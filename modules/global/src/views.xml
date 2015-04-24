@@ -58,4 +58,14 @@
                       view="_minimal"/>
         </property>
     </view>
+    <view class="com.haulmont.ts.entity.ProjectParticipant"
+          name="fullProjectParticipantView">
+        <property name="user"
+                  view="_minimal"/>
+        <property name="project"
+                  view="_minimal"/>
+        <property name="code"/>
+        <property name="role"
+                  view="_minimal"/>
+    </view>
 </views>

@@ -32,4 +32,8 @@
             template="com/haulmont/ts/gui/entities/task/task-browse.xml"/>
     <screen id="ts$Task.edit"
             template="com/haulmont/ts/gui/entities/task/task-edit.xml"/>
+    <screen id="ts$ProjectParticipant.lookup"
+            template="com/haulmont/ts/gui/entities/projectparticipant/projectparticipant-browse.xml"/>
+    <screen id="ts$ProjectParticipant.edit"
+            template="com/haulmont/ts/gui/entities/projectparticipant/projectparticipant-edit.xml"/>
 </screen-config>

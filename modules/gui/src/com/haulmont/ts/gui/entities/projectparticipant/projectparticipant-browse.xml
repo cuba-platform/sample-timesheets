@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+        caption="msg://browseCaption"
+        class="com.haulmont.ts.gui.entities.projectparticipant.ProjectParticipantBrowse"
+        focusComponent="projectParticipantsTable"
+        lookupComponent="projectParticipantsTable"
+        messagesPack="com.haulmont.ts.gui.entities.projectparticipant">
+    <dsContext>
+        <collectionDatasource id="projectParticipantsDs"
+                              class="com.haulmont.ts.entity.ProjectParticipant"
+                              view="fullProjectParticipantView">
+            <query>
+                <![CDATA[select e from ts$ProjectParticipant e]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+    <layout expand="projectParticipantsTable"
+            spacing="true">
+        <filter id="filter"
+                datasource="projectParticipantsDs">
+            <properties include=".*"/>
+        </filter>
+        <table id="projectParticipantsTable"
+               width="100%">
+            <actions>
+                <action id="create"/>
+                <action id="edit"/>
+                <action id="remove"/>
+            </actions>
+            <columns>
+                <column id="user"/>
+                <column id="project"/>
+                <column id="code"/>
+                <column id="role"/>
+            </columns>
+            <rows datasource="projectParticipantsDs"/>
+            <rowsCount/>
+            <buttonsPanel id="buttonsPanel"
+                          alwaysVisible="true">
+                <button id="createBtn"
+                        action="projectParticipantsTable.create"/>
+                <button id="editBtn"
+                        action="projectParticipantsTable.edit"/>
+                <button id="removeBtn"
+                        action="projectParticipantsTable.remove"/>
+            </buttonsPanel>
+        </table>
+    </layout>
+</window>
