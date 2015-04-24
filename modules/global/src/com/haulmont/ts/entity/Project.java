@@ -36,7 +36,7 @@ public class Project extends StandardEntity {
     @JoinColumn(name = "PARENT_ID")
     protected Project parent;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "CLIENT_ID")
     protected Client client;
 
