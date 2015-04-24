@@ -9,11 +9,8 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
  * @author gorelov
  */
 public enum TaskStatus implements EnumClass<Integer>{
-
-    OPEN(10),
-    IN_PROGRESS(20),
-    COMPLETE(30),
-    CLOSE(40);
+    ACTIVE(10),
+    INACTIVE(20);
 
     private Integer id;
 

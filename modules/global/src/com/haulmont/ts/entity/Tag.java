@@ -26,8 +26,8 @@ public class Tag extends StandardEntity {
     @Column(name = "NAME", nullable = false, length = 100)
     protected String name;
 
-    @Column(name = "CODE")
-    protected Integer code;
+    @Column(name = "CODE", nullable = false, length = 50)
+    protected String code;
 
     @Column(name = "DESCRIPTION")
     protected String description;
@@ -35,6 +35,15 @@ public class Tag extends StandardEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TAG_TYPE_ID")
     protected TagType tagType;
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
 
     public TagType getTagType() {
         return tagType;
@@ -52,14 +61,6 @@ public class Tag extends StandardEntity {
 
     public String getName() {
         return name;
-    }
-
-    public void setCode(Integer code) {
-        this.code = code;
-    }
-
-    public Integer getCode() {
-        return code;
     }
 
     public void setDescription(String description) {

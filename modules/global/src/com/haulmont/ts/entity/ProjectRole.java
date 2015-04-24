@@ -21,11 +21,20 @@ public class ProjectRole extends StandardEntity {
     @Column(name = "NAME", nullable = false, length = 100)
     protected String name;
 
-    @Column(name = "CODE")
-    protected Integer code;
+    @Column(name = "CODE", nullable = false, length = 50)
+    protected String code;
 
     @Column(name = "DESCRIPTION")
     protected String description;
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
 
     public void setName(String name) {
         this.name = name;
@@ -33,14 +42,6 @@ public class ProjectRole extends StandardEntity {
 
     public String getName() {
         return name;
-    }
-
-    public void setCode(Integer code) {
-        this.code = code;
-    }
-
-    public Integer getCode() {
-        return code;
     }
 
     public void setDescription(String description) {

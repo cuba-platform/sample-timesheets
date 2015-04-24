@@ -29,8 +29,8 @@ public class Project extends StandardEntity {
     @Column(name = "NAME", nullable = false, length = 100)
     protected String name;
 
-    @Column(name = "CODE")
-    protected Integer code;
+    @Column(name = "CODE", nullable = false, length = 50)
+    protected String code;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PARENT_ID")
@@ -43,7 +43,7 @@ public class Project extends StandardEntity {
     @Column(name = "DESCRIPTION")
     protected String description;
 
-    @Column(name = "STATUS")
+    @Column(name = "STATUS", nullable = false)
     protected Integer status;
 
 
@@ -56,6 +56,15 @@ public class Project extends StandardEntity {
     @OnDelete(DeletePolicy.CASCADE)
     @OneToMany(mappedBy = "project")
     protected Set<Task> tasks;
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
 
     public void setParticipants(Set<ProjectParticipant> participants) {
         this.participants = participants;
@@ -115,14 +124,6 @@ public class Project extends StandardEntity {
 
     public String getName() {
         return name;
-    }
-
-    public void setCode(Integer code) {
-        this.code = code;
-    }
-
-    public Integer getCode() {
-        return code;
     }
 
 

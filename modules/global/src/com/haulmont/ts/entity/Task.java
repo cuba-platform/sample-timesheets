@@ -14,6 +14,10 @@ import javax.persistence.ManyToOne;
 import java.util.Set;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import com.haulmont.chile.core.annotations.Composition;
+import com.haulmont.cuba.core.entity.annotation.OnDelete;
+import com.haulmont.cuba.core.global.DeletePolicy;
+import javax.persistence.OneToMany;
 
 /**
  * @author gorelov
@@ -27,8 +31,8 @@ public class Task extends StandardEntity {
     @Column(name = "NAME", nullable = false, length = 100)
     protected String name;
 
-    @Column(name = "CODE")
-    protected Integer code;
+    @Column(name = "CODE", nullable = false, length = 50)
+    protected String code;
 
     @Column(name = "DESCRIPTION")
     protected String description;
@@ -55,6 +59,44 @@ public class Task extends StandardEntity {
         inverseJoinColumns = @JoinColumn(name = "TAG_ID"))
     @ManyToMany
     protected Set<Tag> defaultTags;
+
+    @JoinTable(name = "TS_TASK_PROJECT_PARTICIPANT_LINK",
+        joinColumns = @JoinColumn(name = "TASK_ID"),
+        inverseJoinColumns = @JoinColumn(name = "PROJECT_PARTICIPANT_ID"))
+    @ManyToMany
+    protected Set<ProjectParticipant> participants;
+
+    @Composition
+    @OnDelete(DeletePolicy.CASCADE)
+    @OneToMany(mappedBy = "task")
+    protected Set<TimeEntry> timeEntries;
+
+    public void setTimeEntries(Set<TimeEntry> timeEntries) {
+        this.timeEntries = timeEntries;
+    }
+
+    public Set<TimeEntry> getTimeEntries() {
+        return timeEntries;
+    }
+
+
+    public void setParticipants(Set<ProjectParticipant> participants) {
+        this.participants = participants;
+    }
+
+    public Set<ProjectParticipant> getParticipants() {
+        return participants;
+    }
+
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
 
     public void setRequaredTagTypes(Set<TagType> requaredTagTypes) {
         this.requaredTagTypes = requaredTagTypes;
@@ -90,14 +132,6 @@ public class Task extends StandardEntity {
         this.type = type;
     }
 
-
-    public void setCode(Integer code) {
-        this.code = code;
-    }
-
-    public Integer getCode() {
-        return code;
-    }
 
     public void setDescription(String description) {
         this.description = description;
