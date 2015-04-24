@@ -122,7 +122,7 @@ create table TS_PROJECT (
     NAME varchar(100) not null,
     CODE varchar(50) not null,
     PARENT_ID varchar(36),
-    CLIENT_ID varchar(36),
+    CLIENT_ID varchar(36) not null,
     DESCRIPTION varchar(255),
     STATUS integer not null,
     --
