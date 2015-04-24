@@ -31,4 +31,31 @@
         <property name="ticket"/>
         <property name="description"/>
     </view>
+    <view class="com.haulmont.ts.entity.Task"
+          name="fullTaskView">
+        <property name="name"/>
+        <property name="code"/>
+        <property name="description"/>
+        <property name="project"
+                  view="_minimal"/>
+        <property name="type"
+                  view="_minimal"/>
+        <property name="status"/>
+        <property name="requaredTagTypes"
+                  view="_minimal"/>
+        <property name="defaultTags">
+            <property name="name"/>
+            <property name="tagType">
+                <property name="name"/>
+            </property>
+        </property>
+        <property name="participants">
+            <property name="user">
+                <property name="login"/>
+                <property name="name"/>
+            </property>
+            <property name="role"
+                      view="_minimal"/>
+        </property>
+    </view>
 </views>

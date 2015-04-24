@@ -9,5 +9,6 @@
         <item id="ts$Tag.lookup"/>
         <item id="ts$TagType.lookup"/>
         <item id="ts$TimeEntry.lookup"/>
+        <item id="ts$Task.lookup"/>
     </menu>
 </menu-config>

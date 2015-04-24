@@ -28,4 +28,8 @@
             template="com/haulmont/ts/gui/entities/timeentry/timeentry-browse.xml"/>
     <screen id="ts$TimeEntry.edit"
             template="com/haulmont/ts/gui/entities/timeentry/timeentry-edit.xml"/>
+    <screen id="ts$Task.lookup"
+            template="com/haulmont/ts/gui/entities/task/task-browse.xml"/>
+    <screen id="ts$Task.edit"
+            template="com/haulmont/ts/gui/entities/task/task-edit.xml"/>
 </screen-config>
