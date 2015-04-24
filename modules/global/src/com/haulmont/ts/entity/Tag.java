@@ -3,21 +3,15 @@
  */
 package com.haulmont.ts.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.chile.core.annotations.NamePattern;
-import java.util.Set;
-import javax.persistence.OneToMany;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import com.haulmont.cuba.core.entity.StandardEntity;
+
+import javax.persistence.*;
 
 /**
  * @author gorelov
  */
-@NamePattern("%s|name")
+@NamePattern("%s [%s]|name,tagType")
 @Table(name = "TS_TAG")
 @Entity(name = "ts$Tag")
 public class Tag extends StandardEntity {
@@ -52,7 +46,6 @@ public class Tag extends StandardEntity {
     public void setTagType(TagType tagType) {
         this.tagType = tagType;
     }
-
 
 
     public void setName(String name) {

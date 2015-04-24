@@ -24,4 +24,8 @@
             template="com/haulmont/ts/gui/entities/tagtype/tagtype-browse.xml"/>
     <screen id="ts$TagType.edit"
             template="com/haulmont/ts/gui/entities/tagtype/tagtype-edit.xml"/>
+    <screen id="ts$TimeEntry.lookup"
+            template="com/haulmont/ts/gui/entities/timeentry/timeentry-browse.xml"/>
+    <screen id="ts$TimeEntry.edit"
+            template="com/haulmont/ts/gui/entities/timeentry/timeentry-edit.xml"/>
 </screen-config>
