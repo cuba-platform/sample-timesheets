@@ -3,5 +3,6 @@
 *.iml
 *.iws
 build/*
+modules/*/build/*
 out
 test-run
