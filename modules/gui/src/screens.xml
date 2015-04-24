@@ -1,4 +1,27 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <screen-config xmlns="http://schemas.haulmont.com/cuba/5.4/screens.xsd">
-
+    <screen id="ts$Client.lookup"
+            template="com/haulmont/ts/gui/entities/client/client-browse.xml"/>
+    <screen id="ts$Client.edit"
+            template="com/haulmont/ts/gui/entities/client/client-edit.xml"/>
+    <screen id="ts$Holiday.lookup"
+            template="com/haulmont/ts/gui/entities/holiday/holiday-browse.xml"/>
+    <screen id="ts$Holiday.edit"
+            template="com/haulmont/ts/gui/entities/holiday/holiday-edit.xml"/>
+    <screen id="ts$ProjectRole.lookup"
+            template="com/haulmont/ts/gui/entities/projectrole/projectrole-browse.xml"/>
+    <screen id="ts$ProjectRole.edit"
+            template="com/haulmont/ts/gui/entities/projectrole/projectrole-edit.xml"/>
+    <screen id="ts$TaskType.lookup"
+            template="com/haulmont/ts/gui/entities/tasktype/tasktype-browse.xml"/>
+    <screen id="ts$TaskType.edit"
+            template="com/haulmont/ts/gui/entities/tasktype/tasktype-edit.xml"/>
+    <screen id="ts$Tag.lookup"
+            template="com/haulmont/ts/gui/entities/tag/tag-browse.xml"/>
+    <screen id="ts$Tag.edit"
+            template="com/haulmont/ts/gui/entities/tag/tag-edit.xml"/>
+    <screen id="ts$TagType.lookup"
+            template="com/haulmont/ts/gui/entities/tagtype/tagtype-browse.xml"/>
+    <screen id="ts$TagType.edit"
+            template="com/haulmont/ts/gui/entities/tagtype/tagtype-edit.xml"/>
 </screen-config>

@@ -1,4 +1,34 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <views xmlns="http://schemas.haulmont.com/cuba/5.4/view.xsd">
-
+    <view class="com.haulmont.ts.entity.Tag"
+          name="tag-with-type">
+        <property name="name"/>
+        <property name="code"/>
+        <property name="description"/>
+        <property name="tagType"
+                  view="_minimal"/>
+    </view>
+    <view class="com.haulmont.ts.entity.TagType"
+          name="tagType-with-project">
+        <property name="name"/>
+        <property name="code"/>
+        <property name="description"/>
+        <property name="project"
+                  view="_minimal"/>
+    </view>
+    <view class="com.haulmont.ts.entity.TimeEntry"
+          name="fullTimeEntryView">
+        <property name="task"
+                  view="_minimal"/>
+        <property name="taskName"/>
+        <property name="user"
+                  view="_minimal"/>
+        <property name="tags"
+                  view="_minimal"/>
+        <property name="date"/>
+        <property name="time"/>
+        <property name="status"/>
+        <property name="ticket"/>
+        <property name="description"/>
+    </view>
 </views>

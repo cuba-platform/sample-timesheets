@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+        caption="msg://browseCaption"
+        class="com.haulmont.ts.gui.entities.tagtype.TagTypeBrowse"
+        focusComponent="tagTypesTable"
+        lookupComponent="tagTypesTable"
+        messagesPack="com.haulmont.ts.gui.entities.tagtype">
+    <dsContext>
+        <collectionDatasource id="tagTypesDs"
+                              class="com.haulmont.ts.entity.TagType"
+                              view="tagType-with-project">
+            <query>
+                <![CDATA[select e from ts$TagType e]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+    <layout expand="tagTypesTable"
+            spacing="true">
+        <filter id="filter"
+                datasource="tagTypesDs">
+            <properties include=".*"/>
+        </filter>
+        <table id="tagTypesTable"
+               width="100%">
+            <actions>
+                <action id="create"/>
+                <action id="edit"/>
+                <action id="remove"/>
+            </actions>
+            <columns>
+                <column id="name"/>
+                <column id="code"/>
+                <column id="description"/>
+                <column id="project"/>
+            </columns>
+            <rows datasource="tagTypesDs"/>
+            <rowsCount/>
+            <buttonsPanel id="buttonsPanel"
+                          alwaysVisible="true">
+                <button id="createBtn"
+                        action="tagTypesTable.create"/>
+                <button id="editBtn"
+                        action="tagTypesTable.edit"/>
+                <button id="removeBtn"
+                        action="tagTypesTable.remove"/>
+            </buttonsPanel>
+        </table>
+    </layout>
+</window>

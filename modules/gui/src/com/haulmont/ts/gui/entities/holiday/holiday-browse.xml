@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+        caption="msg://browseCaption"
+        class="com.haulmont.ts.gui.entities.holiday.HolidayBrowse"
+        focusComponent="holidaysTable"
+        lookupComponent="holidaysTable"
+        messagesPack="com.haulmont.ts.gui.entities.holiday">
+    <dsContext>
+        <collectionDatasource id="holidaysDs"
+                              class="com.haulmont.ts.entity.Holiday"
+                              view="_local">
+            <query>
+                <![CDATA[select e from ts$Holiday e]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+    <layout expand="holidaysTable"
+            spacing="true">
+        <filter id="filter"
+                datasource="holidaysDs">
+            <properties include=".*"/>
+        </filter>
+        <table id="holidaysTable"
+               width="100%">
+            <actions>
+                <action id="create"/>
+                <action id="edit"/>
+                <action id="remove"/>
+            </actions>
+            <columns>
+                <column id="startDate"/>
+                <column id="endDate"/>
+                <column id="name"/>
+                <column id="description"/>
+            </columns>
+            <rows datasource="holidaysDs"/>
+            <rowsCount/>
+            <buttonsPanel id="buttonsPanel"
+                          alwaysVisible="true">
+                <button id="createBtn"
+                        action="holidaysTable.create"/>
+                <button id="editBtn"
+                        action="holidaysTable.edit"/>
+                <button id="removeBtn"
+                        action="holidaysTable.remove"/>
+            </buttonsPanel>
+        </table>
+    </layout>
+</window>

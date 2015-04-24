@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <menu-config xmlns="http://schemas.haulmont.com/cuba/5.4/menu.xsd">
-    <menu id="application" insertBefore="administration">
+    <menu id="application"
+          insertBefore="administration">
+        <item id="ts$Client.lookup"/>
+        <item id="ts$Holiday.lookup"/>
+        <item id="ts$ProjectRole.lookup"/>
+        <item id="ts$TaskType.lookup"/>
+        <item id="ts$Tag.lookup"/>
+        <item id="ts$TagType.lookup"/>
     </menu>
 </menu-config>
