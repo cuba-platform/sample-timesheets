@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+        caption="msg://browseCaption"
+        class="com.haulmont.ts.gui.entities.project.ProjectBrowse"
+        focusComponent="projectsTable"
+        lookupComponent="projectsTable"
+        messagesPack="com.haulmont.ts.gui.entities.project">
+    <dsContext>
+        <hierarchicalDatasource id="projectsDs"
+                                class="com.haulmont.ts.entity.Project"
+                                hierarchyProperty="parent"
+                                view="fullProjectView">
+            <query>
+                <![CDATA[select e from ts$Project e]]>
+            </query>
+        </hierarchicalDatasource>
+    </dsContext>
+    <layout expand="projectsTable"
+            spacing="true">
+        <filter id="filter"
+                datasource="projectsDs">
+            <properties include=".*"/>
+        </filter>
+        <treeTable id="projectsTable"
+                   width="100%">
+            <actions>
+                <action id="create"/>
+                <action id="edit"/>
+                <action id="remove"/>
+            </actions>
+            <columns>
+                <column id="name"/>
+                <column id="code"/>
+                <column id="parent"/>
+                <column id="client"/>
+                <column id="description"/>
+                <column id="status"/>
+            </columns>
+            <rows datasource="projectsDs"/>
+            <rowsCount/>
+            <buttonsPanel id="buttonsPanel"
+                          alwaysVisible="true">
+                <button id="createBtn"
+                        action="projectsTable.create"/>
+                <button id="editBtn"
+                        action="projectsTable.edit"/>
+                <button id="removeBtn"
+                        action="projectsTable.remove"/>
+            </buttonsPanel>
+        </treeTable>
+    </layout>
+</window>

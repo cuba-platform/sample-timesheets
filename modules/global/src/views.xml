@@ -68,4 +68,23 @@
         <property name="role"
                   view="_minimal"/>
     </view>
+    <view class="com.haulmont.ts.entity.Project"
+          name="fullProjectView">
+        <property name="name"/>
+        <property name="code"/>
+        <property name="parent"
+                  view="_minimal"/>
+        <property name="client"
+                  view="_minimal"/>
+        <property name="description"/>
+        <property name="status"/>
+        <property name="participants">
+            <property name="user"
+                      view="_minimal"/>
+            <property name="role"
+                      view="_minimal"/>
+        </property>
+        <property name="tasks"
+                  view="fullTaskView"/>
+    </view>
 </views>

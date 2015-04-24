@@ -11,5 +11,6 @@
         <item id="ts$TimeEntry.lookup"/>
         <item id="ts$Task.lookup"/>
         <item id="ts$ProjectParticipant.lookup"/>
+        <item id="ts$Project.lookup"/>
     </menu>
 </menu-config>
