@@ -31,10 +31,9 @@
             <columns>
                 <column id="name"/>
                 <column id="code"/>
-                <column id="parent"/>
                 <column id="client"/>
-                <column id="description"/>
                 <column id="status"/>
+                <column id="description"/>
             </columns>
             <rows datasource="projectsDs"/>
             <rowsCount/>
