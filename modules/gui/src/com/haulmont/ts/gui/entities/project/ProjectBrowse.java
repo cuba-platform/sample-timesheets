@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 com.haulmont.ts.gui.entities.project
+ * Copyright (c) ${YEAR} ${PACKAGE_NAME}
  */
 package com.haulmont.ts.gui.entities.project;
 
