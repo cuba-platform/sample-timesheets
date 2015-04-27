@@ -21,7 +21,8 @@
             </query>
         </collectionDatasource>
         <collectionDatasource id="projectsDs"
-                              class="com.haulmont.ts.entity.Project">
+                              class="com.haulmont.ts.entity.Project"
+                              view="fullProjectView">
             <query>
                 <![CDATA[select e from ts$Project e]]>
             </query>
