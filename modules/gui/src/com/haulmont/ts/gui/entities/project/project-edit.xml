@@ -54,6 +54,7 @@
             <groupBox id="participantsBox"
                       caption="msg://com.haulmont.ts.entity/Project.participants">
                 <table id="participantsTable"
+                       columnControlVisible="false"
                        editable="true"
                        height="200px"
                        width="100%">
@@ -62,10 +63,12 @@
                         <action id="remove"/>
                     </actions>
                     <columns>
-                        <column id="user"/>
+                        <column id="user" link="true"/>
                         <column id="role"
                                 editable="true"
                                 optionsDatasource="participantsRolesDs"/>
+                        <column id="user.position"/>
+                        <column id="remove" width="35px" caption=""/>
                     </columns>
                     <rows datasource="participantsDs"/>
                     <buttonsPanel>

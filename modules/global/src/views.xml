@@ -62,8 +62,15 @@
           name="fullProjectParticipantView">
         <property name="user"
                   view="_minimal"/>
-        <property name="project"
-                  view="_minimal"/>
+        <property name="project">
+            <property name="name"/>
+            <property name="participants">
+                <property name="user">
+                    <property name="login"/>
+                    <property name="name"/>
+                </property>
+            </property>
+        </property>
         <property name="code"/>
         <property name="role"
                   view="_minimal"/>
@@ -79,8 +86,13 @@
         <property name="description"/>
         <property name="status"/>
         <property name="participants">
-            <property name="user"
-                      view="_minimal"/>
+            <property name="user">
+                <property name="login"/>
+                <property name="name"/>
+                <property name="firstName"/>
+                <property name="lastName"/>
+                <property name="position"/>
+            </property>
             <property name="role"
                       view="_minimal"/>
         </property>

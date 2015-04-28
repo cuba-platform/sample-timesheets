@@ -4,6 +4,7 @@
 package com.haulmont.ts.gui.entities.project;
 
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -13,8 +14,10 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.ts.entity.Client;
 import com.haulmont.ts.entity.Project;
+import com.haulmont.ts.entity.ProjectParticipant;
 import com.haulmont.ts.entity.ProjectStatus;
 import com.haulmont.ts.service.ProjectsService;
 
@@ -26,6 +29,9 @@ import java.util.*;
  * @author gorelov
  */
 public class ProjectEdit extends AbstractEditor<Project> {
+
+    @Inject
+    private Messages messages;
     @Inject
     private FieldGroup fieldGroup;
     @Inject
@@ -36,6 +42,8 @@ public class ProjectEdit extends AbstractEditor<Project> {
     private ProjectsService projectsService;
     @Inject
     private Table participantsTable;
+    @Inject
+    private CollectionDatasource<ProjectParticipant, UUID> participantsDs;
 
     @Named("fieldGroup.parent")
     private LookupPickerField parentField;
@@ -91,8 +99,12 @@ public class ProjectEdit extends AbstractEditor<Project> {
         });
 
         participantsTableCreate.setOpenType(WindowManager.OpenType.DIALOG);
+        Map<String, Object> windowParams = new HashMap<>();
+        windowParams.put("assignedUsers", getAssignUsers(participantsDs.getItems()));
+        participantsTableCreate.setWindowParams(windowParams);
 
-        participantsTable.addGeneratedColumn("remove", new Table.ColumnGenerator() {
+        String removeColumnName = "remove";
+        participantsTable.addGeneratedColumn(removeColumnName, new Table.ColumnGenerator() {
             @Override
             public Component generateCell(Entity entity) {
                 LinkButton removeButton = componentsFactory.createComponent(LinkButton.NAME);
@@ -101,7 +113,11 @@ public class ProjectEdit extends AbstractEditor<Project> {
                 return removeButton;
             }
         });
-        participantsTable.setColumnCaption("remove", "");
+//        participantsTable.setColumnCaption(removeColumnName, messages.getMessage(getClass(), "participantsTable.remove"));
+//        participantsTable.setColumnCaption(removeColumnName, "");
+
+//        participantsTable.setColumnWidth(removeColumnName, 35);
+//        participantsTable.setColumnControlVisible(false);
     }
 
     @Override
@@ -118,10 +134,20 @@ public class ProjectEdit extends AbstractEditor<Project> {
         PickerField.LookupAction lookupAction = new PickerField.LookupAction(pickerField);
         lookupAction.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
         lookupAction.setLookupScreenDialogParams(new DialogParams()
-                .setHeight(480)
-                .setWidth(640)
+                .setWidth(800)
+                .setHeight(500)
                 .setResizable(true));
         return lookupAction;
+    }
+
+    private Collection<User> getAssignUsers(Collection<ProjectParticipant> participants) {
+        if (participants.size() > 0) {
+            List<User> assignedUsers = new ArrayList<>(participants.size());
+            for (ProjectParticipant participant : participants)
+                assignedUsers.add(participant.getUser());
+            return assignedUsers;
+        }
+        return Collections.emptyList();
     }
 
     private class ParticipantRemoveAction extends RemoveAction {
