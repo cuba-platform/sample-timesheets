@@ -9,16 +9,30 @@
         <datasource id="projectParticipantDs"
                     class="com.haulmont.ts.entity.ProjectParticipant"
                     view="fullProjectParticipantView"/>
+        <collectionDatasource id="rolesDs"
+                              class="com.haulmont.ts.entity.ProjectRole">
+            <query>
+                <![CDATA[select e from ts$ProjectRole e]]>
+            </query>
+        </collectionDatasource>
+        <collectionDatasource id="usersDs"
+                              class="com.haulmont.cuba.security.entity.User">
+            <query>
+                <![CDATA[select e from sec$User e]]>
+            </query>
+        </collectionDatasource>
     </dsContext>
     <layout expand="windowActions"
             spacing="true">
         <fieldGroup id="fieldGroup"
                     datasource="projectParticipantDs">
             <column width="250px">
-                <field id="user"/>
+                <field id="user"
+                       optionsDatasource="usersDs"/>
                 <field id="project"/>
                 <field id="code"/>
-                <field id="role"/>
+                <field id="role"
+                       optionsDatasource="rolesDs"/>
             </column>
         </fieldGroup>
         <iframe id="windowActions"
