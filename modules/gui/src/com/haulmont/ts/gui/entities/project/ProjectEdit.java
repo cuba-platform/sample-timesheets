@@ -114,10 +114,8 @@ public class ProjectEdit extends AbstractEditor<Project> {
             }
         });
 //        participantsTable.setColumnCaption(removeColumnName, messages.getMessage(getClass(), "participantsTable.remove"));
-//        participantsTable.setColumnCaption(removeColumnName, "");
-
-//        participantsTable.setColumnWidth(removeColumnName, 35);
-//        participantsTable.setColumnControlVisible(false);
+        participantsTable.setColumnCaption(removeColumnName, "");
+        participantsTable.setColumnWidth(removeColumnName, 35);
     }
 
     @Override

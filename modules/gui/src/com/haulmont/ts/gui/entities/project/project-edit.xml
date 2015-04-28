@@ -68,7 +68,6 @@
                                 editable="true"
                                 optionsDatasource="participantsRolesDs"/>
                         <column id="user.position"/>
-                        <column id="remove" width="35px" caption=""/>
                     </columns>
                     <rows datasource="participantsDs"/>
                     <buttonsPanel>
