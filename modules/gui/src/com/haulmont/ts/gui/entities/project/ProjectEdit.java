@@ -3,9 +3,12 @@
  */
 package com.haulmont.ts.gui.entities.project;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.CreateAction;
+import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
@@ -17,9 +20,7 @@ import com.haulmont.ts.service.ProjectsService;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author gorelov
@@ -33,11 +34,15 @@ public class ProjectEdit extends AbstractEditor<Project> {
     private CollectionDatasource<Project, UUID> projectsDs;
     @Inject
     private ProjectsService projectsService;
+    @Inject
+    private Table participantsTable;
 
     @Named("fieldGroup.parent")
     private LookupPickerField parentField;
     @Named("fieldGroup.client")
     private LookupPickerField clientField;
+    @Named("participantsTable.create")
+    private CreateAction participantsTableCreate;
 
     private List<Project> childrenProjects;
 
@@ -84,6 +89,19 @@ public class ProjectEdit extends AbstractEditor<Project> {
                 return textArea;
             }
         });
+
+        participantsTableCreate.setOpenType(WindowManager.OpenType.DIALOG);
+
+        participantsTable.addGeneratedColumn("remove", new Table.ColumnGenerator() {
+            @Override
+            public Component generateCell(Entity entity) {
+                LinkButton removeButton = componentsFactory.createComponent(LinkButton.NAME);
+                removeButton.setIcon("icons/remove.png");
+                removeButton.setAction(new ParticipantRemoveAction(participantsTable, entity));
+                return removeButton;
+            }
+        });
+        participantsTable.setColumnCaption("remove", "");
     }
 
     @Override
@@ -104,5 +122,31 @@ public class ProjectEdit extends AbstractEditor<Project> {
                 .setWidth(640)
                 .setResizable(true));
         return lookupAction;
+    }
+
+    private class ParticipantRemoveAction extends RemoveAction {
+
+        private Entity entity;
+
+        public ParticipantRemoveAction(ListComponent target, Entity entity) {
+            super(target);
+            this.entity = entity;
+        }
+
+        @Override
+        public void actionPerform(Component component) {
+            if (!isEnabled()) {
+                return;
+            }
+
+            Set<Entity> selected = new HashSet<>(1);
+            selected.add(entity);
+            confirmAndRemove(selected);
+        }
+
+        @Override
+        public String getCaption() {
+            return null;
+        }
     }
 }
