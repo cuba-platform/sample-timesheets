@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+        caption="msg://browseCaption"
+        class="com.haulmont.timesheets.gui.tag.TagBrowse"
+        focusComponent="tagsTable"
+        lookupComponent="tagsTable"
+        messagesPack="com.haulmont.timesheets.gui.tag">
+    <dsContext>
+        <collectionDatasource id="tagsDs"
+                              class="com.haulmont.timesheets.entity.Tag"
+                              view="tag-with-type">
+            <query>
+                <![CDATA[select e from ts$Tag e]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+    <layout expand="tagsTable"
+            spacing="true">
+        <filter id="filter"
+                datasource="tagsDs">
+            <properties include=".*"/>
+        </filter>
+        <table id="tagsTable"
+               width="100%">
+            <actions>
+                <action id="create"/>
+                <action id="edit"/>
+                <action id="remove"/>
+            </actions>
+            <columns>
+                <column id="name"/>
+                <column id="code"/>
+                <column id="description"/>
+                <column id="tagType"/>
+            </columns>
+            <rows datasource="tagsDs"/>
+            <rowsCount/>
+            <buttonsPanel id="buttonsPanel"
+                          alwaysVisible="true">
+                <button id="createBtn"
+                        action="tagsTable.create"/>
+                <button id="editBtn"
+                        action="tagsTable.edit"/>
+                <button id="removeBtn"
+                        action="tagsTable.remove"/>
+            </buttonsPanel>
+        </table>
+    </layout>
+</window>

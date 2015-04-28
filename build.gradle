@@ -1,6 +1,6 @@
 
 allprojects {
-    ext.artifactGroup = 'com.haulmont.ts'
+    ext.artifactGroup = 'com.haulmont.timesheets'
     ext.artifactVersion = '0.1'
     ext.isSnapshot = true
     ext.tomcatDir = "$rootDir/build/tomcat"

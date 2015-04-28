@@ -33,7 +33,7 @@
         <init-param>
             <description>Application class</description>
             <param-name>application</param-name>
-            <param-value>com.haulmont.ts.web.App</param-value>
+            <param-value>com.haulmont.timesheets.web.App</param-value>
         </init-param>
         <init-param>
             <description>Widgetset name</description>

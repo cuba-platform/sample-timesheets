@@ -21,7 +21,7 @@
         <property name="remoteServices">
             <map>
                 <entry key="ts_ProjectsService"
-                       value="com.haulmont.ts.service.ProjectsService"/>
+                       value="com.haulmont.timesheets.service.ProjectsService"/>
             </map>
         </property>
     </bean>

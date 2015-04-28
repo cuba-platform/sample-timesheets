@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+        caption="msg://browseCaption"
+        class="com.haulmont.timesheets.gui.tasktype.TaskTypeBrowse"
+        focusComponent="taskTypesTable"
+        lookupComponent="taskTypesTable"
+        messagesPack="com.haulmont.timesheets.gui.tasktype">
+    <dsContext>
+        <collectionDatasource id="taskTypesDs"
+                              class="com.haulmont.timesheets.entity.TaskType"
+                              view="_local">
+            <query>
+                <![CDATA[select e from ts$TaskType e]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+    <layout expand="taskTypesTable"
+            spacing="true">
+        <filter id="filter"
+                datasource="taskTypesDs">
+            <properties include=".*"/>
+        </filter>
+        <table id="taskTypesTable"
+               width="100%">
+            <actions>
+                <action id="create"/>
+                <action id="edit"/>
+                <action id="remove"/>
+            </actions>
+            <columns>
+                <column id="name"/>
+                <column id="code"/>
+                <column id="description"/>
+            </columns>
+            <rows datasource="taskTypesDs"/>
+            <rowsCount/>
+            <buttonsPanel id="buttonsPanel"
+                          alwaysVisible="true">
+                <button id="createBtn"
+                        action="taskTypesTable.create"/>
+                <button id="editBtn"
+                        action="taskTypesTable.edit"/>
+                <button id="removeBtn"
+                        action="taskTypesTable.remove"/>
+            </buttonsPanel>
+        </table>
+    </layout>
+</window>

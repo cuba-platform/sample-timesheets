@@ -3,16 +3,16 @@
              version="2.0">
     <persistence-unit name="time-sheets"
                       transaction-type="RESOURCE_LOCAL">
-        <class>com.haulmont.ts.entity.Holiday</class>
-        <class>com.haulmont.ts.entity.Client</class>
-        <class>com.haulmont.ts.entity.ProjectRole</class>
-        <class>com.haulmont.ts.entity.TaskType</class>
-        <class>com.haulmont.ts.entity.Tag</class>
-        <class>com.haulmont.ts.entity.TagType</class>
-        <class>com.haulmont.ts.entity.Project</class>
-        <class>com.haulmont.ts.entity.Task</class>
-        <class>com.haulmont.ts.entity.TimeEntry</class>
-        <class>com.haulmont.ts.entity.ProjectParticipant</class>
-        <class>com.haulmont.ts.entity.ExtUser</class>
+        <class>com.haulmont.timesheets.entity.Holiday</class>
+        <class>com.haulmont.timesheets.entity.Client</class>
+        <class>com.haulmont.timesheets.entity.ProjectRole</class>
+        <class>com.haulmont.timesheets.entity.TaskType</class>
+        <class>com.haulmont.timesheets.entity.Tag</class>
+        <class>com.haulmont.timesheets.entity.TagType</class>
+        <class>com.haulmont.timesheets.entity.Project</class>
+        <class>com.haulmont.timesheets.entity.Task</class>
+        <class>com.haulmont.timesheets.entity.TimeEntry</class>
+        <class>com.haulmont.timesheets.entity.ProjectParticipant</class>
+        <class>com.haulmont.timesheets.entity.ExtUser</class>
     </persistence-unit>
 </persistence>

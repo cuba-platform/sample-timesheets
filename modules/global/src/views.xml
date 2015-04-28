@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <views xmlns="http://schemas.haulmont.com/cuba/5.4/view.xsd">
-    <view class="com.haulmont.ts.entity.Tag"
+    <view class="com.haulmont.timesheets.entity.Tag"
           name="tag-with-type">
         <property name="name"/>
         <property name="code"/>
@@ -8,7 +8,7 @@
         <property name="tagType"
                   view="_minimal"/>
     </view>
-    <view class="com.haulmont.ts.entity.TagType"
+    <view class="com.haulmont.timesheets.entity.TagType"
           name="tagType-with-project">
         <property name="name"/>
         <property name="code"/>
@@ -16,8 +16,8 @@
         <property name="project"
                   view="_minimal"/>
     </view>
-    <view class="com.haulmont.ts.entity.TimeEntry"
-          name="fullTimeEntryView">
+    <view class="com.haulmont.timesheets.entity.TimeEntry"
+          name="timeEntry-full">
         <property name="task"
                   view="_minimal"/>
         <property name="taskName"/>
@@ -31,8 +31,8 @@
         <property name="ticket"/>
         <property name="description"/>
     </view>
-    <view class="com.haulmont.ts.entity.Task"
-          name="fullTaskView">
+    <view class="com.haulmont.timesheets.entity.Task"
+          name="task-full">
         <property name="name"/>
         <property name="code"/>
         <property name="description"/>
@@ -59,8 +59,8 @@
         <property name="requiredTagTypes"
                   view="_minimal"/>
     </view>
-    <view class="com.haulmont.ts.entity.ProjectParticipant"
-          name="fullProjectParticipantView">
+    <view class="com.haulmont.timesheets.entity.ProjectParticipant"
+          name="projectParticipant-full">
         <property name="user"
                   view="_minimal"/>
         <property name="project">
@@ -76,8 +76,8 @@
         <property name="role"
                   view="_minimal"/>
     </view>
-    <view class="com.haulmont.ts.entity.Project"
-          name="fullProjectView">
+    <view class="com.haulmont.timesheets.entity.Project"
+          name="project-full">
         <property name="name"/>
         <property name="code"/>
         <property name="parent"
@@ -98,9 +98,6 @@
                       view="_minimal"/>
         </property>
         <property name="tasks"
-                  view="fullTaskView"/>
+                  view="task-full"/>
     </view>
-    <view class="com.haulmont.ts.entity.Task"
-          extends="fullTaskView"
-          name="task-view"/>
 </views>
