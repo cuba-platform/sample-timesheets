@@ -3,6 +3,7 @@
  */
 package com.haulmont.ts.gui.entities.project;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.DialogParams;
@@ -144,7 +145,7 @@ public class ProjectEdit extends AbstractEditor<Project> {
     }
 
     private Collection<User> getAssignUsers(Collection<ProjectParticipant> participants) {
-        if (participants.size() > 0) {
+        if (!participants.isEmpty()) {
             List<User> assignedUsers = new ArrayList<>(participants.size());
             for (ProjectParticipant participant : participants)
                 assignedUsers.add(participant.getUser());
