@@ -40,4 +40,8 @@
             template="com/haulmont/ts/gui/entities/project/project-browse.xml"/>
     <screen id="ts$Project.edit"
             template="com/haulmont/ts/gui/entities/project/project-edit.xml"/>
+    <screen id="sec$User.edit"
+            template="com/haulmont/ts/gui/entities/extuser/extuser-edit.xml"/>
+    <screen id="sec$User.browse"
+            template="com/haulmont/ts/gui/entities/extuser/extuser-browse.xml"/>
 </screen-config>

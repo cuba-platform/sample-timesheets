@@ -3,4 +3,12 @@
 /* Define your theme modifications inside next mixin */
 @mixin halo-ext {
   @include halo;
+
+  .v-button-remove {
+    color: red;
+  }
+
+  .v-button-remove:hover {
+    color: green;
+  }
 }

@@ -8,15 +8,15 @@ values ('Haulmont', '001', 1, '2015-04-24 04:45:09', null, null, null, 'f2e1555d
 
 insert into TS_PROJECT_ROLE
 (NAME, CODE, DESCRIPTION, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
-values ('Developer', '001', null, 1, '2015-04-24 04:47:10', null, null, null, '6a8e8c24-d639-ef26-fac8-57e13bbfed48', '2015-04-24 04:47:10', 'admin');
+values ('Worker', '001', null, 1, '2015-04-24 04:47:10', null, null, null, '6a8e8c24-d639-ef26-fac8-57e13bbfed48', '2015-04-24 04:47:10', 'admin');
 
 insert into TS_PROJECT_ROLE
 (NAME, CODE, DESCRIPTION, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
-values ('QA', '002', null, 1, '2015-04-24 04:47:16', null, null, null, '5bc577ab-44f3-a652-da29-4ae06c02d43b', '2015-04-24 04:47:16', 'admin');
+values ('Manager', '002', null, 1, '2015-04-24 04:47:16', null, null, null, '5bc577ab-44f3-a652-da29-4ae06c02d43b', '2015-04-24 04:47:16', 'admin');
 
 insert into TS_PROJECT_ROLE
 (NAME, CODE, DESCRIPTION, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
-values ('Manager', '003', null, 1, '2015-04-24 04:47:22', null, null, null, '3182a9b0-5ffb-6062-d58c-0148b7b3af3e', '2015-04-24 04:47:22', 'admin');
+values ('Approver', '003', null, 1, '2015-04-24 04:47:22', null, null, null, '3182a9b0-5ffb-6062-d58c-0148b7b3af3e', '2015-04-24 04:47:22', 'admin');
 
 ------------------------------------------------------------------------------------------------------------------------
 

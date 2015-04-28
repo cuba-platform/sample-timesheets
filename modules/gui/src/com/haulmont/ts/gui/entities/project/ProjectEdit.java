@@ -9,6 +9,7 @@ import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
+import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -51,6 +52,10 @@ public class ProjectEdit extends AbstractEditor<Project> {
     private LookupPickerField clientField;
     @Named("participantsTable.create")
     private CreateAction participantsTableCreate;
+    @Named("tasksTable.create")
+    private CreateAction tasksTableCreate;
+    @Named("tasksTable.edit")
+    private EditAction tasksTableEdit;
 
     private List<Project> childrenProjects;
 

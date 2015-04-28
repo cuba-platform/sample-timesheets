@@ -9,13 +9,19 @@
         <datasource id="taskDs"
                     class="com.haulmont.ts.entity.Task"
                     view="fullTaskView">
-            <collectionDatasource id="requaredTagTypesDs"
-                                  property="requaredTagTypes"/>
+            <collectionDatasource id="requiredTagTypesDs"
+                                  property="requiredTagTypes"/>
             <collectionDatasource id="defaultTagsDs"
                                   property="defaultTags"/>
             <collectionDatasource id="participantsDs"
                                   property="participants"/>
         </datasource>
+        <collectionDatasource id="taskTypesDs"
+                              class="com.haulmont.ts.entity.TaskType">
+            <query>
+                <![CDATA[select e from ts$TaskType e]]>
+            </query>
+        </collectionDatasource>
     </dsContext>
     <layout expand="windowActions"
             spacing="true">
@@ -26,54 +32,57 @@
                 <field id="code"/>
                 <field id="description"/>
                 <field id="project"/>
-                <field id="type"/>
+                <field id="type"
+                       optionsDatasource="taskTypesDs"/>
                 <field id="status"/>
             </column>
         </fieldGroup>
-        <groupBox id="requaredTagTypesBox"
-                  caption="msg://com.haulmont.ts.entity/Task.requaredTagTypes"
+        <groupBox id="requiredTagTypesBox"
+                  caption="msg://com.haulmont.ts.entity/Task.requiredTagTypes"
                   visible="false">
-            <table id="requaredTagTypesTable"
-                   height="200px"
-                   width="100%">
-                <actions>
-                    <action id="add"/>
-                    <action id="remove"/>
-                </actions>
-                <columns>
-                    <column id="name"/>
-                </columns>
-                <rows datasource="requaredTagTypesDs"/>
-                <buttonsPanel>
-                    <button action="requaredTagTypesTable.add"/>
-                    <button action="requaredTagTypesTable.remove"/>
-                </buttonsPanel>
-            </table>
+            <!--<table id="requiredTagTypesTable"-->
+                   <!--height="200px"-->
+                   <!--width="100%">-->
+                <!--<actions>-->
+                    <!--<action id="add"/>-->
+                    <!--<action id="remove"/>-->
+                <!--</actions>-->
+                <!--<columns>-->
+                    <!--<column id="name"/>-->
+                <!--</columns>-->
+                <!--<rows datasource="requiredTagTypesDs"/>-->
+                <!--<buttonsPanel>-->
+                    <!--<button action="requiredTagTypesTable.add"/>-->
+                    <!--<button action="requiredTagTypesTable.remove"/>-->
+                <!--</buttonsPanel>-->
+            <!--</table>-->
+
         </groupBox>
         <groupBox id="defaultTagsBox"
                   caption="msg://com.haulmont.ts.entity/Task.defaultTags"
                   visible="false">
-            <table id="defaultTagsTable"
-                   height="200px"
-                   width="100%">
-                <actions>
-                    <action id="add"/>
-                    <action id="remove"/>
-                </actions>
-                <columns>
-                    <column id="name"/>
-                    <column id="tagType"/>
-                </columns>
-                <rows datasource="defaultTagsDs"/>
-                <buttonsPanel>
-                    <button action="defaultTagsTable.add"/>
-                    <button action="defaultTagsTable.remove"/>
-                </buttonsPanel>
-            </table>
+            <!--<table id="defaultTagsTable"-->
+                   <!--height="200px"-->
+                   <!--width="100%">-->
+                <!--<actions>-->
+                    <!--<action id="add"/>-->
+                    <!--<action id="remove"/>-->
+                <!--</actions>-->
+                <!--<columns>-->
+                    <!--<column id="name"/>-->
+                    <!--<column id="tagType"/>-->
+                <!--</columns>-->
+                <!--<rows datasource="defaultTagsDs"/>-->
+                <!--<buttonsPanel>-->
+                    <!--<button action="defaultTagsTable.add"/>-->
+                    <!--<button action="defaultTagsTable.remove"/>-->
+                <!--</buttonsPanel>-->
+            <!--</table>-->
         </groupBox>
         <groupBox id="participantsBox"
                   caption="msg://com.haulmont.ts.entity/Task.participants">
             <table id="participantsTable"
+                   columnControlVisible="false"
                    height="200px"
                    width="100%">
                 <actions>
@@ -81,8 +90,9 @@
                     <action id="remove"/>
                 </actions>
                 <columns>
-                    <column id="user"/>
+                    <column id="user" link="true"/>
                     <column id="role"/>
+                    <column id="user.position"/>
                 </columns>
                 <rows datasource="participantsDs"/>
                 <buttonsPanel>

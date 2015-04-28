@@ -41,8 +41,6 @@
         <property name="type"
                   view="_minimal"/>
         <property name="status"/>
-        <property name="requaredTagTypes"
-                  view="_minimal"/>
         <property name="defaultTags">
             <property name="name"/>
             <property name="tagType">
@@ -53,10 +51,13 @@
             <property name="user">
                 <property name="login"/>
                 <property name="name"/>
+                <property name="position"/>
             </property>
             <property name="role"
                       view="_minimal"/>
         </property>
+        <property name="requiredTagTypes"
+                  view="_minimal"/>
     </view>
     <view class="com.haulmont.ts.entity.ProjectParticipant"
           name="fullProjectParticipantView">
@@ -99,4 +100,7 @@
         <property name="tasks"
                   view="fullTaskView"/>
     </view>
+    <view class="com.haulmont.ts.entity.Task"
+          extends="fullTaskView"
+          name="task-view"/>
 </views>

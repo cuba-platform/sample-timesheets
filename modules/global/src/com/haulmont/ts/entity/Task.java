@@ -52,7 +52,7 @@ public class Task extends StandardEntity {
         joinColumns = @JoinColumn(name = "TASK_ID"),
         inverseJoinColumns = @JoinColumn(name = "TAG_TYPE_ID"))
     @ManyToMany
-    protected Set<TagType> requaredTagTypes;
+    protected Set<TagType> requiredTagTypes;
 
     @JoinTable(name = "TS_TASK_TAG_LINK",
         joinColumns = @JoinColumn(name = "TASK_ID"),
@@ -70,6 +70,15 @@ public class Task extends StandardEntity {
     @OnDelete(DeletePolicy.CASCADE)
     @OneToMany(mappedBy = "task")
     protected Set<TimeEntry> timeEntries;
+
+    public void setRequiredTagTypes(Set<TagType> requiredTagTypes) {
+        this.requiredTagTypes = requiredTagTypes;
+    }
+
+    public Set<TagType> getRequiredTagTypes() {
+        return requiredTagTypes;
+    }
+
 
     public void setTimeEntries(Set<TimeEntry> timeEntries) {
         this.timeEntries = timeEntries;
@@ -97,14 +106,6 @@ public class Task extends StandardEntity {
         this.code = code;
     }
 
-
-    public void setRequaredTagTypes(Set<TagType> requaredTagTypes) {
-        this.requaredTagTypes = requaredTagTypes;
-    }
-
-    public Set<TagType> getRequaredTagTypes() {
-        return requaredTagTypes;
-    }
 
     public void setDefaultTags(Set<Tag> defaultTags) {
         this.defaultTags = defaultTags;

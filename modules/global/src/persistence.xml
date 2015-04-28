@@ -13,5 +13,6 @@
         <class>com.haulmont.ts.entity.Task</class>
         <class>com.haulmont.ts.entity.TimeEntry</class>
         <class>com.haulmont.ts.entity.ProjectParticipant</class>
+        <class>com.haulmont.ts.entity.ExtUser</class>
     </persistence-unit>
 </persistence>
