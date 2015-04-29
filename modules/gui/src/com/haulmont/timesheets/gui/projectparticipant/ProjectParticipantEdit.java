@@ -8,11 +8,14 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.LookupPickerField;
 import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DatasourceListener;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.ProjectParticipant;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
 
@@ -20,6 +23,9 @@ import java.util.*;
  * @author gorelov
  */
 public class ProjectParticipantEdit extends AbstractEditor<ProjectParticipant> {
+
+    @Inject
+    private Datasource<ProjectParticipant> projectParticipantDs;
 
     @Named("fieldGroup.user")
     protected LookupPickerField userField;
@@ -38,6 +44,23 @@ public class ProjectParticipantEdit extends AbstractEditor<ProjectParticipant> {
         Collection<User> assignedUsers = (Collection<User>) params.get("assignedUsers");
         if (assignedUsers != null)
             validator.setAssignedUsers(assignedUsers);
+
+        projectParticipantDs.addListener(new DatasourceListener<ProjectParticipant>() {
+            @Override
+            public void itemChanged(Datasource<ProjectParticipant> ds, ProjectParticipant prevItem, ProjectParticipant item) {
+
+            }
+
+            @Override
+            public void stateChanged(Datasource<ProjectParticipant> ds, Datasource.State prevState, Datasource.State state) {
+
+            }
+
+            @Override
+            public void valueChanged(ProjectParticipant source, String property, Object prevValue, Object value) {
+
+            }
+        });
 
         projectField.addListener(new ValueListener() {
             @Override
@@ -75,7 +98,7 @@ public class ProjectParticipantEdit extends AbstractEditor<ProjectParticipant> {
 
     protected Collection<User> getAssignedUsers(Project project) {
         Set<ProjectParticipant> participants = project.getParticipants();
-        if (!participants.isEmpty()) {
+        if (participants != null && !participants.isEmpty()) {
             List<User> assignedUsers = new ArrayList<>(participants.size());
             for (ProjectParticipant participant : participants) {
                 assignedUsers.add(participant.getUser());
