@@ -36,7 +36,7 @@
             </column>
         </fieldGroup>
         <tokenList id="tagsTokenList"
-                   caption="msg://tags"
+                   caption="msg://com.haulmont.timesheets.entity/TimeEntry.tags"
                    datasource="tagsDs"
                    inline="true"
                    width="480px">
