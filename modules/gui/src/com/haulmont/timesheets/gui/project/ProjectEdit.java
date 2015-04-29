@@ -3,6 +3,7 @@
  */
 package com.haulmont.timesheets.gui.project;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.DialogParams;
@@ -19,6 +20,7 @@ import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.ProjectStatus;
 import com.haulmont.timesheets.service.ProjectsService;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
@@ -41,7 +43,7 @@ public class ProjectEdit extends AbstractEditor<Project> {
     @Inject
     protected Table participantsTable;
     @Inject
-    private Datasource<Project> projectDs;
+    protected Datasource<Project> projectDs;
 
     @Named("fieldGroup.parent")
     protected LookupPickerField parentField;
@@ -53,8 +55,10 @@ public class ProjectEdit extends AbstractEditor<Project> {
     @Override
     public void init(final Map<String, Object> params) {
 
-        parentField.addAction(createLookupAction(parentField));
-        parentField.addAction(new PickerField.ClearAction(parentField));
+//        PickerField.LookupAction lookupAction = createLookupAction(parentField);
+//        lookupAction.setLookupScreenParams(ParamsMap.of("parentProject", getItem()));
+//        parentField.addAction(lookupAction);
+//        parentField.addAction(new PickerField.ClearAction(parentField));
 
         clientField.addAction(createLookupAction(clientField));
         clientField.addAction(new PickerField.ClearAction(clientField));
@@ -118,6 +122,11 @@ public class ProjectEdit extends AbstractEditor<Project> {
         }
 
         project.setStatus(ProjectStatus.OPEN);
+
+        PickerField.LookupAction lookupAction = createLookupAction(parentField);
+        lookupAction.setLookupScreenParams(ParamsMap.of("parentProject", getItem()));
+        parentField.addAction(lookupAction);
+        parentField.addAction(new PickerField.ClearAction(parentField));
     }
 
     @Override
@@ -167,4 +176,17 @@ public class ProjectEdit extends AbstractEditor<Project> {
             return null;
         }
     }
+
+//    protected class ParentProjectLookupAction extends PickerField.LookupAction {
+//
+//        public ParentProjectLookupAction(PickerField pickerField) {
+//            super(pickerField);
+//        }
+//
+//        @Nullable
+//        @Override
+//        public Map<String, Object> getLookupScreenParams() {
+//            return ParamsMap.of("parentProject", getItem());
+//        }
+//    }
 }
