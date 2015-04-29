@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
         caption="msg://browseCaption"
-        class="com.haulmont.timesheets.gui.projectparticipant.ProjectParticipantLookup"
+        class="com.haulmont.timesheets.gui.projectparticipant.ProjectparticipantLookup"
         focusComponent="projectParticipantsTable"
         lookupComponent="projectParticipantsTable"
         messagesPack="com.haulmont.timesheets.gui.projectparticipant">
