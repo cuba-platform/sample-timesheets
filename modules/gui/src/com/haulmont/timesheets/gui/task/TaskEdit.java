@@ -12,9 +12,8 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.timesheets.entity.ProjectParticipant;
-import com.haulmont.timesheets.entity.Task;
-import com.haulmont.timesheets.entity.TaskStatus;
+import com.haulmont.timesheets.entity.*;
+import com.haulmont.timesheets.gui.ComponentsHelper;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -35,6 +34,10 @@ public class TaskEdit extends AbstractEditor<Task> {
     protected Datasource<Task> taskDs;
     @Inject
     protected CollectionDatasource<ProjectParticipant, UUID> participantsDs;
+    @Inject
+    protected CollectionDatasource<Tag, UUID> allTagsDs;
+    @Inject
+    protected CollectionDatasource<TagType, UUID> allTagsTypesDs;
 
     @Named("fieldGroup.project")
     protected PickerField projectField;
@@ -44,29 +47,8 @@ public class TaskEdit extends AbstractEditor<Task> {
     @Override
     public void init(Map<String, Object> params) {
 
-        fieldGroup.addCustomField("description", new FieldGroup.CustomFieldGenerator() {
-            @Override
-            public Component generateField(Datasource datasource, String propertyId) {
-                ResizableTextArea textArea = componentsFactory.createComponent(ResizableTextArea.NAME);
-                textArea.setDatasource(datasource, propertyId);
-                textArea.setHeight("100px");
-                textArea.setResizable(true);
-                return textArea;
-            }
-        });
-
-        String removeColumnName = "remove";
-        participantsTable.addGeneratedColumn(removeColumnName, new Table.ColumnGenerator() {
-            @Override
-            public Component generateCell(Entity entity) {
-                LinkButton removeButton = componentsFactory.createComponent(LinkButton.NAME);
-                removeButton.setIcon("icons/remove.png");
-                removeButton.setAction(new ParticipantRemoveAction(participantsTable, entity));
-                return removeButton;
-            }
-        });
-        participantsTable.setColumnCaption(removeColumnName, "");
-        participantsTable.setColumnWidth(removeColumnName, 35);
+        fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
+        ComponentsHelper.addRemoveColumn(participantsTable, "remove");
 
         taskDs.addListener(new DsListenerAdapter<Task>() {
             @Override
@@ -95,31 +77,5 @@ public class TaskEdit extends AbstractEditor<Task> {
     protected void updateParticipantsTableAddAction() {
         participantsTableAdd.setWindowParams(ParamsMap.of("project", getItem().getProject(), "multiselect", true));
         participantsTableAdd.setEnabled(getItem().getProject() != null);
-    }
-
-    protected class ParticipantRemoveAction extends RemoveAction {
-
-        private Entity entity;
-
-        public ParticipantRemoveAction(ListComponent target, Entity entity) {
-            super(target);
-            this.entity = entity;
-        }
-
-        @Override
-        public void actionPerform(Component component) {
-            if (!isEnabled()) {
-                return;
-            }
-
-            Set<Entity> selected = new HashSet<>(1);
-            selected.add(entity);
-            confirmAndRemove(selected);
-        }
-
-        @Override
-        public String getCaption() {
-            return null;
-        }
     }
 }

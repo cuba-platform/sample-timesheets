@@ -32,7 +32,8 @@
                 <field id="time"/>
                 <field id="status"/>
                 <field id="ticket"/>
-                <field id="description"/>
+                <field id="description"
+                       custom="true"/>
             </column>
         </fieldGroup>
         <tokenList id="tagsTokenList"

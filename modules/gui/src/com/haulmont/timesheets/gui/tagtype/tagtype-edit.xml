@@ -17,7 +17,8 @@
             <column width="250px">
                 <field id="name"/>
                 <field id="code"/>
-                <field id="description"/>
+                <field id="description"
+                       custom="true"/>
                 <field id="project"/>
             </column>
         </fieldGroup>

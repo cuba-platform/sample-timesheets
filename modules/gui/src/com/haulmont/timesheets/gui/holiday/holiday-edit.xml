@@ -18,7 +18,8 @@
                 <field id="startDate"/>
                 <field id="endDate"/>
                 <field id="name"/>
-                <field id="description"/>
+                <field id="description"
+                       custom="true"/>
             </column>
         </fieldGroup>
         <iframe id="windowActions"
