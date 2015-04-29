@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <screen-config xmlns="http://schemas.haulmont.com/cuba/5.4/screens.xsd">
-    <screen id="ts$Client.lookup"
+    <screen id="ts$Client.browse"
             template="/com/haulmont/timesheets/gui/client/client-browse.xml"/>
+    <screen id="ts$Client.lookup"
+            template="com/haulmont/timesheets/gui/client/client-lookup.xml"/>
     <screen id="ts$Client.edit"
             template="/com/haulmont/timesheets/gui/client/client-edit.xml"/>
     <screen id="ts$Holiday.lookup"
@@ -32,12 +34,16 @@
             template="/com/haulmont/timesheets/gui/task/task-browse.xml"/>
     <screen id="ts$Task.edit"
             template="/com/haulmont/timesheets/gui/task/task-edit.xml"/>
-    <screen id="ts$ProjectParticipant.lookup"
+    <screen id="ts$ProjectParticipant.browse"
             template="/com/haulmont/timesheets/gui/projectparticipant/projectparticipant-browse.xml"/>
+    <screen id="ts$ProjectParticipant.lookup"
+            template="com/haulmont/timesheets/gui/projectparticipant/projectparticipant-lookup.xml"/>
     <screen id="ts$ProjectParticipant.edit"
             template="/com/haulmont/timesheets/gui/projectparticipant/projectparticipant-edit.xml"/>
-    <screen id="ts$Project.lookup"
+    <screen id="ts$Project.browse"
             template="/com/haulmont/timesheets/gui/project/project-browse.xml"/>
+    <screen id="ts$Project.lookup"
+            template="com/haulmont/timesheets/gui/project/project-lookup.xml"/>
     <screen id="ts$Project.edit"
             template="/com/haulmont/timesheets/gui/project/project-edit.xml"/>
     <screen id="sec$User.edit"

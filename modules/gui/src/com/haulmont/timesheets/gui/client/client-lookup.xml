@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+        caption="msg://browseCaption"
+        class="com.haulmont.timesheets.gui.client.ClientLookup"
+        focusComponent="clientsTable"
+        lookupComponent="clientsTable"
+        messagesPack="com.haulmont.timesheets.gui.client">
+    <dsContext>
+        <collectionDatasource id="clientsDs"
+                              class="com.haulmont.timesheets.entity.Client"
+                              view="_local">
+            <query>
+                <![CDATA[select e from ts$Client e]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+    <layout expand="clientsTable"
+            spacing="true">
+        <filter id="filter"
+                datasource="clientsDs">
+            <properties include=".*"/>
+        </filter>
+        <table id="clientsTable"
+               width="100%">
+            <columns>
+                <column id="name"/>
+                <column id="code"/>
+            </columns>
+            <rows datasource="clientsDs"/>
+            <rowsCount/>
+        </table>
+    </layout>
+</window>

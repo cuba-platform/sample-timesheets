@@ -1,5 +1,11 @@
 ------------------------------------------------------------------------------------------------------------------------
 
+insert into SEC_USER
+(RATE, LOGIN, LOGIN_LC, PASSWORD, NAME, FIRST_NAME, LAST_NAME, MIDDLE_NAME, POSITION_, EMAIL, LANGUAGE_, TIME_ZONE, TIME_ZONE_AUTO, ACTIVE, CHANGE_PASSWORD_AT_LOGON, GROUP_ID, IP_MASK, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
+values (1.0, 'doe', 'doe', 'd2743978a2c90ddd530ee589e88b4fcfc9b2449d', 'Doe J. ', 'John', 'Doe', null, 'QA', null, 'en', null, null, true, false, '0fa2b1a5-1d68-4d69-9fbd-dff348347f93', null, 1, '2015-04-29 04:59:49', null, null, null, '7a963a98-f03b-c2b6-c903-4ecea5fd0a8d', '2015-04-29 04:59:49', 'admin');
+
+-- ------------------------------------------------------------------------------------------------------------------------
+
 insert into TS_CLIENT
 (NAME, CODE, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
 values ('Haulmont', '001', 1, '2015-04-24 04:45:09', null, null, null, 'f2e1555d-51a7-ea52-4505-fc65c5dde1c6', '2015-04-24 04:45:09', 'admin');

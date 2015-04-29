@@ -2,7 +2,7 @@
 <menu-config xmlns="http://schemas.haulmont.com/cuba/5.4/menu.xsd">
     <menu id="application"
           insertBefore="administration">
-        <item id="ts$Client.lookup"/>
+        <item id="ts$Client.browse"/>
         <item id="ts$Holiday.lookup"/>
         <item id="ts$ProjectRole.lookup"/>
         <item id="ts$TaskType.lookup"/>
@@ -10,7 +10,7 @@
         <item id="ts$TagType.lookup"/>
         <item id="ts$TimeEntry.lookup"/>
         <item id="ts$Task.lookup"/>
-        <item id="ts$ProjectParticipant.lookup"/>
-        <item id="ts$Project.lookup"/>
+        <item id="ts$ProjectParticipant.browse"/>
+        <item id="ts$Project.browse"/>
     </menu>
 </menu-config>

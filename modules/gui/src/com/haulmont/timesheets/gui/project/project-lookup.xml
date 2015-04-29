@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+        caption="msg://browseCaption"
+        class="com.haulmont.timesheets.gui.project.ProjectLookup"
+        focusComponent="projectsTable"
+        lookupComponent="projectsTable"
+        messagesPack="com.haulmont.timesheets.gui.project">
+    <dsContext>
+        <hierarchicalDatasource id="projectsDs"
+                                class="com.haulmont.timesheets.entity.Project"
+                                hierarchyProperty="parent"
+                                view="project-full">
+            <query>
+                <![CDATA[select e from ts$Project e]]>
+            </query>
+        </hierarchicalDatasource>
+    </dsContext>
+    <layout expand="projectsTable"
+            spacing="true">
+        <filter id="filter"
+                datasource="projectsDs">
+            <properties include=".*"/>
+        </filter>
+        <treeTable id="projectsTable"
+                   width="100%">
+            <columns>
+                <column id="name"/>
+                <column id="code"/>
+                <column id="client"/>
+                <column id="status"/>
+                <column id="description"/>
+            </columns>
+            <rows datasource="projectsDs"/>
+            <rowsCount/>
+        </treeTable>
+    </layout>
+</window>
