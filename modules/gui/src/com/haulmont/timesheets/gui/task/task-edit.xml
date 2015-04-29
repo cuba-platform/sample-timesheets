@@ -22,85 +22,77 @@
                 <![CDATA[select e from ts$TaskType e]]>
             </query>
         </collectionDatasource>
+        <collectionDatasource id="allTagsDs"
+                              class="com.haulmont.timesheets.entity.Tag"
+                              view="tag-with-type">
+            <query>
+                <![CDATA[select e from ts$Tag e]]>
+            </query>
+        </collectionDatasource>
+        <collectionDatasource id="allTagsTypesDs"
+                              class="com.haulmont.timesheets.entity.TagType"
+                              view="tagType-with-project">
+            <query>
+                <![CDATA[select e from ts$TagType e]]>
+            </query>
+        </collectionDatasource>
     </dsContext>
-    <layout expand="windowActions"
+    <layout expand="scrollBox"
             spacing="true">
-        <fieldGroup id="fieldGroup"
-                    datasource="taskDs">
-            <column width="250px">
-                <field id="name"/>
-                <field id="code"/>
-                <field id="description"/>
-                <field id="project"/>
-                <field id="type"
-                       optionsDatasource="taskTypesDs"/>
-                <field id="status"/>
-            </column>
-        </fieldGroup>
-        <groupBox id="requiredTagTypesBox"
-                  caption="msg://com.haulmont.timesheets.entity/Task.requiredTagTypes"
-                  visible="false">
-            <!--<table id="requiredTagTypesTable"-->
-            <!--height="200px"-->
-            <!--width="100%">-->
-            <!--<actions>-->
-            <!--<action id="add"/>-->
-            <!--<action id="remove"/>-->
-            <!--</actions>-->
-            <!--<columns>-->
-            <!--<column id="name"/>-->
-            <!--</columns>-->
-            <!--<rows datasource="requiredTagTypesDs"/>-->
-            <!--<buttonsPanel>-->
-            <!--<button action="requiredTagTypesTable.add"/>-->
-            <!--<button action="requiredTagTypesTable.remove"/>-->
-            <!--</buttonsPanel>-->
-            <!--</table>-->
-        </groupBox>
-        <groupBox id="defaultTagsBox"
-                  caption="msg://com.haulmont.timesheets.entity/Task.defaultTags"
-                  visible="false">
-            <!--<table id="defaultTagsTable"-->
-            <!--height="200px"-->
-            <!--width="100%">-->
-            <!--<actions>-->
-            <!--<action id="add"/>-->
-            <!--<action id="remove"/>-->
-            <!--</actions>-->
-            <!--<columns>-->
-            <!--<column id="name"/>-->
-            <!--<column id="tagType"/>-->
-            <!--</columns>-->
-            <!--<rows datasource="defaultTagsDs"/>-->
-            <!--<buttonsPanel>-->
-            <!--<button action="defaultTagsTable.add"/>-->
-            <!--<button action="defaultTagsTable.remove"/>-->
-            <!--</buttonsPanel>-->
-            <!--</table>-->
-        </groupBox>
-        <groupBox id="participantsBox"
-                  caption="msg://com.haulmont.timesheets.entity/Task.participants">
-            <table id="participantsTable"
-                   columnControlVisible="false"
-                   height="200px"
-                   width="100%">
-                <actions>
-                    <action id="add"/>
-                    <action id="remove"/>
-                </actions>
-                <columns>
-                    <column id="user"
-                            link="true"/>
-                    <column id="role"/>
-                    <column id="user.position"/>
-                </columns>
-                <rows datasource="participantsDs"/>
-                <buttonsPanel>
-                    <button action="participantsTable.add"/>
-                    <button action="participantsTable.remove"/>
-                </buttonsPanel>
-            </table>
-        </groupBox>
+        <scrollBox id="scrollBox">
+            <fieldGroup id="fieldGroup"
+                        datasource="taskDs">
+                <column width="250px">
+                    <field id="name"/>
+                    <field id="code"/>
+                    <field id="description"
+                           custom="true"/>
+                    <field id="project"/>
+                    <field id="type"
+                           optionsDatasource="taskTypesDs"/>
+                    <field id="status"/>
+                </column>
+            </fieldGroup>
+            <tokenList id="tagsTypesTokenList"
+                       caption="msg://com.haulmont.timesheets.entity/Task.requiredTagTypes"
+                       datasource="requiredTagTypesDs"
+                       inline="true"
+                       width="480px">
+                <button icon="icons/plus-btn.png"/>
+                <lookup optionsDatasource="allTagsTypesDs"/>
+            </tokenList>
+            <tokenList id="tagsTokenList"
+                       caption="msg://com.haulmont.timesheets.entity/Task.defaultTags"
+                       datasource="defaultTagsDs"
+                       inline="true"
+                       width="480px">
+                <button icon="icons/plus-btn.png"/>
+                <lookup optionsDatasource="allTagsDs"/>
+            </tokenList>
+            <groupBox id="participantsBox"
+                      caption="msg://com.haulmont.timesheets.entity/Task.participants">
+                <table id="participantsTable"
+                       columnControlVisible="false"
+                       height="200px"
+                       width="100%">
+                    <actions>
+                        <action id="add"/>
+                        <action id="remove"/>
+                    </actions>
+                    <columns>
+                        <column id="user"
+                                link="true"/>
+                        <column id="role"/>
+                        <column id="user.position"/>
+                    </columns>
+                    <rows datasource="participantsDs"/>
+                    <buttonsPanel>
+                        <button action="participantsTable.add"/>
+                        <button action="participantsTable.remove"/>
+                    </buttonsPanel>
+                </table>
+            </groupBox>
+        </scrollBox>
         <iframe id="windowActions"
                 screen="editWindowActions"
                 stylename="window-actions"/>

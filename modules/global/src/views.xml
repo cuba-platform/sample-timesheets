@@ -37,7 +37,21 @@
         <property name="code"/>
         <property name="description"/>
         <property name="project"
-                  view="_minimal"/>
+                  view="_minimal">
+            <property name="participants"
+                      view="_minimal">
+                <property name="user">
+                    <property name="login"/>
+                    <property name="name"/>
+                    <property name="firstName"/>
+                    <property name="lastName"/>
+                </property>
+                <property name="code"/>
+                <property name="role">
+                    <property name="name"/>
+                </property>
+            </property>
+        </property>
         <property name="type"
                   view="_minimal"/>
         <property name="status"/>
