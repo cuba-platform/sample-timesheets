@@ -9,8 +9,7 @@ import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.LookupPickerField;
 import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.DatasourceListener;
-import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.ProjectParticipant;
@@ -25,53 +24,34 @@ import java.util.*;
 public class ProjectParticipantEdit extends AbstractEditor<ProjectParticipant> {
 
     @Inject
-    private Datasource<ProjectParticipant> projectParticipantDs;
+    protected Datasource<ProjectParticipant> projectParticipantDs;
 
     @Named("fieldGroup.user")
     protected LookupPickerField userField;
     @Named("fieldGroup.project")
     protected PickerField projectField;
 
+    protected final UniqueUserValidator validator = new UniqueUserValidator();
+
     @Override
     public void init(Map<String, Object> params) {
         userField.addAction(createLookupAction(userField));
         userField.addAction(new PickerField.ClearAction(userField));
 
-        final UniqueUserValidator validator = new UniqueUserValidator();
         userField.addValidator(validator);
 
-        @SuppressWarnings("unchecked")
-        Collection<User> assignedUsers = (Collection<User>) params.get("assignedUsers");
-        if (assignedUsers != null)
-            validator.setAssignedUsers(assignedUsers);
-
-        projectParticipantDs.addListener(new DatasourceListener<ProjectParticipant>() {
-            @Override
-            public void itemChanged(Datasource<ProjectParticipant> ds, ProjectParticipant prevItem, ProjectParticipant item) {
-
-            }
-
-            @Override
-            public void stateChanged(Datasource<ProjectParticipant> ds, Datasource.State prevState, Datasource.State state) {
-
-            }
-
+        projectParticipantDs.addListener(new DsListenerAdapter<ProjectParticipant>() {
             @Override
             public void valueChanged(ProjectParticipant source, String property, Object prevValue, Object value) {
-
-            }
-        });
-
-        projectField.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                if (value != null) {
-                    if (!value.equals(prevValue)) {
-                        Project project = (Project) value;
-                        validator.setAssignedUsers(getAssignedUsers(project));
+                if ("project".equals(property)) {
+                    if (value != null) {
+                        if (!value.equals(prevValue)) {
+                            Project project = (Project) value;
+                            validator.setAssignedUsers(getAssignedUsers(project));
+                        }
+                    } else {
+                        validator.setAssignedUsers(null);
                     }
-                } else {
-                    validator.setAssignedUsers(null);
                 }
             }
         });
@@ -83,6 +63,7 @@ public class ProjectParticipantEdit extends AbstractEditor<ProjectParticipant> {
         ProjectParticipant participant = getItem();
         if (participant.getProject() != null) {
             projectField.setEnabled(false);
+            validator.setAssignedUsers(getAssignedUsers(participant.getProject()));
         }
     }
 

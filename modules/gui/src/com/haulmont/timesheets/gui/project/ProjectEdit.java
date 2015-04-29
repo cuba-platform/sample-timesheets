@@ -3,23 +3,19 @@
  */
 package com.haulmont.timesheets.gui.project;
 
-import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
-import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.entity.Client;
 import com.haulmont.timesheets.entity.Project;
-import com.haulmont.timesheets.entity.ProjectParticipant;
 import com.haulmont.timesheets.entity.ProjectStatus;
 import com.haulmont.timesheets.service.ProjectsService;
 
@@ -45,7 +41,7 @@ public class ProjectEdit extends AbstractEditor<Project> {
     @Inject
     protected Table participantsTable;
     @Inject
-    protected CollectionDatasource<ProjectParticipant, UUID> participantsDs;
+    private Datasource<Project> projectDs;
 
     @Named("fieldGroup.parent")
     protected LookupPickerField parentField;
@@ -53,12 +49,6 @@ public class ProjectEdit extends AbstractEditor<Project> {
     protected LookupPickerField clientField;
     @Named("participantsTable.create")
     protected CreateAction participantsTableCreate;
-    @Named("tasksTable.create")
-    protected CreateAction tasksTableCreate;
-    @Named("tasksTable.edit")
-    protected EditAction tasksTableEdit;
-
-    protected List<Project> childrenProjects;
 
     @Override
     public void init(final Map<String, Object> params) {
@@ -69,28 +59,20 @@ public class ProjectEdit extends AbstractEditor<Project> {
         clientField.addAction(createLookupAction(clientField));
         clientField.addAction(new PickerField.ClearAction(clientField));
 
-        parentField.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                clientField.setEnabled(value == null);
-                if (value != null) {
-                    Project parent = (Project) value;
-                    if (!parent.getClient().equals(getItem().getClient())) {
-                        clientField.setValue(parent.getClient());
-                    }
-                } else if (prevValue != null) {
-                    clientField.setValue(null);
-                }
-            }
-        });
+        participantsTableCreate.setOpenType(WindowManager.OpenType.DIALOG);
 
-        clientField.addListener(new ValueListener() {
+        projectDs.addListener(new DsListenerAdapter<Project>() {
             @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                if (childrenProjects != null && value != null) {
-                    Client client = (Client) value;
-                    for (Project child : childrenProjects) {
-                        projectsService.setClient(child, client);
+            public void valueChanged(Project source, String property, Object prevValue, Object value) {
+                if ("parent".equals(property)) {
+                    clientField.setEnabled(value == null);
+                    if (value != null) {
+                        Project parent = (Project) value;
+                        if (!parent.getClient().equals(getItem().getClient())) {
+                            clientField.setValue(parent.getClient());
+                        }
+                    } else if (prevValue != null) {
+                        clientField.setValue(null);
                     }
                 }
             }
@@ -106,9 +88,6 @@ public class ProjectEdit extends AbstractEditor<Project> {
                 return textArea;
             }
         });
-
-        participantsTableCreate.setOpenType(WindowManager.OpenType.DIALOG);
-        participantsTableCreate.setWindowParams(ParamsMap.of("assignedUsers", getAssignUsers(participantsDs.getItems())));
 
         String removeColumnName = "remove";
         participantsTable.addGeneratedColumn(removeColumnName, new Table.ColumnGenerator() {
@@ -128,11 +107,29 @@ public class ProjectEdit extends AbstractEditor<Project> {
     protected void postInit() {
         Project project = getItem();
         projectsDs.excludeItem(project);
-        childrenProjects = projectsService.getChildren(project);
+
+        List<Project> childrenProjects = projectsService.getChildren(project);
         for (Project child : childrenProjects) {
             projectsDs.excludeItem(child);
         }
+
+        if (project.getParent() != null) {
+            clientField.setEnabled(false);
+        }
+
         project.setStatus(ProjectStatus.OPEN);
+    }
+
+    @Override
+    protected boolean postCommit(boolean committed, boolean close) {
+        if (committed) {
+            Client client = getItem().getClient();
+            List<Project> childrenProjects = projectsService.getChildren(getItem());
+            for (Project child : childrenProjects) {
+                projectsService.setClient(child, client);
+            }
+        }
+        return super.postCommit(committed, close);
     }
 
     protected PickerField.LookupAction createLookupAction(PickerField pickerField) {
@@ -143,17 +140,6 @@ public class ProjectEdit extends AbstractEditor<Project> {
                 .setHeight(500)
                 .setResizable(true));
         return lookupAction;
-    }
-
-    protected Collection<User> getAssignUsers(Collection<ProjectParticipant> participants) {
-        if (!participants.isEmpty()) {
-            List<User> assignedUsers = new ArrayList<>(participants.size());
-            for (ProjectParticipant participant : participants) {
-                assignedUsers.add(participant.getUser());
-            }
-            return assignedUsers;
-        }
-        return Collections.emptyList();
     }
 
     protected class ParticipantRemoveAction extends RemoveAction {

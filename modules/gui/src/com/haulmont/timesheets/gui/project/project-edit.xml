@@ -91,12 +91,8 @@
                         <column id="name"/>
                         <column id="code"/>
                         <column id="description"/>
-                        <column id="project"/>
                         <column id="type"/>
                         <column id="status"/>
-                        <column id="requiredTagTypes"/>
-                        <column id="defaultTags"/>
-                        <column id="participants"/>
                     </columns>
                     <rows datasource="tasksDs"/>
                     <buttonsPanel>

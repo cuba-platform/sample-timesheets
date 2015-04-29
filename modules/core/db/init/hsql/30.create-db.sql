@@ -4,6 +4,10 @@ insert into TS_CLIENT
 (NAME, CODE, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
 values ('Haulmont', '001', 1, '2015-04-24 04:45:09', null, null, null, 'f2e1555d-51a7-ea52-4505-fc65c5dde1c6', '2015-04-24 04:45:09', 'admin');
 
+insert into TS_CLIENT
+(NAME, CODE, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
+values ('Monkey Code, Inc.', '007', 1, '2015-04-29 02:54:57', null, null, null, '625dcc5d-7a06-86b5-a8e5-617bc127a9f2', '2015-04-29 02:54:57', 'admin');
+
 ------------------------------------------------------------------------------------------------------------------------
 
 insert into TS_PROJECT_ROLE
