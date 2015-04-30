@@ -5,13 +5,15 @@ package com.haulmont.timesheets.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.*;
+import java.text.MessageFormat;
 
 /**
  * @author gorelov
  */
-@NamePattern("%s [%s]|name,tagType")
+@NamePattern("#getCaption|name,tagType")
 @Table(name = "TS_TAG")
 @Entity(name = "ts$Tag")
 public class Tag extends StandardEntity {
@@ -64,5 +66,22 @@ public class Tag extends StandardEntity {
         return description;
     }
 
-
+    public String getCaption() {
+        String pattern;
+        Object[] params;
+        if (getTagType() != null) {
+            pattern = "{0} [{1}]";
+            params = new Object[]{
+                    StringUtils.trimToEmpty(name),
+                    StringUtils.trimToEmpty(getTagType().getName())
+            };
+        } else {
+            pattern = "{0}";
+            params = new Object[]{
+                    StringUtils.trimToEmpty(name)
+            };
+        }
+        MessageFormat fmt = new MessageFormat(pattern);
+        return StringUtils.trimToEmpty(fmt.format(params));
+    }
 }
