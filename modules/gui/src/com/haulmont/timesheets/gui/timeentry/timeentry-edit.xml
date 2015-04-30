@@ -19,6 +19,13 @@
                 <![CDATA[select e from ts$Tag e]]>
             </query>
         </collectionDatasource>
+        <collectionDatasource id="openedTasksDs"
+                              class="com.haulmont.timesheets.entity.Task"
+                              view="task-full">
+            <query>
+                <![CDATA[select e from ts$Task e where e.status = 10 order by e.project]]>
+            </query>
+        </collectionDatasource>
     </dsContext>
     <layout expand="scrollBox"
             spacing="true">
@@ -26,9 +33,11 @@
             <fieldGroup id="fieldGroup"
                         datasource="timeEntryDs">
                 <column width="250px">
-                    <field id="task"/>
+                    <field id="task"
+                           optionsDatasource="openedTasksDs"/>
                     <field id="taskName"/>
-                    <field id="user"/>
+                    <field id="user"
+                           enable="false"/>
                     <field id="date"/>
                     <field id="time"/>
                     <field id="status"/>
