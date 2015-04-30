@@ -20,30 +20,32 @@
             </query>
         </collectionDatasource>
     </dsContext>
-    <layout expand="windowActions"
+    <layout expand="scrollBox"
             spacing="true">
-        <fieldGroup id="fieldGroup"
-                    datasource="timeEntryDs">
-            <column width="250px">
-                <field id="task"/>
-                <field id="taskName"/>
-                <field id="user"/>
-                <field id="date"/>
-                <field id="time"/>
-                <field id="status"/>
-                <field id="ticket"/>
-                <field id="description"
-                       custom="true"/>
-            </column>
-        </fieldGroup>
-        <tokenList id="tagsTokenList"
-                   caption="msg://com.haulmont.timesheets.entity/TimeEntry.tags"
-                   datasource="tagsDs"
-                   inline="true"
-                   width="480px">
-            <button icon="icons/plus-btn.png"/>
-            <lookup optionsDatasource="allTagsDs"/>
-        </tokenList>
+        <scrollBox id="scrollBox">
+            <fieldGroup id="fieldGroup"
+                        datasource="timeEntryDs">
+                <column width="250px">
+                    <field id="task"/>
+                    <field id="taskName"/>
+                    <field id="user"/>
+                    <field id="date"/>
+                    <field id="time"/>
+                    <field id="status"/>
+                    <field id="ticket"/>
+                    <field id="description"
+                           custom="true"/>
+                </column>
+            </fieldGroup>
+            <tokenList id="tagsTokenList"
+                       caption="msg://com.haulmont.timesheets.entity/TimeEntry.tags"
+                       datasource="tagsDs"
+                       inline="true"
+                       width="480px">
+                <button icon="icons/plus-btn.png"/>
+                <lookup optionsDatasource="allTagsDs"/>
+            </tokenList>
+        </scrollBox>
         <iframe id="windowActions"
                 screen="editWindowActions"
                 stylename="window-actions"/>
