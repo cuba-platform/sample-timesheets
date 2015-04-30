@@ -22,7 +22,7 @@ import javax.persistence.OneToMany;
 /**
  * @author gorelov
  */
-@NamePattern("%s|name")
+@NamePattern("[%s] %s|project,name")
 @Table(name = "TS_TASK")
 @Entity(name = "ts$Task")
 public class Task extends StandardEntity {
