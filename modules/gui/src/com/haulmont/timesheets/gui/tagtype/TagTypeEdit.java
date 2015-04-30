@@ -26,9 +26,7 @@ public class TagTypeEdit extends AbstractEditor<TagType> {
 
     @Override
     public void init(Map<String, Object> params) {
-
         projectField.addAction(ComponentsHelper.createLookupAction(projectField));
-
         fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
     }
 }

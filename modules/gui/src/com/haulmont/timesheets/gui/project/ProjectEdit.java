@@ -91,11 +91,11 @@ public class ProjectEdit extends AbstractEditor<Project> {
             projectsDs.excludeItem(child);
         }
 
-        if (project.getParent() != null) {
-            clientField.setEnabled(false);
-        }
+        clientField.setEnabled(project.getParent() == null);
 
-        project.setStatus(ProjectStatus.OPEN);
+        if (project.getStatus() == null) {
+            project.setStatus(ProjectStatus.OPEN);
+        }
 
         PickerField.LookupAction lookupAction = ComponentsHelper.createLookupAction(parentField);
         lookupAction.setLookupScreenParams(ParamsMap.of("parentProject", getItem()));
