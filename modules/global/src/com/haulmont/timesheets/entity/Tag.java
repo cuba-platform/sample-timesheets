@@ -69,11 +69,11 @@ public class Tag extends StandardEntity {
     public String getCaption() {
         String pattern;
         Object[] params;
-        if (getTagType() != null) {
+        if (tagType != null) {
             pattern = "{0} [{1}]";
             params = new Object[]{
                     StringUtils.trimToEmpty(name),
-                    StringUtils.trimToEmpty(getTagType().getName())
+                    StringUtils.trimToEmpty(tagType.getName())
             };
         } else {
             pattern = "{0}";
