@@ -3,23 +3,20 @@
  */
 package com.haulmont.timesheets.entity;
 
-import javax.persistence.Entity;
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.core.entity.annotation.Extends;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Table;
 import com.haulmont.chile.core.annotations.NamePattern;
-import javax.persistence.Column;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.InheritanceType;
-import javax.persistence.Inheritance;
+import com.haulmont.cuba.core.entity.annotation.Extends;
+import com.haulmont.cuba.security.entity.User;
+import org.apache.commons.lang.StringUtils;
+
+import javax.persistence.*;
+import java.text.MessageFormat;
 
 /**
  * @author gorelov
  */
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorValue("Ext")
-@NamePattern("%s %s|firstName,lastName")
+@NamePattern("#getCaption|firstName,lastName")
 @Entity(name = "ts$ExtUser")
 @Extends(User.class)
 public class ExtUser extends User {
@@ -36,6 +33,16 @@ public class ExtUser extends User {
         this.rate = rate;
     }
 
-
-
+    @Override
+    public String getCaption() {
+        if (StringUtils.isNotEmpty(firstName) || StringUtils.isNotEmpty(lastName)) {
+            String pattern = "{0} {1}";
+            MessageFormat fmt = new MessageFormat(pattern);
+            return StringUtils.trimToEmpty(fmt.format(new Object[]{
+                    StringUtils.trimToEmpty(firstName),
+                    StringUtils.trimToEmpty(lastName)
+            }));
+        }
+        return super.getCaption();
+    }
 }
