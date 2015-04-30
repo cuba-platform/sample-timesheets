@@ -8,14 +8,17 @@ import javax.persistence.Table;
 import javax.persistence.Column;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.chile.core.annotations.NamePattern;
+import org.apache.commons.lang.StringUtils;
+
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.text.MessageFormat;
 
 /**
  * @author gorelov
  */
-@NamePattern("%s|name")
+@NamePattern("#getCaption|name")
 @Table(name = "TS_TAG_TYPE")
 @Entity(name = "ts$TagType")
 public class TagType extends StandardEntity {
@@ -69,5 +72,22 @@ public class TagType extends StandardEntity {
         return description;
     }
 
-
+    public String getCaption() {
+        String pattern;
+        Object[] params;
+        if (project != null) {
+            pattern = "{0} [{1}]";
+            params = new Object[]{
+                    StringUtils.trimToEmpty(name),
+                    StringUtils.trimToEmpty(project.getName())
+            };
+        } else {
+            pattern = "{0}";
+            params = new Object[]{
+                    StringUtils.trimToEmpty(name)
+            };
+        }
+        MessageFormat fmt = new MessageFormat(pattern);
+        return StringUtils.trimToEmpty(fmt.format(params));
+    }
 }
