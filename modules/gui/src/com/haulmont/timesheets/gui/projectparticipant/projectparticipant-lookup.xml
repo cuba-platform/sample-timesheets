@@ -21,6 +21,7 @@
             <properties include=".*"/>
         </filter>
         <table id="projectParticipantsTable"
+               editable="false"
                width="100%">
             <columns>
                 <column id="user"/>

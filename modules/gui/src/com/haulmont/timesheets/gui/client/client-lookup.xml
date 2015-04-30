@@ -21,6 +21,7 @@
             <properties include=".*"/>
         </filter>
         <table id="clientsTable"
+               editable="false"
                width="100%">
             <columns>
                 <column id="name"/>
