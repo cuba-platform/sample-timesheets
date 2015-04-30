@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+        caption="msg://browseCaption"
+        class="com.haulmont.timesheets.gui.projectrole.ProjectroleLookup"
+        focusComponent="projectRolesTable"
+        lookupComponent="projectRolesTable"
+        messagesPack="com.haulmont.timesheets.gui.projectrole">
+    <dsContext>
+        <collectionDatasource id="projectRolesDs"
+                              class="com.haulmont.timesheets.entity.ProjectRole"
+                              view="_local">
+            <query>
+                <![CDATA[select e from ts$ProjectRole e]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+    <layout expand="projectRolesTable"
+            spacing="true">
+        <filter id="filter"
+                datasource="projectRolesDs">
+            <properties include=".*"/>
+        </filter>
+        <table id="projectRolesTable"
+               editable="false"
+               width="100%">
+            <columns>
+                <column id="name"/>
+                <column id="code"/>
+                <column id="description"
+                        maxTextLength="20"/>
+            </columns>
+            <rows datasource="projectRolesDs"/>
+            <rowsCount/>
+        </table>
+    </layout>
+</window>

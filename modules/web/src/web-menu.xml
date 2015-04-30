@@ -3,13 +3,13 @@
     <menu id="application"
           insertBefore="administration">
         <item id="ts$Client.browse"/>
-        <item id="ts$Holiday.lookup"/>
-        <item id="ts$ProjectRole.lookup"/>
-        <item id="ts$TaskType.lookup"/>
-        <item id="ts$Tag.lookup"/>
-        <item id="ts$TagType.lookup"/>
-        <item id="ts$TimeEntry.lookup"/>
-        <item id="ts$Task.lookup"/>
+        <item id="ts$Holiday.browse"/>
+        <item id="ts$ProjectRole.browse"/>
+        <item id="ts$TaskType.browse"/>
+        <item id="ts$Tag.browse"/>
+        <item id="ts$TagType.browse"/>
+        <item id="ts$TimeEntry.browse"/>
+        <item id="ts$Task.browse"/>
         <item id="ts$ProjectParticipant.browse"/>
         <item id="ts$Project.browse"/>
     </menu>

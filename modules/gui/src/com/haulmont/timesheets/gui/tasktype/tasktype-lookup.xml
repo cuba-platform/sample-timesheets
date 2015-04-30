@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+        caption="msg://browseCaption"
+        class="com.haulmont.timesheets.gui.tasktype.TaskTypeLookup"
+        focusComponent="taskTypesTable"
+        lookupComponent="taskTypesTable"
+        messagesPack="com.haulmont.timesheets.gui.tasktype">
+    <dsContext>
+        <collectionDatasource id="taskTypesDs"
+                              class="com.haulmont.timesheets.entity.TaskType"
+                              view="_local">
+            <query>
+                <![CDATA[select e from ts$TaskType e]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+    <layout expand="taskTypesTable"
+            spacing="true">
+        <filter id="filter"
+                datasource="taskTypesDs">
+            <properties include=".*"/>
+        </filter>
+        <table id="taskTypesTable"
+               editable="false"
+               width="100%">
+            <columns>
+                <column id="name"/>
+                <column id="code"/>
+                <column id="description"
+                        maxTextLength="20"/>
+            </columns>
+            <rows datasource="taskTypesDs"/>
+            <rowsCount/>
+        </table>
+    </layout>
+</window>

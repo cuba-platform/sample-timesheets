@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+        caption="msg://browseCaption"
+        class="com.haulmont.timesheets.gui.timeentry.TimeEntryLookup"
+        focusComponent="timeEntriesTable"
+        lookupComponent="timeEntriesTable"
+        messagesPack="com.haulmont.timesheets.gui.timeentry">
+    <dsContext>
+        <collectionDatasource id="timeEntriesDs"
+                              class="com.haulmont.timesheets.entity.TimeEntry"
+                              view="timeEntry-full">
+            <query>
+                <![CDATA[select e from ts$TimeEntry e]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+    <layout expand="timeEntriesTable"
+            spacing="true">
+        <filter id="filter"
+                datasource="timeEntriesDs">
+            <properties include=".*"/>
+        </filter>
+        <table id="timeEntriesTable"
+               editable="false"
+               width="100%">
+            <columns>
+                <column id="task"/>
+                <column id="taskName"/>
+                <column id="user"/>
+                <column id="date"/>
+                <column id="time"/>
+                <column id="status"/>
+                <column id="ticket"/>
+                <column id="description"
+                        maxTextLength="20"/>
+            </columns>
+            <rows datasource="timeEntriesDs"/>
+            <rowsCount/>
+        </table>
+    </layout>
+</window>

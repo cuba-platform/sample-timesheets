@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+        caption="msg://browseCaption"
+        class="com.haulmont.timesheets.gui.holiday.HolidayLookup"
+        focusComponent="holidaysTable"
+        lookupComponent="holidaysTable"
+        messagesPack="com.haulmont.timesheets.gui.holiday">
+    <dsContext>
+        <collectionDatasource id="holidaysDs"
+                              class="com.haulmont.timesheets.entity.Holiday"
+                              view="_local">
+            <query>
+                <![CDATA[select e from ts$Holiday e]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+    <layout expand="holidaysTable"
+            spacing="true">
+        <filter id="filter"
+                datasource="holidaysDs">
+            <properties include=".*"/>
+        </filter>
+        <table id="holidaysTable"
+               editable="false"
+               width="100%">
+            <columns>
+                <column id="startDate"/>
+                <column id="endDate"/>
+                <column id="name"/>
+                <column id="description"
+                        maxTextLength="20"/>
+            </columns>
+            <rows datasource="holidaysDs"/>
+            <rowsCount/>
+        </table>
+    </layout>
+</window>
