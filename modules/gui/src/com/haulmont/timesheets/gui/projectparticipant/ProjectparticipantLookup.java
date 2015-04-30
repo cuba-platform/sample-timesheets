@@ -3,6 +3,7 @@
  */
 package com.haulmont.timesheets.gui.projectparticipant;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -12,7 +13,6 @@ import org.apache.commons.lang.BooleanUtils;
 
 import javax.inject.Inject;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -30,14 +30,7 @@ public class ProjectparticipantLookup extends AbstractLookup {
         if (BooleanUtils.isTrue((Boolean) params.get("multiselect"))) {
             projectParticipantsTable.setMultiSelect(true);
         }
-
         Project project = (Project) params.get("project");
-        if (project != null) {
-            Set<ProjectParticipant> participants = project.getParticipants();
-            projectParticipantsDs.clear();
-            for (ProjectParticipant participant : participants) {
-                projectParticipantsDs.includeItem(participant);
-            }
-        }
+        projectParticipantsDs.refresh(ParamsMap.of("project", project));
     }
 }

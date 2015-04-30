@@ -10,7 +10,7 @@
                               class="com.haulmont.timesheets.entity.ProjectParticipant"
                               view="projectParticipant-full">
             <query>
-                <![CDATA[select e from ts$ProjectParticipant e]]>
+                <![CDATA[select e from ts$ProjectParticipant e where e.project.id = :custom$project]]>
             </query>
         </collectionDatasource>
     </dsContext>
