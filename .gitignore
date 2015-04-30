@@ -2,7 +2,9 @@
 *.ipr
 *.iml
 *.iws
+*.ids
 build/*
 modules/*/build/*
 out
 test-run
+.idea
