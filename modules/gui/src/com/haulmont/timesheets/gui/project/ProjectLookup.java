@@ -4,6 +4,7 @@
 package com.haulmont.timesheets.gui.project;
 
 import com.haulmont.cuba.gui.components.AbstractLookup;
+import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.service.ProjectsService;
@@ -22,6 +23,8 @@ public class ProjectLookup extends AbstractLookup {
     protected HierarchicalDatasource<Project, UUID> projectsDs;
     @Inject
     protected ProjectsService projectsService;
+    @Inject
+    protected TreeTable projectsTable;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -33,5 +36,10 @@ public class ProjectLookup extends AbstractLookup {
                 projectsDs.excludeItem(child);
             }
         }
+    }
+
+    @Override
+    public void ready() {
+        projectsTable.expandAll();
     }
 }

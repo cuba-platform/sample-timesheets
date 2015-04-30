@@ -36,4 +36,9 @@ public class ProjectBrowse extends AbstractLookup {
             projectsTable.refresh();
         }
     }
+
+    @Override
+    public void ready() {
+        projectsTable.expandAll();
+    }
 }
