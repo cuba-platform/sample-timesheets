@@ -52,8 +52,6 @@ public class Project extends StandardEntity {
     @OneToMany(mappedBy = "project")
     protected Set<ProjectParticipant> participants;
 
-    @Composition
-    @OnDelete(DeletePolicy.CASCADE)
     @OneToMany(mappedBy = "project")
     protected Set<Task> tasks;
 
