@@ -30,8 +30,8 @@
             <columns>
                 <column id="name"/>
                 <column id="code"/>
-                <column id="description"/>
                 <column id="project"/>
+                <column id="description"/>
             </columns>
             <rows datasource="tagTypesDs"/>
             <rowsCount/>

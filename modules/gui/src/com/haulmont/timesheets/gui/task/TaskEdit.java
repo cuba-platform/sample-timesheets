@@ -50,6 +50,8 @@ public class TaskEdit extends AbstractEditor<Task> {
         fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
         ComponentsHelper.addRemoveColumn(participantsTable, "remove");
 
+        projectField.addAction(ComponentsHelper.createLookupAction(projectField));
+
         taskDs.addListener(new DsListenerAdapter<Task>() {
             @Override
             public void valueChanged(Task source, String property, Object prevValue, Object value) {

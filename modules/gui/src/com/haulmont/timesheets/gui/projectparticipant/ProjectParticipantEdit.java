@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.ProjectParticipant;
+import com.haulmont.timesheets.gui.ComponentsHelper;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -37,6 +38,8 @@ public class ProjectParticipantEdit extends AbstractEditor<ProjectParticipant> {
     public void init(Map<String, Object> params) {
         userField.addAction(createLookupAction(userField));
         userField.addAction(new PickerField.ClearAction(userField));
+
+        projectField.addAction(ComponentsHelper.createLookupAction(projectField));
 
         userField.addValidator(validator);
 

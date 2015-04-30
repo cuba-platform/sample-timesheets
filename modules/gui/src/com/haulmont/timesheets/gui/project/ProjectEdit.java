@@ -55,8 +55,8 @@ public class ProjectEdit extends AbstractEditor<Project> {
     @Override
     public void init(final Map<String, Object> params) {
 
-        clientField.addAction(createLookupAction(clientField));
-        clientField.addAction(new PickerField.ClearAction(clientField));
+        clientField.addAction(ComponentsHelper.createLookupAction(clientField));
+        clientField.addClearAction();
 
         participantsTableCreate.setOpenType(WindowManager.OpenType.DIALOG);
 
@@ -98,10 +98,10 @@ public class ProjectEdit extends AbstractEditor<Project> {
 
         project.setStatus(ProjectStatus.OPEN);
 
-        PickerField.LookupAction lookupAction = createLookupAction(parentField);
+        PickerField.LookupAction lookupAction = ComponentsHelper.createLookupAction(parentField);
         lookupAction.setLookupScreenParams(ParamsMap.of("parentProject", getItem()));
         parentField.addAction(lookupAction);
-        parentField.addAction(new PickerField.ClearAction(parentField));
+        parentField.addClearAction();
     }
 
     @Override
@@ -114,15 +114,5 @@ public class ProjectEdit extends AbstractEditor<Project> {
             }
         }
         return super.postCommit(committed, close);
-    }
-
-    protected PickerField.LookupAction createLookupAction(PickerField pickerField) {
-        PickerField.LookupAction lookupAction = new PickerField.LookupAction(pickerField);
-        lookupAction.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
-        lookupAction.setLookupScreenDialogParams(new DialogParams()
-                .setWidth(800)
-                .setHeight(500)
-                .setResizable(true));
-        return lookupAction;
     }
 }

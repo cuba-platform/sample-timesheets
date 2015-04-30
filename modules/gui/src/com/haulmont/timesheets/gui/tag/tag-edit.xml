@@ -9,6 +9,13 @@
         <datasource id="tagDs"
                     class="com.haulmont.timesheets.entity.Tag"
                     view="tag-with-type"/>
+        <collectionDatasource id="allTagsTypesDs"
+                              class="com.haulmont.timesheets.entity.TagType"
+                              view="tagType-with-project">
+            <query>
+                <![CDATA[select e from ts$TagType e]]>
+            </query>
+        </collectionDatasource>
     </dsContext>
     <layout expand="windowActions"
             spacing="true">
@@ -19,7 +26,8 @@
                 <field id="code"/>
                 <field id="description"
                        custom="true"/>
-                <field id="tagType"/>
+                <field id="tagType"
+                       optionsDatasource="allTagsTypesDs"/>
             </column>
         </fieldGroup>
         <iframe id="windowActions"

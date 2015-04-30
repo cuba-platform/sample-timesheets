@@ -6,6 +6,8 @@ package com.haulmont.timesheets.gui;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.gui.DialogParams;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -47,6 +49,16 @@ public class ComponentsHelper {
         });
         table.setColumnCaption(columnName, "");
         table.setColumnWidth(columnName, 35);
+    }
+
+    public static PickerField.LookupAction createLookupAction(PickerField pickerField) {
+        PickerField.LookupAction lookupAction = new PickerField.LookupAction(pickerField);
+        lookupAction.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
+        lookupAction.setLookupScreenDialogParams(new DialogParams()
+                .setWidth(800)
+                .setHeight(500)
+                .setResizable(true));
+        return lookupAction;
     }
 
     public static class EntityRemoveAction extends RemoveAction {
