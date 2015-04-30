@@ -24,9 +24,9 @@
                editable="false"
                width="100%">
             <columns>
+                <column id="name"/>
                 <column id="startDate"/>
                 <column id="endDate"/>
-                <column id="name"/>
                 <column id="description"
                         maxTextLength="20"/>
             </columns>
