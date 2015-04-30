@@ -35,7 +35,8 @@
                 <column id="time"/>
                 <column id="status"/>
                 <column id="ticket"/>
-                <column id="description"/>
+                <column id="description"
+                        maxTextLength="20"/>
             </columns>
             <rows datasource="timeEntriesDs"/>
             <rowsCount/>

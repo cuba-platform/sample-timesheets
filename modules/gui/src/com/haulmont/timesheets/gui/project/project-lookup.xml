@@ -29,7 +29,8 @@
                 <column id="code"/>
                 <column id="client"/>
                 <column id="status"/>
-                <column id="description"/>
+                <column id="description"
+                        maxTextLength="20"/>
             </columns>
             <rows datasource="projectsDs"/>
             <rowsCount/>

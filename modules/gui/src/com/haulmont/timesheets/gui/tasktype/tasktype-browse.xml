@@ -30,7 +30,8 @@
             <columns>
                 <column id="name"/>
                 <column id="code"/>
-                <column id="description"/>
+                <column id="description"
+                        maxTextLength="20"/>
             </columns>
             <rows datasource="taskTypesDs"/>
             <rowsCount/>

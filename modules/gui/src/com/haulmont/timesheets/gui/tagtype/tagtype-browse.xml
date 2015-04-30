@@ -31,7 +31,8 @@
                 <column id="name"/>
                 <column id="code"/>
                 <column id="project"/>
-                <column id="description"/>
+                <column id="description"
+                        maxTextLength="20"/>
             </columns>
             <rows datasource="tagTypesDs"/>
             <rowsCount/>
