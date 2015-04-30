@@ -14,39 +14,80 @@
                 <![CDATA[select e from ts$Project e]]>
             </query>
         </hierarchicalDatasource>
+        <collectionDatasource id="tasksDs"
+                              class="com.haulmont.timesheets.entity.Task"
+                              view="task-full">
+            <query>
+                <![CDATA[select t from ts$Task t where t.project.id = :ds$projectsDs]]>
+            </query>
+        </collectionDatasource>
     </dsContext>
-    <layout expand="projectsTable"
+    <layout expand="split"
             spacing="true">
         <filter id="filter"
                 datasource="projectsDs">
             <properties include=".*"/>
         </filter>
-        <treeTable id="projectsTable"
-                   width="100%">
-            <actions>
-                <action id="create"/>
-                <action id="edit"/>
-                <action id="remove"/>
-            </actions>
-            <columns>
-                <column id="name"/>
-                <column id="code"/>
-                <column id="client"/>
-                <column id="status"/>
-                <column id="description"
-                        maxTextLength="20"/>
-            </columns>
-            <rows datasource="projectsDs"/>
-            <rowsCount/>
-            <buttonsPanel id="buttonsPanel"
-                          alwaysVisible="true">
-                <button id="createBtn"
-                        action="projectsTable.create"/>
-                <button id="editBtn"
-                        action="projectsTable.edit"/>
-                <button id="removeBtn"
-                        action="projectsTable.remove"/>
-            </buttonsPanel>
-        </treeTable>
+        <split id="split" orientation="horizontal" pos="60" width="100%">
+            <vbox spacing="true" margin="false;true;false;false" height="100%">
+                <treeTable id="projectsTable"
+                           width="100%"
+                           height="100%">
+                    <actions>
+                        <action id="create"/>
+                        <action id="edit"/>
+                        <action id="remove"/>
+                    </actions>
+                    <columns>
+                        <column id="name"/>
+                        <column id="code"/>
+                        <column id="client"/>
+                        <column id="status"/>
+                        <column id="description"
+                                maxTextLength="20"/>
+                    </columns>
+                    <rows datasource="projectsDs"/>
+                    <rowsCount/>
+                    <buttonsPanel id="buttonsPanel"
+                                  alwaysVisible="true">
+                        <button id="createBtn"
+                                action="projectsTable.create"/>
+                        <button id="editBtn"
+                                action="projectsTable.edit"/>
+                        <button id="removeBtn"
+                                action="projectsTable.remove"/>
+                    </buttonsPanel>
+                </treeTable>
+            </vbox>
+            <vbox margin="false;false;false;true" height="100%">
+                <table id="tasksTable"
+                       width="100%"
+                       height="100%">
+                    <actions>
+                        <action id="create"/>
+                        <action id="edit"/>
+                        <action id="remove"/>
+                    </actions>
+                    <columns>
+                        <column id="name"/>
+                        <column id="description"
+                                maxTextLength="20"/>
+                        <column id="type"/>
+                        <column id="status"/>
+                    </columns>
+                    <rows datasource="tasksDs"/>
+                    <rowsCount/>
+                    <buttonsPanel id="taskButtonsPanel"
+                                  alwaysVisible="true">
+                        <button id="taskCreateBtn"
+                                action="tasksTable.create"/>
+                        <button id="taskEditBtn"
+                                action="tasksTable.edit"/>
+                        <button id="tasRemoveBtn"
+                                action="tasksTable.remove"/>
+                    </buttonsPanel>
+                </table>
+            </vbox>
+        </split>
     </layout>
 </window>
