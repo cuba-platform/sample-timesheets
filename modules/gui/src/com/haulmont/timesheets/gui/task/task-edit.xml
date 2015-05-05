@@ -26,7 +26,10 @@
                               class="com.haulmont.timesheets.entity.Tag"
                               view="tag-with-type">
             <query>
-                <![CDATA[select e from ts$Tag e order by e.tagType]]>
+                <![CDATA[select e from ts$Tag e]]>
+                <filter>
+                    <c>e.tagType.id in (:custom$requiredTagTypes)</c>
+                </filter>
             </query>
         </collectionDatasource>
         <collectionDatasource id="allTagsTypesDs"

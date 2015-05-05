@@ -11,6 +11,7 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.actions.AddAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.filter.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
@@ -19,10 +20,7 @@ import com.haulmont.timesheets.gui.ComponentsHelper;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author gorelov
@@ -43,6 +41,10 @@ public class TaskEdit extends AbstractEditor<Task> {
     protected CollectionDatasource<Tag, UUID> allTagsDs;
     @Inject
     protected CollectionDatasource<TagType, UUID> allTagsTypesDs;
+    @Inject
+    protected CollectionDatasource<Tag, UUID> defaultTagsDs;
+    @Inject
+    protected CollectionDatasource<TagType, UUID> requiredTagTypesDs;
 
     @Named("fieldGroup.project")
     protected PickerField projectField;
@@ -66,6 +68,22 @@ public class TaskEdit extends AbstractEditor<Task> {
                     participantsDs.clear();
                     updateTagTypeQuery(value);
                 }
+            }
+        });
+
+        requiredTagTypesDs.addListener(new CollectionDsListenerAdapter<TagType>() {
+            @Override
+            public void collectionChanged(CollectionDatasource ds, Operation operation, List<TagType> items) {
+                List<UUID> ids = null;
+                if (!ds.getItems().isEmpty()) {
+                    ids = new ArrayList<>();
+                    @SuppressWarnings("unchecked")
+                    Collection<TagType> types = ds.getItems();
+                    for (TagType type : types) {
+                        ids.add(type.getId());
+                    }
+                }
+                allTagsDs.refresh(ParamsMap.of("requiredTagTypes", ids));
             }
         });
     }
