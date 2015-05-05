@@ -3,6 +3,7 @@
  */
 package com.haulmont.timesheets.gui.timeentry;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.LookupPickerField;
@@ -10,14 +11,13 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.timesheets.entity.Tag;
-import com.haulmont.timesheets.entity.Task;
-import com.haulmont.timesheets.entity.TimeEntry;
-import com.haulmont.timesheets.entity.TimeEntryStatus;
+import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -34,6 +34,8 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     protected Datasource<TimeEntry> timeEntryDs;
     @Inject
     protected CollectionDatasource<Tag, UUID> tagsDs;
+    @Inject
+    protected CollectionDatasource<Tag, UUID> allTagsDs;
 
     @Named("fieldGroup.task")
     protected LookupPickerField taskField;
@@ -48,13 +50,22 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
             @Override
             public void valueChanged(TimeEntry source, String property, Object prevValue, Object value) {
                 if ("task".equals(property)) {
+                    // #PL-5355
+                    tagsDs.clear();
                     if (value != null) {
                         Task task = (Task) value;
-                        // #PL-5355
-                        tagsDs.clear();
                         for (Tag tag : task.getDefaultTags()) {
                             tagsDs.includeItem(tag);
                         }
+
+                        List<UUID> ids = null;
+                        if (!task.getRequiredTagTypes().isEmpty()) {
+                            ids = new ArrayList<>();
+                            for (TagType type : task.getRequiredTagTypes()) {
+                                ids.add(type.getId());
+                            }
+                        }
+                        allTagsDs.refresh(ParamsMap.of("requiredTagTypes", ids));
                     }
                 }
             }
