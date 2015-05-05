@@ -97,7 +97,10 @@
                    inline="true"
                    width="480px">
             <button icon="icons/plus-btn.png"/>
-            <lookup optionsDatasource="allTagsTypesDs"/>
+            <lookup optionsDatasource="allTagsTypesDs"
+                    lookup="true"
+                    lookupScreen="ts$TagType.browse"
+                    openType="DIALOG"/>
         </tokenList>
         <tokenList id="tagsTokenList"
                    caption="msg://com.haulmont.timesheets.entity/Task.defaultTags"
@@ -105,7 +108,10 @@
                    inline="true"
                    width="480px">
             <button icon="icons/plus-btn.png"/>
-            <lookup optionsDatasource="allTagsDs"/>
+            <lookup optionsDatasource="allTagsDs"
+                    lookup="true"
+                    lookupScreen="ts$Tag.browse"
+                    openType="DIALOG"/>
         </tokenList>
         <iframe id="windowActions"
                 screen="editWindowActions"
