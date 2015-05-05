@@ -19,7 +19,7 @@
                 <![CDATA[select e from ts$Tag e]]>
             </query>
         </collectionDatasource>
-        <collectionDatasource id="openedTasksDs"
+        <collectionDatasource id="activeTasksDs"
                               class="com.haulmont.timesheets.entity.Task"
                               view="task-full">
             <query>
@@ -34,7 +34,7 @@
                         datasource="timeEntryDs">
                 <column width="250px">
                     <field id="task"
-                           optionsDatasource="openedTasksDs"/>
+                           optionsDatasource="activeTasksDs"/>
                     <field id="taskName"/>
                     <field id="user"
                            enable="false"/>
