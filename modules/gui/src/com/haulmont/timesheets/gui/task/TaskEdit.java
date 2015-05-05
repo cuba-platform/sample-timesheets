@@ -4,13 +4,16 @@
 package com.haulmont.timesheets.gui.task;
 
 import com.haulmont.bali.util.ParamsMap;
-import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractEditor;
+import com.haulmont.cuba.gui.components.FieldGroup;
+import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.actions.AddAction;
-import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.gui.filter.*;
+import com.haulmont.cuba.gui.filter.Condition;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.gui.ComponentsHelper;
@@ -18,6 +21,7 @@ import com.haulmont.timesheets.gui.ComponentsHelper;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.*;
+import java.util.concurrent.locks.*;
 
 /**
  * @author gorelov
@@ -63,6 +67,7 @@ public class TaskEdit extends AbstractEditor<Task> {
                             participantsDs.removeItem(participant);
                         }
                     }
+                    updateTagTypeQuery(value);
                 }
             }
         });
@@ -77,10 +82,23 @@ public class TaskEdit extends AbstractEditor<Task> {
         }
         projectField.setEnabled(task.getProject() == null);
         updateParticipantsTableAddAction();
+        updateTagTypeQuery(task.getProject());
     }
 
     protected void updateParticipantsTableAddAction() {
         participantsTableAdd.setWindowParams(ParamsMap.of("project", getItem().getProject(), "multiselect", true));
         participantsTableAdd.setEnabled(getItem().getProject() != null);
+    }
+
+    private void updateTagTypeQuery(Object value) {
+        Condition condition = new LogicalCondition(LogicalOp.OR);
+        List<Condition> conditions = new ArrayList<>(2);
+        conditions.add(new Clause("e.project is null", null));
+        if (value != null) {
+            conditions.add(new Clause("e.project.id = :component$fieldGroup.project", null));
+        }
+        condition.setConditions(conditions);
+        allTagsTypesDs.setQueryFilter(new QueryFilter(condition, "ts$TagType"));
+        allTagsTypesDs.refresh();
     }
 }

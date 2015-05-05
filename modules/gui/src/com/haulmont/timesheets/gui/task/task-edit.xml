@@ -26,14 +26,14 @@
                               class="com.haulmont.timesheets.entity.Tag"
                               view="tag-with-type">
             <query>
-                <![CDATA[select e from ts$Tag e]]>
+                <![CDATA[select e from ts$Tag e order by e.tagType]]>
             </query>
         </collectionDatasource>
         <collectionDatasource id="allTagsTypesDs"
                               class="com.haulmont.timesheets.entity.TagType"
                               view="tagType-with-project">
             <query>
-                <![CDATA[select e from ts$TagType e]]>
+                <![CDATA[select e from ts$TagType e order by e.project]]>
             </query>
         </collectionDatasource>
     </dsContext>
