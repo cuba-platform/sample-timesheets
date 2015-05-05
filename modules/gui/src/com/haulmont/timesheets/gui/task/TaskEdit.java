@@ -13,15 +13,16 @@ import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.filter.*;
-import com.haulmont.cuba.gui.filter.Condition;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.*;
-import java.util.concurrent.locks.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author gorelov
@@ -61,12 +62,8 @@ public class TaskEdit extends AbstractEditor<Task> {
             public void valueChanged(Task source, String property, Object prevValue, Object value) {
                 if ("project".equals(property)) {
                     updateParticipantsTableAddAction();
-                    if (value == null || !value.equals(prevValue)) {
-                        Collection<ProjectParticipant> participants = participantsDs.getItems();
-                        for (ProjectParticipant participant : participants) {
-                            participantsDs.removeItem(participant);
-                        }
-                    }
+                    // TODO: known exception
+                    participantsDs.clear();
                     updateTagTypeQuery(value);
                 }
             }
