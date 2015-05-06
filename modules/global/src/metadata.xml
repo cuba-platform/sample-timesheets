@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <metadata xmlns="http://schemas.haulmont.com/cuba/5.4/metadata.xsd">
-
-    <metadata-model root-package="com.haulmont.timesheets" namespace="ts"/>
-
+    <metadata-model namespace="ts"
+                    root-package="com.haulmont.timesheets">
+        <class>com.haulmont.timesheets.entity.WeeklyReportEntry</class>
+    </metadata-model>
 </metadata>
