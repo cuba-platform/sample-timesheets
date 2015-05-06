@@ -13,5 +13,6 @@
         <item id="ts$ProjectParticipant.browse"/>
         <item id="ts$Project.browse"/>
         <item id="approve-screen"/>
+        <item id="simple-weekly-timesheets"/>
     </menu>
 </menu-config>
