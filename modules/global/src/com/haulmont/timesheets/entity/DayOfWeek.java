@@ -10,13 +10,13 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
  */
 public enum DayOfWeek implements EnumClass<String>{
 
-    MONDAY("Mon"),
-    TUESDAY("Tue"),
-    WEDNESDAY("Wed"),
-    THURSDAY("Thu"),
-    FRIDAY("Fri"),
-    SATURDAY("Sat"),
-    SUNDAY("Sun");
+    MONDAY("monday"),
+    TUESDAY("tuesday"),
+    WEDNESDAY("wednesday"),
+    THURSDAY("thursday"),
+    FRIDAY("friday"),
+    SATURDAY("saturday"),
+    SUNDAY("sunday");
 
     private String id;
 

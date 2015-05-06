@@ -61,7 +61,7 @@ public class ComponentsHelper {
         return lookupAction;
     }
 
-    public static class EntityRemoveAction extends RemoveAction {
+    public static class EntityRemoveAction extends CaptionlessRemoveAction {
 
         private Entity entity;
 
@@ -79,6 +79,13 @@ public class ComponentsHelper {
             Set<Entity> selected = new HashSet<>(1);
             selected.add(entity);
             confirmAndRemove(selected);
+        }
+    }
+
+    public static class CaptionlessRemoveAction extends RemoveAction {
+
+        public CaptionlessRemoveAction(ListComponent target) {
+            super(target);
         }
 
         @Override

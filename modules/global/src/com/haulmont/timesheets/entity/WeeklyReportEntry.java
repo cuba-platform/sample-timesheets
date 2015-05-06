@@ -5,9 +5,9 @@ package com.haulmont.timesheets.entity;
 
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
-import java.util.Date;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
-import javax.persistence.ManyToOne;
+
+import java.util.Date;
 
 /**
  * @author gorelov
@@ -44,17 +44,81 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
     protected TimeEntry sunday;
 
     @MetaProperty
-    protected Date total;
+    protected Date mondayTime;
 
-    public Date getTotal() {
-        return total;
+    @MetaProperty
+    protected Date tuesdayTime;
+
+    @MetaProperty
+    protected Date wednesdayTime;
+
+    @MetaProperty
+    protected Date thursdayTime;
+
+    @MetaProperty
+    protected Date fridayTime;
+
+    @MetaProperty
+    protected Date saturdayTime;
+
+    @MetaProperty
+    protected Date sundayTime;
+
+    public void setMondayTime(Date mondayTime) {
+        this.mondayTime = mondayTime;
     }
 
-    public void setTotal(Date total) {
-        this.total = total;
+    public Date getMondayTime() {
+        return mondayTime;
     }
 
+    public void setTuesdayTime(Date tuesdayTime) {
+        this.tuesdayTime = tuesdayTime;
+    }
 
+    public Date getTuesdayTime() {
+        return tuesdayTime;
+    }
+
+    public void setWednesdayTime(Date wednesdayTime) {
+        this.wednesdayTime = wednesdayTime;
+    }
+
+    public Date getWednesdayTime() {
+        return wednesdayTime;
+    }
+
+    public void setThursdayTime(Date thursdayTime) {
+        this.thursdayTime = thursdayTime;
+    }
+
+    public Date getThursdayTime() {
+        return thursdayTime;
+    }
+
+    public void setFridayTime(Date fridayTime) {
+        this.fridayTime = fridayTime;
+    }
+
+    public Date getFridayTime() {
+        return fridayTime;
+    }
+
+    public void setSaturdayTime(Date saturdayTime) {
+        this.saturdayTime = saturdayTime;
+    }
+
+    public Date getSaturdayTime() {
+        return saturdayTime;
+    }
+
+    public void setSundayTime(Date sundayTime) {
+        this.sundayTime = sundayTime;
+    }
+
+    public Date getSundayTime() {
+        return sundayTime;
+    }
 
     public void setProject(Project project) {
         this.project = project;
@@ -129,4 +193,24 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
     }
 
 
+    public TimeEntry getDayOfWeekTimeEntry(DayOfWeek day) {
+        switch (day) {
+            case MONDAY:
+                return getMonday();
+            case TUESDAY:
+                return getTuesday();
+            case WEDNESDAY:
+                return getWednesday();
+            case THURSDAY:
+                return getThursday();
+            case FRIDAY:
+                return getFriday();
+            case SATURDAY:
+                return getSaturday();
+            case SUNDAY:
+                return getSunday();
+            default:
+                return null;
+        }
+    }
 }

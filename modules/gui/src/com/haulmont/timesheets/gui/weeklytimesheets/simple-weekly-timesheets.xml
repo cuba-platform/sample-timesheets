@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+        caption="msg://browseCaption"
+        class="com.haulmont.timesheets.gui.weeklytimesheets.SimpleWeeklyTimesheets"
+        messagesPack="com.haulmont.timesheets.gui.weeklytimesheets">
+    <dsContext>
+        <collectionDatasource id="weeklyEntriesDs"
+                              class="com.haulmont.timesheets.entity.WeeklyReportEntry"
+                              refreshMode="NEVER"
+                              allowCommit="false"/>
+        <collectionDatasource id="projectsDs"
+                              class="com.haulmont.timesheets.entity.Project"
+                              view="project-full">
+            <query>
+                <![CDATA[select e from ts$Project e join e.tasks t join t.participants p where p.user.id = :session$userId and t.status = 10 order by e.name]]>
+            </query>
+        </collectionDatasource>
+        <!--<collectionDatasource id="tasksDs"-->
+                              <!--class="com.haulmont.timesheets.entity.Task"-->
+                              <!--view="task-full">-->
+            <!--<query>-->
+                <!--<![CDATA[select e from ts$Task e join e.participants p where p.user.id = :session$userId and e.project.id = :ds$weeklyEntriesDs.project and e.status = 10 order by e.project]]>-->
+            <!--</query>-->
+        <!--</collectionDatasource>-->
+    </dsContext>
+    <layout>
+        <table id="weeklyTsTable"
+               editable="true"
+               aggregatable="true"
+               height="100%"
+               width="100%">
+            <actions>
+                <action id="add"
+                        icon="icons/plus-btn.png"
+                        invoke="addReport"/>
+                <action id="remove"/>
+                <action id="submitAll"
+                        caption="msg://submitAll"
+                        invoke="submitAll"/>
+            </actions>
+            <columns>
+                <column id="project"
+                        editable="true"
+                        optionsDatasource="projectsDs"/>
+                <!--<column id="task"-->
+                        <!--editable="true"-->
+                        <!--optionsDatasource="tasksDs"/>-->
+                <!--<column id="monday"-->
+                        <!--link="true"-->
+                        <!--width="80px"/>-->
+                <!--<column id="tuesday"-->
+                        <!--width="80px"/>-->
+                <!--<column id="wednesday"-->
+                        <!--width="80px"/>-->
+                <!--<column id="thursday"-->
+                        <!--width="80px"/>-->
+                <!--<column id="friday"-->
+                        <!--width="80px"/>-->
+                <!--<column id="saturday"-->
+                        <!--width="80px"/>-->
+                <!--<column id="sunday"-->
+                        <!--width="80px"/>-->
+                <!--<column id="total"-->
+                        <!--width="100px"/>-->
+            </columns>
+            <rows datasource="weeklyEntriesDs"/>
+            <buttonsPanel>
+                <button action="weeklyTsTable.add"/>
+                <button action="weeklyTsTable.remove"/>
+                <button action="weeklyTsTable.submitAll"/>
+            </buttonsPanel>
+        </table>
+    </layout>
+</window>

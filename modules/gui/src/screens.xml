@@ -66,4 +66,6 @@
             template="/com/haulmont/timesheets/gui/extuser/extuser-browse.xml"/>
     <screen id="approve-screen"
             template="com/haulmont/timesheets/gui/approve/approve-screen.xml"/>
+    <screen id="simple-weekly-timesheets"
+            template="com/haulmont/timesheets/gui/weeklytimesheets/simple-weekly-timesheets.xml"/>
 </screen-config>

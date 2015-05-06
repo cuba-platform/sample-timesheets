@@ -69,6 +69,10 @@ configure(globalModule) {
     task enhance(type: CubaEnhancing) {
         persistenceXml = "$globalModule.projectDir/src/persistence.xml"
     }
+
+    task enhanceTransient(type: CubaEnhanceTransient) {
+        metadataXml = "$globalModule.projectDir/src/metadata.xml"
+    }
 }
 
 configure(coreModule) {
