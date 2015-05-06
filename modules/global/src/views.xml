@@ -25,6 +25,15 @@
                 <property name="client">
                     <property name="name"/>
                 </property>
+                <property name="participants">
+                    <property name="user">
+                        <property name="login"/>
+                        <property name="name"/>
+                    </property>
+                    <property name="role">
+                        <property name="name"/>
+                    </property>
+                </property>
             </property>
         </property>
         <property name="taskName"/>
