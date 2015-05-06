@@ -39,7 +39,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     @Inject
     protected UserSession userSession;
 
-    protected Map<Project, List<Task>> lookupFieldsOptionsLists = new HashMap<>();
+    protected Map<Project, Map<String, Object>> lookupFieldsOptionsLists = new HashMap<>();
 
     @Override
     public void init(Map<String, Object> params) {
@@ -60,17 +60,17 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         if ("project".equals(property)) {
                             Project project = (Project) value;
                             lookupField.setValue(null);
-                            lookupField.setOptionsList(getAssignedTasks(project));
+                            lookupField.setOptionsMap(getAssignedTasks(project));
                         }
                     }
                 });
 
                 final Project project = ds.getItem().getProject();
                 if (project != null) {
-                    List<Task> tasks = getAssignedTasks(project);
-                    lookupField.setOptionsList(tasks);
+                    Map<String, Object> tasks = getAssignedTasks(project);
+                    lookupField.setOptionsMap(tasks);
                     Task task = ds.getItem().getTask();
-                    if (task != null && tasks.contains(task)) {
+                    if (task != null && tasks.values().contains(task)) {
                         lookupField.setValue(task);
                     }
                 }
@@ -104,17 +104,21 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
     }
 
-    protected List<Task> getAssignedTasks(Project project) {
-        List<Task> tasks = lookupFieldsOptionsLists.get(project);
-        if (tasks == null) {
+    protected Map<String, Object> getAssignedTasks(Project project) {
+        Map<String, Object> tasksMap = lookupFieldsOptionsLists.get(project);
+        if (tasksMap == null) {
             LoadContext loadContext = new LoadContext(Task.class)
                     .setView("task-full");
             loadContext.setQueryString("select e from ts$Task e join e.participants p where p.user.id = :userId and e.project.id = :projectId and e.status = 10 order by e.project")
                     .setParameter("projectId", project.getId())
                     .setParameter("userId", userSession.getUser().getId());
-            tasks = dataManager.loadList(loadContext);
-            lookupFieldsOptionsLists.put(project, tasks);
+            List<Task> taskList = dataManager.loadList(loadContext);
+            tasksMap = new HashMap<>(taskList.size());
+            for (Task task : taskList) {
+                tasksMap.put(task.getName(), task);
+            }
+            lookupFieldsOptionsLists.put(project, tasksMap);
         }
-        return tasks;
+        return tasksMap;
     }
 }
