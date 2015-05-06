@@ -82,6 +82,12 @@ public class TaskEdit extends AbstractEditor<Task> {
                     for (TagType type : types) {
                         ids.add(type.getId());
                     }
+
+                    for (Tag tag : defaultTagsDs.getItems()) {
+                        if (tag.getTagType() == null || !types.contains(tag.getTagType())) {
+                            defaultTagsDs.excludeItem(tag);
+                        }
+                    }
                 }
                 allTagsDs.refresh(ParamsMap.of("requiredTagTypes", ids));
             }
