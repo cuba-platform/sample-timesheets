@@ -18,8 +18,15 @@
     </view>
     <view class="com.haulmont.timesheets.entity.TimeEntry"
           name="timeEntry-full">
-        <property name="task"
-                  view="_minimal"/>
+        <property name="task">
+            <property name="name"/>
+            <property name="project">
+                <property name="name"/>
+                <property name="client">
+                    <property name="name"/>
+                </property>
+            </property>
+        </property>
         <property name="taskName"/>
         <property name="user"
                   view="_minimal"/>

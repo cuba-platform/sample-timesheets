@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+        caption="msg://approveScreen"
+        class="com.haulmont.timesheets.gui.approve.ApproveScreen"
+        messagesPack="com.haulmont.timesheets.gui.approve">
+    <dsContext>
+        <groupDatasource id="timeEntriesDs"
+                         class="com.haulmont.timesheets.entity.TimeEntry"
+                         view="timeEntry-full">
+            <query>
+                <![CDATA[select e from ts$TimeEntry e where e.status = 10]]>
+            </query>
+        </groupDatasource>
+    </dsContext>
+    <layout expand="timeEntriesTable">
+        <groupTable id="timeEntriesTable"
+                    multiselect="true"
+                    width="100%">
+            <actions>
+                <action id="approve"
+                        caption="msg://approve"
+                        invoke="approve"/>
+                <action id="reject"
+                        caption="msg://reject"
+                        invoke="reject"/>
+                <action id="edit"/>
+            </actions>
+            <columns>
+                <group>
+                    <column id="user"/>
+                </group>
+                <column id="task.project.client"/>
+                <column id="task.project"/>
+                <column id="task.name" caption="msg://com.haulmont.timesheets.entity/Task"/>
+                <column id="date"/>
+                <column id="time"/>
+                <column id="status"/>
+            </columns>
+            <rows datasource="timeEntriesDs"/>
+            <rowsCount/>
+            <buttonsPanel id="buttonsPanel"
+                          alwaysVisible="true">
+                <button id="approveBtn"
+                        action="timeEntriesTable.approve"/>
+                <button id="rejectBtn"
+                        action="timeEntriesTable.reject"/>
+                <button id="editBtn"
+                        action="timeEntriesTable.edit"/>
+            </buttonsPanel>
+        </groupTable>
+    </layout>
+</window>

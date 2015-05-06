@@ -12,5 +12,6 @@
         <item id="ts$Task.browse"/>
         <item id="ts$ProjectParticipant.browse"/>
         <item id="ts$Project.browse"/>
+        <item id="approve-screen"/>
     </menu>
 </menu-config>
