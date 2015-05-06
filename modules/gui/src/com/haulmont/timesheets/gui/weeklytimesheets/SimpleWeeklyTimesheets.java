@@ -79,7 +79,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         });
 
         for (final DayOfWeek day : DayOfWeek.values()) {
-            weeklyTsTable.addGeneratedColumn(day.getId() + "Time", new Table.ColumnGenerator() {
+            weeklyTsTable.addGeneratedColumn(day.getId(), new Table.ColumnGenerator() {
                 @Override
                 public Component generateCell(Entity entity) {
                     WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
@@ -92,7 +92,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                     }
                 }
             });
-            weeklyTsTable.setColumnWidth(day.getId() + "Time", 80);
+//            weeklyTsTable.setColumnWidth(day.getId(), 80);
         }
     }
 
