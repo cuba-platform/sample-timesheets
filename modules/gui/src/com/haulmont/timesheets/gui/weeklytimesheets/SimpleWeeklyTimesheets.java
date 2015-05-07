@@ -4,19 +4,14 @@
 package com.haulmont.timesheets.gui.weeklytimesheets;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.DataManager;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.timesheets.entity.DayOfWeek;
-import com.haulmont.timesheets.entity.Project;
-import com.haulmont.timesheets.entity.Task;
-import com.haulmont.timesheets.entity.WeeklyReportEntry;
+import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import org.apache.commons.lang.time.DateUtils;
 
@@ -43,6 +38,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     protected Label weekLabel;
     @Inject
     protected Messages messages;
+    @Inject
+    protected ViewRepository viewRepository;
 
     protected Map<Project, Map<String, Object>> lookupFieldsOptionsLists = new HashMap<>();
     protected Date firstDayOfWeek;
@@ -107,7 +104,35 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     }
 
     public void submitAll() {
+        Collection<WeeklyReportEntry> entries = weeklyEntriesDs.getItems();
+        for (WeeklyReportEntry reportEntry : entries) {
+            if (reportEntry.getTask() != null) {
+                for (final DayOfWeek day : DayOfWeek.values()) {
+                    Date time = reportEntry.getDayOfWeekTime(day);
+                    if (time != null) {
+                        TimeEntry timeEntry = new TimeEntry();
+                        timeEntry.setStatus(TimeEntryStatus.NEW);
+                        timeEntry.setUser(userSession.getUser());
+                        timeEntry.setTask(reportEntry.getTask());
+                        timeEntry.setTime(time);
+                        timeEntry.setTags(reportEntry.getTask().getDefaultTags());
+                        timeEntry.setDate(DateUtils.addDays(firstDayOfWeek, getDayOffset(day)));
 
+                        reportEntry.changeDayOfWeekTimeEntry(day, commitTimeEntry(timeEntry));
+                    }
+                }
+            }
+        }
+        weeklyTsTable.repaint();
+    }
+
+    protected TimeEntry commitTimeEntry(TimeEntry timeEntry) {
+        CommitContext commitContext = new CommitContext();
+        commitContext.getCommitInstances().add(timeEntry);
+        commitContext.getViews().put(timeEntry, viewRepository.getView(TimeEntry.class, "timeEntry-full"));
+
+        Set<Entity> commitedEntities = dataManager.commit(commitContext);
+        return commitedEntities.size() == 1 ? (TimeEntry) commitedEntities.iterator().next() : null;
     }
 
     protected Date getFirstDayOfWeek() {
@@ -130,6 +155,25 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         weekLabel.setValue(String.format("%s - %s",
                 dateFormat.format(firstDayOfWeek),
                 dateFormat.format(DateUtils.addDays(firstDayOfWeek, 6))));
+    }
+
+    protected int getDayOffset(DayOfWeek day) {
+        switch (day) {
+            case TUESDAY:
+                return 1;
+            case WEDNESDAY:
+                return 2;
+            case THURSDAY:
+                return 3;
+            case FRIDAY:
+                return 4;
+            case SATURDAY:
+                return 5;
+            case SUNDAY:
+                return 6;
+            default:
+                return 0;
+        }
     }
 
     protected Map<String, Object> getAssignedTasks(Project project) {

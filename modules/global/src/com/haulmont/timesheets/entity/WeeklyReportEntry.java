@@ -213,4 +213,58 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
                 return null;
         }
     }
+
+    public Date getDayOfWeekTime(DayOfWeek day) {
+        switch (day) {
+            case MONDAY:
+                return getMondayTime();
+            case TUESDAY:
+                return getTuesdayTime();
+            case WEDNESDAY:
+                return getWednesdayTime();
+            case THURSDAY:
+                return getThursdayTime();
+            case FRIDAY:
+                return getFridayTime();
+            case SATURDAY:
+                return getSaturdayTime();
+            case SUNDAY:
+                return getSundayTime();
+            default:
+                return null;
+        }
+    }
+
+    public void changeDayOfWeekTimeEntry(DayOfWeek day, TimeEntry timeEntry) {
+        switch (day) {
+            case MONDAY:
+                setMonday(timeEntry);
+                setMondayTime(null);
+                break;
+            case TUESDAY:
+                setTuesday(timeEntry);
+                setTuesdayTime(null);
+                break;
+            case WEDNESDAY:
+                setWednesday(timeEntry);
+                setWednesdayTime(null);
+                break;
+            case THURSDAY:
+                setThursday(timeEntry);
+                setThursdayTime(null);
+                break;
+            case FRIDAY:
+                setFriday(timeEntry);
+                setFridayTime(null);
+                break;
+            case SATURDAY:
+                setSaturday(timeEntry);
+                setSaturdayTime(null);
+                break;
+            case SUNDAY:
+                setSunday(timeEntry);
+                setSundayTime(null);
+                break;
+        }
+    }
 }
