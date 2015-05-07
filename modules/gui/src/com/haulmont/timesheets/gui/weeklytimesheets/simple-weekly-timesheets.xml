@@ -53,13 +53,17 @@
                         width="80px"/>
             </columns>
             <rows datasource="weeklyEntriesDs"/>
-            <buttonsPanel>
-                <button action="weeklyTsTable.add"/>
-                <button action="weeklyTsTable.remove"/>
-                <button action="weeklyTsTable.submitAll"/>
+            <buttonsPanel width="100%">
+                <hbox spacing="true"
+                      align="MIDDLE_LEFT">
+                    <button action="weeklyTsTable.add"/>
+                    <button action="weeklyTsTable.remove"/>
+                </hbox>
                 <hbox id="weekNavigationBox"
                       spacing="true"
+                      align="BOTTOM_RIGHT"
                       height="100%">
+                    <button action="weeklyTsTable.submitAll"/>
                     <linkButton icon="font-icon:CHEVRON_LEFT"
                                 align="MIDDLE_CENTER"
                                 invoke="movePreviousWeek"/>

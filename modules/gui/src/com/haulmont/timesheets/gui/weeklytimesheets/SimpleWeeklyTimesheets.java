@@ -8,6 +8,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.global.UserSession;
@@ -61,6 +62,9 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         weeklyTsTable.addGeneratedColumn("task", new Table.ColumnGenerator() {
             @Override
             public Component generateCell(Entity entity) {
+                // check if we have lookupfield
+                // just return
+
                 @SuppressWarnings("unchecked")
                 Datasource<WeeklyReportEntry> ds = (Datasource<WeeklyReportEntry>) weeklyTsTable.getItemDatasource(entity);
                 final LookupField lookupField = componentsFactory.createComponent(LookupField.NAME);
@@ -101,6 +105,12 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         linkField.setOwner(weeklyTsTable);
                         linkField.setFrame(frame);
                         linkField.setDatasource(weeklyTsTable.getItemDatasource(entity), day.getId());
+                        linkField.addListener(new ValueListener() {
+                            @Override
+                            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                                weeklyTsTable.repaint();
+                            }
+                        });
                         return linkField;
                     }
                 }
