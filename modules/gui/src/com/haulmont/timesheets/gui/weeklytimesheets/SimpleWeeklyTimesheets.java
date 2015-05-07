@@ -6,6 +6,7 @@ package com.haulmont.timesheets.gui.weeklytimesheets;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -17,12 +18,12 @@ import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.Task;
 import com.haulmont.timesheets.entity.WeeklyReportEntry;
 import com.haulmont.timesheets.gui.ComponentsHelper;
+import org.apache.commons.lang.time.DateUtils;
 
 import javax.inject.Inject;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author gorelov
@@ -38,13 +39,22 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     protected DataManager dataManager;
     @Inject
     protected UserSession userSession;
+    @Inject
+    protected Label weekLabel;
+    @Inject
+    protected Messages messages;
 
     protected Map<Project, Map<String, Object>> lookupFieldsOptionsLists = new HashMap<>();
+    protected Date firstDayOfWeek;
+    protected DateFormat dateFormat;
 
     @Override
     public void init(Map<String, Object> params) {
-        weeklyTsTable.addAction(new ComponentsHelper.CaptionlessRemoveAction(weeklyTsTable));
+        firstDayOfWeek = getFirstDayOfWeek();
+        dateFormat = new SimpleDateFormat(messages.getMainMessage("dateFormat"));
+        updateWeekLabel();
 
+        weeklyTsTable.addAction(new ComponentsHelper.CaptionlessRemoveAction(weeklyTsTable));
         weeklyTsTable.addGeneratedColumn("task", new Table.ColumnGenerator() {
             @Override
             public Component generateCell(Entity entity) {
@@ -69,10 +79,6 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                 if (project != null) {
                     Map<String, Object> tasks = getAssignedTasks(project);
                     lookupField.setOptionsMap(tasks);
-                    Task task = ds.getItem().getTask();
-                    if (task != null && tasks.values().contains(task)) {
-                        lookupField.setValue(task);
-                    }
                 }
                 return lookupField;
             }
@@ -92,7 +98,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                     }
                 }
             });
-//            weeklyTsTable.setColumnWidth(day.getId(), 80);
+            weeklyTsTable.setColumnWidth(day.getId(), 80);
         }
     }
 
@@ -102,6 +108,28 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
     public void submitAll() {
 
+    }
+
+    protected Date getFirstDayOfWeek() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        return calendar.getTime();
+    }
+
+    public void movePreviousWeek() {
+        firstDayOfWeek = DateUtils.addDays(firstDayOfWeek, -7);
+        updateWeekLabel();
+    }
+
+    public void moveNextWeek() {
+        firstDayOfWeek = DateUtils.addDays(firstDayOfWeek, 7);
+        updateWeekLabel();
+    }
+
+    protected void updateWeekLabel() {
+        weekLabel.setValue(String.format("%s - %s",
+                dateFormat.format(firstDayOfWeek),
+                dateFormat.format(DateUtils.addDays(firstDayOfWeek, 6))));
     }
 
     protected Map<String, Object> getAssignedTasks(Project project) {

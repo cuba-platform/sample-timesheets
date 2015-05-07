@@ -35,28 +35,24 @@
                 <column id="project"
                         editable="true"
                         optionsDatasource="projectsDs"/>
-                <column id="task"/>
-                <column id="monday"
-                        link="true"
-                        width="80px"/>
-                <column id="tuesday"
-                        width="80px"/>
-                <column id="wednesday"
-                        width="80px"/>
-                <column id="thursday"
-                        width="80px"/>
-                <column id="friday"
-                        width="80px"/>
-                <column id="saturday"
-                        width="80px"/>
-                <column id="sunday"
-                        width="80px"/>
             </columns>
             <rows datasource="weeklyEntriesDs"/>
             <buttonsPanel>
                 <button action="weeklyTsTable.add"/>
                 <button action="weeklyTsTable.remove"/>
                 <button action="weeklyTsTable.submitAll"/>
+                <hbox id="weekNavigationBox"
+                      spacing="true"
+                      height="100%">
+                    <linkButton icon="font-icon:CHEVRON_LEFT"
+                                align="MIDDLE_CENTER"
+                                invoke="movePreviousWeek"/>
+                    <label id="weekLabel"
+                           align="MIDDLE_CENTER"/>
+                    <linkButton icon="font-icon:CHEVRON_RIGHT"
+                                align="MIDDLE_CENTER"
+                                invoke="moveNextWeek"/>
+                </hbox>
             </buttonsPanel>
         </table>
     </layout>
