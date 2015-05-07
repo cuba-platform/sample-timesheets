@@ -115,22 +115,21 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
         }
     }
 
-    public Date getTotal() {
-        Calendar total = Calendar.getInstance();
-        total.set(Calendar.HOUR_OF_DAY, 0);
-        total.set(Calendar.MINUTE, 0);
+    public String getTotal() {
+        int hours = 0;
+        int minutes = 0;
         for (DayOfWeek day : DayOfWeek.values()) {
             TimeEntry timeEntry = getDayOfWeekTimeEntry(day);
             if (timeEntry != null) {
                 Date time = timeEntry.getTime();
                 if (time != null) {
                     Calendar calendar = DateUtils.toCalendar(time);
-                    total.add(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY));
-                    total.add(Calendar.MINUTE, calendar.get(Calendar.MINUTE));
+                    hours += calendar.get(Calendar.HOUR_OF_DAY);
+                    minutes += calendar.get(Calendar.MINUTE);
                 }
             }
         }
-        return total.getTime();
+        return String.format("%02d:%02d", hours, minutes);
     }
 
     public void setMondayTime(Date mondayTime) {

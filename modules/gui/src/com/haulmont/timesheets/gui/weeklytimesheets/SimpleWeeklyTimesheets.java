@@ -49,13 +49,11 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 //    protected Map<Date, List<TimeEntry>> weeklyTimeEntriesCache = new HashMap<>();
     protected Date firstDayOfWeek;
     protected DateFormat dateFormat;
-    protected DateFormat timeFormat;
 
     @Override
     public void init(Map<String, Object> params) {
         firstDayOfWeek = getFirstDayOfWeek();
         dateFormat = new SimpleDateFormat(messages.getMainMessage("dateFormat"));
-        timeFormat = new SimpleDateFormat(messages.getMainMessage("timeFormat"));
         updateWeekLabel();
         fillExistingTimeEntries();
 
@@ -114,7 +112,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             public Component generateCell(Entity entity) {
                 WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
                 Label label = componentsFactory.createComponent(Label.NAME);
-                label.setValue(timeFormat.format(reportEntry.getTotal()));
+                label.setValue(reportEntry.getTotal());
                 return label;
             }
         });
