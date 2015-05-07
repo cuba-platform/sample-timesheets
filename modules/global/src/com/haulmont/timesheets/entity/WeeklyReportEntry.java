@@ -6,7 +6,9 @@ package com.haulmont.timesheets.entity;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import org.apache.commons.lang.time.DateUtils;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -63,6 +65,73 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
 
     @MetaProperty
     protected Date sundayTime;
+
+    public enum DayOfWeek {
+
+        MONDAY("monday"),
+        TUESDAY("tuesday"),
+        WEDNESDAY("wednesday"),
+        THURSDAY("thursday"),
+        FRIDAY("friday"),
+        SATURDAY("saturday"),
+        SUNDAY("sunday");
+
+        private String id;
+
+        DayOfWeek(String value) {
+            this.id = value;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public static DayOfWeek fromId(String id) {
+            for (DayOfWeek at : DayOfWeek.values()) {
+                if (at.getId().equals(id)) {
+                    return at;
+                }
+            }
+            return null;
+        }
+
+        public static int getDayOffset(DayOfWeek day) {
+            switch (day) {
+                case TUESDAY:
+                    return 1;
+                case WEDNESDAY:
+                    return 2;
+                case THURSDAY:
+                    return 3;
+                case FRIDAY:
+                    return 4;
+                case SATURDAY:
+                    return 5;
+                case SUNDAY:
+                    return 6;
+                default:
+                    return 0;
+            }
+        }
+    }
+
+    public Date getTotal() {
+        Calendar total = Calendar.getInstance();
+        total.set(Calendar.HOUR_OF_DAY, 0);
+        total.set(Calendar.MINUTE, 0);
+        for (DayOfWeek day : DayOfWeek.values()) {
+            TimeEntry timeEntry = getDayOfWeekTimeEntry(day);
+            if (timeEntry != null) {
+                Date time = timeEntry.getTime();
+                if (time != null) {
+                    Calendar calendar = DateUtils.toCalendar(time);
+                    total.add(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY));
+                    total.add(Calendar.MINUTE, calendar.get(Calendar.MINUTE));
+                }
+            }
+        }
+        return total.getTime();
+    }
 
     public void setMondayTime(Date mondayTime) {
         this.mondayTime = mondayTime;

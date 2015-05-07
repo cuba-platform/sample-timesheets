@@ -20,6 +20,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static com.haulmont.timesheets.entity.WeeklyReportEntry.DayOfWeek;
+
 /**
  * @author gorelov
  */
@@ -39,16 +41,21 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     @Inject
     protected Messages messages;
     @Inject
+    protected Metadata metadata;
+    @Inject
     protected ViewRepository viewRepository;
 
     protected Map<Project, Map<String, Object>> lookupFieldsOptionsLists = new HashMap<>();
+//    protected Map<Date, List<TimeEntry>> weeklyTimeEntriesCache = new HashMap<>();
     protected Date firstDayOfWeek;
     protected DateFormat dateFormat;
+    protected DateFormat timeFormat;
 
     @Override
     public void init(Map<String, Object> params) {
         firstDayOfWeek = getFirstDayOfWeek();
         dateFormat = new SimpleDateFormat(messages.getMainMessage("dateFormat"));
+        timeFormat = new SimpleDateFormat(messages.getMainMessage("timeFormat"));
         updateWeekLabel();
         fillExistingTimeEntries();
 
@@ -100,8 +107,19 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                     }
                 }
             });
-            weeklyTsTable.setColumnWidth(day.getId(), 80);
         }
+
+        weeklyTsTable.addGeneratedColumn("total", new Table.ColumnGenerator() {
+            @Override
+            public Component generateCell(Entity entity) {
+                WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
+                Label label = componentsFactory.createComponent(Label.NAME);
+                label.setValue(timeFormat.format(reportEntry.getTotal()));
+                return label;
+            }
+        });
+        weeklyTsTable.setColumnWidth("total", 80);
+        weeklyTsTable.setColumnCaption("total", messages.getMessage(getClass(), "total"));
     }
 
     public void addReport() {
@@ -121,7 +139,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         timeEntry.setTask(reportEntry.getTask());
                         timeEntry.setTime(time);
                         timeEntry.setTags(reportEntry.getTask().getDefaultTags());
-                        timeEntry.setDate(DateUtils.addDays(firstDayOfWeek, getDayOffset(day)));
+                        timeEntry.setDate(DateUtils.addDays(firstDayOfWeek, DayOfWeek.getDayOffset(day)));
 
                         reportEntry.changeDayOfWeekTimeEntry(day, commitTimeEntry(timeEntry));
                     }
@@ -170,26 +188,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     }
 
     protected void fillExistingTimeEntries() {
+//        List<TimeEntry> timeEntries = getTimeEntriesForPeriod(firstDayOfWeek, DateUtils.addDays(firstDayOfWeek, 6));
 
-    }
-
-    protected int getDayOffset(DayOfWeek day) {
-        switch (day) {
-            case TUESDAY:
-                return 1;
-            case WEDNESDAY:
-                return 2;
-            case THURSDAY:
-                return 3;
-            case FRIDAY:
-                return 4;
-            case SATURDAY:
-                return 5;
-            case SUNDAY:
-                return 6;
-            default:
-                return 0;
-        }
     }
 
     protected Map<String, Object> getAssignedTasks(Project project) {
@@ -209,4 +209,19 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         }
         return tasksMap;
     }
+
+//    protected List<TimeEntry> getTimeEntriesForPeriod(Date start, Date end) {
+//        List<TimeEntry> timeEntries = weeklyTimeEntriesCache.get(start);
+//        if (timeEntries == null) {
+//            LoadContext loadContext = new LoadContext(TimeEntry.class)
+//                    .setView("timeEntry-full");
+//            loadContext.setQueryString("select e from ts$TimeEntry e where e.user.id = :userId and (e.date between :start and :end)")
+//                    .setParameter("start", start)
+//                    .setParameter("end", end)
+//                    .setParameter("userId", userSession.getUser().getId());
+//            timeEntries = dataManager.loadList(loadContext);
+//            weeklyTimeEntriesCache.put(start, timeEntries);
+//        }
+//        return timeEntries;
+//    }
 }
