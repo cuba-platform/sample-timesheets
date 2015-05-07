@@ -129,6 +129,8 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
                 }
             }
         }
+        hours += minutes / 60;
+        minutes %= 60;
         return String.format("%02d:%02d", hours, minutes);
     }
 
