@@ -3,26 +3,24 @@
  */
 package com.haulmont.timesheets.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import com.haulmont.cuba.core.entity.StandardEntity;
-import com.haulmont.cuba.security.entity.User;
-import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 import com.haulmont.chile.core.annotations.NamePattern;
+import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.security.entity.User;
+import org.apache.commons.lang.StringUtils;
+
+import javax.persistence.*;
+import java.text.DateFormat;
+import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Set;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 
 /**
  * @author gorelov
  */
-@NamePattern("%s|task")
+@NamePattern("#getCaption|time")
 @Table(name = "TS_TIME_ENTRY")
 @Entity(name = "ts$TimeEntry")
 public class TimeEntry extends StandardEntity {
@@ -40,8 +38,8 @@ public class TimeEntry extends StandardEntity {
     protected User user;
 
     @JoinTable(name = "TS_TIME_ENTRY_TAG_LINK",
-        joinColumns = @JoinColumn(name = "TIME_ENTRY_ID"),
-        inverseJoinColumns = @JoinColumn(name = "TAG_ID"))
+            joinColumns = @JoinColumn(name = "TIME_ENTRY_ID"),
+            inverseJoinColumns = @JoinColumn(name = "TAG_ID"))
     @ManyToMany
     protected Set<Tag> tags;
 
@@ -138,5 +136,12 @@ public class TimeEntry extends StandardEntity {
         return task;
     }
 
-
+    public String getCaption() {
+        Messages messages = AppBeans.get(Messages.NAME);
+        DateFormat df = new SimpleDateFormat(messages.getMainMessage("timeFormat"));
+        MessageFormat fmt = new MessageFormat("{0}");
+        return StringUtils.trimToEmpty(fmt.format(new Object[]{
+                StringUtils.trimToEmpty(df.format(getTime()))
+        }));
+    }
 }
