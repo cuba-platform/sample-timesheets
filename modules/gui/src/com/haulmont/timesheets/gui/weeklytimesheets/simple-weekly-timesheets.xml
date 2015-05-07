@@ -37,7 +37,6 @@
                         optionsDatasource="projectsDs"/>
                 <column id="task"/>
                 <column id="monday"
-                        link="true"
                         width="80px"/>
                 <column id="tuesday"
                         width="80px"/>
