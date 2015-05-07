@@ -50,6 +50,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         firstDayOfWeek = getFirstDayOfWeek();
         dateFormat = new SimpleDateFormat(messages.getMainMessage("dateFormat"));
         updateWeekLabel();
+        fillExistingTimeEntries();
 
         weeklyTsTable.addAction(new ComponentsHelper.CaptionlessRemoveAction(weeklyTsTable));
         weeklyTsTable.addGeneratedColumn("task", new Table.ColumnGenerator() {
@@ -91,7 +92,11 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         timeField.setDatasource(weeklyTsTable.getItemDatasource(entity), day.getId() + "Time");
                         return timeField;
                     } else {
-                        return null;
+                        EntityLinkField linkField = componentsFactory.createComponent(EntityLinkField.NAME);
+                        linkField.setOwner(weeklyTsTable);
+                        linkField.setFrame(frame);
+                        linkField.setDatasource(weeklyTsTable.getItemDatasource(entity), day.getId());
+                        return linkField;
                     }
                 }
             });
@@ -144,17 +149,28 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     public void movePreviousWeek() {
         firstDayOfWeek = DateUtils.addDays(firstDayOfWeek, -7);
         updateWeekLabel();
+        updateWeeklyEntries();
     }
 
     public void moveNextWeek() {
         firstDayOfWeek = DateUtils.addDays(firstDayOfWeek, 7);
         updateWeekLabel();
+        updateWeeklyEntries();
     }
 
     protected void updateWeekLabel() {
         weekLabel.setValue(String.format("%s - %s",
                 dateFormat.format(firstDayOfWeek),
                 dateFormat.format(DateUtils.addDays(firstDayOfWeek, 6))));
+    }
+
+    protected void updateWeeklyEntries() {
+        weeklyEntriesDs.clear();
+        fillExistingTimeEntries();
+    }
+
+    protected void fillExistingTimeEntries() {
+
     }
 
     protected int getDayOffset(DayOfWeek day) {
