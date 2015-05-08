@@ -46,8 +46,11 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     @Inject
     protected ViewRepository viewRepository;
 
-    protected Map<Project, Map<String, Object>> lookupFieldsOptionsLists = new HashMap<>();
-//    protected Map<Date, List<TimeEntry>> weeklyTimeEntriesCache = new HashMap<>();
+    protected Map<String, LookupField> lookupFieldsCache = new HashMap<>();
+    protected Map<String, TimeField> timeFieldsCache = new HashMap<>();
+    protected Map<String, EntityLinkField> linkFieldsCache = new HashMap<>();
+    protected Map<String, Label> totalLabelsCache = new HashMap<>();
+    //    protected Map<Date, List<TimeEntry>> weeklyTimeEntriesCache = new HashMap<>();
     protected Date firstDayOfWeek;
     protected DateFormat dateFormat;
 
@@ -58,76 +61,99 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         updateWeekLabel();
         fillExistingTimeEntries();
 
+        final String taskColumnId = "task";
         weeklyTsTable.addAction(new ComponentsHelper.CaptionlessRemoveAction(weeklyTsTable));
-        weeklyTsTable.addGeneratedColumn("task", new Table.ColumnGenerator() {
+        weeklyTsTable.addGeneratedColumn(taskColumnId, new Table.ColumnGenerator() {
             @Override
             public Component generateCell(Entity entity) {
-                // check if we have lookupfield
-                // just return
+                String key = getKeyForEntity(entity, taskColumnId);
+                if (lookupFieldsCache.containsKey(key)) {
+                    return lookupFieldsCache.get(key);
+                } else {
+                    @SuppressWarnings("unchecked")
+                    Datasource<WeeklyReportEntry> ds = (Datasource<WeeklyReportEntry>) weeklyTsTable.getItemDatasource(entity);
+                    final LookupField lookupField = componentsFactory.createComponent(LookupField.NAME);
+                    lookupField.setDatasource(ds, taskColumnId);
+                    lookupField.setWidth("100%");
 
-                @SuppressWarnings("unchecked")
-                Datasource<WeeklyReportEntry> ds = (Datasource<WeeklyReportEntry>) weeklyTsTable.getItemDatasource(entity);
-                final LookupField lookupField = componentsFactory.createComponent(LookupField.NAME);
-                lookupField.setDatasource(ds, "task");
-                lookupField.setWidth("100%");
-
-                ds.addListener(new DsListenerAdapter<WeeklyReportEntry>() {
-                    @Override
-                    public void valueChanged(WeeklyReportEntry source, String property, Object prevValue, Object value) {
-                        if ("project".equals(property)) {
-                            Project project = (Project) value;
-                            lookupField.setValue(null);
-                            lookupField.setOptionsMap(getAssignedTasks(project));
+                    ds.addListener(new DsListenerAdapter<WeeklyReportEntry>() {
+                        @Override
+                        public void valueChanged(WeeklyReportEntry source, String property, Object prevValue, Object value) {
+                            if ("project".equals(property)) {
+                                Project project = (Project) value;
+                                lookupField.setValue(null);
+                                lookupField.setOptionsMap(getAssignedTasks(project));
+                            }
                         }
+                    });
+                    final Project project = ds.getItem().getProject();
+                    if (project != null) {
+                        Map<String, Object> tasks = getAssignedTasks(project);
+                        lookupField.setOptionsMap(tasks);
                     }
-                });
-
-                final Project project = ds.getItem().getProject();
-                if (project != null) {
-                    Map<String, Object> tasks = getAssignedTasks(project);
-                    lookupField.setOptionsMap(tasks);
+                    lookupFieldsCache.put(key, lookupField);
+                    return lookupField;
                 }
-                return lookupField;
             }
         });
 
+        final String totalColumnId = "total";
         for (final DayOfWeek day : DayOfWeek.values()) {
             weeklyTsTable.addGeneratedColumn(day.getId(), new Table.ColumnGenerator() {
                 @Override
-                public Component generateCell(Entity entity) {
-                    WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
+                public Component generateCell(final Entity entity) {
+                    final WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
+                    final String key = getKeyForEntity(entity, day.getId());
                     if (reportEntry.getDayOfWeekTimeEntry(day) == null) {
-                        TimeField timeField = componentsFactory.createComponent(TimeField.NAME);
-                        timeField.setDatasource(weeklyTsTable.getItemDatasource(entity), day.getId() + "Time");
-                        return timeField;
+                        if (timeFieldsCache.containsKey(key)) {
+                            return timeFieldsCache.get(key);
+                        } else {
+                            TimeField timeField = componentsFactory.createComponent(TimeField.NAME);
+                            timeField.setDatasource(weeklyTsTable.getItemDatasource(entity), day.getId() + "Time");
+                            timeFieldsCache.put(key, timeField);
+                            return timeField;
+                        }
                     } else {
-                        EntityLinkField linkField = componentsFactory.createComponent(EntityLinkField.NAME);
-                        linkField.setOwner(weeklyTsTable);
-                        linkField.setFrame(frame);
-                        linkField.setDatasource(weeklyTsTable.getItemDatasource(entity), day.getId());
-                        linkField.addListener(new ValueListener() {
-                            @Override
-                            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                                weeklyTsTable.repaint();
-                            }
-                        });
-                        return linkField;
+                        if (linkFieldsCache.containsKey(key)) {
+                            return linkFieldsCache.get(key);
+                        } else {
+                            EntityLinkField linkField = componentsFactory.createComponent(EntityLinkField.NAME);
+                            linkField.setOwner(weeklyTsTable);
+                            linkField.setFrame(frame);
+                            linkField.setDatasource(weeklyTsTable.getItemDatasource(entity), day.getId());
+                            linkField.addListener(new ValueListener() {
+                                @Override
+                                public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                                    Label total = totalLabelsCache.get(getKeyForEntity(entity, totalColumnId));
+                                    total.setValue(reportEntry.getTotal());
+                                }
+                            });
+                            linkFieldsCache.put(key, linkField);
+                            return linkField;
+                        }
                     }
                 }
             });
         }
 
-        weeklyTsTable.addGeneratedColumn("total", new Table.ColumnGenerator() {
+        weeklyTsTable.addGeneratedColumn(totalColumnId, new Table.ColumnGenerator() {
             @Override
             public Component generateCell(Entity entity) {
                 WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
-                Label label = componentsFactory.createComponent(Label.NAME);
+                String key = getKeyForEntity(entity, totalColumnId);
+                Label label;
+                if (totalLabelsCache.containsKey(key)) {
+                    label = totalLabelsCache.get(key);
+                } else {
+                    label = componentsFactory.createComponent(Label.NAME);
+                    totalLabelsCache.put(key, label);
+                }
                 label.setValue(reportEntry.getTotal());
                 return label;
             }
         });
-        weeklyTsTable.setColumnWidth("total", 80);
-        weeklyTsTable.setColumnCaption("total", messages.getMessage(getClass(), "total"));
+        weeklyTsTable.setColumnWidth(totalColumnId, 80);
+        weeklyTsTable.setColumnCaption(totalColumnId, messages.getMessage(getClass(), "total"));
     }
 
     public void addReport() {
@@ -201,21 +227,21 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     }
 
     protected Map<String, Object> getAssignedTasks(Project project) {
-        Map<String, Object> tasksMap = lookupFieldsOptionsLists.get(project);
-        if (tasksMap == null) {
-            LoadContext loadContext = new LoadContext(Task.class)
-                    .setView("task-full");
-            loadContext.setQueryString("select e from ts$Task e join e.participants p where p.user.id = :userId and e.project.id = :projectId and e.status = 10 order by e.project")
-                    .setParameter("projectId", project.getId())
-                    .setParameter("userId", userSession.getUser().getId());
-            List<Task> taskList = dataManager.loadList(loadContext);
-            tasksMap = new HashMap<>(taskList.size());
-            for (Task task : taskList) {
-                tasksMap.put(task.getName(), task);
-            }
-            lookupFieldsOptionsLists.put(project, tasksMap);
+        LoadContext loadContext = new LoadContext(Task.class)
+                .setView("task-full");
+        loadContext.setQueryString("select e from ts$Task e join e.participants p where p.user.id = :userId and e.project.id = :projectId and e.status = 10 order by e.project")
+                .setParameter("projectId", project.getId())
+                .setParameter("userId", userSession.getUser().getId());
+        List<Task> taskList = dataManager.loadList(loadContext);
+        Map<String, Object> tasksMap = new HashMap<>(taskList.size());
+        for (Task task : taskList) {
+            tasksMap.put(task.getName(), task);
         }
         return tasksMap;
+    }
+
+    protected String getKeyForEntity(Entity entity, String column) {
+        return String.format("%s.%s", entity.getId(), column);
     }
 
 //    protected List<TimeEntry> getTimeEntriesForPeriod(Date start, Date end) {
