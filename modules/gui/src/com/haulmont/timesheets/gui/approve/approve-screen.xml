@@ -18,9 +18,11 @@
                     width="100%">
             <actions>
                 <action id="approve"
+                        icon="icons/ok.png"
                         caption="msg://approve"
                         invoke="approve"/>
                 <action id="reject"
+                        icon="icons/cancel.png"
                         caption="msg://reject"
                         invoke="reject"/>
                 <action id="edit"/>
