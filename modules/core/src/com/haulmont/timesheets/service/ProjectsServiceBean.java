@@ -74,6 +74,9 @@ public class ProjectsServiceBean implements ProjectsService {
 
     @Override
     public ProjectRole getUserProjectRole(Project project, User user) {
+        if (project == null || user == null) {
+            return null;
+        }
         LoadContext loadContext = new LoadContext(ProjectParticipant.class)
                 .setView("projectParticipant-full");
         loadContext.setQueryString("select e from ts$ProjectParticipant e where e.user.id = :userId and e.project.id = :projectId")

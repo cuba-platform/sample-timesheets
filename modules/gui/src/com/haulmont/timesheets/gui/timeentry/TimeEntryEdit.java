@@ -4,10 +4,7 @@
 package com.haulmont.timesheets.gui.timeentry;
 
 import com.haulmont.bali.util.ParamsMap;
-import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.FieldGroup;
-import com.haulmont.cuba.gui.components.LookupPickerField;
-import com.haulmont.cuba.gui.components.TokenList;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
@@ -15,6 +12,7 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.service.ProjectsService;
+import com.sun.org.apache.bcel.internal.generic.NEW;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -45,6 +43,8 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
 
     @Named("fieldGroup.task")
     protected LookupPickerField taskField;
+    @Named("fieldGroup.status")
+    protected LookupField statusField;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -73,7 +73,10 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
                         }
                         allTagsDs.refresh(ParamsMap.of("requiredTagTypes", ids));
                     }
+                    updateStatusField();
+                    setDefaultStatus();
                 }
+                updateStatus();
             }
         });
     }
@@ -83,23 +86,40 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         super.postInit();
         TimeEntry timeEntry = getItem();
         if (timeEntry.getStatus() == null) {
-            timeEntry.setStatus(TimeEntryStatus.NEW);
+            setDefaultStatus();
         } else if (TimeEntryStatus.APPROVED.equals(timeEntry.getStatus()) && userIsWorker()) {
             setReadOnly();
         }
         if (timeEntry.getUser() == null) {
             timeEntry.setUser(userSession.getUser());
         }
+        updateStatusField();
     }
 
     protected boolean userIsWorker() {
         ProjectRole workerRole = projectsService.getRoleByName("Worker");
-        ProjectRole userRole = projectsService.getUserProjectRole(getItem().getTask().getProject(), getItem().getUser());
-        return workerRole != null && workerRole.equals(userRole);
+        Task task = getItem().getTask();
+        Project project = task != null ? task.getProject() : null;
+        ProjectRole userRole = projectsService.getUserProjectRole(project, userSession.getUser());
+        return workerRole == null || userRole == null || workerRole.equals(userRole);
     }
 
     protected void setReadOnly() {
         fieldGroup.setEnabled(false);
         tagsTokenList.setEnabled(false);
+    }
+
+    protected void updateStatusField() {
+        statusField.setEnabled(!userIsWorker());
+    }
+
+    protected void updateStatus() {
+        if (!TimeEntryStatus.REJECTED.equals(getItem().getStatus()) && userIsWorker()) {
+            setDefaultStatus();
+        }
+    }
+
+    protected void setDefaultStatus() {
+        getItem().setStatus(TimeEntryStatus.NEW);
     }
 }
