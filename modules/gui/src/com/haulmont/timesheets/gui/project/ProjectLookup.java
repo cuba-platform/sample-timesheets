@@ -3,12 +3,15 @@
  */
 package com.haulmont.timesheets.gui.project;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.AbstractLookup;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.service.ProjectsService;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +39,22 @@ public class ProjectLookup extends AbstractLookup {
                 projectsDs.excludeItem(child);
             }
         }
+
+        projectsTable.setStyleProvider(new Table.StyleProvider() {
+            @Nullable
+            @Override
+            public String getStyleName(Entity entity, String property) {
+                if ("status".equals(property)) {
+                    Project project = (Project) entity;
+                    switch (project.getStatus()) {
+                        case OPEN: return "project-open";
+                        case CLOSED: return "project-closed";
+                        default: return null;
+                    }
+                }
+                return null;
+            }
+        });
     }
 
     @Override

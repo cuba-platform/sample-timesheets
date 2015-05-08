@@ -11,7 +11,10 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
+import com.haulmont.timesheets.entity.Project;
+import com.haulmont.timesheets.entity.Task;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Map;
 
@@ -29,6 +32,41 @@ public class ProjectBrowse extends AbstractLookup {
     public void init(Map<String, Object> params) {
         projectsTable.addAction(new CustomEditAction(projectsTable));
         tasksTable.addAction(new TaskCreateAction(tasksTable));
+
+        projectsTable.setStyleProvider(new Table.StyleProvider() {
+            @Nullable
+            @Override
+            public String getStyleName(Entity entity, String property) {
+                if ("status".equals(property)) {
+                    Project project = (Project) entity;
+                    switch (project.getStatus()) {
+                        case OPEN:
+                            return "project-open";
+                        case CLOSED:
+                            return "project-closed";
+                        default:
+                            return null;
+                    }
+                }
+                return null;
+            }
+        });
+
+        tasksTable.setStyleProvider(new Table.StyleProvider() {
+            @Nullable
+            @Override
+            public String getStyleName(Entity entity, @Nullable String property) {
+                if ("status".equals(property)) {
+                    Task task = (Task) entity;
+                    switch (task.getStatus()) {
+                        case ACTIVE: return "task-active";
+                        case INACTIVE: return "task-inactive";
+                        default: return null;
+                    }
+                }
+                return null;
+            }
+        });
     }
 
     protected class CustomEditAction extends EditAction {
