@@ -10,7 +10,7 @@
                               class="com.haulmont.timesheets.entity.Task"
                               view="task-full">
             <query>
-                <![CDATA[select e from ts$Task e]]>
+                <![CDATA[select e from ts$Task e join e.participants p where p.user.id = :session$userId]]>
             </query>
         </collectionDatasource>
     </dsContext>
