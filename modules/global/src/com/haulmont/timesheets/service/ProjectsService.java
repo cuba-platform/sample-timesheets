@@ -3,8 +3,10 @@
  */
 package com.haulmont.timesheets.service;
 
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.entity.Client;
 import com.haulmont.timesheets.entity.Project;
+import com.haulmont.timesheets.entity.ProjectRole;
 
 import java.util.List;
 
@@ -17,4 +19,8 @@ public interface ProjectsService {
     List<Project> getChildren(Project parent);
 
     void setClient(Project project, Client client);
+
+    ProjectRole getUserProjectRole(Project project, User user);
+
+    ProjectRole getRoleByName(String name);
 }

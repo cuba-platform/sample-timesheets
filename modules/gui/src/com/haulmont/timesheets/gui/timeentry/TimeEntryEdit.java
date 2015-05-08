@@ -7,12 +7,14 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.LookupPickerField;
+import com.haulmont.cuba.gui.components.TokenList;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.gui.ComponentsHelper;
+import com.haulmont.timesheets.service.ProjectsService;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -29,7 +31,11 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     @Inject
     protected FieldGroup fieldGroup;
     @Inject
+    protected TokenList tagsTokenList;
+    @Inject
     protected UserSession userSession;
+    @Inject
+    protected ProjectsService projectsService;
     @Inject
     protected Datasource<TimeEntry> timeEntryDs;
     @Inject
@@ -78,9 +84,22 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         TimeEntry timeEntry = getItem();
         if (timeEntry.getStatus() == null) {
             timeEntry.setStatus(TimeEntryStatus.NEW);
+        } else if (TimeEntryStatus.APPROVED.equals(timeEntry.getStatus()) && userIsWorker()) {
+            setReadOnly();
         }
         if (timeEntry.getUser() == null) {
             timeEntry.setUser(userSession.getUser());
         }
+    }
+
+    protected boolean userIsWorker() {
+        ProjectRole workerRole = projectsService.getRoleByName("Worker");
+        ProjectRole userRole = projectsService.getUserProjectRole(getItem().getTask().getProject(), getItem().getUser());
+        return workerRole != null && workerRole.equals(userRole);
+    }
+
+    protected void setReadOnly() {
+        fieldGroup.setEnabled(false);
+        tagsTokenList.setEnabled(false);
     }
 }

@@ -7,8 +7,13 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TypedQuery;
+import com.haulmont.cuba.core.global.DataManager;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.entity.Client;
 import com.haulmont.timesheets.entity.Project;
+import com.haulmont.timesheets.entity.ProjectParticipant;
+import com.haulmont.timesheets.entity.ProjectRole;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +30,8 @@ public class ProjectsServiceBean implements ProjectsService {
 
     @Inject
     protected Persistence persistence;
+    @Inject
+    protected DataManager dataManager;
 
     protected List<Project> getAllProjects() {
         EntityManager entityManager = persistence.getEntityManager();
@@ -63,5 +70,24 @@ public class ProjectsServiceBean implements ProjectsService {
         } finally {
             tx.end();
         }
+    }
+
+    @Override
+    public ProjectRole getUserProjectRole(Project project, User user) {
+        LoadContext loadContext = new LoadContext(ProjectParticipant.class)
+                .setView("projectParticipant-full");
+        loadContext.setQueryString("select e from ts$ProjectParticipant e where e.user.id = :userId and e.project.id = :projectId")
+                .setParameter("userId", user.getId())
+                .setParameter("projectId", project.getId());
+        ProjectParticipant participant = dataManager.load(loadContext);
+        return participant != null ? participant.getRole() : null;
+    }
+
+    @Override
+    public ProjectRole getRoleByName(String name) {
+        LoadContext loadContext = new LoadContext(ProjectRole.class);
+        loadContext.setQueryString("select e from ts$ProjectRole e where e.name = :name")
+                .setParameter("name", name);
+        return dataManager.load(loadContext);
     }
 }
