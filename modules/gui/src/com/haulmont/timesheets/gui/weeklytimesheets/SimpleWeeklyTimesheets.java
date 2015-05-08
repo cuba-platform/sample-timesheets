@@ -7,8 +7,10 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.data.CollectionDatasourceListener;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.global.UserSession;
@@ -129,6 +131,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                                 }
                             });
                             linkFieldsCache.put(key, linkField);
+                            timeFieldsCache.remove(key);
                             return linkField;
                         }
                     }
@@ -154,6 +157,23 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         });
         weeklyTsTable.setColumnWidth(totalColumnId, 80);
         weeklyTsTable.setColumnCaption(totalColumnId, messages.getMessage(getClass(), "total"));
+
+        weeklyEntriesDs.addListener(new CollectionDsListenerAdapter<WeeklyReportEntry>() {
+            @Override
+            public void collectionChanged(CollectionDatasource ds, Operation operation, List<WeeklyReportEntry> items) {
+                if (Operation.REMOVE.equals(operation) || Operation.CLEAR.equals(operation)) {
+                    for (WeeklyReportEntry entry : items) {
+                        lookupFieldsCache.remove(getKeyForEntity(entry, taskColumnId));
+                        for (final DayOfWeek day : DayOfWeek.values()) {
+                            String key = getKeyForEntity(entry, day.getId());
+                            timeFieldsCache.remove(key);
+                            linkFieldsCache.remove(key);
+                        }
+                        totalLabelsCache.remove(getKeyForEntity(entry, totalColumnId));
+                    }
+                }
+            }
+        });
     }
 
     public void addReport() {
