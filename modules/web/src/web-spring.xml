@@ -22,6 +22,8 @@
             <map>
                 <entry key="ts_ProjectsService"
                        value="com.haulmont.timesheets.service.ProjectsService"/>
+                <entry key="ts_WorkService"
+                       value="com.haulmont.timesheets.service.WorkService"/>
             </map>
         </property>
     </bean>

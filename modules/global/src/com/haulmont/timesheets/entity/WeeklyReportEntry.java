@@ -95,6 +95,15 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
             return null;
         }
 
+        public static DayOfWeek fromAbbreviation(String abb) {
+            for (DayOfWeek at : DayOfWeek.values()) {
+                if (at.getId().substring(0, 3).equals(abb.toLowerCase())) {
+                    return at;
+                }
+            }
+            return null;
+        }
+
         public static int getDayOffset(DayOfWeek day) {
             switch (day) {
                 case TUESDAY:
