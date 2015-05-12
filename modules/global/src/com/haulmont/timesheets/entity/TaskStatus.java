@@ -30,4 +30,8 @@ public enum TaskStatus implements EnumClass<Integer>{
         }
         return null;
     }
+
+    public TaskStatus inverted() {
+        return TaskStatus.ACTIVE.equals(this) ? TaskStatus.INACTIVE : TaskStatus.ACTIVE;
+    }
 }

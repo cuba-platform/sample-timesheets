@@ -7,13 +7,11 @@ import com.haulmont.cuba.core.EntityManager;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.TypedQuery;
+import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.timesheets.entity.Client;
-import com.haulmont.timesheets.entity.Project;
-import com.haulmont.timesheets.entity.ProjectParticipant;
-import com.haulmont.timesheets.entity.ProjectRole;
+import com.haulmont.timesheets.entity.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -92,5 +90,13 @@ public class ProjectsServiceBean implements ProjectsService {
         loadContext.setQueryString("select e from ts$ProjectRole e where e.name = :name")
                 .setParameter("name", name);
         return dataManager.load(loadContext);
+    }
+
+    @Override
+    public void updateTask(Task task) {
+        CommitContext commitContext = new CommitContext();
+        commitContext.getCommitInstances().add(task);
+
+        dataManager.commit(commitContext);
     }
 }

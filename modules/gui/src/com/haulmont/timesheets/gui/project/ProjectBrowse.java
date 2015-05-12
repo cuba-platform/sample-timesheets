@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.Task;
+import com.haulmont.timesheets.gui.ComponentsHelper;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -32,6 +33,7 @@ public class ProjectBrowse extends AbstractLookup {
     public void init(Map<String, Object> params) {
         projectsTable.addAction(new CustomEditAction(projectsTable));
         tasksTable.addAction(new TaskCreateAction(tasksTable));
+        tasksTable.addAction(new ComponentsHelper.TaskStatusTrackingAction(tasksTable, "switchStatus"));
 
         projectsTable.setStyleProvider(new Table.StyleProvider() {
             @Nullable
@@ -39,14 +41,7 @@ public class ProjectBrowse extends AbstractLookup {
             public String getStyleName(Entity entity, String property) {
                 if ("status".equals(property)) {
                     Project project = (Project) entity;
-                    switch (project.getStatus()) {
-                        case OPEN:
-                            return "project-open";
-                        case CLOSED:
-                            return "project-closed";
-                        default:
-                            return null;
-                    }
+                    return ComponentsHelper.getProjectStatusStyle(project);
                 }
                 return null;
             }
@@ -58,11 +53,7 @@ public class ProjectBrowse extends AbstractLookup {
             public String getStyleName(Entity entity, @Nullable String property) {
                 if ("status".equals(property)) {
                     Task task = (Task) entity;
-                    switch (task.getStatus()) {
-                        case ACTIVE: return "task-active";
-                        case INACTIVE: return "task-inactive";
-                        default: return null;
-                    }
+                    return ComponentsHelper.getTaskStatusStyle(task);
                 }
                 return null;
             }

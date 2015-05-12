@@ -7,6 +7,7 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.entity.Client;
 import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.ProjectRole;
+import com.haulmont.timesheets.entity.Task;
 
 import java.util.List;
 
@@ -23,4 +24,6 @@ public interface ProjectsService {
     ProjectRole getUserProjectRole(Project project, User user);
 
     ProjectRole getRoleByName(String name);
+
+    void updateTask(Task task);
 }

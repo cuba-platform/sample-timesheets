@@ -9,10 +9,16 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.timesheets.entity.Project;
+import com.haulmont.timesheets.entity.Task;
+import com.haulmont.timesheets.entity.TaskStatus;
+import com.haulmont.timesheets.service.ProjectsService;
 
+import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,6 +29,7 @@ import java.util.Set;
 public class ComponentsHelper {
 
     protected static ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.NAME);
+    protected static ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);
 
     public static FieldGroup.CustomFieldGenerator getCustomTextArea() {
         return new FieldGroup.CustomFieldGenerator() {
@@ -82,6 +89,45 @@ public class ComponentsHelper {
         }
     }
 
+    public static class TaskStatusTrackingAction extends ItemTrackingAction {
+
+        public TaskStatusTrackingAction(ListComponent target, String id) {
+            super(target, id);
+        }
+
+        @Override
+        public void actionPerform(Component component) {
+            Task task = target.getSingleSelected();
+            if (task != null) {
+                if (task.getStatus() != null) {
+                    task.setStatus(task.getStatus().inverted());
+                    projectsService.updateTask(task);
+                    target.refresh();
+                }
+            }
+        }
+
+        @Override
+        public void refreshState() {
+            super.refreshState();
+
+            String captionKey = "closeTask";
+            Task selected = target.getSingleSelected();
+            if (selected != null) {
+                TaskStatus status = selected.getStatus();
+                if (status != null && TaskStatus.INACTIVE.equals(status)) {
+                    captionKey = "openTask";
+                }
+            }
+            setCaption(messages.getMessage(getClass(), captionKey));
+        }
+
+        @Override
+        public String getIcon() {
+            return "font-icon:EXCHANGE";
+        }
+    }
+
     public static class CaptionlessRemoveAction extends RemoveAction {
 
         public CaptionlessRemoveAction(ListComponent target) {
@@ -91,6 +137,28 @@ public class ComponentsHelper {
         @Override
         public String getCaption() {
             return null;
+        }
+    }
+
+    public static String getTaskStatusStyle(@Nonnull Task task) {
+        switch (task.getStatus()) {
+            case ACTIVE:
+                return "task-active";
+            case INACTIVE:
+                return "task-inactive";
+            default:
+                return null;
+        }
+    }
+
+    public static String getProjectStatusStyle(@Nonnull Project project) {
+        switch (project.getStatus()) {
+            case OPEN:
+                return "project-open";
+            case CLOSED:
+                return "project-closed";
+            default:
+                return null;
         }
     }
 }

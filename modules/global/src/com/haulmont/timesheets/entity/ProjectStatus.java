@@ -31,4 +31,8 @@ public enum ProjectStatus implements EnumClass<Integer>{
         }
         return null;
     }
+
+    ProjectStatus inverted() {
+        return ProjectStatus.OPEN.equals(this) ? ProjectStatus.CLOSED : ProjectStatus.OPEN;
+    }
 }

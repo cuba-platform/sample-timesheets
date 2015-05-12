@@ -26,6 +26,7 @@
                 <action id="create"/>
                 <action id="edit"/>
                 <action id="remove"/>
+                <action id="switchStatus"/>
             </actions>
             <columns>
                 <column id="name"/>
@@ -46,6 +47,8 @@
                         action="tasksTable.edit"/>
                 <button id="removeBtn"
                         action="tasksTable.remove"/>
+                <button id="switchStatusBtn"
+                        action="tasksTable.switchStatus"/>
             </buttonsPanel>
         </table>
     </layout>
