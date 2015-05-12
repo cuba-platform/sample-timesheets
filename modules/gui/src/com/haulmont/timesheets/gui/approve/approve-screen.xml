@@ -8,7 +8,7 @@
                          class="com.haulmont.timesheets.entity.TimeEntry"
                          view="timeEntry-full">
             <query>
-                <![CDATA[select e from ts$TimeEntry e join e.task t join t.project pr join pr.participants p where p.user.id = :session$userId and (p.role.name = 'Manager' or p.role.name = 'Approver') and e.status = 10]]>
+                <![CDATA[select e from ts$TimeEntry e join e.task t join t.project pr join pr.participants p where p.user.id = :session$userId and (p.role.code = 'manager' or p.role.code = 'approver') and e.status = 10]]>
             </query>
         </groupDatasource>
     </dsContext>

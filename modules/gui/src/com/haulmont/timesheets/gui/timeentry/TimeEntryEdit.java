@@ -12,7 +12,6 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.service.ProjectsService;
-import com.sun.org.apache.bcel.internal.generic.NEW;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -97,7 +96,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     }
 
     protected boolean userIsWorker() {
-        ProjectRole workerRole = projectsService.getRoleByName("Worker");
+        ProjectRole workerRole = projectsService.getRoleByCode("worker");
         Task task = getItem().getTask();
         Project project = task != null ? task.getProject() : null;
         ProjectRole userRole = projectsService.getUserProjectRole(project, userSession.getUser());

@@ -85,10 +85,10 @@ public class ProjectsServiceBean implements ProjectsService {
     }
 
     @Override
-    public ProjectRole getRoleByName(String name) {
+    public ProjectRole getRoleByCode(String code) {
         LoadContext loadContext = new LoadContext(ProjectRole.class);
-        loadContext.setQueryString("select e from ts$ProjectRole e where e.name = :name")
-                .setParameter("name", name);
+        loadContext.setQueryString("select e from ts$ProjectRole e where e.code = :code")
+                .setParameter("code", code);
         return dataManager.load(loadContext);
     }
 

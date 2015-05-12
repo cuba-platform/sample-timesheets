@@ -23,7 +23,7 @@ public interface ProjectsService {
 
     ProjectRole getUserProjectRole(Project project, User user);
 
-    ProjectRole getRoleByName(String name);
+    ProjectRole getRoleByCode(String code);
 
     void updateTask(Task task);
 }
