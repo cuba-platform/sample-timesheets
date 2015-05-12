@@ -121,7 +121,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         } else {
                             EntityLinkField linkField = componentsFactory.createComponent(EntityLinkField.NAME);
                             linkField.setOwner(weeklyTsTable);
-                            linkField.setFrame(frame);
+                            linkField.setFrame(frame);  // TODO: remove after #PL-5371 will release
                             linkField.setDatasource(weeklyTsTable.getItemDatasource(entity), day.getId());
                             linkField.addListener(new ValueListener() {
                                 @Override

@@ -10,6 +10,14 @@
             <grid id="propertiesGrid">
                 <rows>
                     <row id="propertiesRow">
+                        <fieldGroup id="fieldGroupLeft">
+                            <column>
+                                <field id="firstName"
+                                       required="true"/>
+                                <field id="lastName"
+                                       required="true"/>
+                            </column>
+                        </fieldGroup>
                         <fieldGroup id="fieldGroupRight">
                             <column>
                                 <field id="workHoursForWeek"

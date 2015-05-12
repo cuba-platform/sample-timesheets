@@ -17,7 +17,8 @@ create table TS_HOLIDAY (
     primary key (ID)
 )^
 -- end TS_HOLIDAY
--- begin TS_CLIENTcreate table TS_CLIENT (
+-- begin TS_CLIENT
+create table TS_CLIENT (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -32,7 +33,8 @@ create table TS_HOLIDAY (
     --
     primary key (ID)
 )^-- end TS_CLIENT
--- begin TS_PROJECT_ROLEcreate table TS_PROJECT_ROLE (
+-- begin TS_PROJECT_ROLE
+create table TS_PROJECT_ROLE (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -48,7 +50,8 @@ create table TS_HOLIDAY (
     --
     primary key (ID)
 )^-- end TS_PROJECT_ROLE
--- begin TS_TASK_TYPEcreate table TS_TASK_TYPE (
+-- begin TS_TASK_TYPE
+create table TS_TASK_TYPE (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -64,7 +67,8 @@ create table TS_HOLIDAY (
     --
     primary key (ID)
 )^-- end TS_TASK_TYPE
--- begin TS_TAGcreate table TS_TAG (
+-- begin TS_TAG
+create table TS_TAG (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -81,7 +85,8 @@ create table TS_HOLIDAY (
     --
     primary key (ID)
 )^-- end TS_TAG
--- begin TS_TAG_TYPEcreate table TS_TAG_TYPE (
+-- begin TS_TAG_TYPE
+create table TS_TAG_TYPE (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -98,7 +103,8 @@ create table TS_HOLIDAY (
     --
     primary key (ID)
 )^-- end TS_TAG_TYPE
--- begin TS_PROJECTcreate table TS_PROJECT (
+-- begin TS_PROJECT
+create table TS_PROJECT (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -117,7 +123,8 @@ create table TS_HOLIDAY (
     --
     primary key (ID)
 )^-- end TS_PROJECT
--- begin TS_TASKcreate table TS_TASK (
+-- begin TS_TASK
+create table TS_TASK (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -159,7 +166,8 @@ create table TS_TIME_ENTRY (
     primary key (ID)
 )^
 -- end TS_TIME_ENTRY
--- begin TS_PROJECT_PARTICIPANTcreate table TS_PROJECT_PARTICIPANT (
+-- begin TS_PROJECT_PARTICIPANT
+create table TS_PROJECT_PARTICIPANT (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -206,22 +214,6 @@ create table TS_TASK_TAG_LINK (
 -- end TS_TASK_TAG_LINK
 -- begin SEC_USER
 alter table SEC_USER add column WORK_HOURS_FOR_WEEK double precision ^
+update SEC_USER set WORK_HOURS_FOR_WEEK = 0 where WORK_HOURS_FOR_WEEK is null ;
+alter table SEC_USER alter column WORK_HOURS_FOR_WEEK set not null ;
 -- end SEC_USER
-
-------------------------------------------------------------------------------------------------------------------------
-
-insert into TS_PROJECT_ROLE
-(ID, NAME, CODE, DESCRIPTION, VERSION, CREATE_TS)
-values ('5bc577ab-44f3-a652-da29-4ae06c02d43b', 'Manager', '001', 'Can create sub-projects, tasks, change project properties, approve tomsheets', 0, current_timestamp);
-
-insert into TS_PROJECT_ROLE
-(ID, NAME, CODE, DESCRIPTION, VERSION, CREATE_TS)
-values ('6a8e8c24-d639-ef26-fac8-57e13bbfed48', 'Worker', '002', 'Can create time entries. Only see time entries related to him.', 0, current_timestamp);
-
-insert into TS_PROJECT_ROLE
-(ID, NAME, CODE, DESCRIPTION, VERSION, CREATE_TS)
-values ('3182a9b0-5ffb-6062-d58c-0148b7b3af3e', 'Approver', '003', 'Can approve timesheets', 0, current_timestamp);
-
-insert into TS_PROJECT_ROLE
-(ID, NAME, CODE, DESCRIPTION, VERSION, CREATE_TS)
-values ('4111a014-534c-3935-bf70-146a2e5c0970', 'Observer', '004', 'Can only view projects, task and time entries.', 0, current_timestamp);

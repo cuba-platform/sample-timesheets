@@ -22,10 +22,7 @@ import java.text.MessageFormat;
 public class ExtUser extends User {
     private static final long serialVersionUID = 4909893210504413352L;
 
-
-
-
-    @Column(name = "WORK_HOURS_FOR_WEEK")
+    @Column(name = "WORK_HOURS_FOR_WEEK", nullable = false)
     protected Double workHoursForWeek;
 
     public void setWorkHoursForWeek(Double workHoursForWeek) {
@@ -35,7 +32,6 @@ public class ExtUser extends User {
     public Double getWorkHoursForWeek() {
         return workHoursForWeek;
     }
-
 
     @Override
     public String getCaption() {
