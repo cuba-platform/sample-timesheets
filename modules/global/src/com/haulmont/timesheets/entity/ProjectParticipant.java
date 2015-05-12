@@ -28,7 +28,7 @@ public class ProjectParticipant extends StandardEntity {
     @JoinColumn(name = "PROJECT_ID")
     protected Project project;
 
-    @Column(name = "CODE", nullable = false, length = 50)
+    @Column(name = "CODE", nullable = false, unique = true, length = 50)
     protected String code;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

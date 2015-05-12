@@ -17,8 +17,7 @@ create table TS_HOLIDAY (
     primary key (ID)
 )^
 -- end TS_HOLIDAY
--- begin TS_CLIENT
-create table TS_CLIENT (
+-- begin TS_CLIENTcreate table TS_CLIENT (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -32,10 +31,8 @@ create table TS_CLIENT (
     CODE varchar(50) not null,
     --
     primary key (ID)
-)^
--- end TS_CLIENT
--- begin TS_PROJECT_ROLE
-create table TS_PROJECT_ROLE (
+)^-- end TS_CLIENT
+-- begin TS_PROJECT_ROLEcreate table TS_PROJECT_ROLE (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -50,10 +47,8 @@ create table TS_PROJECT_ROLE (
     DESCRIPTION varchar(255),
     --
     primary key (ID)
-)^
--- end TS_PROJECT_ROLE
--- begin TS_TASK_TYPE
-create table TS_TASK_TYPE (
+)^-- end TS_PROJECT_ROLE
+-- begin TS_TASK_TYPEcreate table TS_TASK_TYPE (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -68,10 +63,8 @@ create table TS_TASK_TYPE (
     DESCRIPTION varchar(255),
     --
     primary key (ID)
-)^
--- end TS_TASK_TYPE
--- begin TS_TAG
-create table TS_TAG (
+)^-- end TS_TASK_TYPE
+-- begin TS_TAGcreate table TS_TAG (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -87,10 +80,8 @@ create table TS_TAG (
     TAG_TYPE_ID varchar(36),
     --
     primary key (ID)
-)^
--- end TS_TAG
--- begin TS_TAG_TYPE
-create table TS_TAG_TYPE (
+)^-- end TS_TAG
+-- begin TS_TAG_TYPEcreate table TS_TAG_TYPE (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -106,10 +97,8 @@ create table TS_TAG_TYPE (
     PROJECT_ID varchar(36),
     --
     primary key (ID)
-)^
--- end TS_TAG_TYPE
--- begin TS_PROJECT
-create table TS_PROJECT (
+)^-- end TS_TAG_TYPE
+-- begin TS_PROJECTcreate table TS_PROJECT (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -127,10 +116,8 @@ create table TS_PROJECT (
     STATUS integer not null,
     --
     primary key (ID)
-)^
--- end TS_PROJECT
--- begin TS_TASK
-create table TS_TASK (
+)^-- end TS_PROJECT
+-- begin TS_TASKcreate table TS_TASK (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -148,8 +135,7 @@ create table TS_TASK (
     STATUS integer not null,
     --
     primary key (ID)
-)^
--- end TS_TASK
+)^-- end TS_TASK
 -- begin TS_TIME_ENTRY
 create table TS_TIME_ENTRY (
     ID varchar(36) not null,
@@ -173,8 +159,7 @@ create table TS_TIME_ENTRY (
     primary key (ID)
 )^
 -- end TS_TIME_ENTRY
--- begin TS_PROJECT_PARTICIPANT
-create table TS_PROJECT_PARTICIPANT (
+-- begin TS_PROJECT_PARTICIPANTcreate table TS_PROJECT_PARTICIPANT (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -190,8 +175,7 @@ create table TS_PROJECT_PARTICIPANT (
     ROLE_ID varchar(36) not null,
     --
     primary key (ID)
-)^
--- end TS_PROJECT_PARTICIPANT
+)^-- end TS_PROJECT_PARTICIPANT
 -- begin TS_TASK_PROJECT_PARTICIPANT_LINK
 create table TS_TASK_PROJECT_PARTICIPANT_LINK (
     TASK_ID varchar(36) not null,

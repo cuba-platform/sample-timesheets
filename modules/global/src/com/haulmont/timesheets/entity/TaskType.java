@@ -21,7 +21,7 @@ public class TaskType extends StandardEntity {
     @Column(name = "NAME", nullable = false, length = 100)
     protected String name;
 
-    @Column(name = "CODE", nullable = false, length = 50)
+    @Column(name = "CODE", nullable = false, unique = true, length = 50)
     protected String code;
 
     @Column(name = "DESCRIPTION")
