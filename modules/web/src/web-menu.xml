@@ -4,13 +4,11 @@
           insertBefore="administration">
         <item id="ts$Client.browse"/>
         <item id="ts$Holiday.browse"/>
-        <item id="ts$ProjectRole.browse"/>
         <item id="ts$TaskType.browse"/>
         <item id="ts$Tag.browse"/>
         <item id="ts$TagType.browse"/>
         <item id="ts$TimeEntry.browse"/>
         <item id="ts$Task.browse"/>
-        <item id="ts$ProjectParticipant.browse"/>
         <item id="ts$Project.browse"/>
         <item id="approve-screen"/>
         <item id="simple-weekly-timesheets"/>
