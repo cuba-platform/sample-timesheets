@@ -220,6 +220,5 @@ create table TS_TASK_TAG_LINK (
     primary key (TASK_ID, TAG_ID)
 )^
 -- end TS_TASK_TAG_LINK
--- begin SEC_USER
-alter table SEC_USER add column RATE double precision ^
+-- begin SEC_USERalter table SEC_USER add column WORK_HOURS_FOR_WEEK double precision ^
 -- end SEC_USER

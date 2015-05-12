@@ -22,16 +22,20 @@ import java.text.MessageFormat;
 public class ExtUser extends User {
     private static final long serialVersionUID = 4909893210504413352L;
 
-    @Column(name = "RATE")
-    protected Double rate;
 
-    public Double getRate() {
-        return rate;
+
+
+    @Column(name = "WORK_HOURS_FOR_WEEK")
+    protected Double workHoursForWeek;
+
+    public void setWorkHoursForWeek(Double workHoursForWeek) {
+        this.workHoursForWeek = workHoursForWeek;
     }
 
-    public void setRate(Double rate) {
-        this.rate = rate;
+    public Double getWorkHoursForWeek() {
+        return workHoursForWeek;
     }
+
 
     @Override
     public String getCaption() {

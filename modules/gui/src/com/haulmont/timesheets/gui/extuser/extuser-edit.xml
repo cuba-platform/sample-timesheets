@@ -12,8 +12,8 @@
                     <row id="propertiesRow">
                         <fieldGroup id="fieldGroupRight">
                             <column>
-                                <field id="rate"
-                                       caption="msg://rate"
+                                <field id="workHoursForWeek"
+                                       caption="msg://com.haulmont.timesheets.entity/ExtUser.workHoursForWeek"
                                        ext:index="5"/>
                             </column>
                         </fieldGroup>

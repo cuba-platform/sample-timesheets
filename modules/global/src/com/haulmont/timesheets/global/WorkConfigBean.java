@@ -23,11 +23,11 @@ public class WorkConfigBean {
     @Inject
     protected WorkConfig workConfig;
 
-    public float getWorkHourForDay() {
+    public double getWorkHourForDay() {
         return getWorkHourForWeek() / getWorkDaysCount();
     }
 
-    public float getWorkHourForWeek() {
+    public double getWorkHourForWeek() {
         return workConfig.getWorkHourForWeek();
     }
 
