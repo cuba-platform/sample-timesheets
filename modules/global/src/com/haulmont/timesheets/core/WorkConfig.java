@@ -9,7 +9,7 @@ import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.Default;
-import com.haulmont.cuba.core.config.defaults.DefaultFloat;
+import com.haulmont.cuba.core.config.defaults.DefaultDouble;
 
 /**
  * @author gorelov
@@ -19,8 +19,8 @@ import com.haulmont.cuba.core.config.defaults.DefaultFloat;
 public interface WorkConfig extends Config {
 
     @Property("timesheets.workHourForWeek")
-    @DefaultFloat(40)
-    float getWorkHourForWeek();
+    @DefaultDouble(40)
+    double getWorkHourForWeek();
 
     @Property("timesheets.workDays")
     @Default("Mon|Tue|Wed|Thu|Fri")
