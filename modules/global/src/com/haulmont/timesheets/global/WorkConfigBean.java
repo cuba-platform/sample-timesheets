@@ -2,7 +2,9 @@
  * Copyright (c) ${YEAR} ${PACKAGE_NAME}
  */
 
-package com.haulmont.timesheets.core;
+package com.haulmont.timesheets.global;
+
+import com.haulmont.timesheets.core.WorkConfig;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -13,10 +15,10 @@ import static com.haulmont.timesheets.entity.WeeklyReportEntry.DayOfWeek;
  * @author gorelov
  * @version $Id$
  */
-@ManagedBean(WorkSettingsBean.NAME)
-public class WorkSettingsBean {
+@ManagedBean(WorkConfigBean.NAME)
+public class WorkConfigBean {
 
-    public static final String NAME = "ts_WorkSettings";
+    public static final String NAME = "timesheets_WorkConfigBean";
 
     @Inject
     protected WorkConfig workConfig;

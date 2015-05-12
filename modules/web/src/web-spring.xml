@@ -6,7 +6,7 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:task="http://www.springframework.org/schema/task">
     <!-- Annotation-based beans -->
-    <context:component-scan base-package="com.haulmont.ts"/>
+    <context:component-scan base-package="com.haulmont.timesheets"/>
     <!-- Background Tasks -->
     <!--<bean id="backgroundWorkerScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">-->
     <!--<property name="daemon" value="true"/>-->
@@ -22,8 +22,6 @@
             <map>
                 <entry key="ts_ProjectsService"
                        value="com.haulmont.timesheets.service.ProjectsService"/>
-                <entry key="ts_WorkService"
-                       value="com.haulmont.timesheets.service.WorkService"/>
             </map>
         </property>
     </bean>
