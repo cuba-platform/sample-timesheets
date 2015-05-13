@@ -97,10 +97,16 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
 
     protected boolean userIsWorker() {
         ProjectRole workerRole = projectsService.getRoleByCode("worker");
+        if (workerRole == null) {
+            return true;
+        }
         Task task = getItem().getTask();
         Project project = task != null ? task.getProject() : null;
+        if (project == null) {
+            return true;
+        }
         ProjectRole userRole = projectsService.getUserProjectRole(project, userSession.getUser());
-        return workerRole == null || userRole == null || workerRole.equals(userRole);
+        return userRole == null || workerRole.equals(userRole);
     }
 
     protected void setReadOnly() {

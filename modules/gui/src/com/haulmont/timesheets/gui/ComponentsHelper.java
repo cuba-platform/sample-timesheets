@@ -16,7 +16,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.Task;
 import com.haulmont.timesheets.entity.TaskStatus;
-import com.haulmont.timesheets.service.ProjectsService;
+import com.haulmont.timesheets.entity.TimeEntry;
 
 import javax.annotation.Nonnull;
 import java.util.HashSet;
@@ -29,7 +29,6 @@ import java.util.Set;
 public class ComponentsHelper {
 
     protected static ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.NAME);
-    protected static ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);
 
     public static FieldGroup.CustomFieldGenerator getCustomTextArea() {
         return new FieldGroup.CustomFieldGenerator() {
@@ -101,8 +100,8 @@ public class ComponentsHelper {
             if (task != null) {
                 if (task.getStatus() != null) {
                     task.setStatus(task.getStatus().inverted());
-                    projectsService.updateTask(task);
-                    target.refresh();
+                    target.getDatasource().commit();
+//                    target.refresh();
                 }
             }
         }
@@ -157,6 +156,19 @@ public class ComponentsHelper {
                 return "project-open";
             case CLOSED:
                 return "project-closed";
+            default:
+                return null;
+        }
+    }
+
+    public static String getTimeEntryStatusStyle(@Nonnull TimeEntry timeEntry) {
+        switch (timeEntry.getStatus()) {
+            case NEW:
+                return "time-entry-new";
+            case APPROVED:
+                return "time-entry-approved";
+            case REJECTED:
+                return "time-entry-rejected";
             default:
                 return null;
         }

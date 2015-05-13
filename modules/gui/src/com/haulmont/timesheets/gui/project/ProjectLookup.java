@@ -9,6 +9,7 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.timesheets.entity.Project;
+import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.service.ProjectsService;
 
 import javax.annotation.Nullable;
@@ -46,11 +47,7 @@ public class ProjectLookup extends AbstractLookup {
             public String getStyleName(Entity entity, String property) {
                 if ("status".equals(property)) {
                     Project project = (Project) entity;
-                    switch (project.getStatus()) {
-                        case OPEN: return "project-open";
-                        case CLOSED: return "project-closed";
-                        default: return null;
-                    }
+                    return ComponentsHelper.getProjectStatusStyle(project);
                 }
                 return null;
             }

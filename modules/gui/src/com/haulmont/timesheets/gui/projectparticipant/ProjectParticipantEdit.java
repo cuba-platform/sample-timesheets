@@ -3,8 +3,6 @@
  */
 package com.haulmont.timesheets.gui.projectparticipant;
 
-import com.haulmont.cuba.gui.DialogParams;
-import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.LookupPickerField;
 import com.haulmont.cuba.gui.components.PickerField;
@@ -36,7 +34,7 @@ public class ProjectParticipantEdit extends AbstractEditor<ProjectParticipant> {
 
     @Override
     public void init(Map<String, Object> params) {
-        userField.addAction(createLookupAction(userField));
+        userField.addAction(ComponentsHelper.createLookupAction(userField));
         userField.addAction(new PickerField.ClearAction(userField));
 
         projectField.addAction(ComponentsHelper.createLookupAction(projectField));
@@ -68,16 +66,6 @@ public class ProjectParticipantEdit extends AbstractEditor<ProjectParticipant> {
             projectField.setEnabled(false);
             validator.setAssignedUsers(getAssignedUsers(participant.getProject()));
         }
-    }
-
-    protected PickerField.LookupAction createLookupAction(PickerField pickerField) {
-        PickerField.LookupAction lookupAction = new PickerField.LookupAction(pickerField);
-        lookupAction.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
-        lookupAction.setLookupScreenDialogParams(new DialogParams()
-                .setWidth(800)
-                .setHeight(500)
-                .setResizable(true));
-        return lookupAction;
     }
 
     protected Collection<User> getAssignedUsers(Project project) {

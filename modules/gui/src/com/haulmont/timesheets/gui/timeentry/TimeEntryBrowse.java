@@ -7,6 +7,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.timesheets.entity.TimeEntry;
+import com.haulmont.timesheets.gui.ComponentsHelper;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -26,21 +27,9 @@ public class TimeEntryBrowse extends AbstractLookup {
             @Nullable
             @Override
             public String getStyleName(Entity entity, String property) {
-
-
                 if ("status".equals(property)) {
-                    TimeEntry entry = (TimeEntry) entity;
-
-                    switch (entry.getStatus()) {
-                        case NEW:
-                            return "time-entry-new";
-                        case APPROVED:
-                            return "time-entry-approved";
-                        case REJECTED:
-                            return "time-entry-rejected";
-                        default:
-                            return null;
-                    }
+                    TimeEntry timeEntry = (TimeEntry) entity;
+                    return ComponentsHelper.getTimeEntryStatusStyle(timeEntry);
                 }
                 return null;
             }

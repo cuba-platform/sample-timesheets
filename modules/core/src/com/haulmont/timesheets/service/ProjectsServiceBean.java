@@ -3,18 +3,18 @@
  */
 package com.haulmont.timesheets.service;
 
-import com.haulmont.cuba.core.EntityManager;
-import com.haulmont.cuba.core.Persistence;
-import com.haulmont.cuba.core.Transaction;
-import com.haulmont.cuba.core.TypedQuery;
-import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.timesheets.entity.*;
+import com.haulmont.timesheets.entity.Client;
+import com.haulmont.timesheets.entity.Project;
+import com.haulmont.timesheets.entity.ProjectParticipant;
+import com.haulmont.timesheets.entity.ProjectRole;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,16 +27,17 @@ import java.util.List;
 public class ProjectsServiceBean implements ProjectsService {
 
     @Inject
-    protected Persistence persistence;
-    @Inject
     protected DataManager dataManager;
 
     protected List<Project> getAllProjects() {
-        EntityManager entityManager = persistence.getEntityManager();
-        TypedQuery<Project> query = entityManager.createQuery("select e from ts$Project e", Project.class);
-        return query.getResultList();
+        LoadContext loadContext = new LoadContext(Project.class)
+                .setView("project-full");
+        loadContext.setQueryString("select e from ts$Project e");
+
+        return dataManager.loadList(loadContext);
     }
 
+    @Nonnull
     @Override
     @Transactional
     public List<Project> getChildren(Project parent) {
@@ -55,26 +56,14 @@ public class ProjectsServiceBean implements ProjectsService {
     }
 
     @Override
-    public void setClient(Project project, Client client) {
-        Transaction tx = persistence.createTransaction();
-        try {
-            List<Project> projects = getAllProjects();
-            for (Project entity : projects) {
-                if (entity.equals(project)) {
-                    entity.setClient(client);
-                }
-            }
-            tx.commit();
-        } finally {
-            tx.end();
-        }
+    public void setClient(@Nonnull Project project, @Nullable Client client) {
+        project.setClient(client);
+        dataManager.commit(project);
     }
 
+    @Nullable
     @Override
-    public ProjectRole getUserProjectRole(Project project, User user) {
-        if (project == null || user == null) {
-            return null;
-        }
+    public ProjectRole getUserProjectRole(@Nonnull  Project project, @Nonnull User user) {
         LoadContext loadContext = new LoadContext(ProjectParticipant.class)
                 .setView("projectParticipant-full");
         loadContext.setQueryString("select e from ts$ProjectParticipant e where e.user.id = :userId and e.project.id = :projectId")
@@ -84,19 +73,12 @@ public class ProjectsServiceBean implements ProjectsService {
         return participant != null ? participant.getRole() : null;
     }
 
+    @Nullable
     @Override
     public ProjectRole getRoleByCode(String code) {
         LoadContext loadContext = new LoadContext(ProjectRole.class);
         loadContext.setQueryString("select e from ts$ProjectRole e where e.code = :code")
                 .setParameter("code", code);
         return dataManager.load(loadContext);
-    }
-
-    @Override
-    public void updateTask(Task task) {
-        CommitContext commitContext = new CommitContext();
-        commitContext.getCommitInstances().add(task);
-
-        dataManager.commit(commitContext);
     }
 }

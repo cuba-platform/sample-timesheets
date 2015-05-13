@@ -4,14 +4,12 @@
 package com.haulmont.timesheets.gui.project;
 
 import com.haulmont.bali.util.ParamsMap;
-import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.timesheets.entity.Client;
 import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.ProjectStatus;
@@ -30,11 +28,7 @@ import java.util.UUID;
 public class ProjectEdit extends AbstractEditor<Project> {
 
     @Inject
-    protected Messages messages;
-    @Inject
     protected FieldGroup fieldGroup;
-    @Inject
-    protected ComponentsFactory componentsFactory;
     @Inject
     protected CollectionDatasource<Project, UUID> projectsDs;
     @Inject

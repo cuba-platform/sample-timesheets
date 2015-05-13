@@ -14,7 +14,6 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.filter.*;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 
@@ -29,8 +28,6 @@ public class TaskEdit extends AbstractEditor<Task> {
 
     @Inject
     protected Table participantsTable;
-    @Inject
-    protected ComponentsFactory componentsFactory;
     @Inject
     protected FieldGroup fieldGroup;
     @Inject

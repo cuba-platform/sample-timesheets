@@ -7,8 +7,9 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.entity.Client;
 import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.ProjectRole;
-import com.haulmont.timesheets.entity.Task;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.List;
 
 /**
@@ -17,13 +18,14 @@ import java.util.List;
 public interface ProjectsService {
     String NAME = "ts_ProjectsService";
 
+    @Nonnull
     List<Project> getChildren(Project parent);
 
-    void setClient(Project project, Client client);
+    void setClient(@Nonnull Project project, @Nullable Client client);
 
-    ProjectRole getUserProjectRole(Project project, User user);
+    @Nullable
+    ProjectRole getUserProjectRole(@Nonnull Project project, @Nonnull User user);
 
+    @Nullable
     ProjectRole getRoleByCode(String code);
-
-    void updateTask(Task task);
 }

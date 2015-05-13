@@ -9,6 +9,7 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.entity.TimeEntryStatus;
+import com.haulmont.timesheets.gui.ComponentsHelper;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -33,18 +34,8 @@ public class ApproveScreen extends AbstractWindow {
             @Override
             public String getStyleName(Entity entity, String property) {
                 if ("status".equals(property)) {
-                    TimeEntry entry = (TimeEntry) entity;
-
-                    switch (entry.getStatus()) {
-                        case NEW:
-                            return "time-entry-new";
-                        case APPROVED:
-                            return "time-entry-approved";
-                        case REJECTED:
-                            return "time-entry-rejected";
-                        default:
-                            return null;
-                    }
+                    TimeEntry timeEntry = (TimeEntry) entity;
+                    return ComponentsHelper.getTimeEntryStatusStyle(timeEntry);
                 }
                 return null;
             }
