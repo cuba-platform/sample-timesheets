@@ -12,12 +12,6 @@
             template="com/haulmont/timesheets/gui/holiday/holiday-lookup.xml"/>
     <screen id="ts$Holiday.edit"
             template="/com/haulmont/timesheets/gui/holiday/holiday-edit.xml"/>
-    <screen id="ts$ProjectRole.browse"
-            template="/com/haulmont/timesheets/gui/projectrole/projectrole-browse.xml"/>
-    <screen id="ts$ProjectRole.lookup"
-            template="com/haulmont/timesheets/gui/projectrole/projectrole-lookup.xml"/>
-    <screen id="ts$ProjectRole.edit"
-            template="/com/haulmont/timesheets/gui/projectrole/projectrole-edit.xml"/>
     <screen id="ts$TaskType.browse"
             template="/com/haulmont/timesheets/gui/tasktype/tasktype-browse.xml"/>
     <screen id="ts$TaskType.lookup"
