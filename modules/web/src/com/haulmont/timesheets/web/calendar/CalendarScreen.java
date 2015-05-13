@@ -45,6 +45,7 @@ public class CalendarScreen extends AbstractWindow {
         calendar = new Calendar(new TimeEntryEventProvider(userSession.getUser()));
         calendar.setWidth("100%");
         calendar.setHeight("90%");
+        calendar.setTimeFormat(Calendar.TimeFormat.Format24H);
         calendar.setDropHandler(null);
         calendar.setHandler((CalendarComponentEvents.EventMoveHandler) null);   // Do not work
         calendar.setHandler((CalendarComponentEvents.WeekClickHandler) null);
