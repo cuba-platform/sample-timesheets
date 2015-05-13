@@ -13,4 +13,6 @@
         <item id="approve-screen"/>
         <item id="simple-weekly-timesheets"/>
     </menu>
+    <item id="calendar-screen"
+          insertBefore="administration"/>
 </menu-config>

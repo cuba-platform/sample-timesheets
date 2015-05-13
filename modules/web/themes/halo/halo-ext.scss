@@ -51,4 +51,16 @@
   .v-table-cell-content-time-entry-rejected {
     color: red;
   }
+
+  .v-calendar .v-calendar-event-time-entry-new:before {
+      color: orange;
+  }
+
+  .v-calendar .v-calendar-event-time-entry-approved:before {
+    color: green;
+  }
+
+  .v-calendar .v-calendar-event-time-entry-rejected:before {
+    color: red;
+  }
 }

@@ -9,12 +9,15 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 
 import javax.persistence.*;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Set;
 
 /**
@@ -83,7 +86,14 @@ public class TimeEntry extends StandardEntity {
     }
 
     public Date getTime() {
-        return time;
+        if (date == null || time == null) {
+            return time;
+        }
+        Calendar dateCal = DateUtils.toCalendar(date);
+        Date timeDate = DateUtils.setDays(time, dateCal.get(Calendar.DAY_OF_MONTH));
+        timeDate = DateUtils.setMonths(timeDate, dateCal.get(Calendar.MONTH));
+        timeDate = DateUtils.setYears(timeDate, dateCal.get(Calendar.YEAR));
+        return timeDate;
     }
 
     public void setTicket(String ticket) {

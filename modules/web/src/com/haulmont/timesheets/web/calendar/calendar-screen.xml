@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+        caption="msg://caption"
+        class="com.haulmont.timesheets.web.calendar.CalendarScreen"
+        messagesPack="com.haulmont.timesheets.web.calendar">
+    <layout expand="calBox"
+            spacing="true">
+        <grid spacing="true"
+              width="100%">
+            <columns>
+                <column/>
+                <column flex="1.0"/>
+                <column/>
+            </columns>
+            <rows>
+                <row>
+                    <hbox width="200px"
+                          spacing="true"/>
+                    <hbox align="MIDDLE_CENTER"
+                          spacing="true">
+                        <linkButton align="MIDDLE_CENTER"
+                                    icon="font-icon:CHEVRON_LEFT"
+                                    invoke="movePreviousMonth"/>
+                        <linkButton id="monthLabel"
+                                    align="MIDDLE_CENTER"
+                                    invoke="updateCalendarRange"/>
+                        <linkButton align="MIDDLE_CENTER"
+                                    icon="font-icon:CHEVRON_RIGHT"
+                                    invoke="moveNextMonth"/>
+                    </hbox>
+                    <hbox width="200px"
+                          spacing="true">
+                        <button id="addTimeEntry"
+                                align="MIDDLE_RIGHT"
+                                caption="msg://addTimeEntry"
+                                invoke="addTimeEntry"/>
+                    </hbox>
+                </row>
+            </rows>
+        </grid>
+        <vbox id="calBox"/>
+    </layout>
+</window>
