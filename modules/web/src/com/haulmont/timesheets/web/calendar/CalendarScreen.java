@@ -6,11 +6,10 @@ package com.haulmont.timesheets.web.calendar;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.BoxLayout;
-import com.haulmont.cuba.gui.components.LinkButton;
+import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.timesheets.entity.TimeEntry;
-import com.haulmont.timesheets.entity.TimeEntryStatus;
 import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
 import com.vaadin.ui.Calendar;
 import com.vaadin.ui.Layout;
@@ -29,25 +28,26 @@ public class CalendarScreen extends AbstractWindow {
     @Inject
     protected BoxLayout calBox;
     @Inject
-    protected LinkButton monthLabel;
+    protected Label monthLabel;
     @Inject
     protected UserSession userSession;
 
     protected Calendar calendar;
     protected Date firstDayOfMonth;
+    protected TimeEntryEventProvider dataSource;
 
     @Override
     public void init(Map<String, Object> params) {
 
         firstDayOfMonth = getFirstDayOfMonth();
-        updateMonthCaption();
+        dataSource = new TimeEntryEventProvider(userSession.getUser());
 
-        calendar = new Calendar(new TimeEntryEventProvider(userSession.getUser()));
+        calendar = new Calendar(dataSource);
         calendar.setWidth("100%");
         calendar.setHeight("90%");
         calendar.setTimeFormat(Calendar.TimeFormat.Format24H);
         calendar.setDropHandler(null);
-        calendar.setHandler((CalendarComponentEvents.EventMoveHandler) null);   // Do not work
+        calendar.setHandler((CalendarComponentEvents.EventMoveHandler) null);   // Do not work for month view
         calendar.setHandler((CalendarComponentEvents.WeekClickHandler) null);
         calendar.setHandler((CalendarComponentEvents.DateClickHandler) null);
         calendar.setHandler((CalendarComponentEvents.EventResizeHandler) null);
@@ -55,14 +55,12 @@ public class CalendarScreen extends AbstractWindow {
             @Override
             public void eventClick(CalendarComponentEvents.EventClick event) {
                 CalendarEventAdapter eventAdapter = (CalendarEventAdapter) event.getCalendarEvent();
-                TimeEntry timeEntry = eventAdapter.getTimeEntry();
-                if (!TimeEntryStatus.APPROVED.equals(timeEntry.getStatus())) {
-                    editTimeEntry(timeEntry);
-                }
+                editTimeEntry(eventAdapter.getTimeEntry());
             }
         });
 
         updateCalendarRange();
+        updateMonthCaption();
 
         Layout layout = WebComponentsHelper.unwrap(calBox);
         layout.addComponent(calendar);
@@ -87,23 +85,22 @@ public class CalendarScreen extends AbstractWindow {
 
     public void addTimeEntry() {
         editTimeEntry(new TimeEntry());
-        calendar.setEventProvider(new TimeEntryEventProvider(userSession.getUser()));
     }
 
     protected void editTimeEntry(TimeEntry timeEntry) {
-        TimeEntryEdit editor = openEditor("ts$TimeEntry.edit", timeEntry, WindowManager.OpenType.DIALOG);
+        final TimeEntryEdit editor = openEditor("ts$TimeEntry.edit", timeEntry, WindowManager.OpenType.DIALOG);
         editor.addListener(new CloseListener() {
             @Override
             public void windowClosed(String actionId) {
                 if (COMMIT_ACTION_ID.equals(actionId)) {
-//                    updateCalendarRange();
+                    dataSource.changeEventTimeEntity(editor.getItem());
                 }
             }
         });
     }
 
     protected void updateMonthCaption() {
-        monthLabel.setCaption(String.format("%s %s", getMonthName(firstDayOfMonth), getYear(firstDayOfMonth)));
+        monthLabel.setValue(String.format("%s %s", getMonthName(firstDayOfMonth), getYear(firstDayOfMonth)));
     }
 
     protected String getMonthName(Date firstDayOfMonth) {
@@ -117,7 +114,7 @@ public class CalendarScreen extends AbstractWindow {
 
     protected Date getFirstDayOfMonth() {
 //        return DateUtils.setDays(new Date(), 1);
-        java.util.Calendar calendar = getCalendarTithoutTime();
+        java.util.Calendar calendar = getCalendarWithoutTime();
         calendar.set(java.util.Calendar.DAY_OF_MONTH, 1);
         return calendar.getTime();
     }
@@ -128,7 +125,7 @@ public class CalendarScreen extends AbstractWindow {
         return calendar.getTime();
     }
 
-    protected java.util.Calendar getCalendarTithoutTime() {
+    protected java.util.Calendar getCalendarWithoutTime() {
         java.util.Calendar calendar = java.util.Calendar.getInstance();
         calendar.set(java.util.Calendar.HOUR_OF_DAY, 0);
         calendar.set(java.util.Calendar.MINUTE, 0);

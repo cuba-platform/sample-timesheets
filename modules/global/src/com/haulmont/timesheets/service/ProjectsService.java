@@ -33,4 +33,7 @@ public interface ProjectsService {
 
     @Nonnull
     List<TimeEntry> getTimeEntriesForPeriod(@Nonnull Date start, @Nonnull Date end, @Nonnull User user);
+
+    @Nonnull
+    List<TimeEntry> getTimeEntriesForUser(@Nonnull User user);
 }

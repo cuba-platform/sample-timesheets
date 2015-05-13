@@ -5,35 +5,35 @@
 package com.haulmont.timesheets.web.calendar;
 
 import com.haulmont.timesheets.entity.TimeEntry;
-import com.vaadin.ui.components.calendar.event.CalendarEvent;
-import com.vaadin.ui.components.calendar.event.CalendarEvent.EventChangeNotifier;
+import com.haulmont.timesheets.gui.ComponentsHelper;
+import com.vaadin.ui.components.calendar.event.BasicEvent;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author gorelov
  * @version $Id$
  */
-public class CalendarEventAdapter implements CalendarEvent, EventChangeNotifier {
+public class CalendarEventAdapter extends BasicEvent {
 
     protected TimeEntry timeEntry;
-    protected String styleName;
-    protected transient List<EventChangeListener> listeners = new ArrayList<>();
 
     public CalendarEventAdapter(TimeEntry timeEntry) {
-        this.timeEntry = timeEntry;
+        this.setTimeEntry(timeEntry);
     }
 
     public TimeEntry getTimeEntry() {
         return timeEntry;
     }
 
+    public void setTimeEntry(TimeEntry timeEntry) {
+        this.timeEntry = timeEntry;
+        super.setStyleName(ComponentsHelper.getTimeEntryStatusStyle(this.timeEntry));
+    }
+
     @Override
     public String getCaption() {
-        String caption = timeEntry.getTaskName();
-        return caption != null ? caption : timeEntry.getTask().getName();
+        return timeEntry.getTask().getName();
     }
 
     @Override
@@ -49,42 +49,5 @@ public class CalendarEventAdapter implements CalendarEvent, EventChangeNotifier 
     @Override
     public Date getStart() {
         return timeEntry.getDate();
-    }
-
-    @Override
-    public String getStyleName() {
-        return styleName;
-    }
-
-    public void setStyleName(String styleName) {
-        this.styleName = styleName;
-        fireEventChange();
-    }
-
-    @Override
-    public boolean isAllDay() {
-        return false;
-    }
-
-    @Override
-    public void addEventChangeListener(EventChangeListener listener) {
-        listeners.add(listener);
-    }
-
-    @Override
-    public void removeEventChangeListener(EventChangeListener listener) {
-        listeners.remove(listener);
-    }
-
-    /**
-     * Fires an event change event to the listeners. Should be triggered when
-     * some property of the event changes.
-     */
-    protected void fireEventChange() {
-        EventChangeEvent event = new EventChangeEvent(this);
-
-        for (EventChangeListener listener : listeners) {
-            listener.eventChange(event);
-        }
     }
 }

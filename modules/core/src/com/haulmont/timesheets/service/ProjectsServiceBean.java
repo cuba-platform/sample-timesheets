@@ -91,4 +91,14 @@ public class ProjectsServiceBean implements ProjectsService {
                 .setParameter("userId", user.getId());
         return dataManager.loadList(loadContext);
     }
+
+    @Nonnull
+    @Override
+    public List<TimeEntry> getTimeEntriesForUser(@Nonnull User user) {
+        LoadContext loadContext = new LoadContext(TimeEntry.class)
+                .setView("timeEntry-full");
+        loadContext.setQueryString("select e from ts$TimeEntry e where e.user.id = :userId")
+                .setParameter("userId", user.getId());
+        return dataManager.loadList(loadContext);
+    }
 }

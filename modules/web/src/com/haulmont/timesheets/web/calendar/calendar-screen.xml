@@ -17,16 +17,18 @@
                     <hbox width="200px"
                           spacing="true"/>
                     <hbox align="MIDDLE_CENTER"
+                          width="400px"
                           spacing="true">
-                        <linkButton align="MIDDLE_CENTER"
-                                    icon="font-icon:CHEVRON_LEFT"
-                                    invoke="movePreviousMonth"/>
-                        <linkButton id="monthLabel"
-                                    align="MIDDLE_CENTER"
-                                    invoke="updateCalendarRange"/>
-                        <linkButton align="MIDDLE_CENTER"
-                                    icon="font-icon:CHEVRON_RIGHT"
-                                    invoke="moveNextMonth"/>
+                        <button align="MIDDLE_LEFT"
+                                icon="font-icon:CHEVRON_LEFT"
+                                stylename=""
+                                invoke="movePreviousMonth"/>
+                        <label id="monthLabel"
+                               align="MIDDLE_CENTER"
+                               stylename="h1"/>
+                        <button align="MIDDLE_RIGHT"
+                                icon="font-icon:CHEVRON_RIGHT"
+                                invoke="moveNextMonth"/>
                     </hbox>
                     <hbox width="200px"
                           spacing="true">

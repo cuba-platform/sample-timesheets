@@ -9,9 +9,12 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.service.ProjectsService;
+import com.vaadin.ui.components.calendar.event.BasicEventProvider;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
 import com.vaadin.ui.components.calendar.event.CalendarEventProvider;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -21,28 +24,37 @@ import java.util.List;
  * @author gorelov
  * @version $Id$
  */
-public class TimeEntryEventProvider implements CalendarEventProvider {
-
-    protected User user;
-    protected ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);
+public class TimeEntryEventProvider extends BasicEventProvider {
 
     public TimeEntryEventProvider(User user) {
-        this.user = user;
+        ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);
+        List<TimeEntry> timeEntries = projectsService.getTimeEntriesForUser(user);
+
+        for (TimeEntry entry : timeEntries) {
+            eventList.add(new CalendarEventAdapter(entry));
+        }
     }
 
-    @Override
-    public List<CalendarEvent> getEvents(Date startDate, Date endDate) {
-        List<TimeEntry> timeEntries = projectsService.getTimeEntriesForPeriod(startDate, endDate, user);
-        if (timeEntries.isEmpty()) {
-            return Collections.emptyList();
+    public void changeEventTimeEntity(@Nonnull TimeEntry timeEntry) {
+        CalendarEventAdapter adapter = findEventWithTimeEntry(timeEntry);
+        if (adapter != null) {
+            adapter.setTimeEntry(timeEntry);
+            fireEventSetChange();
+        } else {
+            super.addEvent(new CalendarEventAdapter(timeEntry));
         }
+    }
 
-        List<CalendarEvent> events = new ArrayList<>(timeEntries.size());
-        for (TimeEntry entry : timeEntries) {
-            CalendarEventAdapter adapter = new CalendarEventAdapter(entry);
-            adapter.setStyleName(ComponentsHelper.getTimeEntryStatusStyle(entry));
-            events.add(adapter);
+    @Nullable
+    protected CalendarEventAdapter findEventWithTimeEntry(@Nonnull TimeEntry timeEntry) {
+        for (CalendarEvent event : eventList) {
+            if (event instanceof CalendarEventAdapter) {
+                CalendarEventAdapter adapter = (CalendarEventAdapter) event;
+                if (timeEntry.getId().equals(adapter.getTimeEntry().getId())) {
+                    return adapter;
+                }
+            }
         }
-        return events;
+        return null;
     }
 }
