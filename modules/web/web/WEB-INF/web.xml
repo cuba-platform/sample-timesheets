@@ -1,8 +1,7 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <web-app xmlns="http://java.sun.com/xml/ns/javaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-		  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee     http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
          version="2.5">
     <context-param>
         <description>Vaadin production mode</description>
@@ -17,12 +16,10 @@
     <!-- Application properties config files -->
     <context-param>
         <param-name>appPropertiesConfig</param-name>
-        <param-value>
-            classpath:cuba-web-app.properties
+        <param-value>classpath:cuba-web-app.properties
             classpath:web-app.properties
             /WEB-INF/local.app.properties
-            file:${catalina.home}/conf/app/local.app.properties
-        </param-value>
+            file:${catalina.home}/conf/app/local.app.properties</param-value>
     </context-param>
     <listener>
         <listener-class>com.haulmont.cuba.web.sys.WebAppContextLoader</listener-class>
@@ -38,7 +35,7 @@
         <init-param>
             <description>Widgetset name</description>
             <param-name>widgetset</param-name>
-            <param-value>com.haulmont.cuba.web.toolkit.ui.WidgetSet</param-value>
+            <param-value>com.haulmont.timesheets.web.toolkit.ui.AppWidgetSet</param-value>
         </init-param>
         <init-param>
             <description>UI class</description>

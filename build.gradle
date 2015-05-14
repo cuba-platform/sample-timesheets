@@ -9,7 +9,6 @@ allprojects {
  * @author ${USER}
  */'''
     ext.vcs = 'Git'
-    
 }
 
 buildscript {
@@ -32,6 +31,7 @@ def globalModule = project(':app-global')
 def coreModule = project(':app-core')
 def guiModule = project(':app-gui')
 def webModule = project(':app-web')
+def webToolkitModule = project(':app-web-toolkit')
 
 def hsql = 'org.hsqldb:hsqldb:2.2.9'
 def servletApi = 'org.apache.tomcat:tomcat-servlet-api:7.0.53'
@@ -40,7 +40,7 @@ def servletApi = 'org.apache.tomcat:tomcat-servlet-api:7.0.53'
 apply(plugin: 'idea')
 apply(plugin: 'cuba')
 
-configure([globalModule, coreModule, guiModule, webModule]) {
+configure([globalModule, coreModule, guiModule, webModule, webToolkitModule]) {
     apply(plugin: 'java')
     apply(plugin: 'maven')
     apply(plugin: 'idea')
@@ -105,7 +105,7 @@ configure(coreModule) {
 
     task deploy(dependsOn: [assemble, cleanConf], type: CubaDeployment) {
         appName = 'app-core'
-        appJars('cuba-global', 'cuba-core', 
+        appJars('cuba-core', 'cuba-global', 
                 'app-global', 'app-core')
     }
 
@@ -136,7 +136,7 @@ configure(guiModule) {
 
     task deployConf(type: Copy) {
         from file('src')
-        include "com/haulmont/ts/**"
+        include "com/haulmont/timesheets/**"
         into "$tomcatDir/conf/app"
     }
 }
@@ -154,7 +154,6 @@ configure(webModule) {
         compile(guiModule)
         compile("com.haulmont.cuba:cuba-web:$cubaVersion")
         webcontent("com.haulmont.cuba:cuba-web:$cubaVersion:web@zip")
-        webcontent("com.haulmont.cuba:cuba-web-toolkit:$cubaVersion:web@zip")
         themes("com.haulmont.cuba:cuba-web-themes:$cubaVersion")
         provided("com.haulmont.cuba:cuba-web-themes:$cubaVersion")
 
@@ -171,7 +170,7 @@ configure(webModule) {
 
     task deployConf(type: Copy) {
         from file('src')
-        include "com/haulmont/ts/**"
+        include "com/haulmont/timesheets/**"
         into "$tomcatDir/conf/app"
     }
     
@@ -192,11 +191,47 @@ configure(webModule) {
 
     task deploy(dependsOn: [assemble, cleanConf], type: CubaDeployment) {
         appName = 'app'
-        appJars('cuba-gui', 'cuba-client', 'cuba-global', 'cuba-web', 
+        appJars('cuba-gui', 'cuba-client', 'cuba-web', 'cuba-global', 
                 'app-global', 'app-gui', 'app-web')
     }
     task buildScssThemes(type: CubaWebScssThemeCreation)
     assemble.dependsOn buildScssThemes
+}
+
+configure(webToolkitModule) {
+
+
+    dependencies {
+        compile(webModule)
+
+        compile("com.haulmont.cuba:cuba-web-toolkit:$cubaVersion")
+        runtime(servletApi)
+
+    }
+
+    task buildWidgetSet(type: CubaWidgetSetBuilding) {
+        widgetSetClass = 'com.haulmont.timesheets.web.toolkit.ui.AppWidgetSet'
+    }
+
+    task webArchive(dependsOn: buildWidgetSet, type: Zip) {
+        from file("$buildDir/web")
+        classifier = 'web'
+    }
+
+    artifacts {
+        archives webArchive
+    }
+
+    task deploy(dependsOn: buildWidgetSet) << {
+        delete {
+            "$tomcatDir/webapps/app/VAADIN/widgetsets"
+        }
+        copy {
+            from "$buildDir/web"
+            into "$tomcatDir/webapps/app"
+            exclude '**/gwt-unitCache/'
+        }
+    }
 }
 
 

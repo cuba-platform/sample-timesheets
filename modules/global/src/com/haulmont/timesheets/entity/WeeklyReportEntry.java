@@ -10,6 +10,7 @@ import org.apache.commons.lang.time.DateUtils;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * @author gorelov
@@ -105,6 +106,7 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
         }
 
         public static int getDayOffset(DayOfWeek day) {
+            // TODO: ???????? ? ??????????? ??? ? java.util.Calendar ? ???????????? ??
             switch (day) {
                 case TUESDAY:
                     return 1;
@@ -121,6 +123,35 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
                 default:
                     return 0;
             }
+        }
+
+        public static int convertToDayOfWeekNumber(DayOfWeek day, Locale locale) {
+            int firstDayOfWeek = Calendar.getInstance(locale).getFirstDayOfWeek();
+            int offset = firstDayOfWeek - 1;
+
+            switch (day) {
+                case SUNDAY:
+                    return getComputedNumber(1, offset);
+                case MONDAY:
+                    return getComputedNumber(2, offset);
+                case TUESDAY:
+                    return getComputedNumber(3, offset);
+                case WEDNESDAY:
+                    return getComputedNumber(4, offset);
+                case THURSDAY:
+                    return getComputedNumber(5, offset);
+                case FRIDAY:
+                    return getComputedNumber(6, offset);
+                case SATURDAY:
+                    return getComputedNumber(7, offset);
+                default:
+                    return 0;
+            }
+        }
+
+        protected static int getComputedNumber(int origin, int offset) {
+            int value = origin - offset;
+            return value > 0 ? value : 7 - value;
         }
     }
 

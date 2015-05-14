@@ -9,6 +9,10 @@ import com.haulmont.timesheets.core.WorkConfig;
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import static com.haulmont.timesheets.entity.WeeklyReportEntry.DayOfWeek;
 
 /**
@@ -42,5 +46,13 @@ public class WorkConfigBean {
             workDays[i] = DayOfWeek.fromAbbreviation(days[i]);
         }
         return workDays;
+    }
+
+    public DayOfWeek[] getWeekends() {
+        List<DayOfWeek> days = new ArrayList<>(Arrays.asList(DayOfWeek.values()));
+        for (DayOfWeek day : getWorkDays()) {
+            days.remove(day);
+        }
+        return days.toArray(new DayOfWeek[days.size()]);
     }
 }

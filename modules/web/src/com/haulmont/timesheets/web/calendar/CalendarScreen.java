@@ -12,6 +12,7 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
+import com.haulmont.timesheets.web.toolkit.ui.TimeSheetsCalendar;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Calendar;
 import com.vaadin.ui.Layout;
@@ -23,6 +24,7 @@ import org.apache.commons.lang.time.DateUtils;
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -39,7 +41,7 @@ public class CalendarScreen extends AbstractWindow {
     @Inject
     protected Messages messages;
 
-    protected Calendar calendar;
+    protected TimeSheetsCalendar calendar;
     protected Date firstDayOfMonth;
     protected TimeEntryEventProvider dataSource;
 
@@ -49,13 +51,12 @@ public class CalendarScreen extends AbstractWindow {
         firstDayOfMonth = getFirstDayOfMonth();
         dataSource = new TimeEntryEventProvider(userSession.getUser());
 
-        calendar = new Calendar(dataSource);
+        calendar = new TimeSheetsCalendar(dataSource);
         calendar.setWidth("100%");
         calendar.setHeight("90%");
         calendar.setTimeFormat(Calendar.TimeFormat.Format24H);
         calendar.setDropHandler(null);
         calendar.setHandler((CalendarComponentEvents.EventMoveHandler) null);   // Do not work for month view
-        calendar.setReadOnly(true);                                             // Fix for month view
         calendar.setHandler((CalendarComponentEvents.WeekClickHandler) null);
         calendar.setHandler((CalendarComponentEvents.DateClickHandler) null);
         calendar.setHandler((CalendarComponentEvents.EventResizeHandler) null);
