@@ -1,22 +1,56 @@
-@mixin ts-calendar($primary-stylename: v-calendar) {
+@mixin ts-calendar($primary-stylename: ts-calendar) {
 
   .v-calendar .v-calendar-event-time-entry-new:before {
       color: orange;
   }
 
-  .#{$primary-stylename} .#{$primary-stylename}-event-time-entry-approved:before {
+  .v-calendar .v-calendar-event-time-entry-approved:before {
     color: green;
   }
 
-  .#{$primary-stylename} .#{$primary-stylename}-event-time-entry-rejected:before {
+  .v-calendar .v-calendar-event-time-entry-rejected:before {
     color: red;
   }
 
-  //.#{$primary-stylename}-event-month:hover {
+  //.v-calendar-event-month:hover {
   //  text-decoration: underline;
   //}
 
-  .#{$primary-stylename}-event-month .#{$primary-stylename}-event-time {
-    visibility: hidden;
+  .v-calendar-event-month .v-calendar-event-time {
+    display: none;
+  }
+
+  .v-calendar .v-calendar-month-day {
+    border-bottom: 1px solid #ebf3f9;
+    border-right: 0px solid #ebf3f9;
+    border-left: 1px solid #ebf3f9;
+    padding: 0px 0px;
+  }
+
+  .v-calendar .v-calendar-month-day.holiday {
+    background: #f8f8f8;
+  }
+
+  .v-calendar .v-calendar-month-day-prev-month,.v-calendar .v-calendar-month-day-next-month {
+      color:lightgray;
+  }
+
+  .v-calendar .v-calendar-month-day-today {
+  	border: 1px solid #53a6c6;
+    //background-color: transparent;
+    margin-top: -1px;
+  }
+
+  //.v-calendar .v-calendar-month-day-today .v-calendar-day-number {
+  //}
+
+  .v-calendar-month-day .v-calendar-day-number,
+  .v-calendar-month-day-today .v-calendar-day-number{
+     text-align: left;
+     font-size: 14px;
+     //background-color: #f6f8fa;
+     border-bottom: 1px solid #ebf3f9;
+     padding: 5px;
+     margin-bottom:1px;
   }
 }
