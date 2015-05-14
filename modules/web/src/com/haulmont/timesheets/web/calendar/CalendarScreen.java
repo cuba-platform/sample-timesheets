@@ -3,6 +3,7 @@
  */
 package com.haulmont.timesheets.web.calendar;
 
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.BoxLayout;
@@ -11,13 +12,17 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
+import com.vaadin.event.Action;
 import com.vaadin.ui.Calendar;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents;
+import com.vaadin.ui.components.calendar.CalendarDateRange;
+import com.vaadin.ui.components.calendar.event.CalendarEvent;
 import org.apache.commons.lang.time.DateUtils;
 
 import javax.inject.Inject;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,6 +36,8 @@ public class CalendarScreen extends AbstractWindow {
     protected Label monthLabel;
     @Inject
     protected UserSession userSession;
+    @Inject
+    protected Messages messages;
 
     protected Calendar calendar;
     protected Date firstDayOfMonth;
@@ -48,6 +55,7 @@ public class CalendarScreen extends AbstractWindow {
         calendar.setTimeFormat(Calendar.TimeFormat.Format24H);
         calendar.setDropHandler(null);
         calendar.setHandler((CalendarComponentEvents.EventMoveHandler) null);   // Do not work for month view
+        calendar.setReadOnly(true);                                             // Fix for month view
         calendar.setHandler((CalendarComponentEvents.WeekClickHandler) null);
         calendar.setHandler((CalendarComponentEvents.DateClickHandler) null);
         calendar.setHandler((CalendarComponentEvents.EventResizeHandler) null);
@@ -58,8 +66,65 @@ public class CalendarScreen extends AbstractWindow {
                 editTimeEntry(eventAdapter.getTimeEntry());
             }
         });
+        // Handle the context menu selection
+        Action.Handler actionHandler = new Action.Handler() {
+            Action addEventAction = new Action(messages.getMessage(getClass(), "addTimeEntry"));
+            Action deleteEventAction = new Action(messages.getMessage(getClass(), "deleteTimeEntry"));
+
+            @Override
+            public Action[] getActions(Object target, Object sender) {
+                // The target should be a CalendarDateRage for the
+                // entire day from midnight to midnight.
+                if (!(target instanceof CalendarDateRange))
+                    return null;
+                CalendarDateRange dateRange = (CalendarDateRange) target;
+
+                // The sender is the Calendar object
+                if (!(sender instanceof Calendar))
+                    return null;
+                Calendar calendar = (Calendar) sender;
+
+                // List all the events on the requested day
+                List<CalendarEvent> events =
+                        calendar.getEvents(dateRange.getStart(),
+                                dateRange.getEnd());
+
+                if (events.size() == 0)
+                    return new Action[]{addEventAction};
+                else
+                    return new Action[]{addEventAction, deleteEventAction};
+            }
+
+            @Override
+            public void handleAction(Action action, Object sender, Object target) {
+                // The sender is the Calendar object
+                Calendar calendar = (Calendar) sender;
+
+                if (action == addEventAction) {
+                    // Check that the click was not done on an event
+                    if (target instanceof Date) {
+                        Date date = (Date) target;
+                        TimeEntry timeEntry = new TimeEntry();
+                        timeEntry.setDate(date);
+                        editTimeEntry(timeEntry);
+                    } else {
+                        showNotification(messages.getMessage(getClass(), "cantAddTimeEntry"), NotificationType.WARNING);
+                    }
+                } else if (action == deleteEventAction) {
+                    // Check if the action was clicked on top of an event
+                    if (target instanceof CalendarEvent) {
+                        CalendarEvent event = (CalendarEvent) target;
+                        calendar.removeEvent(event);
+                    } else {
+                        showNotification(messages.getMessage(getClass(), "cantDeleteTimeEntry"), NotificationType.WARNING);
+                    }
+                }
+            }
+        };
+        calendar.addActionHandler(actionHandler);
 
         updateCalendarRange();
+
         updateMonthCaption();
 
         Layout layout = WebComponentsHelper.unwrap(calBox);
