@@ -33,7 +33,7 @@ public class CalendarEventAdapter extends BasicEvent {
 
     @Override
     public String getCaption() {
-        return timeEntry.getTask().getName();
+        return String.format("%s %s", timeEntry.getInstanceName(), timeEntry.getTask().getName());
     }
 
     @Override

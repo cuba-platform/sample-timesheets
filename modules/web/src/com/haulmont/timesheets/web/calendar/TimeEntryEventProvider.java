@@ -7,17 +7,12 @@ package com.haulmont.timesheets.web.calendar;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.entity.TimeEntry;
-import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.service.ProjectsService;
 import com.vaadin.ui.components.calendar.event.BasicEventProvider;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
-import com.vaadin.ui.components.calendar.event.CalendarEventProvider;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 /**
