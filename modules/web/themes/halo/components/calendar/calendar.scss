@@ -1,0 +1,22 @@
+@mixin ts-calendar($primary-stylename: v-calendar) {
+
+  .v-calendar .v-calendar-event-time-entry-new:before {
+      color: orange;
+  }
+
+  .#{$primary-stylename} .#{$primary-stylename}-event-time-entry-approved:before {
+    color: green;
+  }
+
+  .#{$primary-stylename} .#{$primary-stylename}-event-time-entry-rejected:before {
+    color: red;
+  }
+
+  //.#{$primary-stylename}-event-month:hover {
+  //  text-decoration: underline;
+  //}
+
+  .#{$primary-stylename}-event-month .#{$primary-stylename}-event-time {
+    visibility: hidden;
+  }
+}

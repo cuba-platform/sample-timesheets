@@ -1,8 +1,12 @@
 @import "../halo/halo";
 
+@import "components/calendar/calendar";
+
 /* Define your theme modifications inside next mixin */
 @mixin halo-ext {
   @include halo;
+
+  @include ts-calendar;
 
   .v-button-remove {
     color: red;
@@ -50,25 +54,5 @@
 
   .v-table-cell-content-time-entry-rejected {
     color: red;
-  }
-
-  .v-calendar .v-calendar-event-time-entry-new:before {
-      color: orange;
-  }
-
-  .v-calendar .v-calendar-event-time-entry-approved:before {
-    color: green;
-  }
-
-  .v-calendar .v-calendar-event-time-entry-rejected:before {
-    color: red;
-  }
-
-  //.v-calendar-event-month:hover {
-  //  text-decoration: underline;
-  //}
-
-  .v-calendar-event-month .v-calendar-event-time {
-    visibility: hidden;
   }
 }
