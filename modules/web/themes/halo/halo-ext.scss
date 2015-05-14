@@ -63,4 +63,12 @@
   .v-calendar .v-calendar-event-time-entry-rejected:before {
     color: red;
   }
+
+  //.v-calendar-event-month:hover {
+  //  text-decoration: underline;
+  //}
+
+  .v-calendar-event-month .v-calendar-event-time {
+    visibility: hidden;
+  }
 }
