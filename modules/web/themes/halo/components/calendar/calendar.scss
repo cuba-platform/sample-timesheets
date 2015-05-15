@@ -74,7 +74,7 @@
   }
 
   .v-calendar .v-calendar-month-day-today .v-calendar-day-number {    
-    border-top: 0px;
+    border-top: 2px solid #197de1;
     color: inherit;
   }
 
@@ -85,9 +85,6 @@
   }
     
  .v-calendar .v-calendar-month-day-today {
-    border: 1px solid #197de1;
     background-color: transparent;
-    margin-top: -1px;
-    margin-right: 0px;
   }
 }
