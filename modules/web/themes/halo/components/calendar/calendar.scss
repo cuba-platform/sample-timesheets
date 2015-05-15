@@ -23,6 +23,10 @@
   .v-calendar .v-calendar-month-day-prev-month,.v-calendar .v-calendar-month-day-next-month {
       color:lightgray;
   }
+
+  .v-calendar-month {
+    width: 100%;
+  }
     
   .v-calendar-header-month {
     padding-bottom: 3px;
@@ -32,6 +36,7 @@
 
   .v-calendar-header-day {
     text-align: left;
+    padding-left: 9px;
   }
 
   .v-calendar-header-month td:first-child {
