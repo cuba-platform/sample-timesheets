@@ -14,11 +14,11 @@ import java.util.Date;
  * @author gorelov
  * @version $Id$
  */
-public class CalendarEventAdapter extends BasicEvent {
+public class TimeEntryCalendarEventAdapter extends BasicEvent {
 
     protected TimeEntry timeEntry;
 
-    public CalendarEventAdapter(TimeEntry timeEntry) {
+    public TimeEntryCalendarEventAdapter(TimeEntry timeEntry) {
         this.setTimeEntry(timeEntry);
     }
 

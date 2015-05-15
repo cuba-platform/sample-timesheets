@@ -19,32 +19,32 @@ import java.util.List;
  * @author gorelov
  * @version $Id$
  */
-public class TimeEntryEventProvider extends BasicEventProvider {
+public class TimeSheetsCalendarEventProvider extends BasicEventProvider {
 
-    public TimeEntryEventProvider(User user) {
+    public TimeSheetsCalendarEventProvider(User user) {
         ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);
         List<TimeEntry> timeEntries = projectsService.getTimeEntriesForUser(user);
 
         for (TimeEntry entry : timeEntries) {
-            eventList.add(new CalendarEventAdapter(entry));
+            eventList.add(new TimeEntryCalendarEventAdapter(entry));
         }
     }
 
     public void changeEventTimeEntity(@Nonnull TimeEntry timeEntry) {
-        CalendarEventAdapter adapter = findEventWithTimeEntry(timeEntry);
+        TimeEntryCalendarEventAdapter adapter = findEventWithTimeEntry(timeEntry);
         if (adapter != null) {
             adapter.setTimeEntry(timeEntry);
             fireEventSetChange();
         } else {
-            super.addEvent(new CalendarEventAdapter(timeEntry));
+            super.addEvent(new TimeEntryCalendarEventAdapter(timeEntry));
         }
     }
 
     @Nullable
-    protected CalendarEventAdapter findEventWithTimeEntry(@Nonnull TimeEntry timeEntry) {
+    protected TimeEntryCalendarEventAdapter findEventWithTimeEntry(@Nonnull TimeEntry timeEntry) {
         for (CalendarEvent event : eventList) {
-            if (event instanceof CalendarEventAdapter) {
-                CalendarEventAdapter adapter = (CalendarEventAdapter) event;
+            if (event instanceof TimeEntryCalendarEventAdapter) {
+                TimeEntryCalendarEventAdapter adapter = (TimeEntryCalendarEventAdapter) event;
                 if (timeEntry.getId().equals(adapter.getTimeEntry().getId())) {
                     return adapter;
                 }

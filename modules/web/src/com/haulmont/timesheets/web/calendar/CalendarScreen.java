@@ -24,7 +24,6 @@ import org.apache.commons.lang.time.DateUtils;
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -43,13 +42,13 @@ public class CalendarScreen extends AbstractWindow {
 
     protected TimeSheetsCalendar calendar;
     protected Date firstDayOfMonth;
-    protected TimeEntryEventProvider dataSource;
+    protected TimeSheetsCalendarEventProvider dataSource;
 
     @Override
     public void init(Map<String, Object> params) {
 
         firstDayOfMonth = getFirstDayOfMonth();
-        dataSource = new TimeEntryEventProvider(userSession.getUser());
+        dataSource = new TimeSheetsCalendarEventProvider(userSession.getUser());
 
         calendar = new TimeSheetsCalendar(dataSource);
         calendar.setWidth("100%");
@@ -63,7 +62,7 @@ public class CalendarScreen extends AbstractWindow {
         calendar.setHandler(new CalendarComponentEvents.EventClickHandler() {
             @Override
             public void eventClick(CalendarComponentEvents.EventClick event) {
-                CalendarEventAdapter eventAdapter = (CalendarEventAdapter) event.getCalendarEvent();
+                TimeEntryCalendarEventAdapter eventAdapter = (TimeEntryCalendarEventAdapter) event.getCalendarEvent();
                 editTimeEntry(eventAdapter.getTimeEntry());
             }
         });
