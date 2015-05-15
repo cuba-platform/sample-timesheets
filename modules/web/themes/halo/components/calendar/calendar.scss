@@ -12,19 +12,8 @@
     color: red;
   }
 
-  //.v-calendar-event-month:hover {
-  //  text-decoration: underline;
-  //}
-
   .v-calendar-event-month .v-calendar-event-time {
     display: none;
-  }
-
-  .v-calendar .v-calendar-month-day {
-    border-bottom: 1px solid #ebf3f9;
-    border-right: 0px solid #ebf3f9;
-    border-left: 1px solid #ebf3f9;
-    padding: 0px 0px;
   }
 
   .v-calendar .v-calendar-month-day.holiday {
@@ -34,23 +23,49 @@
   .v-calendar .v-calendar-month-day-prev-month,.v-calendar .v-calendar-month-day-next-month {
       color:lightgray;
   }
-
-  .v-calendar .v-calendar-month-day-today {
-  	border: 1px solid #53a6c6;
-    //background-color: transparent;
-    margin-top: -1px;
+    
+  .v-calendar-header-month {
+    padding-bottom: 3px;
+    margin-bottom: 1px;
+    border-bottom: 1px solid darkgrey;
   }
 
-  //.v-calendar .v-calendar-month-day-today .v-calendar-day-number {
-  //}
+  .v-calendar-header-day {
+    text-align: left;
+  }
 
-  .v-calendar-month-day .v-calendar-day-number,
-  .v-calendar-month-day-today .v-calendar-day-number{
-     text-align: left;
-     font-size: 14px;
-     //background-color: #f6f8fa;
-     border-bottom: 1px solid #ebf3f9;
-     padding: 5px;
-     margin-bottom:1px;
+  .v-calendar-header-month td:first-child {
+    padding-left: 0px;
+  }
+
+  .v-calendar-week-numbers {
+    display: none;
+  }
+
+  .v-calendar-day-number {
+    border-top: 0px;
+  }
+  
+  .v-calendar-day-number:hover {
+    cursor: default;
+    color: inherit;
+  }
+
+  .v-calendar .v-calendar-month-day-today .v-calendar-day-number {    
+    border-top: 0px;
+    color: inherit;
+  }
+
+  .v-calendar .v-calendar-month-day {
+    border-bottom: 1px solid #ebf3f9;
+    border-left: 1px solid #ebf3f9;
+    margin-right: -1px;
+  }
+    
+ .v-calendar .v-calendar-month-day-today {
+    border: 1px solid #197de1;
+    background-color: transparent;
+    margin-top: -1px;
+    margin-right: 0px;
   }
 }
