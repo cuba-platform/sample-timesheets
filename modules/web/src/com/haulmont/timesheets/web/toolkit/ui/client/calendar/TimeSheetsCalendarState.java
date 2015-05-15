@@ -6,9 +6,7 @@ package com.haulmont.timesheets.web.toolkit.ui.client.calendar;
 
 import com.vaadin.shared.ui.calendar.CalendarState;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author gorelov
@@ -17,6 +15,6 @@ import java.util.List;
 public class TimeSheetsCalendarState extends CalendarState {
 
     public List<Integer> weekends = new ArrayList<>();
-    public List<Date> holidays = new ArrayList<>();
+    public Set<String> holidays = new HashSet<>();
 
 }

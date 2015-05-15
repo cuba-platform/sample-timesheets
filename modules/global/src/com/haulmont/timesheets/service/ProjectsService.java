@@ -4,10 +4,7 @@
 package com.haulmont.timesheets.service;
 
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.timesheets.entity.Client;
-import com.haulmont.timesheets.entity.Project;
-import com.haulmont.timesheets.entity.ProjectRole;
-import com.haulmont.timesheets.entity.TimeEntry;
+import com.haulmont.timesheets.entity.*;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -36,4 +33,7 @@ public interface ProjectsService {
 
     @Nonnull
     List<TimeEntry> getTimeEntriesForUser(@Nonnull User user);
+
+    @Nonnull
+    List<Holiday> getHolidays();
 }

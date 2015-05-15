@@ -29,6 +29,15 @@
     background-color: red;
   }
 
+  .v-calendar .v-calendar-event-holiday:before {
+    color: brown;
+  }
+
+  .v-calendar .v-calendar-event-holiday-all-day {
+    color: $ts-all-day-text-color;
+    background-color: brown;
+  }
+
   .v-calendar-event-month .v-calendar-event-time {
     display: none;
   }
@@ -86,5 +95,13 @@
     
  .v-calendar .v-calendar-month-day-today {
     background-color: transparent;
-  }
+ }
+
+ .v-calendar-event-all-day {
+  margin-left: -2px;
+ }
+
+ .v-calendar-event-start {
+  margin-left: 4px;
+ }
 }

@@ -8,9 +8,7 @@ import com.vaadin.client.ui.VCalendar;
 import com.vaadin.client.ui.calendar.schedule.CalendarDay;
 import com.vaadin.client.ui.calendar.schedule.SimpleDayCell;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author gorelov
@@ -19,14 +17,12 @@ import java.util.List;
 public class TimeSheetsCalendarWidget extends VCalendar {
 
     protected List<Integer> weekends = new ArrayList<Integer>();
-    protected List<Date> holidays = new ArrayList<Date>();
-
-
+    protected Set<String> holidays = new HashSet<String>();
 
     @Override
     protected void setCellStyle(Date today, List<CalendarDay> days, String date, SimpleDayCell cell, int columns, int pos) {
         CalendarDay day = days.get(pos);
-        if (isWeekend(day.getDayOfWeek()) || isHoliday(cell.getDate())) {
+        if (isWeekend(day.getDayOfWeek()) || isHoliday(date)) {
             cell.addStyleName("holiday");
             cell.setTitle(date);
         }
@@ -41,7 +37,12 @@ public class TimeSheetsCalendarWidget extends VCalendar {
         return false;
     }
 
-    protected boolean isHoliday(Date date) {
+    protected boolean isHoliday(String date) {
+        for (String holiday : holidays) {
+            if (holiday.equals(date)) {
+                return true;
+            }
+        }
         return false;
     }
 
@@ -49,7 +50,7 @@ public class TimeSheetsCalendarWidget extends VCalendar {
         this.weekends = weekends;
     }
 
-    public void setHolidays(List<Date> holidays) {
+    public void setHolidays(Set<String> holidays) {
         this.holidays = holidays;
     }
 }

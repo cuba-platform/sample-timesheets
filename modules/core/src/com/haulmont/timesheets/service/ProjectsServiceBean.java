@@ -101,4 +101,12 @@ public class ProjectsServiceBean implements ProjectsService {
                 .setParameter("userId", user.getId());
         return dataManager.loadList(loadContext);
     }
+
+    @Nonnull
+    @Override
+    public List<Holiday> getHolidays() {
+        LoadContext loadContext = new LoadContext(Holiday.class);
+        loadContext.setQueryString("select e from ts$Holiday e");
+        return dataManager.loadList(loadContext);
+    }
 }

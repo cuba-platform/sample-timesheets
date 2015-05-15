@@ -42,12 +42,17 @@ public class TimeEntryCalendarEventAdapter extends BasicEvent {
     }
 
     @Override
+    public Date getStart() {
+        return timeEntry.getDate();
+    }
+
+    @Override
     public Date getEnd() {
         return timeEntry.getTime();
     }
 
     @Override
-    public Date getStart() {
-        return timeEntry.getDate();
+    public boolean isAllDay() {
+        return false;
     }
 }

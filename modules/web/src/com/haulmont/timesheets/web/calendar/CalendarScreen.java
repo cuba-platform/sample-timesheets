@@ -10,7 +10,9 @@ import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.timesheets.entity.Holiday;
 import com.haulmont.timesheets.entity.TimeEntry;
+import com.haulmont.timesheets.gui.holiday.HolidayEdit;
 import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
 import com.haulmont.timesheets.web.toolkit.ui.TimeSheetsCalendar;
 import com.vaadin.event.Action;
@@ -62,8 +64,13 @@ public class CalendarScreen extends AbstractWindow {
         calendar.setHandler(new CalendarComponentEvents.EventClickHandler() {
             @Override
             public void eventClick(CalendarComponentEvents.EventClick event) {
-                TimeEntryCalendarEventAdapter eventAdapter = (TimeEntryCalendarEventAdapter) event.getCalendarEvent();
-                editTimeEntry(eventAdapter.getTimeEntry());
+                if (event.getCalendarEvent() instanceof TimeEntryCalendarEventAdapter) {
+                    TimeEntryCalendarEventAdapter eventAdapter = (TimeEntryCalendarEventAdapter) event.getCalendarEvent();
+                    editTimeEntry(eventAdapter.getTimeEntry());
+                } else if (event.getCalendarEvent() instanceof HolidayCalendarEventAdapter) {
+                    HolidayCalendarEventAdapter eventAdapter = (HolidayCalendarEventAdapter) event.getCalendarEvent();
+                    editHoliday(eventAdapter.getHoliday());
+                }
             }
         });
         calendar.addActionHandler(new CalendarActionHandler());
@@ -103,6 +110,18 @@ public class CalendarScreen extends AbstractWindow {
             public void windowClosed(String actionId) {
                 if (COMMIT_ACTION_ID.equals(actionId)) {
                     dataSource.changeEventTimeEntity(editor.getItem());
+                }
+            }
+        });
+    }
+
+    protected void editHoliday(Holiday holiday) {
+        final HolidayEdit editor = openEditor("ts$Holiday.edit", holiday, WindowManager.OpenType.DIALOG);
+        editor.addListener(new CloseListener() {
+            @Override
+            public void windowClosed(String actionId) {
+                if (COMMIT_ACTION_ID.equals(actionId)) {
+                    dataSource.changeEventHoliday(editor.getItem());
                 }
             }
         });
@@ -161,9 +180,7 @@ public class CalendarScreen extends AbstractWindow {
             Calendar calendar = (Calendar) sender;
 
             // List all the events on the requested day
-            List<CalendarEvent> events =
-                    calendar.getEvents(dateRange.getStart(),
-                            dateRange.getEnd());
+            List<CalendarEvent> events = calendar.getEvents(dateRange.getStart(), dateRange.getEnd());
 
             if (events.size() == 0)
                 return new Action[]{addEventAction};
@@ -188,7 +205,9 @@ public class CalendarScreen extends AbstractWindow {
                 }
             } else if (action == deleteEventAction) {
                 // Check if the action was clicked on top of an event
-                if (target instanceof CalendarEvent) {
+                if (target instanceof HolidayCalendarEventAdapter) {
+                    showNotification(messages.getMessage(getClass(), "cantDeleteHoliday"), NotificationType.WARNING);
+                } else if (target instanceof TimeEntryCalendarEventAdapter) {
                     CalendarEvent event = (CalendarEvent) target;
                     calendar.removeEvent(event);
                 } else {
