@@ -1,15 +1,32 @@
 @mixin ts-calendar($primary-stylename: ts-calendar) {
 
+  $ts-all-day-text-color: white;
+
   .v-calendar .v-calendar-event-time-entry-new:before {
       color: orange;
+  }
+
+  .v-calendar .v-calendar-event-time-entry-new-all-day {
+    color: $ts-all-day-text-color;
+    background-color: orange;
   }
 
   .v-calendar .v-calendar-event-time-entry-approved:before {
     color: green;
   }
 
+  .v-calendar .v-calendar-event-time-entry-approved-all-day {
+    color: $ts-all-day-text-color;
+    background-color: green;
+  }
+
   .v-calendar .v-calendar-event-time-entry-rejected:before {
     color: red;
+  }
+
+  .v-calendar .v-calendar-event-time-entry-rejected-all-day {
+    color: $ts-all-day-text-color;
+    background-color: red;
   }
 
   .v-calendar-event-month .v-calendar-event-time {
