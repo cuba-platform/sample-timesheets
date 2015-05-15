@@ -53,7 +53,7 @@ public class CalendarScreen extends AbstractWindow {
 
         calendar = new TimeSheetsCalendar(dataSource);
         calendar.setWidth("100%");
-        calendar.setHeight("90%");
+        calendar.setHeight("89%");
         calendar.setTimeFormat(Calendar.TimeFormat.Format24H);
         calendar.setDropHandler(null);
         calendar.setHandler((CalendarComponentEvents.EventMoveHandler) null);   // Do not work for month view
@@ -67,65 +67,9 @@ public class CalendarScreen extends AbstractWindow {
                 editTimeEntry(eventAdapter.getTimeEntry());
             }
         });
-        // Handle the context menu selection
-        Action.Handler actionHandler = new Action.Handler() {
-            Action addEventAction = new Action(messages.getMessage(getClass(), "addTimeEntry"));
-            Action deleteEventAction = new Action(messages.getMessage(getClass(), "deleteTimeEntry"));
-
-            @Override
-            public Action[] getActions(Object target, Object sender) {
-                // The target should be a CalendarDateRage for the
-                // entire day from midnight to midnight.
-                if (!(target instanceof CalendarDateRange))
-                    return null;
-                CalendarDateRange dateRange = (CalendarDateRange) target;
-
-                // The sender is the Calendar object
-                if (!(sender instanceof Calendar))
-                    return null;
-                Calendar calendar = (Calendar) sender;
-
-                // List all the events on the requested day
-                List<CalendarEvent> events =
-                        calendar.getEvents(dateRange.getStart(),
-                                dateRange.getEnd());
-
-                if (events.size() == 0)
-                    return new Action[]{addEventAction};
-                else
-                    return new Action[]{addEventAction, deleteEventAction};
-            }
-
-            @Override
-            public void handleAction(Action action, Object sender, Object target) {
-                // The sender is the Calendar object
-                Calendar calendar = (Calendar) sender;
-
-                if (action == addEventAction) {
-                    // Check that the click was not done on an event
-                    if (target instanceof Date) {
-                        Date date = (Date) target;
-                        TimeEntry timeEntry = new TimeEntry();
-                        timeEntry.setDate(date);
-                        editTimeEntry(timeEntry);
-                    } else {
-                        showNotification(messages.getMessage(getClass(), "cantAddTimeEntry"), NotificationType.WARNING);
-                    }
-                } else if (action == deleteEventAction) {
-                    // Check if the action was clicked on top of an event
-                    if (target instanceof CalendarEvent) {
-                        CalendarEvent event = (CalendarEvent) target;
-                        calendar.removeEvent(event);
-                    } else {
-                        showNotification(messages.getMessage(getClass(), "cantDeleteTimeEntry"), NotificationType.WARNING);
-                    }
-                }
-            }
-        };
-        calendar.addActionHandler(actionHandler);
+        calendar.addActionHandler(new CalendarActionHandler());
 
         updateCalendarRange();
-
         updateMonthCaption();
 
         Layout layout = WebComponentsHelper.unwrap(calBox);
@@ -198,5 +142,60 @@ public class CalendarScreen extends AbstractWindow {
         calendar.set(java.util.Calendar.SECOND, 0);
         calendar.set(java.util.Calendar.MILLISECOND, 0);
         return calendar;
+    }
+
+    protected class CalendarActionHandler implements Action.Handler {
+        Action addEventAction = new Action(messages.getMessage(getClass(), "addTimeEntry"));
+        Action deleteEventAction = new Action(messages.getMessage(getClass(), "deleteTimeEntry"));
+
+        @Override
+        public Action[] getActions(Object target, Object sender) {
+            // The target should be a CalendarDateRage for the
+            // entire day from midnight to midnight.
+            if (!(target instanceof CalendarDateRange))
+                return null;
+            CalendarDateRange dateRange = (CalendarDateRange) target;
+
+            // The sender is the Calendar object
+            if (!(sender instanceof Calendar))
+                return null;
+            Calendar calendar = (Calendar) sender;
+
+            // List all the events on the requested day
+            List<CalendarEvent> events =
+                    calendar.getEvents(dateRange.getStart(),
+                            dateRange.getEnd());
+
+            if (events.size() == 0)
+                return new Action[]{addEventAction};
+            else
+                return new Action[]{addEventAction, deleteEventAction};
+        }
+
+        @Override
+        public void handleAction(Action action, Object sender, Object target) {
+            // The sender is the Calendar object
+            Calendar calendar = (Calendar) sender;
+
+            if (action == addEventAction) {
+                // Check that the click was not done on an event
+                if (target instanceof Date) {
+                    Date date = (Date) target;
+                    TimeEntry timeEntry = new TimeEntry();
+                    timeEntry.setDate(date);
+                    editTimeEntry(timeEntry);
+                } else {
+                    showNotification(messages.getMessage(getClass(), "cantAddTimeEntry"), NotificationType.WARNING);
+                }
+            } else if (action == deleteEventAction) {
+                // Check if the action was clicked on top of an event
+                if (target instanceof CalendarEvent) {
+                    CalendarEvent event = (CalendarEvent) target;
+                    calendar.removeEvent(event);
+                } else {
+                    showNotification(messages.getMessage(getClass(), "cantDeleteTimeEntry"), NotificationType.WARNING);
+                }
+            }
+        }
     }
 }
