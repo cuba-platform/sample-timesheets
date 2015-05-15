@@ -3,17 +3,18 @@
  */
 package com.haulmont.timesheets.web.calendar;
 
+import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.AbstractWindow;
-import com.haulmont.cuba.gui.components.BoxLayout;
-import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.timesheets.entity.Holiday;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.gui.holiday.HolidayEdit;
 import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
+import com.haulmont.timesheets.service.ProjectsService;
 import com.haulmont.timesheets.web.toolkit.ui.TimeSheetsCalendar;
 import com.vaadin.event.Action;
 import com.vaadin.ui.Calendar;
@@ -163,8 +164,11 @@ public class CalendarScreen extends AbstractWindow {
     }
 
     protected class CalendarActionHandler implements Action.Handler {
-        Action addEventAction = new Action(messages.getMessage(getClass(), "addTimeEntry"));
-        Action deleteEventAction = new Action(messages.getMessage(getClass(), "deleteTimeEntry"));
+        protected Action addEventAction = new Action(messages.getMessage(getClass(), "addTimeEntry"));
+        protected Action deleteEventAction = new Action(messages.getMessage(getClass(), "deleteTimeEntry"));
+        protected String confirmationMessage;
+        protected String confirmationTitle;
+        protected ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);
 
         @Override
         public Action[] getActions(Object target, Object sender) {
@@ -208,12 +212,50 @@ public class CalendarScreen extends AbstractWindow {
                 if (target instanceof HolidayCalendarEventAdapter) {
                     showNotification(messages.getMessage(getClass(), "cantDeleteHoliday"), NotificationType.WARNING);
                 } else if (target instanceof TimeEntryCalendarEventAdapter) {
-                    CalendarEvent event = (CalendarEvent) target;
+                    TimeEntryCalendarEventAdapter event = (TimeEntryCalendarEventAdapter) target;
                     calendar.removeEvent(event);
+                    confirmAndRemove(event.getTimeEntry());
+
                 } else {
                     showNotification(messages.getMessage(getClass(), "cantDeleteTimeEntry"), NotificationType.WARNING);
                 }
             }
+        }
+
+        protected void confirmAndRemove(final TimeEntry timeEntry) {
+            final String messagesPackage = AppConfig.getMessagesPack();
+            getFrame().showOptionDialog(
+                    getConfirmationTitle(messagesPackage),
+                    getConfirmationMessage(messagesPackage),
+                    IFrame.MessageType.CONFIRMATION,
+                    new com.haulmont.cuba.gui.components.Action[]{
+                            new DialogAction(DialogAction.Type.OK) {
+                                @Override
+                                public void actionPerform(Component component) {
+                                    doRemove(timeEntry);
+                                }
+                            },
+                            new DialogAction(DialogAction.Type.CANCEL)
+                    }
+            );
+        }
+
+        protected void doRemove(TimeEntry timeEntry) {
+            projectsService.removeTimeEntry(timeEntry);
+        }
+
+        protected String getConfirmationMessage(String messagesPackage) {
+            if (confirmationMessage != null)
+                return confirmationMessage;
+            else
+                return messages.getMessage(messagesPackage, "dialogs.Confirmation.Remove");
+        }
+
+        protected String getConfirmationTitle(String messagesPackage) {
+            if (confirmationTitle != null)
+                return confirmationTitle;
+            else
+                return messages.getMessage(messagesPackage, "dialogs.Confirmation");
         }
     }
 }

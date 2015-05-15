@@ -3,6 +3,7 @@
  */
 package com.haulmont.timesheets.service;
 
+import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.security.entity.User;
@@ -108,5 +109,12 @@ public class ProjectsServiceBean implements ProjectsService {
         LoadContext loadContext = new LoadContext(Holiday.class);
         loadContext.setQueryString("select e from ts$Holiday e");
         return dataManager.loadList(loadContext);
+    }
+
+    @Override
+    public void removeTimeEntry(TimeEntry timeEntry) {
+        CommitContext commitContext = new CommitContext();
+        commitContext.getRemoveInstances().add(timeEntry);
+        dataManager.commit(commitContext);
     }
 }

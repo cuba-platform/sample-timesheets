@@ -36,4 +36,6 @@ public interface ProjectsService {
 
     @Nonnull
     List<Holiday> getHolidays();
+
+    void removeTimeEntry(TimeEntry timeEntry);
 }
