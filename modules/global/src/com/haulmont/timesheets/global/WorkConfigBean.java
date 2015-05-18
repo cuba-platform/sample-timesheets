@@ -5,15 +5,13 @@
 package com.haulmont.timesheets.global;
 
 import com.haulmont.timesheets.core.WorkConfig;
+import com.haulmont.timesheets.entity.DayOfWeek;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import static com.haulmont.timesheets.entity.WeeklyReportEntry.DayOfWeek;
 
 /**
  * @author gorelov

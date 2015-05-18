@@ -3,16 +3,11 @@
  */
 package com.haulmont.timesheets.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.chile.core.annotations.NamePattern;
+import com.haulmont.cuba.core.entity.StandardEntity;
 import org.apache.commons.lang.StringUtils;
 
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 import java.text.MessageFormat;
 
 /**
@@ -22,6 +17,7 @@ import java.text.MessageFormat;
 @Table(name = "TS_TAG_TYPE")
 @Entity(name = "ts$TagType")
 public class TagType extends StandardEntity {
+
     private static final long serialVersionUID = 1694745893454315167L;
 
     @Column(name = "NAME", nullable = false, length = 100)
@@ -53,7 +49,6 @@ public class TagType extends StandardEntity {
     public void setCode(String code) {
         this.code = code;
     }
-
 
 
     public void setName(String name) {

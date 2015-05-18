@@ -3,21 +3,14 @@
  */
 package com.haulmont.timesheets.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import com.haulmont.cuba.core.entity.StandardEntity;
-import javax.persistence.Column;
-import com.haulmont.chile.core.annotations.NamePattern;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import java.util.Set;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import com.haulmont.chile.core.annotations.Composition;
+import com.haulmont.chile.core.annotations.NamePattern;
+import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.global.DeletePolicy;
-import javax.persistence.OneToMany;
+
+import javax.persistence.*;
+import java.util.Set;
 
 /**
  * @author gorelov
@@ -26,6 +19,7 @@ import javax.persistence.OneToMany;
 @Table(name = "TS_TASK")
 @Entity(name = "ts$Task")
 public class Task extends StandardEntity {
+
     private static final long serialVersionUID = 4693836896751773146L;
 
     @Column(name = "NAME", nullable = false, length = 100)
@@ -49,20 +43,20 @@ public class Task extends StandardEntity {
     protected Integer status;
 
     @JoinTable(name = "TS_TASK_TAG_TYPE_LINK",
-        joinColumns = @JoinColumn(name = "TASK_ID"),
-        inverseJoinColumns = @JoinColumn(name = "TAG_TYPE_ID"))
+            joinColumns = @JoinColumn(name = "TASK_ID"),
+            inverseJoinColumns = @JoinColumn(name = "TAG_TYPE_ID"))
     @ManyToMany
     protected Set<TagType> requiredTagTypes;
 
     @JoinTable(name = "TS_TASK_TAG_LINK",
-        joinColumns = @JoinColumn(name = "TASK_ID"),
-        inverseJoinColumns = @JoinColumn(name = "TAG_ID"))
+            joinColumns = @JoinColumn(name = "TASK_ID"),
+            inverseJoinColumns = @JoinColumn(name = "TAG_ID"))
     @ManyToMany
     protected Set<Tag> defaultTags;
 
     @JoinTable(name = "TS_TASK_PROJECT_PARTICIPANT_LINK",
-        joinColumns = @JoinColumn(name = "TASK_ID"),
-        inverseJoinColumns = @JoinColumn(name = "PROJECT_PARTICIPANT_ID"))
+            joinColumns = @JoinColumn(name = "TASK_ID"),
+            inverseJoinColumns = @JoinColumn(name = "PROJECT_PARTICIPANT_ID"))
     @ManyToMany
     protected Set<ProjectParticipant> participants;
 

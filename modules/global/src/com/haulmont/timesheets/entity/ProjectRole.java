@@ -3,11 +3,12 @@
  */
 package com.haulmont.timesheets.entity;
 
+import com.haulmont.chile.core.annotations.NamePattern;
+import com.haulmont.cuba.core.entity.StandardEntity;
+
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import javax.persistence.Column;
-import com.haulmont.cuba.core.entity.StandardEntity;
-import com.haulmont.chile.core.annotations.NamePattern;
 
 /**
  * @author gorelov
@@ -16,6 +17,7 @@ import com.haulmont.chile.core.annotations.NamePattern;
 @Table(name = "TS_PROJECT_ROLE")
 @Entity(name = "ts$ProjectRole")
 public class ProjectRole extends StandardEntity {
+
     private static final long serialVersionUID = -5950778738684445845L;
 
     @Column(name = "NAME", nullable = false, length = 100)

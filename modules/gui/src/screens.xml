@@ -62,4 +62,6 @@
             template="com/haulmont/timesheets/gui/approve/approve-screen.xml"/>
     <screen id="simple-weekly-timesheets"
             template="com/haulmont/timesheets/gui/weeklytimesheets/simple-weekly-timesheets.xml"/>
+    <screen id="weekly-timesheets"
+            template="com/haulmont/timesheets/gui/weeklytimesheets/weekly-timesheets.xml"/>
 </screen-config>

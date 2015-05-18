@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+        caption="msg://browseCaption"
+        class="com.haulmont.timesheets.gui.weeklytimesheets.WeeklyTimesheets"
+        messagesPack="com.haulmont.timesheets.gui.weeklytimesheets">
+    <dsContext>
+        <collectionDatasource id="projectsDs"
+                              class="com.haulmont.timesheets.entity.Project"
+                              view="project-full">
+            <query>
+                <![CDATA[select e from ts$Project e join e.tasks t join t.participants p where p.user.id = :session$userId and t.status = 10 order by e.name]]>
+            </query>
+        </collectionDatasource>
+    </dsContext>
+    <layout/>
+</window>

@@ -8,7 +8,7 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 /**
  * @author gorelov
  */
-public enum TimeEntryStatus implements EnumClass<Integer>{
+public enum TimeEntryStatus implements EnumClass<Integer> {
 
     NEW(10),
     APPROVED(20),
@@ -16,7 +16,7 @@ public enum TimeEntryStatus implements EnumClass<Integer>{
 
     private Integer id;
 
-    TimeEntryStatus (Integer value) {
+    TimeEntryStatus(Integer value) {
         this.id = value;
     }
 
