@@ -8,6 +8,7 @@ import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.ViewRepository;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -171,6 +172,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                             EntityLinkField linkField = componentsFactory.createComponent(EntityLinkField.NAME);
                             linkField.setOwner(weeklyTsTable);
                             linkField.setFrame(frame);  // TODO: remove after #PL-5371 will release
+                            linkField.setScreenOpenType(WindowManager.OpenType.DIALOG);
                             linkField.setDatasource(weeklyTsTable.getItemDatasource(entity), day.getId());
                             linkField.addListener(new ValueListener() {
                                 @Override
