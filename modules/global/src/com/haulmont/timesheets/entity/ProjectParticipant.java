@@ -25,21 +25,9 @@ public class ProjectParticipant extends StandardEntity {
     @JoinColumn(name = "PROJECT_ID")
     protected Project project;
 
-    @Column(name = "CODE", nullable = false, unique = true, length = 50)
-    protected String code;
-
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "ROLE_ID")
     protected ProjectRole role;
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
 
     public void setRole(ProjectRole role) {
         this.role = role;

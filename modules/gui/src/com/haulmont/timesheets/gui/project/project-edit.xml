@@ -9,15 +9,7 @@
         <datasource id="projectDs"
                     class="com.haulmont.timesheets.entity.Project"
                     view="project-full">
-            <collectionDatasource id="participantsDs"
-                                  property="participants"/>
         </datasource>
-        <collectionDatasource id="participantsRolesDs"
-                              class="com.haulmont.timesheets.entity.ProjectRole">
-            <query>
-                <![CDATA[select e from ts$ProjectRole e]]>
-            </query>
-        </collectionDatasource>
         <collectionDatasource id="projectsDs"
                               class="com.haulmont.timesheets.entity.Project"
                               view="project-full">
@@ -56,34 +48,6 @@
                             <field id="status"/>
                         </column>
                     </fieldGroup>
-                    <groupBox id="participantsBox"
-                              width="100%"
-                              height="100%"
-                              caption="msg://com.haulmont.timesheets.entity/Project.participants">
-                        <table id="participantsTable"
-                               columnControlVisible="false"
-                               editable="true"
-                               height="100%"
-                               width="100%">
-                            <actions>
-                                <action id="create"/>
-                                <action id="remove"/>
-                            </actions>
-                            <columns>
-                                <column id="user"
-                                        link="true"/>
-                                <column id="role"
-                                        editable="true"
-                                        optionsDatasource="participantsRolesDs"/>
-                                <column id="user.position"/>
-                            </columns>
-                            <rows datasource="participantsDs"/>
-                            <buttonsPanel>
-                                <button action="participantsTable.create"/>
-                                <button action="participantsTable.remove"/>
-                            </buttonsPanel>
-                        </table>
-                    </groupBox>
                 </row>
             </rows>
         </grid>

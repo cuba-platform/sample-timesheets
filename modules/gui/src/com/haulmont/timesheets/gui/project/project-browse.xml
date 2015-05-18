@@ -11,7 +11,7 @@
                                 hierarchyProperty="parent"
                                 view="project-full">
             <query>
-                <![CDATA[select e from ts$Project e join e.participants p where p.user.id = :session$userId]]>
+                <![CDATA[select e from ts$Project e left join e.participants p where p.user.id = :session$userId or :param$superuser = true]]>
             </query>
         </hierarchicalDatasource>
         <collectionDatasource id="tasksDs"
@@ -21,6 +21,19 @@
                 <![CDATA[select t from ts$Task t where t.project.id = :ds$projectsDs]]>
             </query>
         </collectionDatasource>
+        <collectionDatasource id="participantsDs"
+                              class="com.haulmont.timesheets.entity.ProjectParticipant"
+                              view="projectParticipant-full">
+            <query>
+                <![CDATA[select p from ts$ProjectParticipant p where p.project.id = :ds$projectsDs]]>
+            </query>
+        </collectionDatasource>
+        <collectionDatasource id="participantsRolesDs"
+                              class="com.haulmont.timesheets.entity.ProjectRole">
+            <query>
+                <![CDATA[select e from ts$ProjectRole e]]>
+            </query>
+        </collectionDatasource>
     </dsContext>
     <layout expand="split"
             spacing="true">
@@ -28,11 +41,16 @@
                 datasource="projectsDs">
             <properties include=".*"/>
         </filter>
-        <split id="split" orientation="horizontal" pos="60" width="100%">
-            <vbox spacing="true" margin="false;true;false;false" height="100%">
+        <split id="split"
+               orientation="horizontal"
+               pos="21"
+               width="100%">
+            <vbox height="100%"
+                  margin="false,true,false,false"
+                  spacing="true">
                 <treeTable id="projectsTable"
-                           width="100%"
-                           height="100%">
+                           height="100%"
+                           width="100%">
                     <actions>
                         <action id="create"/>
                         <action id="edit"/>
@@ -43,8 +61,6 @@
                         <column id="code"/>
                         <column id="client"/>
                         <column id="status"/>
-                        <column id="description"
-                                maxTextLength="20"/>
                     </columns>
                     <rows datasource="projectsDs"/>
                     <rowsCount/>
@@ -59,38 +75,70 @@
                     </buttonsPanel>
                 </treeTable>
             </vbox>
-            <vbox margin="false;false;false;true" height="100%">
-                <table id="tasksTable"
-                       width="100%"
-                       height="100%">
-                    <actions>
-                        <action id="create"/>
-                        <action id="edit"/>
-                        <action id="remove"/>
-                        <action id="switchStatus"/>
-                    </actions>
-                    <columns>
-                        <column id="name"/>
-                        <column id="description"
-                                maxTextLength="20"/>
-                        <column id="type"/>
-                        <column id="status"/>
-                    </columns>
-                    <rows datasource="tasksDs"/>
-                    <rowsCount/>
-                    <buttonsPanel id="taskButtonsPanel"
-                                  alwaysVisible="true">
-                        <button id="taskCreateBtn"
-                                action="tasksTable.create"/>
-                        <button id="taskEditBtn"
-                                action="tasksTable.edit"/>
-                        <button id="tasRemoveBtn"
-                                action="tasksTable.remove"/>
-                        <button id="switchStatusBtn"
-                                action="tasksTable.switchStatus"/>
-                    </buttonsPanel>
-                </table>
-            </vbox>
+            <split id="split2"
+                   height="100%"
+                   orientation="horizontal"
+                   pos="37"
+                   width="100%">
+                <vbox height="100%"
+                      margin="false,false,false,true">
+                    <table id="tasksTable"
+                           height="100%"
+                           width="100%">
+                        <actions>
+                            <action id="create"/>
+                            <action id="edit"/>
+                            <action id="remove"/>
+                            <action id="switchStatus"/>
+                        </actions>
+                        <columns>
+                            <column id="name"/>
+                            <column id="description"
+                                    maxTextLength="20"/>
+                            <column id="type"/>
+                            <column id="status"/>
+                        </columns>
+                        <rows datasource="tasksDs"/>
+                        <buttonsPanel id="taskButtonsPanel"
+                                      alwaysVisible="true">
+                            <button id="taskCreateBtn"
+                                    action="tasksTable.create"/>
+                            <button id="taskEditBtn"
+                                    action="tasksTable.edit"/>
+                            <button id="tasRemoveBtn"
+                                    action="tasksTable.remove"/>
+                            <button id="switchStatusBtn"
+                                    action="tasksTable.switchStatus"/>
+                        </buttonsPanel>
+                    </table>
+                </vbox>
+                <vbox height="100%"
+                      margin="false,false,false,true">
+                    <table id="participantsTable"
+                           columnControlVisible="false"
+                           editable="true"
+                           height="100%"
+                           width="100%">
+                        <actions>
+                            <action id="create"/>
+                            <action id="remove"/>
+                        </actions>
+                        <columns>
+                            <column id="user"
+                                    link="true"/>
+                            <column id="role"
+                                    editable="true"
+                                    optionsDatasource="participantsRolesDs"/>
+                            <column id="user.position"/>
+                        </columns>
+                        <rows datasource="participantsDs"/>
+                        <buttonsPanel>
+                            <button action="participantsTable.create"/>
+                            <button action="participantsTable.remove"/>
+                        </buttonsPanel>
+                    </table>
+                </vbox>
+            </split>
         </split>
     </layout>
 </window>

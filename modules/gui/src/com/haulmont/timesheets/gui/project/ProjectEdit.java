@@ -26,7 +26,6 @@ import java.util.UUID;
  * @author gorelov
  */
 public class ProjectEdit extends AbstractEditor<Project> {
-
     @Inject
     protected FieldGroup fieldGroup;
     @Inject
@@ -34,24 +33,18 @@ public class ProjectEdit extends AbstractEditor<Project> {
     @Inject
     protected ProjectsService projectsService;
     @Inject
-    protected Table participantsTable;
-    @Inject
     protected Datasource<Project> projectDs;
 
     @Named("fieldGroup.parent")
     protected LookupPickerField parentField;
     @Named("fieldGroup.client")
     protected LookupPickerField clientField;
-    @Named("participantsTable.create")
-    protected CreateAction participantsTableCreate;
 
     @Override
     public void init(final Map<String, Object> params) {
 
         clientField.addAction(ComponentsHelper.createLookupAction(clientField));
         clientField.addClearAction();
-
-        participantsTableCreate.setOpenType(WindowManager.OpenType.DIALOG);
 
         projectDs.addListener(new DsListenerAdapter<Project>() {
             @Override
@@ -71,8 +64,6 @@ public class ProjectEdit extends AbstractEditor<Project> {
         });
 
         fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
-        ComponentsHelper.addRemoveColumn(participantsTable, "remove");
-
     }
 
     @Override

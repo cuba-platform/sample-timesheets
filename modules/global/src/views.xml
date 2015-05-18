@@ -62,7 +62,6 @@
                     <property name="firstName"/>
                     <property name="lastName"/>
                 </property>
-                <property name="code"/>
                 <property name="role">
                     <property name="name"/>
                 </property>
@@ -102,7 +101,6 @@
                 </property>
             </property>
         </property>
-        <property name="code"/>
         <property name="role"
                   view="_minimal"/>
     </view>

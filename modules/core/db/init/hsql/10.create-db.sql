@@ -166,8 +166,7 @@ create table TS_TIME_ENTRY (
     primary key (ID)
 )^
 -- end TS_TIME_ENTRY
--- begin TS_PROJECT_PARTICIPANT
-create table TS_PROJECT_PARTICIPANT (
+-- begin TS_PROJECT_PARTICIPANTcreate table TS_PROJECT_PARTICIPANT (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -179,7 +178,6 @@ create table TS_PROJECT_PARTICIPANT (
     --
     USER_ID varchar(36) not null,
     PROJECT_ID varchar(36) not null,
-    CODE varchar(50) not null,
     ROLE_ID varchar(36) not null,
     --
     primary key (ID)

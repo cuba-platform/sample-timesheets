@@ -40,73 +40,82 @@
             </query>
         </collectionDatasource>
     </dsContext>
-    <layout expand="windowActions"
+    <layout expand="tabsheet"
             spacing="true">
-        <grid spacing="true"
-              width="100%">
-            <columns>
-                <column/>
-                <column flex="1"/>
-            </columns>
-            <rows>
-                <row>
-                    <fieldGroup id="fieldGroup"
-                                datasource="taskDs">
-                        <column width="250px">
-                            <field id="name"/>
-                            <field id="code"/>
-                            <field id="description"
-                                   custom="true"/>
-                            <field id="project"/>
-                            <field id="type"
-                                   optionsDatasource="taskTypesDs"/>
-                            <field id="status"/>
-                        </column>
-                    </fieldGroup>
-                    <groupBox id="participantsBox"
-                              width="100%"
-                              height="100%"
-                              caption="msg://com.haulmont.timesheets.entity/Task.participants">
-                        <table id="participantsTable"
-                               columnControlVisible="false"
-                               width="100%"
-                               height="100%">
-                            <actions>
-                                <action id="add"/>
-                                <action id="remove"/>
-                            </actions>
-                            <columns>
-                                <column id="user"
-                                        link="true"/>
-                                <column id="role"/>
-                                <column id="user.position"/>
-                            </columns>
-                            <rows datasource="participantsDs"/>
-                            <buttonsPanel>
-                                <button action="participantsTable.add"/>
-                                <button action="participantsTable.remove"/>
-                            </buttonsPanel>
-                        </table>
-                    </groupBox>
-                </row>
-            </rows>
-        </grid>
-        <tokenList id="tagsTypesTokenList"
-                   caption="msg://com.haulmont.timesheets.entity/Task.requiredTagTypes"
-                   datasource="requiredTagTypesDs"
-                   inline="true"
-                   width="480px">
-            <button icon="icons/plus-btn.png"/>
-            <lookup optionsDatasource="allTagsTypesDs"/>
-        </tokenList>
-        <tokenList id="tagsTokenList"
-                   caption="msg://com.haulmont.timesheets.entity/Task.defaultTags"
-                   datasource="defaultTagsDs"
-                   inline="true"
-                   width="480px">
-            <button icon="icons/plus-btn.png"/>
-            <lookup optionsDatasource="allTagsDs"/>
-        </tokenList>
+        <tabSheet id="tabsheet">
+            <tab id="main"
+                 caption="msg://caption.main"
+                 margin="true">
+                <grid spacing="true"
+                      width="100%">
+                    <columns>
+                        <column/>
+                        <column flex="1.0"/>
+                    </columns>
+                    <rows>
+                        <row>
+                            <fieldGroup id="fieldGroup"
+                                        datasource="taskDs">
+                                <column width="250px">
+                                    <field id="name"/>
+                                    <field id="code"/>
+                                    <field id="description"
+                                           custom="true"/>
+                                    <field id="project"/>
+                                    <field id="type"
+                                           optionsDatasource="taskTypesDs"/>
+                                    <field id="status"/>
+                                </column>
+                            </fieldGroup>
+                        </row>
+                    </rows>
+                </grid>
+            </tab>
+            <tab id="advanced"
+                 caption="msg://caption.advanced"
+                 expand="participantsBox"
+                 margin="true">
+                <tokenList id="tagsTypesTokenList"
+                           caption="msg://com.haulmont.timesheets.entity/Task.requiredTagTypes"
+                           datasource="requiredTagTypesDs"
+                           inline="true"
+                           width="480px">
+                    <button icon="icons/plus-btn.png"/>
+                    <lookup optionsDatasource="allTagsTypesDs"/>
+                </tokenList>
+                <tokenList id="tagsTokenList"
+                           caption="msg://com.haulmont.timesheets.entity/Task.defaultTags"
+                           datasource="defaultTagsDs"
+                           inline="true"
+                           width="480px">
+                    <button icon="icons/plus-btn.png"/>
+                    <lookup optionsDatasource="allTagsDs"/>
+                </tokenList>
+                <groupBox id="participantsBox"
+                          caption="msg://com.haulmont.timesheets.entity/Task.participants">
+                    <table id="participantsTable"
+                           columnControlVisible="false"
+                           height="100%"
+                           width="100%">
+                        <actions>
+                            <action id="add"/>
+                            <action id="remove"/>
+                        </actions>
+                        <columns>
+                            <column id="user"
+                                    link="true"/>
+                            <column id="role"/>
+                            <column id="user.position"/>
+                        </columns>
+                        <rows datasource="participantsDs"/>
+                        <buttonsPanel>
+                            <button action="participantsTable.add"/>
+                            <button action="participantsTable.remove"/>
+                        </buttonsPanel>
+                    </table>
+                </groupBox>
+            </tab>
+        </tabSheet>
         <iframe id="windowActions"
                 screen="editWindowActions"
                 stylename="window-actions"/>
