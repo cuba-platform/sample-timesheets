@@ -14,10 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author gorelov
@@ -116,5 +113,21 @@ public class ProjectsServiceBean implements ProjectsService {
         CommitContext commitContext = new CommitContext();
         commitContext.getRemoveInstances().add(timeEntry);
         dataManager.commit(commitContext);
+    }
+
+    @Nonnull
+    @Override
+    public Map<String, Object> getAssignedTasks(@Nonnull Project project, @Nonnull User user) {
+        LoadContext loadContext = new LoadContext(Task.class)
+                .setView("task-full");
+        loadContext.setQueryString("select e from ts$Task e join e.participants p where p.user.id = :userId and e.project.id = :projectId and e.status = 10 order by e.project")
+                .setParameter("projectId", project.getId())
+                .setParameter("userId", user.getId());
+        List<Task> taskList = dataManager.loadList(loadContext);
+        Map<String, Object> tasksMap = new HashMap<>(taskList.size());
+        for (Task task : taskList) {
+            tasksMap.put(task.getName(), task);
+        }
+        return tasksMap;
     }
 }
