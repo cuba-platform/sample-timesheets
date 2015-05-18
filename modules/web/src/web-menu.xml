@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <menu-config xmlns="http://schemas.haulmont.com/cuba/5.4/menu.xsd">
-    <menu id="application"
+    <menu id="timesheets"
           insertBefore="administration">
-        <item id="ts$Client.browse"/>
-        <item id="ts$Holiday.browse"/>
-        <item id="ts$TaskType.browse"/>
-        <item id="ts$Tag.browse"/>
-        <item id="ts$TagType.browse"/>
-        <item id="ts$TimeEntry.browse"/>
+        <item id="simple-weekly-timesheets"/>
+        <item id="calendar-screen"/>
         <item id="ts$Task.browse"/>
+        <item id="ts$TimeEntry.browse"/>
+    </menu>
+    <menu id="projects"
+          insertAfter="timesheets">
+        <item id="ts$Client.browse"/>
         <item id="ts$Project.browse"/>
         <item id="approve-screen"/>
-        <item id="simple-weekly-timesheets"/>
     </menu>
-    <item id="calendar-screen"
-          insertBefore="administration"/>
+    <menu id="timesheet-settings"
+          insertAfter="projects">
+        <item id="ts$TaskType.browse"/>
+        <item id="ts$Holiday.browse"/>
+        <item id="ts$TagType.browse"/>
+        <item id="ts$Tag.browse"/>
+    </menu>
 </menu-config>
