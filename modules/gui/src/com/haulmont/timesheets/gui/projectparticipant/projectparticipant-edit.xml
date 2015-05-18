@@ -30,7 +30,6 @@
                 <field id="user"
                        optionsDatasource="usersDs"/>
                 <field id="project"/>
-                <field id="code"/>
                 <field id="role"
                        optionsDatasource="rolesDs"/>
             </column>

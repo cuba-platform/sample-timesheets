@@ -26,7 +26,6 @@
             <columns>
                 <column id="user"/>
                 <column id="project"/>
-                <column id="code"/>
                 <column id="role"/>
             </columns>
             <rows datasource="projectParticipantsDs"/>
