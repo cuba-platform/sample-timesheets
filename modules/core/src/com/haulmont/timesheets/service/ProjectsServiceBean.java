@@ -115,6 +115,13 @@ public class ProjectsServiceBean implements ProjectsService {
         dataManager.commit(commitContext);
     }
 
+    @Override
+    public void removeTimeEntries(List<TimeEntry> timeEntries) {
+        CommitContext commitContext = new CommitContext();
+        commitContext.getRemoveInstances().addAll(timeEntries);
+        dataManager.commit(commitContext);
+    }
+
     @Nonnull
     @Override
     public Map<String, Object> getAssignedTasks(@Nonnull Project project, @Nonnull User user) {

@@ -32,9 +32,7 @@
                         invoke="submitAll"/>
             </actions>
             <columns>
-                <column id="project"
-                        editable="true"
-                        optionsDatasource="projectsDs"/>
+                <column id="project"/>
                 <column id="task"/>
                 <column id="monday"
                         width="80px"/>

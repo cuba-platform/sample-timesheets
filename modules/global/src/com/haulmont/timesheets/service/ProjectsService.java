@@ -40,6 +40,8 @@ public interface ProjectsService {
 
     void removeTimeEntry(TimeEntry timeEntry);
 
+    void removeTimeEntries(List<TimeEntry> timeEntries);
+
     @Nonnull
     Map<String, Object> getAssignedTasks(@Nonnull Project project, @Nonnull User user);
 }

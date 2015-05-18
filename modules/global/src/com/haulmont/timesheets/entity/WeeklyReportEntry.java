@@ -8,8 +8,8 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import org.apache.commons.lang.time.DateUtils;
 
-import java.util.Calendar;
-import java.util.Date;
+import java.sql.Time;
+import java.util.*;
 
 /**
  * @author gorelov
@@ -287,6 +287,56 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
                 setSunday(timeEntry);
                 setSundayTime(null);
                 break;
+        }
+    }
+
+    public void updateTimeEntryRelativeToMondayDate(Date firstDayOfWeek, TimeEntry timeEntry) {
+        int monday = DateUtils.toCalendar(firstDayOfWeek).get(Calendar.DAY_OF_MONTH);
+        int fact = DateUtils.toCalendar(timeEntry.getDate()).get(Calendar.DAY_OF_MONTH);
+
+        switch (fact - monday) {
+            case 0: setMonday(timeEntry);
+                break;
+            case 1: setTuesday(timeEntry);
+                break;
+            case 2: setWednesday(timeEntry);
+                break;
+            case 3: setThursday(timeEntry);
+                break;
+            case 4: setFriday(timeEntry);
+                break;
+            case 5: setSaturday(timeEntry);
+                break;
+            case 6: setSunday(timeEntry);
+                break;
+        }
+    }
+
+    public boolean hasTimeEntries() {
+        for (DayOfWeek day : DayOfWeek.values()) {
+            if (getDayOfWeekTimeEntry(day) != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public List<TimeEntry> getExistTimeEntries() {
+        List<TimeEntry> timeEntries = null;
+        for (DayOfWeek day : DayOfWeek.values()) {
+            TimeEntry current = getDayOfWeekTimeEntry(day);
+            if (current != null) {
+                if (timeEntries == null) {
+                    timeEntries = new ArrayList<>();
+                }
+                timeEntries.add(current);
+            }
+        }
+
+        if (timeEntries != null) {
+            return timeEntries;
+        } else {
+            return Collections.emptyList();
         }
     }
 }
