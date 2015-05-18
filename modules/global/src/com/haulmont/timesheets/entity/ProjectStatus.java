@@ -8,14 +8,14 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 /**
  * @author gorelov
  */
-public enum ProjectStatus implements EnumClass<Integer>{
+public enum ProjectStatus implements EnumClass<Integer> {
 
     OPEN(10),
     CLOSED(20);
 
     private Integer id;
 
-    ProjectStatus (Integer value) {
+    ProjectStatus(Integer value) {
         this.id = value;
     }
 

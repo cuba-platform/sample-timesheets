@@ -17,6 +17,7 @@ import java.text.MessageFormat;
 @Table(name = "TS_TAG")
 @Entity(name = "ts$Tag")
 public class Tag extends StandardEntity {
+
     private static final long serialVersionUID = 7460355223234159296L;
 
     @Column(name = "NAME", nullable = false, length = 100)

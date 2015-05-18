@@ -8,13 +8,14 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 /**
  * @author gorelov
  */
-public enum TaskStatus implements EnumClass<Integer>{
+public enum TaskStatus implements EnumClass<Integer> {
+
     ACTIVE(10),
     INACTIVE(20);
 
     private Integer id;
 
-    TaskStatus (Integer value) {
+    TaskStatus(Integer value) {
         this.id = value;
     }
 

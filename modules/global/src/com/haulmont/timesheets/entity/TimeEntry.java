@@ -17,7 +17,6 @@ import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Set;
 
 /**
@@ -27,6 +26,7 @@ import java.util.Set;
 @Table(name = "TS_TIME_ENTRY")
 @Entity(name = "ts$TimeEntry")
 public class TimeEntry extends StandardEntity {
+
     private static final long serialVersionUID = -5042871389501734493L;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

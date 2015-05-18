@@ -10,6 +10,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author gorelov
@@ -38,4 +39,7 @@ public interface ProjectsService {
     List<Holiday> getHolidays();
 
     void removeTimeEntry(TimeEntry timeEntry);
+
+    @Nonnull
+    Map<String, Object> getAssignedTasks(@Nonnull Project project, @Nonnull User user);
 }

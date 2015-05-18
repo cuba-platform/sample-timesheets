@@ -20,6 +20,7 @@ import java.text.MessageFormat;
 @Entity(name = "ts$ExtUser")
 @Extends(User.class)
 public class ExtUser extends User {
+
     private static final long serialVersionUID = 4909893210504413352L;
 
     @Column(name = "WORK_HOURS_FOR_WEEK", nullable = false)
