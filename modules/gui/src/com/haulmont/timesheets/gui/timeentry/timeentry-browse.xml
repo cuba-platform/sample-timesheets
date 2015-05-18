@@ -34,7 +34,6 @@
                 <column id="date"/>
                 <column id="time"/>
                 <column id="status"/>
-                <column id="ticket"/>
                 <column id="description"
                         maxTextLength="20"/>
             </columns>

@@ -23,7 +23,9 @@ import java.util.Set;
  * @author gorelov
  */
 @NamePattern("#getCaption|time")
-@Table(name = "TS_TIME_ENTRY")
+@Table(name = "TS_TIME_ENTRY", uniqueConstraints = {
+    @UniqueConstraint(name = "IDX_TS_TIME_ENTRY_UNIQ_TASK_DATE", columnNames = {"TASK_ID", "DATE_"})
+})
 @Entity(name = "ts$TimeEntry")
 public class TimeEntry extends StandardEntity {
 
@@ -57,8 +59,6 @@ public class TimeEntry extends StandardEntity {
     @Column(name = "STATUS", nullable = false)
     protected Integer status;
 
-    @Column(name = "TICKET")
-    protected String ticket;
 
     @Column(name = "DESCRIPTION")
     protected String description;
@@ -96,13 +96,7 @@ public class TimeEntry extends StandardEntity {
         return timeDate;
     }
 
-    public void setTicket(String ticket) {
-        this.ticket = ticket;
-    }
 
-    public String getTicket() {
-        return ticket;
-    }
 
     public void setDescription(String description) {
         this.description = description;

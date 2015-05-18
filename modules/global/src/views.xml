@@ -44,7 +44,6 @@
         <property name="date"/>
         <property name="time"/>
         <property name="status"/>
-        <property name="ticket"/>
         <property name="description"/>
     </view>
     <view class="com.haulmont.timesheets.entity.Task"

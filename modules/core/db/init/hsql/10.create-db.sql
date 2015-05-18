@@ -160,13 +160,12 @@ create table TS_TIME_ENTRY (
     DATE_ date not null,
     TIME_ time not null,
     STATUS integer not null,
-    TICKET varchar(255),
     DESCRIPTION varchar(255),
     --
     primary key (ID)
-)^
--- end TS_TIME_ENTRY
--- begin TS_PROJECT_PARTICIPANTcreate table TS_PROJECT_PARTICIPANT (
+)^-- end TS_TIME_ENTRY
+-- begin TS_PROJECT_PARTICIPANT
+create table TS_PROJECT_PARTICIPANT (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),

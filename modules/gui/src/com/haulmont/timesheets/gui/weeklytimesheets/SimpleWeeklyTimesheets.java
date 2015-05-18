@@ -213,7 +213,12 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                 // TODO: add new caches
                 if (Operation.REMOVE.equals(operation) || Operation.CLEAR.equals(operation)) {
                     for (WeeklyReportEntry entry : items) {
-                        tasksLookupFieldsCache.remove(getKeyForEntity(entry, taskColumnId));
+                        String projectKey = getKeyForEntity(entry, projectColumnId);
+                        projectsLookupFieldsCache.remove(projectKey);
+                        projectsLabelsCache.remove(projectKey);
+                        String taskKey = getKeyForEntity(entry, taskColumnId);
+                        tasksLookupFieldsCache.remove(taskKey);
+                        tasksLabelsCache.remove(taskKey);
                         for (final DayOfWeek day : DayOfWeek.values()) {
                             String key = getKeyForEntity(entry, day.getId());
                             timeFieldsCache.remove(key);
