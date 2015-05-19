@@ -1,3 +1,5 @@
+--The following field used to emulate unique index with null value
+--Base HSQL unique index does not support nulls http://hsqldb.org/doc/guide/ch02.html#N102DF
 alter table TS_TIME_ENTRY add column INDEX_FIELD varchar(100) GENERATED ALWAYS AS (TASK_ID || ' ' || DATE_ || ' ' || case when DELETE_TS is not null then 'DELETED' else 'NOT_DELETED' end )^
 create unique index IDX_TS_TIME_ENTRY_UNIQ_TASK_DATE on TS_TIME_ENTRY (INDEX_FIELD)^
 
