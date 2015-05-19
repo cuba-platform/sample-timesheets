@@ -10,6 +10,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
+import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.haulmont.timesheets.entity.Holiday;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.gui.holiday.HolidayEdit;
@@ -17,11 +18,13 @@ import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
 import com.haulmont.timesheets.service.ProjectsService;
 import com.haulmont.timesheets.web.toolkit.ui.TimeSheetsCalendar;
 import com.vaadin.event.Action;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Calendar;
 import com.vaadin.ui.Layout;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents;
 import com.vaadin.ui.components.calendar.CalendarDateRange;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
+import com.vaadin.ui.components.calendar.event.CalendarEventProvider;
 import org.apache.commons.lang.time.DateUtils;
 
 import javax.inject.Inject;
@@ -33,9 +36,10 @@ import java.util.Map;
  * @author gorelov
  */
 public class CalendarScreen extends AbstractWindow {
-
     @Inject
     protected BoxLayout calBox;
+    @Inject
+    private BoxLayout summaryBox;
     @Inject
     protected Label monthLabel;
     @Inject
@@ -44,7 +48,9 @@ public class CalendarScreen extends AbstractWindow {
     protected Messages messages;
 
     protected TimeSheetsCalendar calendar;
+
     protected Date firstDayOfMonth;
+
     protected TimeSheetsCalendarEventProvider dataSource;
 
     @Override
@@ -79,13 +85,70 @@ public class CalendarScreen extends AbstractWindow {
         updateCalendarRange();
         updateMonthCaption();
 
-        Layout layout = WebComponentsHelper.unwrap(calBox);
-        layout.addComponent(calendar);
+        Layout calendarLayout = WebComponentsHelper.unwrap(calBox);
+        calendarLayout.addComponent(calendar);
+
+        updateSummary();
+        dataSource.addEventSetChangeListener(new CalendarEventProvider.EventSetChangeListener() {
+            @Override
+            public void eventSetChange(CalendarEventProvider.EventSetChangeEvent changeEvent) {
+                updateSummary();
+            }
+        });
+    }
+
+    protected void updateSummary() {
+        summaryBox.removeAll();
+        CubaVerticalActionsLayout summaryLayout = WebComponentsHelper.unwrap(summaryBox);
+        CubaVerticalActionsLayout upperSpacer = new CubaVerticalActionsLayout();
+        upperSpacer.setHeight("30px");
+        summaryLayout.addComponent(upperSpacer);
+
+        HoursAndMinutes[] summariesByWeeks = calculateSummariesByWeeks();
+
+        for (int i = 1; i < summariesByWeeks.length; i++) {
+            com.vaadin.ui.Label label = new com.vaadin.ui.Label();
+            label.setContentMode(ContentMode.HTML);
+            HoursAndMinutes summaryForTheWeek = summariesByWeeks[i];
+            if (summaryForTheWeek == null) {
+                summaryForTheWeek = new HoursAndMinutes();
+            }
+            label.setValue(formatMessage("label.hoursSummary",
+                    summaryForTheWeek.getSummaryHours(), summaryForTheWeek.getSummaryMinutes()));
+            label.setWidthUndefined();
+            summaryLayout.addComponent(label);
+            summaryLayout.setExpandRatio(label, 1);
+            summaryLayout.setComponentAlignment(label, com.vaadin.ui.Alignment.MIDDLE_CENTER);
+        }
+    }
+
+    protected HoursAndMinutes[] calculateSummariesByWeeks() {Date start = firstDayOfMonth;
+        java.util.Calendar javaCalendar = java.util.Calendar.getInstance();
+        javaCalendar.setTime(firstDayOfMonth);
+        int countOfWeeksInTheMonth = javaCalendar.getActualMaximum(java.util.Calendar.WEEK_OF_MONTH);
+        Date end = getLastDayOfMonth();
+        List<CalendarEvent> events = dataSource.getEvents(start, end);
+        HoursAndMinutes[] summariesByWeeks = new HoursAndMinutes[countOfWeeksInTheMonth + 1];
+        for (CalendarEvent event : events) {
+            javaCalendar.setTime(event.getEnd());
+            int numberOfWeekForTheEvent = javaCalendar.get(java.util.Calendar.WEEK_OF_MONTH);
+            HoursAndMinutes summaryForTheWeek = summariesByWeeks[numberOfWeekForTheEvent];
+            if (summaryForTheWeek == null) {
+                summaryForTheWeek = new HoursAndMinutes();
+            }
+            summaryForTheWeek.hours = summaryForTheWeek.hours + javaCalendar.get(java.util.Calendar.HOUR_OF_DAY);
+            summaryForTheWeek.minutes = summaryForTheWeek.minutes + javaCalendar.get(java.util.Calendar.MINUTE);
+
+            summariesByWeeks[numberOfWeekForTheEvent] = summaryForTheWeek;
+        }
+        return summariesByWeeks;
     }
 
     public void updateCalendarRange() {
         calendar.setStartDate(firstDayOfMonth);
-        calendar.setEndDate(getEndDate());
+        calendar.setEndDate(getLastDayOfMonth());
+
+        updateSummary();
     }
 
     public void moveNextMonth() {
@@ -148,7 +211,7 @@ public class CalendarScreen extends AbstractWindow {
         return calendar.getTime();
     }
 
-    protected Date getEndDate() {
+    protected Date getLastDayOfMonth() {
         java.util.Calendar calendar = DateUtils.toCalendar(firstDayOfMonth);
         calendar.set(java.util.Calendar.DAY_OF_MONTH, calendar.getActualMaximum(java.util.Calendar.DAY_OF_MONTH));
         return calendar.getTime();
@@ -213,8 +276,7 @@ public class CalendarScreen extends AbstractWindow {
                     showNotification(messages.getMessage(getClass(), "cantDeleteHoliday"), NotificationType.WARNING);
                 } else if (target instanceof TimeEntryCalendarEventAdapter) {
                     TimeEntryCalendarEventAdapter event = (TimeEntryCalendarEventAdapter) target;
-                    calendar.removeEvent(event);
-                    confirmAndRemove(event.getTimeEntry());
+                    confirmAndRemove(event);
 
                 } else {
                     showNotification(messages.getMessage(getClass(), "cantDeleteTimeEntry"), NotificationType.WARNING);
@@ -222,17 +284,18 @@ public class CalendarScreen extends AbstractWindow {
             }
         }
 
-        protected void confirmAndRemove(final TimeEntry timeEntry) {
+        protected void confirmAndRemove(final TimeEntryCalendarEventAdapter event) {
             final String messagesPackage = AppConfig.getMessagesPack();
             getFrame().showOptionDialog(
                     getConfirmationTitle(messagesPackage),
                     getConfirmationMessage(messagesPackage),
-                    IFrame.MessageType.CONFIRMATION,
+                    MessageType.CONFIRMATION,
                     new com.haulmont.cuba.gui.components.Action[]{
                             new DialogAction(DialogAction.Type.OK) {
                                 @Override
                                 public void actionPerform(Component component) {
-                                    doRemove(timeEntry);
+                                    calendar.removeEvent(event);
+                                    doRemove(event.getTimeEntry());
                                 }
                             },
                             new DialogAction(DialogAction.Type.CANCEL)
@@ -256,6 +319,19 @@ public class CalendarScreen extends AbstractWindow {
                 return confirmationTitle;
             else
                 return messages.getMessage(messagesPackage, "dialogs.Confirmation");
+        }
+    }
+
+    protected static class HoursAndMinutes {
+        protected int hours = 0;
+        protected int minutes = 0;
+
+        protected int getSummaryHours() {
+            return hours + minutes / 60;
+        }
+
+        protected int getSummaryMinutes() {
+            return minutes % 60;
         }
     }
 }
