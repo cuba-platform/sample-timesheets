@@ -127,7 +127,7 @@ public class ProjectsServiceBean implements ProjectsService {
     public Map<String, Object> getAssignedTasks(@Nonnull Project project, @Nonnull User user) {
         LoadContext loadContext = new LoadContext(Task.class)
                 .setView("task-full");
-        loadContext.setQueryString("select e from ts$Task e join e.participants p where p.user.id = :userId and e.project.id = :projectId and e.status = 10 order by e.project")
+        loadContext.setQueryString("select e from ts$Task e join e.participants p where p.user.id = :userId and e.project.id = :projectId and e.status = 'active' order by e.project")
                 .setParameter("projectId", project.getId())
                 .setParameter("userId", user.getId());
         List<Task> taskList = dataManager.loadList(loadContext);

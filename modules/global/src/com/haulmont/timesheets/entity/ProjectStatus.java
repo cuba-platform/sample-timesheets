@@ -8,22 +8,22 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 /**
  * @author gorelov
  */
-public enum ProjectStatus implements EnumClass<Integer> {
+public enum ProjectStatus implements EnumClass<String> {
 
-    OPEN(10),
-    CLOSED(20);
+    OPEN("open"),
+    CLOSED("closed");
 
-    private Integer id;
+    private String id;
 
-    ProjectStatus(Integer value) {
+    ProjectStatus(String value) {
         this.id = value;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public static ProjectStatus fromId(Integer id) {
+    public static ProjectStatus fromId(String id) {
         for (ProjectStatus at : ProjectStatus.values()) {
             if (at.getId().equals(id)) {
                 return at;

@@ -102,8 +102,7 @@ create table TS_TAG_TYPE (
     --
     primary key (ID)
 )^-- end TS_TAG_TYPE
--- begin TS_PROJECT
-create table TS_PROJECT (
+-- begin TS_PROJECTcreate table TS_PROJECT (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -118,12 +117,11 @@ create table TS_PROJECT (
     PARENT_ID varchar(36),
     CLIENT_ID varchar(36) not null,
     DESCRIPTION varchar(255),
-    STATUS integer not null,
+    STATUS varchar(50) not null,
     --
     primary key (ID)
 )^-- end TS_PROJECT
--- begin TS_TASK
-create table TS_TASK (
+-- begin TS_TASKcreate table TS_TASK (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -138,12 +136,11 @@ create table TS_TASK (
     DESCRIPTION varchar(255),
     PROJECT_ID varchar(36) not null,
     TYPE_ID varchar(36) not null,
-    STATUS integer not null,
+    STATUS varchar(50) not null,
     --
     primary key (ID)
 )^-- end TS_TASK
--- begin TS_TIME_ENTRY
-create table TS_TIME_ENTRY (
+-- begin TS_TIME_ENTRYcreate table TS_TIME_ENTRY (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -158,7 +155,7 @@ create table TS_TIME_ENTRY (
     USER_ID varchar(36) not null,
     DATE_ date not null,
     TIME_ time not null,
-    STATUS integer not null,
+    STATUS varchar(50) not null,
     DESCRIPTION varchar(255),
     --
     primary key (ID)

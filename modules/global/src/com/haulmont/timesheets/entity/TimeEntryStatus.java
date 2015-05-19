@@ -8,23 +8,23 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 /**
  * @author gorelov
  */
-public enum TimeEntryStatus implements EnumClass<Integer> {
+public enum TimeEntryStatus implements EnumClass<String> {
 
-    NEW(10),
-    APPROVED(20),
-    REJECTED(30);
+    NEW("new"),
+    APPROVED("approved"),
+    REJECTED("rejected");
 
-    private Integer id;
+    private String id;
 
-    TimeEntryStatus(Integer value) {
+    TimeEntryStatus(String value) {
         this.id = value;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public static TimeEntryStatus fromId(Integer id) {
+    public static TimeEntryStatus fromId(String id) {
         for (TimeEntryStatus at : TimeEntryStatus.values()) {
             if (at.getId().equals(id)) {
                 return at;

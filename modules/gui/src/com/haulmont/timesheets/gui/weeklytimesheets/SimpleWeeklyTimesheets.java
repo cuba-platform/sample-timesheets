@@ -212,7 +212,6 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         weeklyEntriesDs.addListener(new CollectionDsListenerAdapter<WeeklyReportEntry>() {
             @Override
             public void collectionChanged(CollectionDatasource ds, Operation operation, List<WeeklyReportEntry> items) {
-                // TODO: add new caches
                 if (Operation.REMOVE.equals(operation) || Operation.CLEAR.equals(operation)) {
                     for (WeeklyReportEntry entry : items) {
                         String projectKey = getKeyForEntity(entry, projectColumnId);

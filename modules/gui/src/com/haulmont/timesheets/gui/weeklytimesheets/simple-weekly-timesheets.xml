@@ -12,7 +12,7 @@
                               class="com.haulmont.timesheets.entity.Project"
                               view="project-full">
             <query>
-                <![CDATA[select e from ts$Project e join e.tasks t join t.participants p where p.user.id = :session$userId and t.status = 10 order by e.name]]>
+                <![CDATA[select e from ts$Project e join e.tasks t join t.participants p where p.user.id = :session$userId and t.status = 'active' order by e.name]]>
             </query>
         </collectionDatasource>
     </dsContext>

@@ -40,7 +40,7 @@ public class Task extends StandardEntity {
     protected TaskType type;
 
     @Column(name = "STATUS", nullable = false)
-    protected Integer status;
+    protected String status;
 
     @JoinTable(name = "TS_TASK_TAG_TYPE_LINK",
             joinColumns = @JoinColumn(name = "TASK_ID"),
@@ -65,6 +65,14 @@ public class Task extends StandardEntity {
     @OneToMany(mappedBy = "task")
     protected Set<TimeEntry> timeEntries;
 
+    public TaskStatus getStatus() {
+        return status == null ? null : TaskStatus.fromId(status);
+    }
+
+    public void setStatus(TaskStatus status) {
+        this.status = status == null ? null : status.getId();
+    }
+
     public void setRequiredTagTypes(Set<TagType> requiredTagTypes) {
         this.requiredTagTypes = requiredTagTypes;
     }
@@ -72,7 +80,6 @@ public class Task extends StandardEntity {
     public Set<TagType> getRequiredTagTypes() {
         return requiredTagTypes;
     }
-
 
     public void setTimeEntries(Set<TimeEntry> timeEntries) {
         this.timeEntries = timeEntries;
@@ -82,7 +89,6 @@ public class Task extends StandardEntity {
         return timeEntries;
     }
 
-
     public void setParticipants(Set<ProjectParticipant> participants) {
         this.participants = participants;
     }
@@ -90,7 +96,6 @@ public class Task extends StandardEntity {
     public Set<ProjectParticipant> getParticipants() {
         return participants;
     }
-
 
     public String getCode() {
         return code;
@@ -100,7 +105,6 @@ public class Task extends StandardEntity {
         this.code = code;
     }
 
-
     public void setDefaultTags(Set<Tag> defaultTags) {
         this.defaultTags = defaultTags;
     }
@@ -109,16 +113,6 @@ public class Task extends StandardEntity {
         return defaultTags;
     }
 
-
-    public void setStatus(TaskStatus status) {
-        this.status = status == null ? null : status.getId();
-    }
-
-    public TaskStatus getStatus() {
-        return status == null ? null : TaskStatus.fromId(status);
-    }
-
-
     public TaskType getType() {
         return type;
     }
@@ -126,7 +120,6 @@ public class Task extends StandardEntity {
     public void setType(TaskType type) {
         this.type = type;
     }
-
 
     public void setDescription(String description) {
         this.description = description;
@@ -144,7 +137,6 @@ public class Task extends StandardEntity {
         return project;
     }
 
-
     public void setName(String name) {
         this.name = name;
     }
@@ -152,6 +144,4 @@ public class Task extends StandardEntity {
     public String getName() {
         return name;
     }
-
-
 }

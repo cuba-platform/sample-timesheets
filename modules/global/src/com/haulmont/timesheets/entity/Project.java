@@ -40,8 +40,7 @@ public class Project extends StandardEntity {
     protected String description;
 
     @Column(name = "STATUS", nullable = false)
-    protected Integer status;
-
+    protected String status;
 
     @Composition
     @OnDelete(DeletePolicy.CASCADE)
@@ -50,6 +49,13 @@ public class Project extends StandardEntity {
 
     @OneToMany(mappedBy = "project")
     protected Set<Task> tasks;
+    public ProjectStatus getStatus() {
+        return status == null ? null : ProjectStatus.fromId(status);
+    }
+
+    public void setStatus(ProjectStatus status) {
+        this.status = status == null ? null : status.getId();
+    }
 
     public String getCode() {
         return code;
@@ -77,16 +83,6 @@ public class Project extends StandardEntity {
         return tasks;
     }
 
-
-    public void setStatus(ProjectStatus status) {
-        this.status = status == null ? null : status.getId();
-    }
-
-    public ProjectStatus getStatus() {
-        return status == null ? null : ProjectStatus.fromId(status);
-    }
-
-
     public void setParent(Project parent) {
         this.parent = parent;
     }
@@ -110,7 +106,6 @@ public class Project extends StandardEntity {
     public String getDescription() {
         return description;
     }
-
 
     public void setName(String name) {
         this.name = name;

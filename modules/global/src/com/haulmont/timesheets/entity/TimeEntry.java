@@ -24,7 +24,7 @@ import java.util.Set;
  */
 @NamePattern("#getCaption|time")
 @Table(name = "TS_TIME_ENTRY", uniqueConstraints = {
-    @UniqueConstraint(name = "IDX_TS_TIME_ENTRY_UNIQ_TASK_DATE", columnNames = {"TASK_ID", "DATE_"})
+        @UniqueConstraint(name = "IDX_TS_TIME_ENTRY_UNIQ_TASK_DATE", columnNames = {"TASK_ID", "DATE_"})
 })
 @Entity(name = "ts$TimeEntry")
 public class TimeEntry extends StandardEntity {
@@ -57,11 +57,18 @@ public class TimeEntry extends StandardEntity {
     protected Date time;
 
     @Column(name = "STATUS", nullable = false)
-    protected Integer status;
-
+    protected String status;
 
     @Column(name = "DESCRIPTION")
     protected String description;
+
+    public TimeEntryStatus getStatus() {
+        return status == null ? null : TimeEntryStatus.fromId(status);
+    }
+
+    public void setStatus(TimeEntryStatus status) {
+        this.status = status == null ? null : status.getId();
+    }
 
     public Set<Tag> getTags() {
         return tags;
@@ -70,16 +77,6 @@ public class TimeEntry extends StandardEntity {
     public void setTags(Set<Tag> tags) {
         this.tags = tags;
     }
-
-
-    public void setStatus(TimeEntryStatus status) {
-        this.status = status == null ? null : status.getId();
-    }
-
-    public TimeEntryStatus getStatus() {
-        return status == null ? null : TimeEntryStatus.fromId(status);
-    }
-
 
     public void setTime(Date time) {
         this.time = time;
@@ -96,8 +93,6 @@ public class TimeEntry extends StandardEntity {
         return timeDate;
     }
 
-
-
     public void setDescription(String description) {
         this.description = description;
     }
@@ -105,7 +100,6 @@ public class TimeEntry extends StandardEntity {
     public String getDescription() {
         return description;
     }
-
 
     public void setTaskName(String taskName) {
         this.taskName = taskName;
@@ -130,7 +124,6 @@ public class TimeEntry extends StandardEntity {
     public Date getDate() {
         return date;
     }
-
 
     public void setTask(Task task) {
         this.task = task;

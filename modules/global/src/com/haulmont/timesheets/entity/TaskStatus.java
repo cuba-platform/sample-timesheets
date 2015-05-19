@@ -8,22 +8,22 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 /**
  * @author gorelov
  */
-public enum TaskStatus implements EnumClass<Integer> {
+public enum TaskStatus implements EnumClass<String> {
 
-    ACTIVE(10),
-    INACTIVE(20);
+    ACTIVE("active"),
+    INACTIVE("inactive");
 
-    private Integer id;
+    private String id;
 
-    TaskStatus(Integer value) {
+    TaskStatus(String value) {
         this.id = value;
     }
 
-    public Integer getId() {
+    public String getId() {
         return id;
     }
 
-    public static TaskStatus fromId(Integer id) {
+    public static TaskStatus fromId(String id) {
         for (TaskStatus at : TaskStatus.values()) {
             if (at.getId().equals(id)) {
                 return at;
