@@ -30,16 +30,22 @@ import java.util.Map;
  * @author gorelov
  */
 public class ProjectBrowse extends AbstractLookup {
+
     @Inject
     protected TreeTable projectsTable;
     @Inject
     protected Table tasksTable;
     @Inject
     protected Table participantsTable;
-    @Named("participantsTable.create")
-    protected CreateAction participantsTableCreate;
     @Inject
     protected UserSessionSource userSessionSource;
+
+    @Named("participantsTable.create")
+    protected CreateAction participantsTableCreate;
+    @Named("participantsTable.edit")
+    protected EditAction participantsTableEdit;
+    @Named("tasksTable.edit")
+    protected EditAction tasksTableEdit;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -75,6 +81,7 @@ public class ProjectBrowse extends AbstractLookup {
             }
         });
         participantsTableCreate.setOpenType(WindowManager.OpenType.DIALOG);
+        participantsTableEdit.setOpenType(WindowManager.OpenType.DIALOG);
 
         ComponentsHelper.addRemoveColumn(participantsTable, "remove");
     }
@@ -82,11 +89,17 @@ public class ProjectBrowse extends AbstractLookup {
     private void initTasksTable() {
         tasksTable.addAction(new CreateAction(tasksTable){
             @Override
+            public WindowManager.OpenType getOpenType() {
+                return WindowManager.OpenType.DIALOG;
+            }
+
+            @Override
             public Map<String, Object> getInitialValues() {
                 return ParamsMap.of("project", projectsTable.getSingleSelected());
             }
         });
         tasksTable.addAction(new ComponentsHelper.TaskStatusTrackingAction(tasksTable, "switchStatus"));
+        tasksTableEdit.setOpenType(WindowManager.OpenType.DIALOG);
 
         tasksTable.setStyleProvider(new Table.StyleProvider() {
             @Nullable

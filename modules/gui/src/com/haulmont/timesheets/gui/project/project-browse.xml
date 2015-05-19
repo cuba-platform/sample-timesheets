@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
         caption="msg://browseCaption"
         class="com.haulmont.timesheets.gui.project.ProjectBrowse"
         focusComponent="projectsTable"
@@ -28,12 +28,6 @@
                 <![CDATA[select p from ts$ProjectParticipant p where p.project.id = :ds$projectsDs]]>
             </query>
         </collectionDatasource>
-        <collectionDatasource id="participantsRolesDs"
-                              class="com.haulmont.timesheets.entity.ProjectRole">
-            <query>
-                <![CDATA[select e from ts$ProjectRole e]]>
-            </query>
-        </collectionDatasource>
     </dsContext>
     <layout expand="split"
             spacing="true">
@@ -43,13 +37,12 @@
         </filter>
         <split id="split"
                orientation="horizontal"
-               pos="21"
                width="100%">
             <vbox height="100%"
                   margin="false,true,false,false"
-                  spacing="true">
+                  spacing="true"
+                  expand="projectsTable">
                 <treeTable id="projectsTable"
-                           height="100%"
                            width="100%">
                     <actions>
                         <action id="create"/>
@@ -75,12 +68,10 @@
                     </buttonsPanel>
                 </treeTable>
             </vbox>
-            <tabSheet>
-                <tab id="tasks" caption="msg://caption.tasks" margin="true;false;false;false">
-                    <vbox height="100%"
-                          margin="false,false,false,true">
+            <vbox height="100%" margin="false,false,false,true">
+                <tabSheet height="100%" width="100%">
+                    <tab id="tasks" caption="msg://caption.tasks" margin="true;false;false;false" expand="tasksTable">
                         <table id="tasksTable"
-                               height="100%"
                                width="100%">
                             <actions>
                                 <action id="create"/>
@@ -108,38 +99,35 @@
                                         action="tasksTable.switchStatus"/>
                             </buttonsPanel>
                         </table>
-                    </vbox>
-                </tab>
+                    </tab>
 
-                <tab id="participants" caption="msg://caption.participants" margin="true;false;false;false">
-                    <vbox height="100%"
-                          margin="false,false,false,true">
+                    <tab id="participants" caption="msg://caption.participants"
+                         margin="true;false;false;false" expand="participantsTable">
                         <table id="participantsTable"
                                columnControlVisible="false"
                                editable="true"
-                               height="100%"
                                width="100%">
                             <actions>
                                 <action id="create"/>
+                                <action id="edit"/>
                                 <action id="remove"/>
                             </actions>
                             <columns>
                                 <column id="user"
                                         link="true"/>
-                                <column id="role"
-                                        editable="true"
-                                        optionsDatasource="participantsRolesDs"/>
+                                <column id="role"/>
                                 <column id="user.position"/>
                             </columns>
                             <rows datasource="participantsDs"/>
                             <buttonsPanel>
                                 <button action="participantsTable.create"/>
+                                <button action="participantsTable.edit"/>
                                 <button action="participantsTable.remove"/>
                             </buttonsPanel>
                         </table>
-                    </vbox>
-                </tab>
-            </tabSheet>
+                    </tab>
+                </tabSheet>
+            </vbox>
         </split>
     </layout>
 </window>
