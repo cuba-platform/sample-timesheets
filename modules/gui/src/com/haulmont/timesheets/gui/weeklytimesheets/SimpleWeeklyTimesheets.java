@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
+import com.haulmont.timesheets.global.TimeUtils;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.service.ProjectsService;
 import org.apache.commons.lang.time.DateUtils;
@@ -56,7 +57,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
     protected Map<String, Label> labelsCache = new HashMap<>();
     protected Map<String, LookupField> lookupFieldsCache = new HashMap<>();
-    protected Map<String, TimeField> timeFieldsCache = new HashMap<>();
+    protected Map<String, TextField> timeFieldsCache = new HashMap<>();
     protected Map<String, EntityLinkField> linkFieldsCache = new HashMap<>();
 
     protected Date firstDayOfWeek;
@@ -159,7 +160,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         if (timeFieldsCache.containsKey(key)) {
                             return timeFieldsCache.get(key);
                         } else {
-                            TimeField timeField = componentsFactory.createComponent(TimeField.NAME);
+                            TextField timeField = componentsFactory.createComponent(TextField.NAME);
+                            timeField.setWidth("100%");
                             timeField.setDatasource(weeklyTsTable.getItemDatasource(entity), day.getId() + "Time");
                             timeFieldsCache.put(key, timeField);
                             return timeField;
@@ -242,7 +244,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         for (WeeklyReportEntry reportEntry : entries) {
             if (reportEntry.getTask() != null) {
                 for (final DayOfWeek day : DayOfWeek.values()) {
-                    Date time = reportEntry.getDayOfWeekTime(day);
+                    String timeStr = reportEntry.getDayOfWeekTime(day);
+                    Date time = TimeUtils.parse(timeStr);
                     if (time != null) {
                         TimeEntry timeEntry = new TimeEntry();
                         timeEntry.setStatus(TimeEntryStatus.NEW);
@@ -309,14 +312,14 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             addTimeEntryToMap(timeEntry);
         }
 
-        for (Project project : timeEntriesForWeekMap.keySet()) {
-            for (Task task : timeEntriesForWeekMap.get(project).keySet()) {
+        for (Map.Entry<Project, Map<Task, List<TimeEntry>>> projectEntry : timeEntriesForWeekMap.entrySet()) {
+            for (Map.Entry<Task, List<TimeEntry>> taskEntry : projectEntry.getValue().entrySet()) {
                 WeeklyReportEntry reportEntry = new WeeklyReportEntry();
-                reportEntry.setProject(project);
-                reportEntry.setTask(task);
+                reportEntry.setProject(projectEntry.getKey());
+                reportEntry.setTask(taskEntry.getKey());
                 weeklyEntriesDs.addItem(reportEntry);
-                for (TimeEntry timeEntry : timeEntriesForWeekMap.get(project).get(task)) {
-                    reportEntry.updateTimeEntryRelativeToMondayDate(firstDayOfWeek, timeEntry);
+                for (TimeEntry timeEntry : taskEntry.getValue()) {
+                    reportEntry.updateTimeEntry(timeEntry);
                 }
             }
         }

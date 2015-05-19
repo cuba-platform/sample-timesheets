@@ -8,7 +8,6 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import org.apache.commons.lang.time.DateUtils;
 
-import java.sql.Time;
 import java.util.*;
 
 /**
@@ -47,25 +46,25 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
     protected TimeEntry sunday;
 
     @MetaProperty
-    protected Date mondayTime;
+    protected String mondayTime;
 
     @MetaProperty
-    protected Date tuesdayTime;
+    protected String tuesdayTime;
 
     @MetaProperty
-    protected Date wednesdayTime;
+    protected String wednesdayTime;
 
     @MetaProperty
-    protected Date thursdayTime;
+    protected String thursdayTime;
 
     @MetaProperty
-    protected Date fridayTime;
+    protected String fridayTime;
 
     @MetaProperty
-    protected Date saturdayTime;
+    protected String saturdayTime;
 
     @MetaProperty
-    protected Date sundayTime;
+    protected String sundayTime;
 
     public String getTotal() {
         int hours = 0;
@@ -86,59 +85,59 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
         return String.format("%02d:%02d", hours, minutes);
     }
 
-    public void setMondayTime(Date mondayTime) {
+    public void setMondayTime(String mondayTime) {
         this.mondayTime = mondayTime;
     }
 
-    public Date getMondayTime() {
+    public String getMondayTime() {
         return mondayTime;
     }
 
-    public void setTuesdayTime(Date tuesdayTime) {
+    public void setTuesdayTime(String tuesdayTime) {
         this.tuesdayTime = tuesdayTime;
     }
 
-    public Date getTuesdayTime() {
+    public String getTuesdayTime() {
         return tuesdayTime;
     }
 
-    public void setWednesdayTime(Date wednesdayTime) {
+    public void setWednesdayTime(String wednesdayTime) {
         this.wednesdayTime = wednesdayTime;
     }
 
-    public Date getWednesdayTime() {
+    public String getWednesdayTime() {
         return wednesdayTime;
     }
 
-    public void setThursdayTime(Date thursdayTime) {
+    public void setThursdayTime(String thursdayTime) {
         this.thursdayTime = thursdayTime;
     }
 
-    public Date getThursdayTime() {
+    public String getThursdayTime() {
         return thursdayTime;
     }
 
-    public void setFridayTime(Date fridayTime) {
+    public void setFridayTime(String fridayTime) {
         this.fridayTime = fridayTime;
     }
 
-    public Date getFridayTime() {
+    public String getFridayTime() {
         return fridayTime;
     }
 
-    public void setSaturdayTime(Date saturdayTime) {
+    public void setSaturdayTime(String saturdayTime) {
         this.saturdayTime = saturdayTime;
     }
 
-    public Date getSaturdayTime() {
+    public String getSaturdayTime() {
         return saturdayTime;
     }
 
-    public void setSundayTime(Date sundayTime) {
+    public void setSundayTime(String sundayTime) {
         this.sundayTime = sundayTime;
     }
 
-    public Date getSundayTime() {
+    public String getSundayTime() {
         return sundayTime;
     }
 
@@ -236,7 +235,7 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
         }
     }
 
-    public Date getDayOfWeekTime(DayOfWeek day) {
+    public String getDayOfWeekTime(DayOfWeek day) {
         switch (day) {
             case MONDAY:
                 return getMondayTime();
@@ -290,24 +289,30 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
         }
     }
 
-    public void updateTimeEntryRelativeToMondayDate(Date firstDayOfWeek, TimeEntry timeEntry) {
-        int monday = DateUtils.toCalendar(firstDayOfWeek).get(Calendar.DAY_OF_MONTH);
-        int fact = DateUtils.toCalendar(timeEntry.getDate()).get(Calendar.DAY_OF_MONTH);
+    public void updateTimeEntry(TimeEntry timeEntry) {
+        int day = DateUtils.toCalendar(timeEntry.getDate()).get(Calendar.DAY_OF_WEEK);
 
-        switch (fact - monday) {
-            case 0: setMonday(timeEntry);
+        switch (day) {
+            case Calendar.MONDAY:
+                setMonday(timeEntry);
                 break;
-            case 1: setTuesday(timeEntry);
+            case Calendar.TUESDAY:
+                setTuesday(timeEntry);
                 break;
-            case 2: setWednesday(timeEntry);
+            case Calendar.WEDNESDAY:
+                setWednesday(timeEntry);
                 break;
-            case 3: setThursday(timeEntry);
+            case Calendar.THURSDAY:
+                setThursday(timeEntry);
                 break;
-            case 4: setFriday(timeEntry);
+            case Calendar.FRIDAY:
+                setFriday(timeEntry);
                 break;
-            case 5: setSaturday(timeEntry);
+            case Calendar.SATURDAY:
+                setSaturday(timeEntry);
                 break;
-            case 6: setSunday(timeEntry);
+            case Calendar.SUNDAY:
+                setSunday(timeEntry);
                 break;
         }
     }
