@@ -22,15 +22,10 @@ import java.util.*;
  */
 public class ProjectParticipantEdit extends AbstractEditor<ProjectParticipant> {
 
-    @Inject
-    protected Datasource<ProjectParticipant> projectParticipantDs;
-
     @Named("fieldGroup.user")
     protected LookupPickerField userField;
     @Named("fieldGroup.project")
     protected PickerField projectField;
-
-    protected final UniqueUserValidator validator = new UniqueUserValidator();
 
     @Override
     public void init(Map<String, Object> params) {
@@ -38,24 +33,6 @@ public class ProjectParticipantEdit extends AbstractEditor<ProjectParticipant> {
         userField.addAction(new PickerField.ClearAction(userField));
 
         projectField.addAction(ComponentsHelper.createLookupAction(projectField));
-
-        userField.addValidator(validator);
-
-        projectParticipantDs.addListener(new DsListenerAdapter<ProjectParticipant>() {
-            @Override
-            public void valueChanged(ProjectParticipant source, String property, Object prevValue, Object value) {
-                if ("project".equals(property)) {
-                    if (value != null) {
-                        if (!value.equals(prevValue)) {
-                            Project project = (Project) value;
-                            validator.setAssignedUsers(getAssignedUsers(project));
-                        }
-                    } else {
-                        validator.setAssignedUsers(null);
-                    }
-                }
-            }
-        });
     }
 
     @Override
@@ -64,19 +41,6 @@ public class ProjectParticipantEdit extends AbstractEditor<ProjectParticipant> {
         ProjectParticipant participant = getItem();
         if (participant.getProject() != null) {
             projectField.setEnabled(false);
-            validator.setAssignedUsers(getAssignedUsers(participant.getProject()));
         }
-    }
-
-    protected Collection<User> getAssignedUsers(Project project) {
-        Set<ProjectParticipant> participants = project.getParticipants();
-        if (participants != null && !participants.isEmpty()) {
-            List<User> assignedUsers = new ArrayList<>(participants.size());
-            for (ProjectParticipant participant : participants) {
-                assignedUsers.add(participant.getUser());
-            }
-            return assignedUsers;
-        }
-        return Collections.emptyList();
     }
 }

@@ -23,9 +23,7 @@
         <table id="tasksTable"
                width="100%">
             <actions>
-                <action id="create"/>
                 <action id="edit"/>
-                <action id="remove"/>
             </actions>
             <columns>
                 <column id="name"/>
@@ -40,12 +38,8 @@
             <rowsCount/>
             <buttonsPanel id="buttonsPanel"
                           alwaysVisible="true">
-                <button id="createBtn"
-                        action="tasksTable.create"/>
                 <button id="editBtn"
                         action="tasksTable.edit"/>
-                <button id="removeBtn"
-                        action="tasksTable.remove"/>
             </buttonsPanel>
         </table>
     </layout>

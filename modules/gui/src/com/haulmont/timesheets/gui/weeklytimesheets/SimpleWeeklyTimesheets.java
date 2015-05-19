@@ -53,13 +53,12 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     protected ViewRepository viewRepository;
 
     protected Map<Project, Map<Task, List<TimeEntry>>> timeEntriesForWeekMap = new HashMap<>();
-    protected Map<String, LookupField> projectsLookupFieldsCache = new HashMap<>();
-    protected Map<String, Label> projectsLabelsCache = new HashMap<>();
-    protected Map<String, LookupField> tasksLookupFieldsCache = new HashMap<>();
-    protected Map<String, Label> tasksLabelsCache = new HashMap<>();
+
+    protected Map<String, Label> labelsCache = new HashMap<>();
+    protected Map<String, LookupField> lookupFieldsCache = new HashMap<>();
     protected Map<String, TimeField> timeFieldsCache = new HashMap<>();
     protected Map<String, EntityLinkField> linkFieldsCache = new HashMap<>();
-    protected Map<String, Label> totalLabelsCache = new HashMap<>();
+
     protected Date firstDayOfWeek;
     protected DateFormat dateFormat;
 
@@ -77,17 +76,17 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                 String key = getKeyForEntity(entity, projectColumnId);
                 WeeklyReportEntry weeklyReportEntry = (WeeklyReportEntry) entity;
                 if (weeklyReportEntry.hasTimeEntries()) {
-                    if (projectsLabelsCache.containsKey(key)) {
-                        return projectsLabelsCache.get(key);
+                    if (labelsCache.containsKey(key)) {
+                        return labelsCache.get(key);
                     } else {
                         Label label = componentsFactory.createComponent(Label.NAME);
                         label.setValue(weeklyReportEntry.getProject().getName());
-                        projectsLabelsCache.put(key, label);
+                        labelsCache.put(key, label);
                         return label;
                     }
                 } else {
-                    if (projectsLookupFieldsCache.containsKey(key)) {
-                        return projectsLookupFieldsCache.get(key);
+                    if (lookupFieldsCache.containsKey(key)) {
+                        return lookupFieldsCache.get(key);
                     } else {
                         @SuppressWarnings("unchecked")
                         Datasource<WeeklyReportEntry> ds = (Datasource<WeeklyReportEntry>) weeklyTsTable.getItemDatasource(entity);
@@ -95,7 +94,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         lookupField.setDatasource(ds, projectColumnId);
                         lookupField.setOptionsDatasource(projectsDs);
                         lookupField.setWidth("100%");
-                        projectsLookupFieldsCache.put(key, lookupField);
+                        lookupFieldsCache.put(key, lookupField);
                         return lookupField;
                     }
                 }
@@ -109,17 +108,17 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                 String key = getKeyForEntity(entity, taskColumnId);
                 WeeklyReportEntry weeklyReportEntry = (WeeklyReportEntry) entity;
                 if (weeklyReportEntry.hasTimeEntries()) {
-                    if (tasksLabelsCache.containsKey(key)) {
-                        return tasksLabelsCache.get(key);
+                    if (labelsCache.containsKey(key)) {
+                        return labelsCache.get(key);
                     } else {
                         Label label = componentsFactory.createComponent(Label.NAME);
                         label.setValue(weeklyReportEntry.getTask().getName());
-                        tasksLabelsCache.put(key, label);
+                        labelsCache.put(key, label);
                         return label;
                     }
                 } else {
-                    if (tasksLookupFieldsCache.containsKey(key)) {
-                        return tasksLookupFieldsCache.get(key);
+                    if (lookupFieldsCache.containsKey(key)) {
+                        return lookupFieldsCache.get(key);
                     } else {
                         @SuppressWarnings("unchecked")
                         Datasource<WeeklyReportEntry> ds = (Datasource<WeeklyReportEntry>) weeklyTsTable.getItemDatasource(entity);
@@ -142,7 +141,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                             Map<String, Object> tasks = projectsService.getAssignedTasks(project, userSession.getUser());
                             lookupField.setOptionsMap(tasks);
                         }
-                        tasksLookupFieldsCache.put(key, lookupField);
+                        lookupFieldsCache.put(key, lookupField);
                         return lookupField;
                     }
                 }
@@ -177,7 +176,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                             linkField.addListener(new ValueListener() {
                                 @Override
                                 public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                                    Label total = totalLabelsCache.get(getKeyForEntity(entity, totalColumnId));
+                                    Label total = labelsCache.get(getKeyForEntity(entity, totalColumnId));
                                     total.setValue(reportEntry.getTotal());
                                 }
                             });
@@ -196,11 +195,11 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                 WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
                 String key = getKeyForEntity(entity, totalColumnId);
                 Label label;
-                if (totalLabelsCache.containsKey(key)) {
-                    label = totalLabelsCache.get(key);
+                if (labelsCache.containsKey(key)) {
+                    label = labelsCache.get(key);
                 } else {
                     label = componentsFactory.createComponent(Label.NAME);
-                    totalLabelsCache.put(key, label);
+                    labelsCache.put(key, label);
                 }
                 label.setValue(reportEntry.getTotal());
                 return label;
@@ -215,17 +214,17 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                 if (Operation.REMOVE.equals(operation) || Operation.CLEAR.equals(operation)) {
                     for (WeeklyReportEntry entry : items) {
                         String projectKey = getKeyForEntity(entry, projectColumnId);
-                        projectsLookupFieldsCache.remove(projectKey);
-                        projectsLabelsCache.remove(projectKey);
                         String taskKey = getKeyForEntity(entry, taskColumnId);
-                        tasksLookupFieldsCache.remove(taskKey);
-                        tasksLabelsCache.remove(taskKey);
+                        lookupFieldsCache.remove(projectKey);
+                        lookupFieldsCache.remove(taskKey);
+                        labelsCache.remove(projectKey);
+                        labelsCache.remove(taskKey);
                         for (final DayOfWeek day : DayOfWeek.values()) {
                             String key = getKeyForEntity(entry, day.getId());
                             timeFieldsCache.remove(key);
                             linkFieldsCache.remove(key);
                         }
-                        totalLabelsCache.remove(getKeyForEntity(entry, totalColumnId));
+                        labelsCache.remove(getKeyForEntity(entry, totalColumnId));
                     }
                 }
             }

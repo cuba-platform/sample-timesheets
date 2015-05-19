@@ -90,7 +90,7 @@
     <view class="com.haulmont.timesheets.entity.ProjectParticipant"
           name="projectParticipant-full">
         <property name="user"
-                  view="_minimal"/>
+                  view="_local"/>
         <property name="project">
             <property name="name"/>
             <property name="participants">
