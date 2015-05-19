@@ -73,7 +73,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
                         allTagsDs.refresh(ParamsMap.of("requiredTagTypes", ids));
                     }
                     updateStatusField();
-                    setDefaultStatus();
+                    setDefaultStatus(getItem());
                 }
                 updateStatus();
             }
@@ -81,16 +81,22 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     }
 
     @Override
+    protected void initNewItem(TimeEntry item) {
+        super.initNewItem(item);
+        if (item.getStatus() == null) {
+            setDefaultStatus(item);
+        }
+        if (item.getUser() == null) {
+            item.setUser(userSession.getUser());
+        }
+    }
+
+    @Override
     protected void postInit() {
         super.postInit();
         TimeEntry timeEntry = getItem();
-        if (timeEntry.getStatus() == null) {
-            setDefaultStatus();
-        } else if (TimeEntryStatus.APPROVED.equals(timeEntry.getStatus()) && userIsWorker()) {
+        if (TimeEntryStatus.APPROVED.equals(timeEntry.getStatus()) && userIsWorker()) {
             setReadOnly();
-        }
-        if (timeEntry.getUser() == null) {
-            timeEntry.setUser(userSession.getUser());
         }
         updateStatusField();
     }
@@ -119,12 +125,13 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     }
 
     protected void updateStatus() {
-        if (!TimeEntryStatus.REJECTED.equals(getItem().getStatus()) && userIsWorker()) {
-            setDefaultStatus();
+        TimeEntry item = getItem();
+        if (!TimeEntryStatus.REJECTED.equals(item.getStatus()) && userIsWorker()) {
+            setDefaultStatus(item);
         }
     }
 
-    protected void setDefaultStatus() {
-        getItem().setStatus(TimeEntryStatus.NEW);
+    protected void setDefaultStatus(TimeEntry item) {
+        item.setStatus(TimeEntryStatus.NEW);
     }
 }

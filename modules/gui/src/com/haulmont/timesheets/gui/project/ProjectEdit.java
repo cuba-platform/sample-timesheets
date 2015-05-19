@@ -67,6 +67,14 @@ public class ProjectEdit extends AbstractEditor<Project> {
     }
 
     @Override
+    protected void initNewItem(Project item) {
+        super.initNewItem(item);
+        if (item.getStatus() == null) {
+            item.setStatus(ProjectStatus.OPEN);
+        }
+    }
+
+    @Override
     protected void postInit() {
         Project project = getItem();
         projectsDs.excludeItem(project);
@@ -77,10 +85,6 @@ public class ProjectEdit extends AbstractEditor<Project> {
         }
 
         clientField.setEnabled(project.getParent() == null);
-
-        if (project.getStatus() == null) {
-            project.setStatus(ProjectStatus.OPEN);
-        }
 
         PickerField.LookupAction lookupAction = ComponentsHelper.createLookupAction(parentField);
         lookupAction.setLookupScreenParams(ParamsMap.of("parentProject", getItem()));

@@ -92,12 +92,17 @@ public class TaskEdit extends AbstractEditor<Task> {
     }
 
     @Override
+    protected void initNewItem(Task item) {
+        super.initNewItem(item);
+        if (item.getStatus() == null) {
+            item.setStatus(TaskStatus.ACTIVE);
+        }
+    }
+
+    @Override
     protected void postInit() {
         super.postInit();
         Task task = getItem();
-        if (task.getStatus() == null) {
-            task.setStatus(TaskStatus.ACTIVE);
-        }
         projectField.setEnabled(task.getProject() == null);
         updateParticipantsTableAddAction();
         updateTagTypeQuery(task.getProject());
