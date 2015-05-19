@@ -44,8 +44,6 @@ public class ProjectBrowse extends AbstractLookup {
     protected CreateAction participantsTableCreate;
     @Named("participantsTable.edit")
     protected EditAction participantsTableEdit;
-    @Named("tasksTable.edit")
-    protected EditAction tasksTableEdit;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -89,17 +87,11 @@ public class ProjectBrowse extends AbstractLookup {
     private void initTasksTable() {
         tasksTable.addAction(new CreateAction(tasksTable){
             @Override
-            public WindowManager.OpenType getOpenType() {
-                return WindowManager.OpenType.DIALOG;
-            }
-
-            @Override
             public Map<String, Object> getInitialValues() {
                 return ParamsMap.of("project", projectsTable.getSingleSelected());
             }
         });
         tasksTable.addAction(new ComponentsHelper.TaskStatusTrackingAction(tasksTable, "switchStatus"));
-        tasksTableEdit.setOpenType(WindowManager.OpenType.DIALOG);
 
         tasksTable.setStyleProvider(new Table.StyleProvider() {
             @Nullable
