@@ -20,7 +20,6 @@ create index IDX_TS_TASK_TYPE on TS_TASK (TYPE_ID)^
 -- end TS_TASK
 -- begin TS_TIME_ENTRYalter table TS_TIME_ENTRY add constraint FK_TS_TIME_ENTRY_TASK_ID foreign key (TASK_ID) references TS_TASK(ID)^
 alter table TS_TIME_ENTRY add constraint FK_TS_TIME_ENTRY_USER_ID foreign key (USER_ID) references SEC_USER(ID)^
-create unique index IDX_TS_TIME_ENTRY_UNIQ_TASK_DATE on TS_TIME_ENTRY (TASK_ID, DATE_) ^
 create index IDX_TS_TIME_ENTRY_USER on TS_TIME_ENTRY (USER_ID)^
 create index IDX_TS_TIME_ENTRY_TASK on TS_TIME_ENTRY (TASK_ID)^
 -- end TS_TIME_ENTRY

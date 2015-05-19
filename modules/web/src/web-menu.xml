@@ -4,8 +4,8 @@
           insertBefore="administration">
         <item id="simple-weekly-timesheets"/>
         <item id="calendar-screen"/>
-        <item id="ts$Task.browse"/>
         <item id="ts$TimeEntry.browse"/>
+        <item id="ts$Task.browse"/>
     </menu>
     <menu id="projects"
           insertAfter="timesheets">
