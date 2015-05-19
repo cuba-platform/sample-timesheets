@@ -23,9 +23,7 @@ import java.util.Set;
  * @author gorelov
  */
 @NamePattern("#getCaption|time")
-@Table(name = "TS_TIME_ENTRY", uniqueConstraints = {
-        @UniqueConstraint(name = "IDX_TS_TIME_ENTRY_UNIQ_TASK_DATE", columnNames = {"TASK_ID", "DATE_"})
-})
+@Table(name = "TS_TIME_ENTRY")
 @Entity(name = "ts$TimeEntry")
 public class TimeEntry extends StandardEntity {
 
