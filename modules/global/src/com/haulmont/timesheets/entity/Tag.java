@@ -29,7 +29,7 @@ public class Tag extends StandardEntity {
     @Column(name = "DESCRIPTION")
     protected String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "TAG_TYPE_ID")
     protected TagType tagType;
 

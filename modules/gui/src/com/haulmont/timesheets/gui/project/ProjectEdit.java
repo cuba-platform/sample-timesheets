@@ -42,7 +42,6 @@ public class ProjectEdit extends AbstractEditor<Project> {
 
     @Override
     public void init(final Map<String, Object> params) {
-
         clientField.addAction(ComponentsHelper.createLookupAction(clientField));
         clientField.addClearAction();
 
@@ -63,6 +62,7 @@ public class ProjectEdit extends AbstractEditor<Project> {
             }
         });
 
+        projectDs.addListener(new ComponentsHelper.EntityCodeGenerationListener<Project>());
         fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
     }
 

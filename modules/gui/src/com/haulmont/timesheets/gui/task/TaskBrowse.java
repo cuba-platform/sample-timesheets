@@ -23,9 +23,6 @@ public class TaskBrowse extends AbstractLookup {
 
     @Override
     public void init(Map<String, Object> params) {
-
-        tasksTable.addAction(new ComponentsHelper.TaskStatusTrackingAction(tasksTable, "switchStatus"));
-
         tasksTable.setStyleProvider(new Table.StyleProvider() {
             @Nullable
             @Override

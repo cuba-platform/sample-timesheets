@@ -12,7 +12,11 @@
             </query>
         </groupDatasource>
     </dsContext>
-    <layout expand="timeEntriesTable">
+    <layout expand="timeEntriesTable" spacing="true">
+        <filter id="filter"
+                datasource="timeEntriesDs">
+            <properties include=".*"/>
+        </filter>
         <groupTable id="timeEntriesTable"
                     multiselect="true"
                     width="100%">
