@@ -12,11 +12,13 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.Task;
 import com.haulmont.timesheets.entity.TaskStatus;
 import com.haulmont.timesheets.entity.TimeEntry;
+import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nonnull;
 import java.util.HashSet;
@@ -171,6 +173,21 @@ public class ComponentsHelper {
                 return "time-entry-rejected";
             default:
                 return null;
+        }
+    }
+
+    public static class EntityCodeGenerationListener<T extends Entity> extends DsListenerAdapter<T> {
+        @Override
+        public void valueChanged(T source, String property, Object prevValue, Object value) {
+            if ("name".equalsIgnoreCase(property) && source.getMetaClass().getProperty("code") != null) {
+                String codeValue = source.getValue("code");
+                if (StringUtils.isBlank(codeValue)) {
+                    String newName = String.valueOf(value);
+                    String newCode = newName.toUpperCase().replaceAll(" ", "_");
+                    source.setValue("code", newCode);
+                }
+
+            }
         }
     }
 }

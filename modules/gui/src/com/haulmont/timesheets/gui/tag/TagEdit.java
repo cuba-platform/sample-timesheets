@@ -6,7 +6,9 @@ package com.haulmont.timesheets.gui.tag;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.LookupPickerField;
+import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.timesheets.entity.Tag;
+import com.haulmont.timesheets.entity.TagType;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 
 import javax.inject.Inject;
@@ -24,11 +26,16 @@ public class TagEdit extends AbstractEditor<Tag> {
     @Named("fieldGroup.tagType")
     protected LookupPickerField tagTypeField;
 
+    @Inject
+    private Datasource<Tag> tagDs;
+
     @Override
     public void init(Map<String, Object> params) {
         tagTypeField.addAction(ComponentsHelper.createLookupAction(tagTypeField));
         tagTypeField.addClearAction();
 
         fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
+
+        tagDs.addListener(new ComponentsHelper.EntityCodeGenerationListener<Tag>());
     }
 }

@@ -4,10 +4,7 @@
 package com.haulmont.timesheets.gui.task;
 
 import com.haulmont.bali.util.ParamsMap;
-import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.FieldGroup;
-import com.haulmont.cuba.gui.components.PickerField;
-import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.AddAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -45,6 +42,8 @@ public class TaskEdit extends AbstractEditor<Task> {
 
     @Named("fieldGroup.project")
     protected PickerField projectField;
+    @Named("fieldGroup.type")
+    protected LookupPickerField typeField;
     @Named("participantsTable.add")
     protected AddAction participantsTableAdd;
 
@@ -55,6 +54,7 @@ public class TaskEdit extends AbstractEditor<Task> {
         ComponentsHelper.addRemoveColumn(participantsTable, "remove");
 
         projectField.addAction(ComponentsHelper.createLookupAction(projectField));
+        typeField.addAction(ComponentsHelper.createLookupAction(typeField));
 
         taskDs.addListener(new DsListenerAdapter<Task>() {
             @Override
@@ -89,6 +89,8 @@ public class TaskEdit extends AbstractEditor<Task> {
                 allTagsDs.refresh(ParamsMap.of("requiredTagTypes", ids));
             }
         });
+
+        taskDs.addListener(new ComponentsHelper.EntityCodeGenerationListener<Task>());
     }
 
     @Override

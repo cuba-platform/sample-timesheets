@@ -36,16 +36,8 @@ public class ProjectBrowse extends AbstractLookup {
     protected Table tasksTable;
     @Inject
     protected Table participantsTable;
-
     @Named("participantsTable.create")
     protected CreateAction participantsTableCreate;
-
-    @Named("projectsTable.create")
-    protected CreateAction projectsTableCreate;
-
-    @Named("projectsTable.edit")
-    protected EditAction projectsTableEdit;
-
     @Inject
     protected UserSessionSource userSessionSource;
 

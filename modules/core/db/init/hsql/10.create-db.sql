@@ -67,8 +67,7 @@ create table TS_TASK_TYPE (
     --
     primary key (ID)
 )^-- end TS_TASK_TYPE
--- begin TS_TAG
-create table TS_TAG (
+-- begin TS_TAGcreate table TS_TAG (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -81,7 +80,7 @@ create table TS_TAG (
     NAME varchar(100) not null,
     CODE varchar(50) not null,
     DESCRIPTION varchar(255),
-    TAG_TYPE_ID varchar(36),
+    TAG_TYPE_ID varchar(36) not null,
     --
     primary key (ID)
 )^-- end TS_TAG
