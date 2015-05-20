@@ -11,6 +11,7 @@ import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -38,24 +39,27 @@ public class WorkTimeConfigBean {
     }
 
     public int getWorkDaysCount() {
-        return getWorkDays().length;
+        return getWorkDays().size();
     }
 
-    public DayOfWeek[] getWorkDays() {
+    public List<DayOfWeek> getWorkDays() {
         String[] days = workTimeConfig.getWorkDays().split("[|]");
-        DayOfWeek[] workDays = new DayOfWeek[days.length];
-        for (int i = 0; i < days.length; i++) {
-            workDays[i] = DayOfWeek.fromAbbreviation(days[i]);
+        if (days.length == 0) {
+            return Collections.emptyList();
+        }
+        List<DayOfWeek> workDays = new ArrayList<>(days.length);
+        for (String day : days) {
+            workDays.add(DayOfWeek.fromAbbreviation(day));
         }
         return workDays;
     }
 
-    public void setWorkDays(DayOfWeek[] workDays) {
+    public void setWorkDays(List<DayOfWeek> workDays) {
         int count = 3;
-        StringBuilder sb = new StringBuilder(workDays.length * count);
-        int length = workDays.length;
+        StringBuilder sb = new StringBuilder(workDays.size() * count);
+        int length = workDays.size();
         for (int i = 0; i < length; i++) {
-            sb.append(workDays[i].getId().substring(0, count));
+            sb.append(workDays.get(i).getId().substring(0, count));
             if (i < length - 1) {
                 sb.append("|");
             }

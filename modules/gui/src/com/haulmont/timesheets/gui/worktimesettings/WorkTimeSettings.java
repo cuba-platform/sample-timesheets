@@ -9,11 +9,9 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.timesheets.entity.DayOfWeek;
 import com.haulmont.timesheets.global.WorkTimeConfigBean;
-import org.apache.commons.lang.BooleanUtils;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -74,8 +72,8 @@ public class WorkTimeSettings extends AbstractWindow {
     }
 
     protected void initWorkDays() {
-        List<DayOfWeek> workDays = Arrays.asList(workTimeConfigBean.getWorkDays());
-        for (DayOfWeek day: DayOfWeek.values()) {
+        List<DayOfWeek> workDays = workTimeConfigBean.getWorkDays();
+        for (DayOfWeek day : DayOfWeek.values()) {
             HBoxLayout hBoxLayout = componentsFactory.createComponent(HBoxLayout.NAME);
             CheckBox checkBox = componentsFactory.createComponent(CheckBox.NAME);
             checkBox.setId(day.getId());
@@ -90,14 +88,14 @@ public class WorkTimeSettings extends AbstractWindow {
         }
     }
 
-    protected DayOfWeek[] getWorkDays() {
+    protected List<DayOfWeek> getWorkDays() {
         List<DayOfWeek> workDays = new ArrayList<>();
-        for (DayOfWeek day: DayOfWeek.values()) {
+        for (DayOfWeek day : DayOfWeek.values()) {
             CheckBox checkBox = getComponent(day.getId());
             if (checkBox != null && (Boolean) checkBox.getValue()) {
                 workDays.add(day);
             }
         }
-        return workDays.toArray(new DayOfWeek[workDays.size()]);
+        return workDays;
     }
 }
