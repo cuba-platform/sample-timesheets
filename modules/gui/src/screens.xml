@@ -56,4 +56,6 @@
             template="com/haulmont/timesheets/gui/weeklytimesheets/simple-weekly-timesheets.xml"/>
     <screen id="work-time-settings"
             template="com/haulmont/timesheets/gui/worktimesettings/work-time-settings.xml"/>
+    <screen id="command-line-frame"
+            template="com/haulmont/timesheets/gui/commandline/command-line-frame.xml"/>
 </screen-config>

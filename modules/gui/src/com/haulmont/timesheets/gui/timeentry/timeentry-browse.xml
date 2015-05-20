@@ -21,8 +21,8 @@
             <properties include=".*"/>
         </filter>
 
-        <sourceCodeEditor id="commandLine" width="500px" height="30px"/>
-
+        <iframe id="commandLine"
+                screen="command-line-frame"/>
         <table id="timeEntriesTable"
                width="100%">
             <actions>

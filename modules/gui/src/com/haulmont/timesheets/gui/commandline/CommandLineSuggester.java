@@ -2,7 +2,7 @@
  * Copyright (c) ${YEAR} ${PACKAGE_NAME}
  */
 
-package com.haulmont.timesheets.gui;
+package com.haulmont.timesheets.gui.commandline;
 
 import com.haulmont.cuba.core.app.DataService;
 import com.haulmont.cuba.core.global.AppBeans;
