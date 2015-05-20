@@ -4,46 +4,31 @@
         class="com.haulmont.timesheets.web.calendar.CalendarScreen"
         messagesPack="com.haulmont.timesheets.web.calendar">
     <layout expand="calendarHbox" spacing="true">
-        <grid spacing="true"
-              width="100%">
-            <columns>
-                <column/>
-                <column flex="1.0"/>
-                <column/>
-            </columns>
-            <rows>
-                <row>
-                    <hbox width="200px"
-                          spacing="true"/>
-                    <hbox align="MIDDLE_CENTER"
-                          width="500px"
-                          spacing="true">
-                        <button align="MIDDLE_LEFT"
-                                icon="font-icon:CHEVRON_LEFT"
-                                stylename=""
-                                invoke="movePreviousMonth"/>
-                        <label id="monthLabel"
-                               align="MIDDLE_CENTER"
-                               stylename="h1"/>
-                        <button align="MIDDLE_RIGHT"
-                                icon="font-icon:CHEVRON_RIGHT"
-                                invoke="moveNextMonth"/>
-                    </hbox>
-                    <hbox width="200px"
-                          spacing="true">
-                        <button id="addTimeEntry"
-                                align="MIDDLE_RIGHT"
-                                caption="msg://addTimeEntry"
-                                invoke="addTimeEntry"/>
-                    </hbox>
-                </row>
-            </rows>
-        </grid>
+        <buttonsPanel width="100%">
+            <hbox align="MIDDLE_LEFT" spacing="true">
+                <linkButton align="MIDDLE_LEFT"
+                            icon="font-icon:CHEVRON_LEFT"
+                            invoke="movePreviousMonth"/>
+                <linkButton caption="msg://today"
+                            invoke="setCurrentDate"/>
+                <linkButton align="MIDDLE_RIGHT"
+                            icon="font-icon:CHEVRON_RIGHT"
+                            invoke="moveNextMonth"/>
+                <dateField id="dateField" align="MIDDLE_LEFT" resolution="MONTH" stylename="simple"/>
+            </hbox>
+            <label id="monthLabel"
+                   align="MIDDLE_CENTER"
+                   stylename="h1"/>
+            <hbox align="MIDDLE_RIGHT"
+                  spacing="true">
+                <button id="addTimeEntry" visible="false"
+                        caption="msg://addTimeEntry"
+                        invoke="addTimeEntry"/>
+            </hbox>
+        </buttonsPanel>
         <hbox id="calendarHbox" expand="calBox" width="100%">
             <vbox id="calBox" height="100%"/>
-            <vbox id="summaryBox" height="100%" width="150px">
-
-            </vbox>
+            <vbox id="summaryBox" height="100%" width="150px"/>
         </hbox>
 
     </layout>
