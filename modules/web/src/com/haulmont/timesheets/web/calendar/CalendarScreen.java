@@ -143,7 +143,7 @@ public class CalendarScreen extends AbstractWindow {
     }
 
     protected HoursAndMinutes[] calculateSummariesByWeeks() {Date start = firstDayOfMonth;
-        java.util.Calendar javaCalendar = java.util.Calendar.getInstance();
+        java.util.Calendar javaCalendar = java.util.Calendar.getInstance(userSession.getLocale());
         javaCalendar.setTime(firstDayOfMonth);
         int countOfWeeksInTheMonth = javaCalendar.getActualMaximum(java.util.Calendar.WEEK_OF_MONTH);
         Date end = getLastDayOfMonth();
