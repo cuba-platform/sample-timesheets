@@ -18,30 +18,27 @@ import java.util.Map;
 public interface ProjectsService {
     String NAME = "ts_ProjectsService";
 
-    @Nonnull
     List<Project> getChildren(Project parent);
 
-    void setClient(@Nonnull Project project, @Nullable Client client);
+    void setClient(Project project, @Nullable Client client);
 
     @Nullable
-    ProjectRole getUserProjectRole(@Nonnull Project project, @Nonnull User user);
+    ProjectRole getUserProjectRole(Project project, User user);
 
     @Nullable
     ProjectRole getRoleByCode(String code);
 
-    @Nonnull
-    List<TimeEntry> getTimeEntriesForPeriod(@Nonnull Date start, @Nonnull Date end, @Nonnull User user);
+    List<TimeEntry> getTimeEntriesForPeriod(Date start, Date end, User user);
 
-    @Nonnull
-    List<TimeEntry> getTimeEntriesForUser(@Nonnull User user);
+    List<TimeEntry> getTimeEntriesForUser(User user);
 
-    @Nonnull
     List<Holiday> getHolidays();
 
     void removeTimeEntry(TimeEntry timeEntry);
 
     void removeTimeEntries(List<TimeEntry> timeEntries);
 
-    @Nonnull
-    Map<String, Object> getAssignedTasks(@Nonnull Project project, @Nonnull User user);
+    List<Task> getUserActiveTasks(User user);
+
+    Map<String, Object> getUserActiveTasksInProject(Project project, User user);
 }

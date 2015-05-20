@@ -33,7 +33,7 @@ public class ProjectsServiceBean implements ProjectsService {
         return dataManager.loadList(loadContext);
     }
 
-    @Nonnull
+
     @Override
     @Transactional
     public List<Project> getChildren(Project parent) {
@@ -52,14 +52,14 @@ public class ProjectsServiceBean implements ProjectsService {
     }
 
     @Override
-    public void setClient(@Nonnull Project project, @Nullable Client client) {
+    public void setClient(Project project, @Nullable Client client) {
         project.setClient(client);
         dataManager.commit(project);
     }
 
     @Nullable
     @Override
-    public ProjectRole getUserProjectRole(@Nonnull  Project project, @Nonnull User user) {
+    public ProjectRole getUserProjectRole(Project project, User user) {
         LoadContext loadContext = new LoadContext(ProjectParticipant.class)
                 .setView("projectParticipant-full");
         loadContext.setQueryString("select e from ts$ProjectParticipant e where e.user.id = :userId and e.project.id = :projectId")
@@ -78,9 +78,8 @@ public class ProjectsServiceBean implements ProjectsService {
         return dataManager.load(loadContext);
     }
 
-    @Nonnull
     @Override
-    public List<TimeEntry> getTimeEntriesForPeriod(@Nonnull Date start, @Nonnull Date end, @Nonnull User user) {
+    public List<TimeEntry> getTimeEntriesForPeriod(Date start, Date end, User user) {
         LoadContext loadContext = new LoadContext(TimeEntry.class)
                 .setView("timeEntry-full");
         loadContext.setQueryString("select e from ts$TimeEntry e where e.user.id = :userId and (e.date between :start and :end)")
@@ -90,9 +89,8 @@ public class ProjectsServiceBean implements ProjectsService {
         return dataManager.loadList(loadContext);
     }
 
-    @Nonnull
     @Override
-    public List<TimeEntry> getTimeEntriesForUser(@Nonnull User user) {
+    public List<TimeEntry> getTimeEntriesForUser(User user) {
         LoadContext loadContext = new LoadContext(TimeEntry.class)
                 .setView("timeEntry-full");
         loadContext.setQueryString("select e from ts$TimeEntry e where e.user.id = :userId")
@@ -100,7 +98,6 @@ public class ProjectsServiceBean implements ProjectsService {
         return dataManager.loadList(loadContext);
     }
 
-    @Nonnull
     @Override
     public List<Holiday> getHolidays() {
         LoadContext loadContext = new LoadContext(Holiday.class);
@@ -122,17 +119,45 @@ public class ProjectsServiceBean implements ProjectsService {
         dataManager.commit(commitContext);
     }
 
-    @Nonnull
     @Override
-    public Map<String, Object> getAssignedTasks(@Nonnull Project project, @Nonnull User user) {
+    public List<Task> getUserActiveTasks(User user) {
+            LoadContext loadContext = new LoadContext(Task.class)
+                    .setView("task-full");
+            loadContext.setQueryString("select e from ts$Task e join e.participants p where p.user.id = :userId and e.status = 'active' order by e.project")
+                    .setParameter("userId", user.getId());
+            List<Task> assignedTasks = dataManager.loadList(loadContext);
+            loadContext.setQueryString("select e from ts$Task e join e.project pr join pr.participants p where p.user.id = :userId and e.participants is null and e.status = 'active' order by e.project")
+                    .setParameter("userId", user.getId());
+            List<Task> commonTasks = dataManager.loadList(loadContext);
+            if (assignedTasks.isEmpty() && commonTasks.isEmpty()) {
+                return Collections.emptyList();
+            }
+            List<Task> allTasks = new ArrayList<>(assignedTasks.size() + commonTasks.size());
+            allTasks.addAll(assignedTasks);
+            allTasks.addAll(commonTasks);
+            return allTasks;
+    }
+
+    @Override
+    public Map<String, Object> getUserActiveTasksInProject(Project project, User user) {
         LoadContext loadContext = new LoadContext(Task.class)
                 .setView("task-full");
         loadContext.setQueryString("select e from ts$Task e join e.participants p where p.user.id = :userId and e.project.id = :projectId and e.status = 'active' order by e.project")
                 .setParameter("projectId", project.getId())
                 .setParameter("userId", user.getId());
-        List<Task> taskList = dataManager.loadList(loadContext);
-        Map<String, Object> tasksMap = new HashMap<>(taskList.size());
-        for (Task task : taskList) {
+        List<Task> assignedTasks = dataManager.loadList(loadContext);
+        loadContext.setQueryString("select e from ts$Task e join e.project pr join pr.participants p where p.user.id = :userId and e.project.id = :projectId and e.participants is null and e.status = 'active' order by e.project")
+                .setParameter("projectId", project.getId())
+                .setParameter("userId", user.getId());
+        List<Task> commonTasks = dataManager.loadList(loadContext);
+        if (assignedTasks.isEmpty() && commonTasks.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        List<Task> allTasks = new ArrayList<>(assignedTasks.size() + commonTasks.size());
+        allTasks.addAll(assignedTasks);
+        allTasks.addAll(commonTasks);
+        Map<String, Object> tasksMap = new HashMap<>(allTasks.size());
+        for (Task task : allTasks) {
             tasksMap.put(task.getName(), task);
         }
         return tasksMap;

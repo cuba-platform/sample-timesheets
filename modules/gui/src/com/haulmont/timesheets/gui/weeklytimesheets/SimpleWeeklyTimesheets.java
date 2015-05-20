@@ -135,13 +135,13 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                                 if ("project".equals(property)) {
                                     Project project = (Project) value;
                                     lookupField.setValue(null);
-                                    lookupField.setOptionsMap(projectsService.getAssignedTasks(project, userSession.getUser()));
+                                    lookupField.setOptionsMap(projectsService.getUserActiveTasksInProject(project, userSession.getUser()));
                                 }
                             }
                         });
                         final Project project = ds.getItem().getProject();
                         if (project != null) {
-                            Map<String, Object> tasks = projectsService.getAssignedTasks(project, userSession.getUser());
+                            Map<String, Object> tasks = projectsService.getUserActiveTasksInProject(project, userSession.getUser());
                             lookupField.setOptionsMap(tasks);
                         }
                         lookupFieldsCache.put(key, lookupField);

@@ -276,9 +276,6 @@ public class CalendarScreen extends AbstractWindow {
 
         @Override
         public void handleAction(Action action, Object sender, Object target) {
-            // The sender is the Calendar object
-            Calendar calendar = (Calendar) sender;
-
             if (action == addEventAction) {
                 // Check that the click was not done on an event
                 if (target instanceof Date) {
