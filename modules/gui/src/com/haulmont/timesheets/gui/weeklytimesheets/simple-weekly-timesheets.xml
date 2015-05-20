@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
         caption="msg://browseCaption"
         class="com.haulmont.timesheets.gui.weeklytimesheets.SimpleWeeklyTimesheets"
         messagesPack="com.haulmont.timesheets.gui.weeklytimesheets">
@@ -56,18 +56,23 @@
                     <button action="weeklyTsTable.add"/>
                     <button action="weeklyTsTable.remove"/>
                 </hbox>
+                <label id="weekCaption" stylename="h2" align="MIDDLE_CENTER"/>
                 <hbox id="weekNavigationBox"
                       spacing="true"
-                      align="BOTTOM_RIGHT"
-                      height="100%">
+                      align="BOTTOM_RIGHT">
                     <button action="weeklyTsTable.submitAll"/>
+                    <dateField id="dateField"
+                               resolution="DAY"
+                               stylename="simple"
+                               align="MIDDLE_RIGHT"/>
                     <linkButton icon="font-icon:CHEVRON_LEFT"
-                                align="MIDDLE_CENTER"
+                                align="MIDDLE_RIGHT"
                                 invoke="movePreviousWeek"/>
-                    <label id="weekLabel"
-                           align="MIDDLE_CENTER"/>
+                    <linkButton caption="msg://today"
+                                invoke="setCurrentWeek"
+                                align="MIDDLE_RIGHT"/>
                     <linkButton icon="font-icon:CHEVRON_RIGHT"
-                                align="MIDDLE_CENTER"
+                                align="MIDDLE_RIGHT"
                                 invoke="moveNextWeek"/>
                 </hbox>
             </buttonsPanel>

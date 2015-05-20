@@ -35,6 +35,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     @Inject
     protected Table weeklyTsTable;
     @Inject
+    protected DateField dateField;
+    @Inject
     protected CollectionDatasource<WeeklyReportEntry, UUID> weeklyEntriesDs;
     @Inject
     protected CollectionDatasource<Project, UUID> projectsDs;
@@ -45,7 +47,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     @Inject
     protected UserSession userSession;
     @Inject
-    protected Label weekLabel;
+    protected Label weekCaption;
     @Inject
     protected Messages messages;
     @Inject
@@ -65,7 +67,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
-        firstDayOfWeek = getFirstDayOfWeek();
+        firstDayOfWeek = getFirstDayOfWeek(new Date());
         dateFormat = new SimpleDateFormat(messages.getMainMessage("dateFormat"));
 
         weeklyTsTable.addAction(new WeeklyReportEntryRemoveAction(weeklyTsTable));
@@ -232,6 +234,14 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             }
         });
 
+        dateField.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                firstDayOfWeek = getFirstDayOfWeek((Date) value);
+                updateWeek();
+            }
+        });
+
         updateWeek();
     }
 
@@ -263,6 +273,11 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         weeklyTsTable.repaint();
     }
 
+    public void setCurrentWeek() {
+        firstDayOfWeek = getFirstDayOfWeek(new Date());
+        updateWeek();
+    }
+
     protected TimeEntry commitTimeEntry(TimeEntry timeEntry) {
         CommitContext commitContext = new CommitContext();
         commitContext.getCommitInstances().add(timeEntry);
@@ -272,8 +287,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         return commitedEntities.size() == 1 ? (TimeEntry) commitedEntities.iterator().next() : null;
     }
 
-    protected Date getFirstDayOfWeek() {
-        Calendar calendar = Calendar.getInstance();
+    protected Date getFirstDayOfWeek(Date date) {
+        Calendar calendar = DateUtils.toCalendar(date);
         calendar.set(Calendar.HOUR_OF_DAY, 0);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
@@ -292,8 +307,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         updateWeek();
     }
 
-    protected void updateWeekLabel() {
-        weekLabel.setValue(String.format("%s - %s",
+    protected void updateWeekCaption() {
+        weekCaption.setValue(String.format("%s - %s",
                 dateFormat.format(firstDayOfWeek),
                 dateFormat.format(DateUtils.addDays(firstDayOfWeek, 6))));
     }
@@ -301,7 +316,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     protected void updateWeek() {
         weeklyEntriesDs.clear();
         timeEntriesForWeekMap.clear();
-        updateWeekLabel();
+        updateWeekCaption();
         fillExistingTimeEntries();
         weeklyTsTable.repaint();
     }

@@ -55,4 +55,19 @@
   .v-table-cell-content-time-entry-rejected {
     color: red;
   }
+
+  .cuba-datefield-composition-simple .cuba-datefield {
+    width: auto !important;
+    height: auto;
+  }
+
+  .cuba-datefield-composition-simple .cuba-datefield-textfield {
+    display: none;
+  }
+
+  .cuba-datefield-composition-simple .cuba-datefield [class*="button"] {
+    position: relative;
+    border: 0px;
+    top: 0px;
+  }
 }
