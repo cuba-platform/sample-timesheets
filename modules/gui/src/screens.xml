@@ -54,4 +54,6 @@
             template="com/haulmont/timesheets/gui/approve/approve-screen.xml"/>
     <screen id="simple-weekly-timesheets"
             template="com/haulmont/timesheets/gui/weeklytimesheets/simple-weekly-timesheets.xml"/>
+    <screen id="work-time-settings"
+            template="com/haulmont/timesheets/gui/worktimesettings/work-time-settings.xml"/>
 </screen-config>

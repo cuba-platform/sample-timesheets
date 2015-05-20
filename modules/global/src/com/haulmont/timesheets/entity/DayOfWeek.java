@@ -70,6 +70,10 @@ public enum DayOfWeek implements EnumClass<String> {
         }
     }
 
+    public static String getDayOfWeekLocalizationKey(DayOfWeek day) {
+        return day.getClass().getSimpleName() + "." + day.getId().toUpperCase();
+    }
+
     public static int convertToDayOfWeekNumber(DayOfWeek day, Locale locale) {
         int firstDayOfWeek = Calendar.getInstance(locale).getFirstDayOfWeek();
         int offset = firstDayOfWeek - 1;

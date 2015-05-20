@@ -19,5 +19,6 @@
         <item id="ts$Holiday.browse"/>
         <item id="ts$TagType.browse"/>
         <item id="ts$Tag.browse"/>
+        <item id="work-time-settings"/>
     </menu>
 </menu-config>

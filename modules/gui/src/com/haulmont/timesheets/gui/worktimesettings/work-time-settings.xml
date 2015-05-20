@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
+        caption="msg://caption"
+        class="com.haulmont.timesheets.gui.worktimesettings.WorkTimeSettings"
+        messagesPack="com.haulmont.timesheets.gui.worktimesettings">
+    <layout expand="windowActions"
+            spacing="true">
+        <hbox spacing="true">
+            <label value="msg://forkHoursForWeek"/>
+            <textField id="workHoursTextField"
+                       datatype="double"/>
+        </hbox>
+        <groupBox id="workDaysGroupBox"
+                  spacing="true"
+                  caption="msg://workDays"/>
+        <iframe id="windowActions"
+                screen="editWindowActions"
+                stylename="window-actions"/>
+    </layout>
+</window>
