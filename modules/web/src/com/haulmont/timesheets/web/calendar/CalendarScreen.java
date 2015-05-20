@@ -8,32 +8,31 @@ import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.DateField;
-import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.haulmont.timesheets.entity.Holiday;
 import com.haulmont.timesheets.entity.TimeEntry;
+import com.haulmont.timesheets.global.TimeUtils;
 import com.haulmont.timesheets.gui.holiday.HolidayEdit;
 import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
 import com.haulmont.timesheets.service.ProjectsService;
 import com.haulmont.timesheets.web.toolkit.ui.TimeSheetsCalendar;
 import com.vaadin.event.Action;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.*;
 import com.vaadin.ui.Calendar;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents;
 import com.vaadin.ui.components.calendar.CalendarDateRange;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
 import com.vaadin.ui.components.calendar.event.CalendarEventProvider;
 import org.apache.commons.lang.time.DateUtils;
-import org.jsoup.helper.DataUtil;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author gorelov
@@ -61,7 +60,7 @@ public class CalendarScreen extends AbstractWindow {
     @Override
     public void init(Map<String, Object> params) {
 
-        firstDayOfMonth = getFirstDayOfMonth(new Date());
+        firstDayOfMonth = TimeUtils.getFirstDayOfMonth(new Date());
         dataSource = new TimeSheetsCalendarEventProvider(userSession.getUser());
 
         calendar = new TimeSheetsCalendar(dataSource);
@@ -104,7 +103,7 @@ public class CalendarScreen extends AbstractWindow {
         dateField.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                firstDayOfMonth = getFirstDayOfMonth((Date) value);
+                firstDayOfMonth = TimeUtils.getFirstDayOfMonth((Date) value);
                 updateCalendarRange();
                 updateMonthCaption();
             }
@@ -112,7 +111,7 @@ public class CalendarScreen extends AbstractWindow {
     }
 
     public void setCurrentDate() {
-        firstDayOfMonth = getFirstDayOfMonth(new Date());
+        firstDayOfMonth = TimeUtils.getFirstDayOfMonth(new Date());
         updateCalendarRange();
         updateMonthCaption();
     }
@@ -142,11 +141,12 @@ public class CalendarScreen extends AbstractWindow {
         }
     }
 
-    protected HoursAndMinutes[] calculateSummariesByWeeks() {Date start = firstDayOfMonth;
+    protected HoursAndMinutes[] calculateSummariesByWeeks() {
+        Date start = firstDayOfMonth;
         java.util.Calendar javaCalendar = java.util.Calendar.getInstance(userSession.getLocale());
         javaCalendar.setTime(firstDayOfMonth);
         int countOfWeeksInTheMonth = javaCalendar.getActualMaximum(java.util.Calendar.WEEK_OF_MONTH);
-        Date end = getLastDayOfMonth();
+        Date end = TimeUtils.getLastDayOfMonth(firstDayOfMonth);
         List<CalendarEvent> events = dataSource.getEvents(start, end);
         HoursAndMinutes[] summariesByWeeks = new HoursAndMinutes[countOfWeeksInTheMonth + 1];
         for (CalendarEvent event : events) {
@@ -166,7 +166,7 @@ public class CalendarScreen extends AbstractWindow {
 
     public void updateCalendarRange() {
         calendar.setStartDate(firstDayOfMonth);
-        calendar.setEndDate(getLastDayOfMonth());
+        calendar.setEndDate(TimeUtils.getLastDayOfMonth(firstDayOfMonth));
 
         updateSummary();
     }
@@ -222,27 +222,6 @@ public class CalendarScreen extends AbstractWindow {
 
     protected int getYear(Date firstDayOfMonth) {
         return DateUtils.toCalendar(firstDayOfMonth).get(java.util.Calendar.YEAR);
-    }
-
-    protected Date getFirstDayOfMonth(Date date) {
-        java.util.Calendar calendar = getCalendarWithoutTime(date);
-        calendar.set(java.util.Calendar.DAY_OF_MONTH, 1);
-        return calendar.getTime();
-    }
-
-    protected Date getLastDayOfMonth() {
-        java.util.Calendar calendar = DateUtils.toCalendar(firstDayOfMonth);
-        calendar.set(java.util.Calendar.DAY_OF_MONTH, calendar.getActualMaximum(java.util.Calendar.DAY_OF_MONTH));
-        return calendar.getTime();
-    }
-
-    protected java.util.Calendar getCalendarWithoutTime(Date date) {
-        java.util.Calendar calendar = DateUtils.toCalendar(date);
-        calendar.set(java.util.Calendar.HOUR_OF_DAY, 0);
-        calendar.set(java.util.Calendar.MINUTE, 0);
-        calendar.set(java.util.Calendar.SECOND, 0);
-        calendar.set(java.util.Calendar.MILLISECOND, 0);
-        return calendar;
     }
 
     protected class CalendarActionHandler implements Action.Handler {

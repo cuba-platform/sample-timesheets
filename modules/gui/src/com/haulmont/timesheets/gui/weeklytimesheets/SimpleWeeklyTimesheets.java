@@ -67,7 +67,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
-        firstDayOfWeek = getFirstDayOfWeek(new Date());
+        firstDayOfWeek = TimeUtils.getFirstDayOfWeek(new Date());
         dateFormat = new SimpleDateFormat(messages.getMainMessage("dateFormat"));
 
         weeklyTsTable.addAction(new WeeklyReportEntryRemoveAction(weeklyTsTable));
@@ -143,7 +143,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         final Project project = ds.getItem().getProject();
                         if (project != null) {
                             Map<String, Task> tasks = projectsService.getActiveTasksForUserAndProject(userSession.getUser(), project);
-                            lookupField.setOptionsMap((Map)tasks);
+                            lookupField.setOptionsMap((Map) tasks);
                         }
                         lookupFieldsCache.put(key, lookupField);
                         return lookupField;
@@ -238,7 +238,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         dateField.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                firstDayOfWeek = getFirstDayOfWeek((Date) value);
+                firstDayOfWeek = TimeUtils.getFirstDayOfWeek((Date) value);
                 updateWeek();
             }
         });
@@ -275,7 +275,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     }
 
     public void setCurrentWeek() {
-        firstDayOfWeek = getFirstDayOfWeek(new Date());
+        firstDayOfWeek = TimeUtils.getFirstDayOfWeek(new Date());
         updateWeek();
     }
 
@@ -286,16 +286,6 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
         Set<Entity> commitedEntities = dataManager.commit(commitContext);
         return commitedEntities.size() == 1 ? (TimeEntry) commitedEntities.iterator().next() : null;
-    }
-
-    protected Date getFirstDayOfWeek(Date date) {
-        Calendar calendar = DateUtils.toCalendar(date);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-        return calendar.getTime();
     }
 
     public void movePreviousWeek() {

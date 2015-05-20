@@ -27,7 +27,7 @@ public class TimeUtils {
             return null;
         }
 
-        Date result = getZeroTime();
+        Date result = getDateWithoutTime(new Date());
         if (StringUtils.isNumeric(time)) {
             return DateUtils.addHours(result, Integer.parseInt(time));
         }
@@ -62,13 +62,34 @@ public class TimeUtils {
         return 0;
     }
 
-    public static Date getZeroTime() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        return calendar.getTime();
+    public static Calendar getCalendarWithoutTime(Date date) {
+        java.util.Calendar calendar = DateUtils.toCalendar(date);
+        calendar.set(java.util.Calendar.HOUR_OF_DAY, 0);
+        calendar.set(java.util.Calendar.MINUTE, 0);
+        calendar.set(java.util.Calendar.SECOND, 0);
+        calendar.set(java.util.Calendar.MILLISECOND, 0);
+        return calendar;
+    }
+    
+    public static Date getDateWithoutTime(Date date) {
+        return getCalendarWithoutTime(date).getTime();
+    }
 
+    public static Date getFirstDayOfWeek(Date date) {
+        Calendar calendar = getCalendarWithoutTime(date);
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        return calendar.getTime();
+    }
+
+    public static Date getFirstDayOfMonth(Date date) {
+        java.util.Calendar calendar = getCalendarWithoutTime(date);
+        calendar.set(java.util.Calendar.DAY_OF_MONTH, 1);
+        return calendar.getTime();
+    }
+
+    public static Date getLastDayOfMonth(Date date) {
+        java.util.Calendar calendar = getCalendarWithoutTime(date);
+        calendar.set(java.util.Calendar.DAY_OF_MONTH, calendar.getActualMaximum(java.util.Calendar.DAY_OF_MONTH));
+        return calendar.getTime();
     }
 }
