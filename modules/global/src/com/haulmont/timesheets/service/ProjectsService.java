@@ -6,7 +6,6 @@ package com.haulmont.timesheets.service;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.entity.*;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Date;
 import java.util.List;

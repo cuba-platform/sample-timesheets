@@ -20,7 +20,6 @@ import com.haulmont.timesheets.entity.TaskStatus;
 import com.haulmont.timesheets.entity.TimeEntry;
 import org.apache.commons.lang.StringUtils;
 
-import javax.annotation.Nonnull;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -141,7 +140,7 @@ public class ComponentsHelper {
         }
     }
 
-    public static String getTaskStatusStyle(@Nonnull Task task) {
+    public static String getTaskStatusStyle(Task task) {
         switch (task.getStatus()) {
             case ACTIVE:
                 return "task-active";
@@ -152,7 +151,7 @@ public class ComponentsHelper {
         }
     }
 
-    public static String getProjectStatusStyle(@Nonnull Project project) {
+    public static String getProjectStatusStyle(Project project) {
         switch (project.getStatus()) {
             case OPEN:
                 return "project-open";
@@ -163,7 +162,7 @@ public class ComponentsHelper {
         }
     }
 
-    public static String getTimeEntryStatusStyle(@Nonnull TimeEntry timeEntry) {
+    public static String getTimeEntryStatusStyle(TimeEntry timeEntry) {
         switch (timeEntry.getStatus()) {
             case NEW:
                 return "time-entry-new";

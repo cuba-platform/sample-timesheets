@@ -13,7 +13,6 @@ import com.vaadin.ui.components.calendar.event.BasicEventProvider;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
 import org.apache.commons.lang.time.DateUtils;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -55,7 +54,7 @@ public class TimeSheetsCalendarEventProvider extends BasicEventProvider {
         return stringHolidays;
     }
 
-    public void changeEventTimeEntity(@Nonnull TimeEntry timeEntry) {
+    public void changeEventTimeEntity(TimeEntry timeEntry) {
         TimeEntryCalendarEventAdapter adapter = findEventWithTimeEntry(timeEntry);
         if (adapter != null) {
             adapter.setTimeEntry(timeEntry);
@@ -65,7 +64,7 @@ public class TimeSheetsCalendarEventProvider extends BasicEventProvider {
         }
     }
 
-    public void changeEventHoliday(@Nonnull Holiday holiday) {
+    public void changeEventHoliday(Holiday holiday) {
         HolidayCalendarEventAdapter adapter = findEventWithHoliday(holiday);
         if (adapter != null) {
             adapter.setHoliday(holiday);
@@ -86,7 +85,6 @@ public class TimeSheetsCalendarEventProvider extends BasicEventProvider {
         this.format = format;
     }
 
-    @Nonnull
     protected Set<String> holidayAsSeparateStrings(Holiday holiday, Date startDate, Date endDate) {
         Date start;
         Date end;
@@ -116,7 +114,7 @@ public class TimeSheetsCalendarEventProvider extends BasicEventProvider {
     }
 
     @Nullable
-    protected TimeEntryCalendarEventAdapter findEventWithTimeEntry(@Nonnull TimeEntry timeEntry) {
+    protected TimeEntryCalendarEventAdapter findEventWithTimeEntry(TimeEntry timeEntry) {
         for (CalendarEvent event : eventList) {
             if (event instanceof TimeEntryCalendarEventAdapter) {
                 TimeEntryCalendarEventAdapter adapter = (TimeEntryCalendarEventAdapter) event;
@@ -129,7 +127,7 @@ public class TimeSheetsCalendarEventProvider extends BasicEventProvider {
     }
 
     @Nullable
-    protected HolidayCalendarEventAdapter findEventWithHoliday(@Nonnull Holiday holiday) {
+    protected HolidayCalendarEventAdapter findEventWithHoliday(Holiday holiday) {
         for (CalendarEvent event : eventList) {
             if (event instanceof HolidayCalendarEventAdapter) {
                 HolidayCalendarEventAdapter adapter = (HolidayCalendarEventAdapter) event;
