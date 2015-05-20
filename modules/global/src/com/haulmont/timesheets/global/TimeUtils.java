@@ -4,6 +4,8 @@
 
 package com.haulmont.timesheets.global;
 
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 
@@ -17,6 +19,8 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 public class TimeUtils {
+
+    protected static Messages messages = AppBeans.get(Messages.NAME);
 
     public static Date parse(String time) {
         if (StringUtils.isBlank(time)) {
@@ -35,11 +39,11 @@ public class TimeUtils {
     }
 
     protected static int findHours(String time) {
-        return findTimeValue(time, "h|hr|hour");
+        return findTimeValue(time, messages.getMessage(TimeUtils.class, "timeHours"));
     }
 
     protected static int findMinutes(String time) {
-        return findTimeValue(time, "m|min|minutes");
+        return findTimeValue(time, messages.getMessage(TimeUtils.class, "timeMinutes"));
     }
 
     protected static int findTimeValue(String time, String units) {
