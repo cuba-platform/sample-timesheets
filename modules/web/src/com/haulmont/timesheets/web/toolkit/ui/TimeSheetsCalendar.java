@@ -7,7 +7,7 @@ package com.haulmont.timesheets.web.toolkit.ui;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.DayOfWeek;
-import com.haulmont.timesheets.global.WorkConfigBean;
+import com.haulmont.timesheets.global.WorkTimeConfigBean;
 import com.haulmont.timesheets.web.calendar.TimeSheetsCalendarEventProvider;
 import com.haulmont.timesheets.web.toolkit.ui.client.calendar.TimeSheetsCalendarState;
 import com.vaadin.shared.ui.calendar.DateConstants;
@@ -62,9 +62,9 @@ public class TimeSheetsCalendar extends Calendar {
     }
 
     protected List<Integer> getWeekends() {
-        WorkConfigBean workConfigBean = AppBeans.get(WorkConfigBean.NAME);
+        WorkTimeConfigBean workTimeConfigBean = AppBeans.get(WorkTimeConfigBean.NAME);
         UserSession userSession = AppBeans.get(UserSession.class);
-        DayOfWeek[] weekends = workConfigBean.getWeekends();
+        DayOfWeek[] weekends = workTimeConfigBean.getWeekends();
         List<Integer> dayNumbers = new ArrayList<>(weekends.length);
         for (DayOfWeek day : weekends) {
             int number = DayOfWeek.convertToDayOfWeekNumber(day, userSession.getLocale());

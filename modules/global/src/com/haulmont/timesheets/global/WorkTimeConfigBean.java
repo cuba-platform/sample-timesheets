@@ -4,7 +4,7 @@
 
 package com.haulmont.timesheets.global;
 
-import com.haulmont.timesheets.core.WorkConfig;
+import com.haulmont.timesheets.core.WorkTimeConfig;
 import com.haulmont.timesheets.entity.DayOfWeek;
 
 import javax.annotation.ManagedBean;
@@ -17,20 +17,20 @@ import java.util.List;
  * @author gorelov
  * @version $Id$
  */
-@ManagedBean(WorkConfigBean.NAME)
-public class WorkConfigBean {
+@ManagedBean(WorkTimeConfigBean.NAME)
+public class WorkTimeConfigBean {
 
-    public static final String NAME = "timesheets_WorkConfigBean";
+    public static final String NAME = "timesheets_WorkTimeConfigBean";
 
     @Inject
-    protected WorkConfig workConfig;
+    protected WorkTimeConfig workTimeConfig;
 
     public double getWorkHourForDay() {
         return getWorkHourForWeek() / getWorkDaysCount();
     }
 
     public double getWorkHourForWeek() {
-        return workConfig.getWorkHourForWeek();
+        return workTimeConfig.getWorkHourForWeek();
     }
 
     public int getWorkDaysCount() {
@@ -38,7 +38,7 @@ public class WorkConfigBean {
     }
 
     public DayOfWeek[] getWorkDays() {
-        String[] days = workConfig.getWorkDays().split("[|]");
+        String[] days = workTimeConfig.getWorkDays().split("[|]");
         DayOfWeek[] workDays = new DayOfWeek[days.length];
         for (int i = 0; i < days.length; i++) {
             workDays[i] = DayOfWeek.fromAbbreviation(days[i]);

@@ -55,7 +55,6 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
             @Override
             public void valueChanged(TimeEntry source, String property, Object prevValue, Object value) {
                 if ("task".equals(property)) {
-                    // #PL-5355
                     tagsDs.clear();
                     if (value != null) {
                         Task task = (Task) value;

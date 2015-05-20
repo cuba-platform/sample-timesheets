@@ -61,7 +61,6 @@ public class TaskEdit extends AbstractEditor<Task> {
             public void valueChanged(Task source, String property, Object prevValue, Object value) {
                 if ("project".equals(property)) {
                     updateParticipantsTableAddAction();
-                    // #PL-5355
                     participantsDs.clear();
                     updateTagTypeQuery(value);
                 }

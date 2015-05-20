@@ -16,7 +16,7 @@ import com.haulmont.cuba.core.config.defaults.DefaultDouble;
  * @version $Id$
  */
 @Source(type = SourceType.DATABASE)
-public interface WorkConfig extends Config {
+public interface WorkTimeConfig extends Config {
 
     @Property("timesheets.workHourForWeek")
     @DefaultDouble(40)
