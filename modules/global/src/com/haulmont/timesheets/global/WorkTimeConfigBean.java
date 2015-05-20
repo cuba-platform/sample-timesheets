@@ -55,12 +55,12 @@ public class WorkTimeConfigBean {
         StringBuilder sb = new StringBuilder(workDays.length * count);
         int length = workDays.length;
         for (int i = 0; i < length; i++) {
-            String id = workDays[i].getId();
-            sb.append(id.substring(0, 0).toUpperCase()).append(id.substring(1, count));
+            sb.append(workDays[i].getId().substring(0, count));
             if (i < length - 1) {
                 sb.append("|");
             }
         }
+        workTimeConfig.setWorkDays(sb.toString());
     }
 
     public DayOfWeek[] getWeekends() {
