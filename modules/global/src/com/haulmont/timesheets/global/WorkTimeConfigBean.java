@@ -33,6 +33,10 @@ public class WorkTimeConfigBean {
         return workTimeConfig.getWorkHourForWeek();
     }
 
+    public void setWorkHourForWeek(double hours) {
+        workTimeConfig.setWorkHourForWeek(hours);
+    }
+
     public int getWorkDaysCount() {
         return getWorkDays().length;
     }
@@ -44,6 +48,19 @@ public class WorkTimeConfigBean {
             workDays[i] = DayOfWeek.fromAbbreviation(days[i]);
         }
         return workDays;
+    }
+
+    public void setWorkDays(DayOfWeek[] workDays) {
+        int count = 3;
+        StringBuilder sb = new StringBuilder(workDays.length * count);
+        int length = workDays.length;
+        for (int i = 0; i < length; i++) {
+            String id = workDays[i].getId();
+            sb.append(id.substring(0, 0).toUpperCase()).append(id.substring(1, count));
+            if (i < length - 1) {
+                sb.append("|");
+            }
+        }
     }
 
     public DayOfWeek[] getWeekends() {
