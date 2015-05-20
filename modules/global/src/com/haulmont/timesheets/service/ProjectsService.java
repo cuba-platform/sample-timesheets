@@ -38,7 +38,9 @@ public interface ProjectsService {
 
     void removeTimeEntries(List<TimeEntry> timeEntries);
 
-    List<Task> getUserActiveTasks(User user);
+    List<Task> getActiveTasksForUser(User user);
 
-    Map<String, Object> getUserActiveTasksInProject(Project project, User user);
+    Map<String, Task> getActiveTasksForUserAndProject(User user, Project project);
+
+    List<Project> getActiveProjectsForUser(User user);
 }

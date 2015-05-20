@@ -20,6 +20,9 @@
                 datasource="timeEntriesDs">
             <properties include=".*"/>
         </filter>
+
+        <sourceCodeEditor id="commandLine" width="500px" height="30px"/>
+
         <table id="timeEntriesTable"
                width="100%">
             <actions>
