@@ -4,8 +4,9 @@
 package com.haulmont.timesheets.gui.extuser;
 
 import com.haulmont.cuba.gui.app.security.user.edit.UserEditor;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.entity.ExtUser;
-import com.haulmont.timesheets.global.WorkConfigBean;
+import com.haulmont.timesheets.global.WorkTimeConfigBean;
 
 import javax.inject.Inject;
 
@@ -15,13 +16,14 @@ import javax.inject.Inject;
 public class ExtUserEdit extends UserEditor {
 
     @Inject
-    protected WorkConfigBean workConfigBean;
+    protected WorkTimeConfigBean workTimeConfigBean;
 
     @Override
-    protected void postInit() {
-        ExtUser user = (ExtUser) getItem();
+    protected void initNewItem(User item) {
+        super.initNewItem(item);
+        ExtUser user = (ExtUser) item;
         if (user.getWorkHoursForWeek() == null) {
-            user.setWorkHoursForWeek(workConfigBean.getWorkHourForWeek());
+            user.setWorkHoursForWeek(workTimeConfigBean.getWorkHourForWeek());
         }
     }
 }
