@@ -22,7 +22,11 @@ public interface WorkTimeConfig extends Config {
     @DefaultDouble(40)
     double getWorkHourForWeek();
 
+    void setWorkHourForWeek(double hours);
+
     @Property("timesheets.workDays")
     @Default("Mon|Tue|Wed|Thu|Fri")
     String getWorkDays();
+
+    void setWorkDays(String workDays);
 }
