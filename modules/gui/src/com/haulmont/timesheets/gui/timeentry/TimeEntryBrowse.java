@@ -6,17 +6,18 @@ package com.haulmont.timesheets.gui.timeentry;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractLookup;
-import com.haulmont.cuba.gui.components.SourceCodeEditor;
+import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.timesheets.entity.TimeEntry;
-import com.haulmont.timesheets.gui.CommandLineSuggester;
 import com.haulmont.timesheets.gui.ComponentsHelper;
+import com.haulmont.timesheets.gui.commandline.CommandLineFrameController;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,12 +26,12 @@ import java.util.Map;
 public class TimeEntryBrowse extends AbstractLookup {
     @Inject
     protected Table timeEntriesTable;
-    @Inject
-    protected SourceCodeEditor commandLine;
     @Named("timeEntriesTable.edit")
     protected EditAction timeEntriesTableEdit;
     @Named("timeEntriesTable.create")
     protected CreateAction timeEntriesTableCreate;
+    @Inject
+    private CommandLineFrameController commandLine;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -49,7 +50,12 @@ public class TimeEntryBrowse extends AbstractLookup {
             }
         });
 
-        commandLine.setSuggester(new CommandLineSuggester(commandLine));
+        commandLine.setTimeEntriesHandler(new CommandLineFrameController.ResultTimeEntriesHandler() {
+            @Override
+            public void handle(List<TimeEntry> resultTimeEntries) {
+                //todo eude - do something here
+            }
+        });
     }
 
 }
