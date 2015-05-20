@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
         caption="msg://editCaption"
         class="com.haulmont.timesheets.gui.extuser.ExtUserEdit"
         extends="/com/haulmont/cuba/gui/app/security/user/edit/user-edit.xml"
         messagesPack="com.haulmont.timesheets.gui.extuser"
-        xmlns:ext="http://schemas.haulmont.com/cuba/5.4/window-ext.xsd">
+        xmlns:ext="http://schemas.haulmont.com/cuba/5.5/window-ext.xsd">
     <layout>
         <groupBox id="propertiesBox">
             <grid id="propertiesGrid">
