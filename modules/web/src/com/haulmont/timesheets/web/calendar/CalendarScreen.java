@@ -20,7 +20,6 @@ import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
 import com.haulmont.timesheets.service.ProjectsService;
 import com.haulmont.timesheets.web.toolkit.ui.TimeSheetsCalendar;
 import com.vaadin.event.Action;
-import com.vaadin.event.MouseEvents;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Calendar;
 import com.vaadin.ui.Layout;
@@ -69,7 +68,15 @@ public class CalendarScreen extends AbstractWindow {
         calendar.setHeight("89%");
         calendar.setTimeFormat(Calendar.TimeFormat.Format24H);
         calendar.setDropHandler(null);
-        calendar.setHandler((CalendarComponentEvents.EventMoveHandler) null);   // Do not work for month view
+        calendar.setHandler(new CalendarComponentEvents.EventMoveHandler() {
+            @Override
+            public void eventMove(CalendarComponentEvents.MoveEvent event) {
+                TimeEntryCalendarEventAdapter adapter = (TimeEntryCalendarEventAdapter) event.getCalendarEvent();
+                adapter.getTimeEntry().setDate(event.getNewStart());
+                TimeEntry committed = getDsContext().getDataSupplier().commit(adapter.getTimeEntry());
+                adapter.setTimeEntry(committed);
+            }
+        });   // Do not work for month view
         calendar.setHandler((CalendarComponentEvents.WeekClickHandler) null);
         calendar.setHandler((CalendarComponentEvents.DateClickHandler) null);
         calendar.setHandler((CalendarComponentEvents.EventResizeHandler) null);

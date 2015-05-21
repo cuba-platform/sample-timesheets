@@ -6,10 +6,10 @@ package com.haulmont.timesheets.gui.commandline;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.service.CommandLineService;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
@@ -20,8 +20,13 @@ import java.util.Map;
  * @version $Id$
  */
 public class CommandLineFrameController extends AbstractFrame {
-    @Inject
     protected SourceCodeEditor commandLine;
+
+    @Inject
+    private ComponentsFactory componentsFactory;
+
+    @Inject
+    private BoxLayout commandLineHBox;
 
     @Inject
     protected Button apply;
@@ -34,6 +39,11 @@ public class CommandLineFrameController extends AbstractFrame {
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
+
+        commandLine = componentsFactory.createComponent("commandLine");//todo eude to constants
+        commandLine.setWidth("500px");
+        commandLine.setHeight("30px");
+        commandLineHBox.add(commandLine, 0);
 
         commandLine.setShowGutter(false);
         commandLine.setShowPrintMargin(false);

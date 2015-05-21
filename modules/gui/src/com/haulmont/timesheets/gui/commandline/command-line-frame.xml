@@ -6,8 +6,7 @@
         class="com.haulmont.timesheets.gui.commandline.CommandLineFrameController"
         messagesPack="com.haulmont.timesheets.gui.commandline">
     <layout>
-        <hbox spacing="true">
-            <sourceCodeEditor id="commandLine" width="500px" height="30px"/>
+        <hbox id="commandLineHBox" spacing="true">
             <button id="apply" caption="msg://caption.apply"/>
         </hbox>
     </layout>
