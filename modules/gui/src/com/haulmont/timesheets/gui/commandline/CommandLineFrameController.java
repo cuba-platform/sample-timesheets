@@ -35,6 +35,9 @@ public class CommandLineFrameController extends AbstractFrame {
     public void init(Map<String, Object> params) {
         super.init(params);
 
+        commandLine.setShowGutter(false);
+        commandLine.setShowPrintMargin(false);
+        commandLine.setHighlightActiveLine(false);
         commandLine.setSuggester(new CommandLineSuggester(commandLine));
         apply.setAction(new AbstractAction("apply") {
             @Override
