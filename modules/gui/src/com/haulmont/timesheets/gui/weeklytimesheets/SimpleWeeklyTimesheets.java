@@ -26,8 +26,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
 
 import javax.inject.Inject;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -67,12 +65,10 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     protected Map<String, EntityLinkField> linkFieldsCache = new HashMap<>();
 
     protected Date firstDayOfWeek;
-    protected DateFormat dateFormat;
 
     @Override
     public void init(Map<String, Object> params) {
         firstDayOfWeek = TimeUtils.getFirstDayOfWeek(new Date());
-        dateFormat = new SimpleDateFormat(messages.getMainMessage("dateFormat"));
 
         weeklyTsTable.addAction(new WeeklyReportEntryRemoveAction(weeklyTsTable));
 
@@ -179,7 +175,6 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         } else {
                             EntityLinkField linkField = componentsFactory.createComponent(EntityLinkField.NAME);
                             linkField.setOwner(weeklyTsTable);
-                            linkField.setFrame(frame);  // TODO: remove after #PL-5371 will release
                             linkField.setScreenOpenType(WindowManager.OpenType.DIALOG);
                             linkField.setDatasource(weeklyTsTable.getItemDatasource(entity), day.getId());
                             linkField.addListener(new ValueListener() {
@@ -326,8 +321,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
     protected void updateWeekCaption() {
         weekCaption.setValue(String.format("%s - %s",
-                dateFormat.format(firstDayOfWeek),
-                dateFormat.format(DateUtils.addDays(firstDayOfWeek, 6))));
+                TimeUtils.getDateFormat().format(firstDayOfWeek),
+                TimeUtils.getDateFormat().format(DateUtils.addDays(firstDayOfWeek, 6))));
     }
 
     protected void updateWeek() {

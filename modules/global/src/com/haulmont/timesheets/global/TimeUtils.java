@@ -9,6 +9,8 @@ import com.haulmont.cuba.core.global.Messages;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -22,8 +24,9 @@ import java.util.regex.Pattern;
  */
 public class TimeUtils {
     protected static Messages messages = AppBeans.get(Messages.NAME);
+    protected static DateFormat dateFormat;
+    
     public static final String TIME_FORMAT = "hh:mm";
-
 
     public static Date parse(String time) {
         if (StringUtils.isBlank(time)) {
@@ -101,5 +104,13 @@ public class TimeUtils {
         java.util.Calendar calendar = getCalendarWithoutTime(date);
         calendar.set(java.util.Calendar.DAY_OF_MONTH, calendar.getActualMaximum(java.util.Calendar.DAY_OF_MONTH));
         return calendar.getTime();
+    }
+
+    public static DateFormat getDateFormat() {
+        return dateFormat;
+    }
+
+    public static void setDateFormat(DateFormat dateFormat) {
+        TimeUtils.dateFormat = dateFormat;
     }
 }
