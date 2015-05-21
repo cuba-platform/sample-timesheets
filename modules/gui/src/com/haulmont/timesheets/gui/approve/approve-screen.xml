@@ -8,9 +8,17 @@
                               class="com.haulmont.timesheets.entity.ExtUser"
                               view="_local">
             <query>
-                <![CDATA[select e.user from ts$ProjectParticipant e
-                join e.project pr join pr.participants p where p.user.id = :session$userId
-                and (p.role.code = 'manager' or p.role.code = 'approver')]]>
+                <![CDATA[
+                select u
+                from sec$User u,
+                     ts$ProjectParticipant pp
+                     join pp.project pr
+                     join pr.participants me
+                where
+                    pp.user.id = u.id and
+                    me.user.id = :session$userId and
+                    (me.role.code = 'manager' or me.role.code = 'approver')
+                    ]]>
             </query>
         </collectionDatasource>
         <collectionDatasource id="weeklyEntriesDs"
