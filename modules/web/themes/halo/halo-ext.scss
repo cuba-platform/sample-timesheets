@@ -72,37 +72,25 @@
   }
 
   .v-table-cell-content-time-entry-new-bg {
-    background-color: #ffcd9f;
-  }
-
-  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-new-bg {
-    border-left-color: #d4d4d4;
-  }
-
-  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-new-bg .v-button-link {
-    color: #197de1;
+    background-image: unquote("linear-gradient(to bottom,#F4F94C 2%,#F5DA4F 98%)");
   }
 
   .v-table-cell-content-time-entry-approved-bg {
-    background-color: #cdffcd;
-  }
-
-  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-approved-bg {
-    border-left-color: #d4d4d4;
-  }
-
-  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-approved-bg .v-button-link {
-    color: #197de1;
+    background-image: unquote("linear-gradient(to bottom,#9BEA7F 2%,#5AE43C 98%)");
   }
 
   .v-table-cell-content-time-entry-rejected-bg {
-    background-color: #ffcdcd;
+    background-image: unquote("linear-gradient(to bottom,#FFC5C5 2%,#FAAFAF 98%)");
   }
 
+  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-new-bg,
+  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-approved-bg,
   .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-rejected-bg {
     border-left-color: #d4d4d4;
   }
 
+  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-new-bg .v-button-link,
+  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-approved-bg .v-button-link,
   .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-rejected-bg .v-button-link {
     color: #197de1;
   }
