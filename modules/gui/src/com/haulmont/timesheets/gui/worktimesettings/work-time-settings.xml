@@ -6,7 +6,7 @@
     <layout expand="windowActions"
             spacing="true">
         <hbox spacing="true">
-            <label value="msg://forkHoursForWeek"/>
+            <label value="msg://forkHoursForWeek" align="MIDDLE_LEFT"/>
             <textField id="workHoursTextField"
                        datatype="double"/>
         </hbox>
