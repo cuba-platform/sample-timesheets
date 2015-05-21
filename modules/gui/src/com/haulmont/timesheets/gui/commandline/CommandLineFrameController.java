@@ -29,9 +29,6 @@ public class CommandLineFrameController extends AbstractFrame {
     private BoxLayout commandLineHBox;
 
     @Inject
-    protected Button apply;
-
-    @Inject
     private CommandLineService commandLineService;
 
     protected  ResultTimeEntriesHandler timeEntriesHandler;
@@ -40,7 +37,7 @@ public class CommandLineFrameController extends AbstractFrame {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        commandLine = componentsFactory.createComponent("commandLine");//todo eude to constants
+        commandLine = componentsFactory.createComponent(CommandLine.NAME);
         commandLine.setWidth("500px");
         commandLine.setHeight("30px");
         commandLineHBox.add(commandLine, 0);
@@ -49,18 +46,16 @@ public class CommandLineFrameController extends AbstractFrame {
         commandLine.setShowPrintMargin(false);
         commandLine.setHighlightActiveLine(false);
         commandLine.setSuggester(new CommandLineSuggester(commandLine));
-        apply.setAction(new AbstractAction("apply") {
-            @Override
-            public void actionPerform(Component component) {
-                if (timeEntriesHandler != null) {
-                    List<TimeEntry> timeEntries =
-                            commandLineService.createTimeEntriesForTheCommandLine(String.valueOf(commandLine.getValue()));
-                    timeEntriesHandler.handle(timeEntries != null ? timeEntries : Collections.<TimeEntry>emptyList());
-                } else {
-                    throw new GuiDevelopmentException("ResultTimeEntriesHandler is not set for CommandLineFrameController", getFrame().getId());
-                }
-            }
-        });
+    }
+
+    public void apply(){
+        if (timeEntriesHandler != null) {
+            List<TimeEntry> timeEntries =
+                    commandLineService.createTimeEntriesForTheCommandLine(String.valueOf(commandLine.getValue()));
+            timeEntriesHandler.handle(timeEntries != null ? timeEntries : Collections.<TimeEntry>emptyList());
+        } else {
+            throw new GuiDevelopmentException("ResultTimeEntriesHandler is not set for CommandLineFrameController", getFrame().getId());
+        }
     }
 
     public void setTimeEntriesHandler(ResultTimeEntriesHandler timeEntriesHandler) {

@@ -6,14 +6,14 @@ package com.haulmont.timesheets.web.commandline;
 
 import com.haulmont.cuba.gui.components.autocomplete.Suggester;
 import com.haulmont.cuba.web.gui.components.WebSourceCodeEditor;
+import com.haulmont.timesheets.gui.commandline.CommandLine;
+import com.haulmont.timesheets.gui.commandline.CommandLineFrameController;
 
 /**
  * @author degtyarjov
  * @version $Id$
  */
-public class CommandLine extends WebSourceCodeEditor {
-    public static final String NAME = "commandLine";
-
+public class WebCommandLine extends WebSourceCodeEditor implements CommandLine {
     @Override
     public void setSuggester(Suggester suggester) {
         this.suggester = suggester;

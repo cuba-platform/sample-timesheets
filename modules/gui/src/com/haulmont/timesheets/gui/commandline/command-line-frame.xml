@@ -7,7 +7,7 @@
         messagesPack="com.haulmont.timesheets.gui.commandline">
     <layout>
         <hbox id="commandLineHBox" spacing="true">
-            <button id="apply" caption="msg://caption.apply"/>
+            <button id="apply" invoke="apply" caption="msg://caption.apply"/>
         </hbox>
     </layout>
 </window>

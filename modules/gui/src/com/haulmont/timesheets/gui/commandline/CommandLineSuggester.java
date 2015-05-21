@@ -48,7 +48,7 @@ public class CommandLineSuggester implements Suggester {
         if (text.charAt(cursorPosition - 1) == '@') {
             List<Project> projects = projectsService.getActiveProjectsForUser(currentUser);
             for (Project project : projects) {
-                Suggestion suggestion = new Suggestion(sourceCodeEditor.getAutoCompleteSupport(), project.getName(), project.getCode(), "", cursorPosition, cursorPosition + 10);
+                Suggestion suggestion = suggestion(project.getInstanceName(), project.getCode(), cursorPosition);
                 suggestions.add(suggestion);
             }
         } else if (text.charAt(cursorPosition - 1) == '#') {
@@ -63,11 +63,16 @@ public class CommandLineSuggester implements Suggester {
             }
 
             for (Task task : tasks) {
-                Suggestion suggestion = new Suggestion(sourceCodeEditor.getAutoCompleteSupport(), task.getName(), task.getCode(), "", cursorPosition, cursorPosition + 10);
+                Suggestion suggestion = suggestion(task.getInstanceName(), task.getCode(), cursorPosition);
                 suggestions.add(suggestion);
             }
         }
 
         return suggestions;
+    }
+
+    protected Suggestion suggestion(String caption, String value, int cursorPosition) {
+        return new Suggestion(sourceCodeEditor.getAutoCompleteSupport(), caption, value,
+                "", cursorPosition, cursorPosition + 10);
     }
 }
