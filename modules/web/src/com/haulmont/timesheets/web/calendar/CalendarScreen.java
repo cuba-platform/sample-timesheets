@@ -142,28 +142,36 @@ public class CalendarScreen extends AbstractWindow {
         editTimeEntry(new TimeEntry());
     }
 
+    //todo eude reimplement with CUBA API
     protected void updateSummaryColumn() {
         summaryBox.removeAll();
         CubaVerticalActionsLayout summaryLayout = WebComponentsHelper.unwrap(summaryBox);
-        CubaVerticalActionsLayout upperSpacer = new CubaVerticalActionsLayout();
-        upperSpacer.setHeight("30px");
-        summaryLayout.addComponent(upperSpacer);
+        CubaVerticalActionsLayout summaryCaptionVbox = new CubaVerticalActionsLayout();
+        summaryCaptionVbox.setHeight("30px");
+        summaryCaptionVbox.setWidth("100%");
+        com.vaadin.ui.Label summaryCaption = new com.vaadin.ui.Label();
+        summaryCaption.setContentMode(ContentMode.HTML);
+        summaryCaption.setValue(getMessage("label.summaryCaption"));
+        summaryCaption.setWidthUndefined();
+        summaryCaptionVbox.addComponent(summaryCaption);
+        summaryCaptionVbox.setComponentAlignment(summaryCaption, com.vaadin.ui.Alignment.MIDDLE_CENTER);
+        summaryLayout.addComponent(summaryCaptionVbox);
 
         HoursAndMinutes[] summariesByWeeks = calculateSummariesByWeeks();
 
         for (int i = 1; i < summariesByWeeks.length; i++) {
-            com.vaadin.ui.Label label = new com.vaadin.ui.Label();
-            label.setContentMode(ContentMode.HTML);
+            com.vaadin.ui.Label hourLabel = new com.vaadin.ui.Label();
+            hourLabel.setContentMode(ContentMode.HTML);
             HoursAndMinutes summaryForTheWeek = summariesByWeeks[i];
             if (summaryForTheWeek == null) {
                 summaryForTheWeek = new HoursAndMinutes();
             }
-            label.setValue(formatMessage("label.hoursSummary",
+            hourLabel.setValue(formatMessage("label.hoursSummary",
                     summaryForTheWeek.getSummaryHours(), summaryForTheWeek.getSummaryMinutes()));
-            label.setWidthUndefined();
-            summaryLayout.addComponent(label);
-            summaryLayout.setExpandRatio(label, 1);
-            summaryLayout.setComponentAlignment(label, com.vaadin.ui.Alignment.MIDDLE_CENTER);
+            hourLabel.setWidthUndefined();
+            summaryLayout.addComponent(hourLabel);
+            summaryLayout.setExpandRatio(hourLabel, 1);
+            summaryLayout.setComponentAlignment(hourLabel, com.vaadin.ui.Alignment.MIDDLE_CENTER);
         }
     }
 
@@ -187,6 +195,8 @@ public class CalendarScreen extends AbstractWindow {
 
             summariesByWeeks[numberOfWeekForTheEvent] = summaryForTheWeek;
         }
+
+        //todo eude calculate planned hours for each week
         return summariesByWeeks;
     }
 
