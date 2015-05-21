@@ -4,7 +4,8 @@
           insertBefore="administration">
         <item id="simple-weekly-timesheets"
               shortcut="CTRL-ALT-W"/>
-        <item id="calendar-screen"/>
+        <item id="calendar-screen"
+              shortcut="CTRL-ALT-C"/>
         <item id="ts$TimeEntry.browse"/>
         <item id="ts$Task.browse"/>
     </menu>
