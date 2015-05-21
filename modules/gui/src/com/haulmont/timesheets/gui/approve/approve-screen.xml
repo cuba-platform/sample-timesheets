@@ -39,13 +39,13 @@
                            align="MIDDLE_RIGHT"/>
                 <linkButton icon="font-icon:CHEVRON_LEFT"
                             align="MIDDLE_RIGHT"
-                            invoke="movePreviousWeek"/>
+                            invoke="showPreviousWeek"/>
                 <linkButton caption="msg://today"
-                            invoke="setCurrentWeek"
+                            invoke="setToday"
                             align="MIDDLE_RIGHT"/>
                 <linkButton icon="font-icon:CHEVRON_RIGHT"
                             align="MIDDLE_RIGHT"
-                            invoke="moveNextWeek"/>
+                            invoke="showNextWeek"/>
             </hbox>
         </buttonsPanel>
         <split id="split"
@@ -62,7 +62,7 @@
                         <column id="lastName"/>
                         <column id="firstName"/>
                         <column id="actions" caption="Actions"
-                                width="100px"/>
+                                width="80px"/>
                     </columns>
                     <rows datasource="usersDs"/>
                 </table>
@@ -92,7 +92,7 @@
                         <column id="sunday"
                                 width="80px"/>
                         <column id="actions" caption="Actions"
-                                width="100px"/>
+                                width="80px"/>
                     </columns>
                     <rows datasource="weeklyEntriesDs"/>
                 </table>

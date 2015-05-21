@@ -14,10 +14,7 @@ import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.timesheets.entity.Project;
-import com.haulmont.timesheets.entity.Task;
-import com.haulmont.timesheets.entity.TaskStatus;
-import com.haulmont.timesheets.entity.TimeEntry;
+import com.haulmont.timesheets.entity.*;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.HashSet;
@@ -66,6 +63,15 @@ public class ComponentsHelper {
                 .setHeight(500)
                 .setResizable(true));
         return lookupAction;
+    }
+
+    public static LinkButton createCaptionlessLinkButton(String icon, String description, Action action) {
+        LinkButton linkButton = componentsFactory.createComponent(LinkButton.NAME);
+        linkButton.setIcon(icon);
+        linkButton.setDescription(description);
+        linkButton.setAlignment(Component.Alignment.MIDDLE_CENTER);
+        linkButton.setAction(action);
+        return linkButton;
     }
 
     public static class EntityRemoveAction extends CaptionlessRemoveAction {

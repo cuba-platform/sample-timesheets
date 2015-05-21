@@ -19,6 +19,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.global.TimeUtils;
+import com.haulmont.timesheets.global.WeeklyReportConverterBean;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.gui.commandline.CommandLineFrameController;
 import com.haulmont.timesheets.service.ProjectsService;
@@ -57,8 +58,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     protected ProjectsService projectsService;
     @Inject
     protected ViewRepository viewRepository;
-
-    protected Map<Project, Map<Task, List<TimeEntry>>> timeEntriesForWeekMap = new HashMap<>();
+    @Inject
+    protected WeeklyReportConverterBean reportConverterBean;
 
     protected Map<String, Label> labelsCache = new HashMap<>();
     protected Map<String, LookupField> lookupFieldsCache = new HashMap<>();
@@ -341,7 +342,6 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
     protected void updateWeek() {
         weeklyEntriesDs.clear();
-        timeEntriesForWeekMap.clear();
         updateWeekCaption();
         fillExistingTimeEntries();
         weeklyTsTable.repaint();
@@ -350,38 +350,10 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     protected void fillExistingTimeEntries() {
         List<TimeEntry> timeEntries = projectsService.getTimeEntriesForPeriod(firstDayOfWeek,
                 DateUtils.addDays(firstDayOfWeek, 6), userSession.getUser(), null);
-        for (TimeEntry timeEntry : timeEntries) {
-            addTimeEntryToMap(timeEntry);
+        List<WeeklyReportEntry> reportEntries = reportConverterBean.convertFromTimeEtnries(timeEntries);
+        for (WeeklyReportEntry entry : reportEntries) {
+            weeklyEntriesDs.addItem(entry);
         }
-
-        for (Map.Entry<Project, Map<Task, List<TimeEntry>>> projectEntry : timeEntriesForWeekMap.entrySet()) {
-            for (Map.Entry<Task, List<TimeEntry>> taskEntry : projectEntry.getValue().entrySet()) {
-                WeeklyReportEntry reportEntry = new WeeklyReportEntry();
-                reportEntry.setProject(projectEntry.getKey());
-                reportEntry.setTask(taskEntry.getKey());
-                weeklyEntriesDs.addItem(reportEntry);
-                for (TimeEntry timeEntry : taskEntry.getValue()) {
-                    reportEntry.updateTimeEntry(timeEntry);
-                }
-            }
-        }
-    }
-
-    protected void addTimeEntryToMap(TimeEntry timeEntry) {
-        Project project = timeEntry.getTask().getProject();
-        Task task = timeEntry.getTask();
-        Map<Task, List<TimeEntry>> taskMap = timeEntriesForWeekMap.get(project);
-        if (taskMap == null) {
-            taskMap = new HashMap<>();
-            timeEntriesForWeekMap.put(project, taskMap);
-        }
-
-        List<TimeEntry> timeEntryList = taskMap.get(task);
-        if (timeEntryList == null) {
-            timeEntryList = new ArrayList<>();
-            taskMap.put(task, timeEntryList);
-        }
-        timeEntryList.add(timeEntry);
     }
 
     protected String getKeyForEntity(Entity entity, String column) {

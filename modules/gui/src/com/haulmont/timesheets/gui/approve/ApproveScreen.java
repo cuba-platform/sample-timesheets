@@ -5,6 +5,7 @@ package com.haulmont.timesheets.gui.approve;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -16,6 +17,7 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.global.TimeUtils;
+import com.haulmont.timesheets.global.WeeklyReportConverterBean;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.service.ProjectsService;
 import org.apache.commons.lang.time.DateUtils;
@@ -51,14 +53,16 @@ public class ApproveScreen extends AbstractWindow {
     protected UserSession userSession;
     @Inject
     protected ProjectsService projectsService;
-
-    protected Map<Project, Map<Task, List<TimeEntry>>> timeEntriesForWeekMap = new HashMap<>();
+    @Inject
+    protected TimeSource timeSource;
+    @Inject
+    protected WeeklyReportConverterBean reportConverterBean;
 
     protected Date firstDayOfWeek;
 
     @Override
     public void init(Map<String, Object> params) {
-        firstDayOfWeek = TimeUtils.getFirstDayOfWeek(new Date());
+        firstDayOfWeek = TimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp());
 
         initUsersTable();
         initUserReportsTable();
@@ -72,28 +76,12 @@ public class ApproveScreen extends AbstractWindow {
         usersTable.addGeneratedColumn("actions", new Table.ColumnGenerator() {
             @Override
             public Component generateCell(Entity entity) {
-
                 User user = (User) entity;
 
-                HBoxLayout hBoxLayout = componentsFactory.createComponent(HBoxLayout.NAME);
-                hBoxLayout.setSpacing(true);
-                hBoxLayout.setWidth("100%");
-
-                LinkButton approve = componentsFactory.createComponent(LinkButton.NAME);
-                approve.setIcon("icons/ok.png");
-                approve.setDescription(messages.getMessage(getClass(), "approve"));
-                approve.setAlignment(Alignment.MIDDLE_CENTER);
-                approve.setAction(new UserChangeStatusAction("approve", user, TimeEntryStatus.APPROVED));
-                hBoxLayout.add(approve);
-
-                LinkButton reject = componentsFactory.createComponent(LinkButton.NAME);
-                reject.setIcon("icons/remove.png");
-                reject.setDescription(messages.getMessage(getClass(), "reject"));
-                reject.setAlignment(Alignment.MIDDLE_CENTER);
-                reject.setAction(new UserChangeStatusAction("reject", user, TimeEntryStatus.REJECTED));
-                hBoxLayout.add(reject);
-
-                return hBoxLayout;
+                return getApproveControls(
+                        new UserChangeStatusAction("approve", user, TimeEntryStatus.APPROVED),
+                        new UserChangeStatusAction("reject", user, TimeEntryStatus.REJECTED)
+                );
             }
         });
 
@@ -165,27 +153,12 @@ public class ApproveScreen extends AbstractWindow {
             @Override
             public Component generateCell(Entity entity) {
                 WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
-
-                HBoxLayout hBoxLayout = componentsFactory.createComponent(HBoxLayout.NAME);
-                hBoxLayout.setSpacing(true);
-                hBoxLayout.setWidth("100%");
-
-                LinkButton approve = componentsFactory.createComponent(LinkButton.NAME);
-                approve.setIcon("icons/ok.png");
-                approve.setDescription(messages.getMessage(getClass(), "approve"));
-                approve.setAlignment(Alignment.MIDDLE_CENTER);
                 User user = usersTable.getSingleSelected();
-                approve.setAction(new WeeklyReportChangeStatusAction("aprove", user, reportEntry, TimeEntryStatus.APPROVED));
-                hBoxLayout.add(approve);
 
-                LinkButton reject = componentsFactory.createComponent(LinkButton.NAME);
-                reject.setIcon("icons/remove.png");
-                reject.setDescription(messages.getMessage(getClass(), "reject"));
-                reject.setAlignment(Alignment.MIDDLE_CENTER);
-                reject.setAction(new WeeklyReportChangeStatusAction("reject", user, reportEntry, TimeEntryStatus.REJECTED));
-                hBoxLayout.add(reject);
-
-                return hBoxLayout;
+                return getApproveControls(
+                        new WeeklyReportChangeStatusAction("approve", user, reportEntry, TimeEntryStatus.APPROVED),
+                        new WeeklyReportChangeStatusAction("reject", user, reportEntry, TimeEntryStatus.REJECTED)
+                );
             }
         });
 
@@ -206,6 +179,22 @@ public class ApproveScreen extends AbstractWindow {
         });
     }
 
+    protected Component getApproveControls(Action approveAction, Action rejectAction) {
+        HBoxLayout hBoxLayout = componentsFactory.createComponent(HBoxLayout.NAME);
+        hBoxLayout.setSpacing(true);
+        hBoxLayout.setWidth("100%");
+
+        hBoxLayout.add(ComponentsHelper.createCaptionlessLinkButton("icons/ok.png",
+                messages.getMessage(getClass(), "approve"),
+                approveAction));
+
+        hBoxLayout.add(ComponentsHelper.createCaptionlessLinkButton("icons/remove.png",
+                messages.getMessage(getClass(), "reject"),
+                rejectAction));
+
+        return hBoxLayout;
+    }
+
     protected void initDateField() {
         dateField.addListener(new ValueListener() {
             @Override
@@ -218,9 +207,7 @@ public class ApproveScreen extends AbstractWindow {
 
     protected void initStatusOption() {
         statusOption.setOptionsList(Arrays.asList(TimeEntryStatus.values()));
-        List<TimeEntryStatus> initValue = new ArrayList<>(1);
-        initValue.add(TimeEntryStatus.NEW);
-        statusOption.setValue(initValue);
+        statusOption.setValue(Collections.singletonList(TimeEntryStatus.NEW));
 
         statusOption.addListener(new ValueListener() {
             @Override
@@ -230,17 +217,17 @@ public class ApproveScreen extends AbstractWindow {
         });
     }
 
-    public void setCurrentWeek() {
-        firstDayOfWeek = TimeUtils.getFirstDayOfWeek(new Date());
+    public void setToday() {
+        firstDayOfWeek = TimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp());
         updateWeek();
     }
 
-    public void movePreviousWeek() {
+    public void showPreviousWeek() {
         firstDayOfWeek = DateUtils.addDays(firstDayOfWeek, -7);
         updateWeek();
     }
 
-    public void moveNextWeek() {
+    public void showNextWeek() {
         firstDayOfWeek = DateUtils.addDays(firstDayOfWeek, 7);
         updateWeek();
     }
@@ -252,7 +239,6 @@ public class ApproveScreen extends AbstractWindow {
 
     protected void updateReportTable() {
         weeklyEntriesDs.clear();
-        timeEntriesForWeekMap.clear();
         User user = usersTable.getSingleSelected();
         if (user != null) {
             fillExistingTimeEntries(user);
@@ -268,20 +254,9 @@ public class ApproveScreen extends AbstractWindow {
 
     protected void fillExistingTimeEntries(User user) {
         List<TimeEntry> timeEntries = getUserTimeEntries(user);
-        for (TimeEntry timeEntry : timeEntries) {
-            addTimeEntryToMap(timeEntry);
-        }
-
-        for (Map.Entry<Project, Map<Task, List<TimeEntry>>> projectEntry : timeEntriesForWeekMap.entrySet()) {
-            for (Map.Entry<Task, List<TimeEntry>> taskEntry : projectEntry.getValue().entrySet()) {
-                WeeklyReportEntry reportEntry = new WeeklyReportEntry();
-                reportEntry.setProject(projectEntry.getKey());
-                reportEntry.setTask(taskEntry.getKey());
-                weeklyEntriesDs.addItem(reportEntry);
-                for (TimeEntry timeEntry : taskEntry.getValue()) {
-                    reportEntry.updateTimeEntry(timeEntry);
-                }
-            }
+        List<WeeklyReportEntry> reportEntries = reportConverterBean.convertFromTimeEtnries(timeEntries);
+        for (WeeklyReportEntry entry : reportEntries) {
+            weeklyEntriesDs.addItem(entry);
         }
     }
 
@@ -299,27 +274,10 @@ public class ApproveScreen extends AbstractWindow {
         return timeEntries;
     }
 
-    protected void addTimeEntryToMap(TimeEntry timeEntry) {
-        Project project = timeEntry.getTask().getProject();
-        Task task = timeEntry.getTask();
-        Map<Task, List<TimeEntry>> taskMap = timeEntriesForWeekMap.get(project);
-        if (taskMap == null) {
-            taskMap = new HashMap<>();
-            timeEntriesForWeekMap.put(project, taskMap);
-        }
-
-        List<TimeEntry> timeEntryList = taskMap.get(task);
-        if (timeEntryList == null) {
-            timeEntryList = new ArrayList<>();
-            taskMap.put(task, timeEntryList);
-        }
-        timeEntryList.add(timeEntry);
-    }
-
     protected abstract class AbstractChangeStatusAction extends AbstractAction {
 
-        protected User user;
-        protected TimeEntryStatus status;
+        protected final User user;
+        protected final TimeEntryStatus status;
 
         protected AbstractChangeStatusAction(String id, User user, TimeEntryStatus status) {
             super(id);
@@ -356,7 +314,7 @@ public class ApproveScreen extends AbstractWindow {
 
     protected class WeeklyReportChangeStatusAction extends AbstractChangeStatusAction {
 
-        protected WeeklyReportEntry weeklyReportEntry;
+        protected final WeeklyReportEntry weeklyReportEntry;
 
         protected WeeklyReportChangeStatusAction(String id, User user, WeeklyReportEntry weeklyReportEntry, TimeEntryStatus status) {
             super(id, user, status);
