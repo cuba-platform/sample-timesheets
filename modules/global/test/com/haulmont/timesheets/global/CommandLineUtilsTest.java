@@ -22,5 +22,15 @@ public class CommandLineUtilsTest {
         Assert.assertEquals("PLATFORM", projectCode);
         Assert.assertEquals("DEVELOPMENT", taskCode);
         Assert.assertEquals("2h30m", spentTime);
+
+        commandLine = "@PLATFORM #DEVELOPMENT 2:30";
+        commandLineUtils = new CommandLineUtils(commandLine);
+        spentTime = commandLineUtils.getSpentTime();
+        projectCode = commandLineUtils.getProjectCode();
+        taskCode = commandLineUtils.getTaskCode();
+        Assert.assertEquals("PLATFORM", projectCode);
+        Assert.assertEquals("DEVELOPMENT", taskCode);
+        Assert.assertEquals("2:30", spentTime);
+
     }
 }
