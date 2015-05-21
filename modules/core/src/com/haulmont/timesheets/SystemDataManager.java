@@ -20,7 +20,7 @@ import javax.inject.Inject;
  * @version $Id$
  */
 @ManagedBean
-public class TimeSheetsDataManager {
+public class SystemDataManager {
     @Inject
     protected DataManager dataManager;
 

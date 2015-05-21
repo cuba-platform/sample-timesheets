@@ -6,7 +6,7 @@ package com.haulmont.timesheets.service;
 
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.View;
-import com.haulmont.timesheets.TimeSheetsDataManager;
+import com.haulmont.timesheets.SystemDataManager;
 import com.haulmont.timesheets.entity.Task;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.entity.TimeEntryStatus;
@@ -27,7 +27,7 @@ import java.util.List;
 @Service(CommandLineService.NAME)
 public class CommandLineServiceBean implements CommandLineService {
     @Inject
-    protected TimeSheetsDataManager timeSheetsDataManager;
+    protected SystemDataManager systemDataManager;
 
     @Inject
     protected TimeSource timeSource;
@@ -38,7 +38,7 @@ public class CommandLineServiceBean implements CommandLineService {
         CommandLineUtils commandLineUtils = new CommandLineUtils(commandLine);
         String taskCode = commandLineUtils.getTaskCode();
         if (taskCode != null) {
-            Task task = timeSheetsDataManager.getEntityByCode(Task.class, taskCode, View.MINIMAL);
+            Task task = systemDataManager.getEntityByCode(Task.class, taskCode, View.MINIMAL);
             TimeEntry timeEntry = new TimeEntry();
             timeEntry.setTask(task);
             String spentTime = commandLineUtils.getSpentTime();

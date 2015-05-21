@@ -6,7 +6,7 @@ package com.haulmont.timesheets.service;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.timesheets.TimeSheetsDataManager;
+import com.haulmont.timesheets.SystemDataManager;
 import com.haulmont.timesheets.entity.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +24,7 @@ public class ProjectsServiceBean implements ProjectsService {
     protected DataManager dataManager;
 
     @Inject
-    protected TimeSheetsDataManager timeSheetsDataManager;
+    protected SystemDataManager systemDataManager;
 
     protected List<Project> getAllProjects() {
         LoadContext loadContext = new LoadContext(Project.class)
@@ -73,7 +73,7 @@ public class ProjectsServiceBean implements ProjectsService {
     @Nullable
     @Override
     public <T extends Entity> T getEntityByCode(Class<T> clazz, String code, String viewName) {
-        return timeSheetsDataManager.getEntityByCode(clazz, code, viewName);
+        return systemDataManager.getEntityByCode(clazz, code, viewName);
     }
 
     @Override
