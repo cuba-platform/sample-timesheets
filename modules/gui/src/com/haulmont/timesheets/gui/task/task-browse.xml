@@ -8,10 +8,8 @@
     <dsContext>
         <collectionDatasource id="tasksDs"
                               class="com.haulmont.timesheets.entity.Task"
+                              datasourceClass="com.haulmont.timesheets.gui.data.TasksCollectionDatasource"
                               view="task-full">
-            <query>
-                <![CDATA[select e from ts$Task e join e.participants p where p.user.id = :session$userId]]>
-            </query>
         </collectionDatasource>
     </dsContext>
     <layout expand="tasksTable"
@@ -27,10 +25,10 @@
             </actions>
             <columns>
                 <column id="name"/>
+                <column id="project"/>
                 <column id="code"/>
                 <column id="description"
                         maxTextLength="20"/>
-                <column id="project"/>
                 <column id="type"/>
                 <column id="status"/>
             </columns>
