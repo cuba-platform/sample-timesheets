@@ -3,11 +3,10 @@
  */
 package com.haulmont.timesheets.service;
 
-import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.DataManager;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.timesheets.TimeSheetsDataManager;
 import com.haulmont.timesheets.entity.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,9 +20,11 @@ import java.util.*;
  */
 @Service(ProjectsService.NAME)
 public class ProjectsServiceBean implements ProjectsService {
-
     @Inject
     protected DataManager dataManager;
+
+    @Inject
+    protected TimeSheetsDataManager timeSheetsDataManager;
 
     protected List<Project> getAllProjects() {
         LoadContext loadContext = new LoadContext(Project.class)
@@ -71,11 +72,8 @@ public class ProjectsServiceBean implements ProjectsService {
 
     @Nullable
     @Override
-    public ProjectRole getRoleByCode(String code) {
-        LoadContext loadContext = new LoadContext(ProjectRole.class);
-        loadContext.setQueryString("select e from ts$ProjectRole e where e.code = :code")
-                .setParameter("code", code);
-        return dataManager.load(loadContext);
+    public <T extends Entity> T getEntityByCode(Class<T> clazz, String code, String viewName) {
+        return timeSheetsDataManager.getEntityByCode(clazz, code, viewName);
     }
 
     @Override
@@ -121,23 +119,23 @@ public class ProjectsServiceBean implements ProjectsService {
 
     @Override
     public List<Task> getActiveTasksForUser(User user) {
-            LoadContext loadContext = new LoadContext(Task.class)
-                    .setView("task-full");
-            loadContext.setQueryString("select e from ts$Task e join e.participants p " +
-                    "where p.user.id = :userId and e.status = 'active' order by e.project")
-                    .setParameter("userId", user.getId());
-            List<Task> assignedTasks = dataManager.loadList(loadContext);
-            loadContext.setQueryString("select e from ts$Task e join e.project pr join pr.participants p " +
-                    "where p.user.id = :userId and e.participants is null and e.status = 'active' order by e.project")
-                    .setParameter("userId", user.getId());
-            List<Task> commonTasks = dataManager.loadList(loadContext);
-            if (assignedTasks.isEmpty() && commonTasks.isEmpty()) {
-                return Collections.emptyList();
-            }
-            List<Task> allTasks = new ArrayList<>(assignedTasks.size() + commonTasks.size());
-            allTasks.addAll(assignedTasks);
-            allTasks.addAll(commonTasks);
-            return allTasks;
+        LoadContext loadContext = new LoadContext(Task.class)
+                .setView("task-full");
+        loadContext.setQueryString("select e from ts$Task e join e.participants p " +
+                "where p.user.id = :userId and e.status = 'active' order by e.project")
+                .setParameter("userId", user.getId());
+        List<Task> assignedTasks = dataManager.loadList(loadContext);
+        loadContext.setQueryString("select e from ts$Task e join e.project pr join pr.participants p " +
+                "where p.user.id = :userId and e.participants is null and e.status = 'active' order by e.project")
+                .setParameter("userId", user.getId());
+        List<Task> commonTasks = dataManager.loadList(loadContext);
+        if (assignedTasks.isEmpty() && commonTasks.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<Task> allTasks = new ArrayList<>(assignedTasks.size() + commonTasks.size());
+        allTasks.addAll(assignedTasks);
+        allTasks.addAll(commonTasks);
+        return allTasks;
     }
 
     @Override

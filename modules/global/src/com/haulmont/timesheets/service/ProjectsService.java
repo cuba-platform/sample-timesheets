@@ -3,6 +3,7 @@
  */
 package com.haulmont.timesheets.service;
 
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.entity.*;
 
@@ -25,7 +26,7 @@ public interface ProjectsService {
     ProjectRole getUserProjectRole(Project project, User user);
 
     @Nullable
-    ProjectRole getRoleByCode(String code);
+    <T extends Entity> T getEntityByCode(Class<T> clazz, String code, @Nullable String viewName);
 
     List<TimeEntry> getTimeEntriesForPeriod(Date start, Date end, User user);
 

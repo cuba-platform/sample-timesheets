@@ -101,7 +101,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     }
 
     protected boolean userIsWorker() {
-        ProjectRole workerRole = projectsService.getRoleByCode("worker");
+        ProjectRole workerRole = projectsService.getEntityByCode(ProjectRole.class, "worker", null);
         if (workerRole == null) {
             return true;
         }

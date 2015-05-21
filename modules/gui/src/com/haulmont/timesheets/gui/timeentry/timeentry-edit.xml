@@ -32,7 +32,7 @@
         <scrollBox id="scrollBox">
             <fieldGroup id="fieldGroup"
                         datasource="timeEntryDs">
-                <column width="250px">
+                <column width="300px">
                     <field id="task"
                            optionsDatasource="activeTasksDs"/>
                     <field id="taskName"/>

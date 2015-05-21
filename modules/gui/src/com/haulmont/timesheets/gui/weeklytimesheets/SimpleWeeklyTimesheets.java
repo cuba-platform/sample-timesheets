@@ -20,7 +20,9 @@ import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.global.TimeUtils;
 import com.haulmont.timesheets.gui.ComponentsHelper;
+import com.haulmont.timesheets.gui.commandline.CommandLineFrameController;
 import com.haulmont.timesheets.service.ProjectsService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
 
 import javax.inject.Inject;
@@ -32,6 +34,8 @@ import java.util.*;
  * @author gorelov
  */
 public class SimpleWeeklyTimesheets extends AbstractWindow {
+    @Inject
+    private CommandLineFrameController commandLine;
     @Inject
     protected Table weeklyTsTable;
     @Inject
@@ -244,6 +248,28 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         });
 
         updateWeek();
+
+        commandLine.setTimeEntriesHandler(new CommandLineFrameController.ResultTimeEntriesHandler() {
+            @Override
+            public void handle(List<TimeEntry> resultTimeEntries) {
+                if (CollectionUtils.isNotEmpty(resultTimeEntries)) {
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(TimeUtils.TIME_FORMAT);
+                    TimeEntry timeEntry = resultTimeEntries.get(0);
+                    String spentTimeStr = simpleDateFormat.format(timeEntry.getTime());
+
+                    WeeklyReportEntry weeklyReportEntry = new WeeklyReportEntry();
+                    weeklyReportEntry.setTask(timeEntry.getTask());
+                    weeklyReportEntry.setProject(timeEntry.getTask().getProject());
+                    weeklyReportEntry.setMondayTime(spentTimeStr);
+                    weeklyReportEntry.setTuesdayTime(spentTimeStr);
+                    weeklyReportEntry.setWednesdayTime(spentTimeStr);
+                    weeklyReportEntry.setThursdayTime(spentTimeStr);
+                    weeklyReportEntry.setFridayTime(spentTimeStr);
+
+                    weeklyTsTable.getDatasource().addItem(weeklyReportEntry);
+                }
+            }
+        });
     }
 
     public void addReport() {

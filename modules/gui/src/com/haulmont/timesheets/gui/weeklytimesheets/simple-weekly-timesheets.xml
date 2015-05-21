@@ -16,11 +16,12 @@
             </query>
         </collectionDatasource>
     </dsContext>
-    <layout>
+    <layout expand="weeklyTsTable" spacing="true">
+        <iframe id="commandLine"
+                screen="command-line-frame"/>
         <table id="weeklyTsTable"
                editable="true"
                aggregatable="true"
-               height="100%"
                width="100%">
             <actions>
                 <action id="add"

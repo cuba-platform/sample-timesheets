@@ -6,13 +6,13 @@ package com.haulmont.timesheets.gui.timeentry;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractLookup;
-import com.haulmont.cuba.gui.components.IFrame;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.gui.commandline.CommandLineFrameController;
+import org.apache.commons.collections.CollectionUtils;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -53,9 +53,10 @@ public class TimeEntryBrowse extends AbstractLookup {
         commandLine.setTimeEntriesHandler(new CommandLineFrameController.ResultTimeEntriesHandler() {
             @Override
             public void handle(List<TimeEntry> resultTimeEntries) {
-                //todo eude - do something here
+                if (CollectionUtils.isNotEmpty(resultTimeEntries)) {
+                    openEditor("ts$TimeEntry.edit", resultTimeEntries.get(0), WindowManager.OpenType.DIALOG);
+                }
             }
         });
     }
-
 }
