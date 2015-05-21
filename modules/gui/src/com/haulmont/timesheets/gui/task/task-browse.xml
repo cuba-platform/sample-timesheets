@@ -14,10 +14,6 @@
     </dsContext>
     <layout expand="tasksTable"
             spacing="true">
-        <filter id="filter"
-                datasource="tasksDs">
-            <properties include=".*"/>
-        </filter>
         <table id="tasksTable"
                width="100%">
             <actions>

@@ -8,13 +8,13 @@
             <hbox align="MIDDLE_LEFT" spacing="true">
                 <linkButton align="MIDDLE_LEFT"
                             icon="font-icon:CHEVRON_LEFT"
-                            invoke="movePreviousMonth"/>
+                            invoke="showPreviousMonth"/>
                 <linkButton caption="msg://today"
-                            invoke="setCurrentDate"/>
+                            invoke="setToday"/>
                 <linkButton align="MIDDLE_RIGHT"
                             icon="font-icon:CHEVRON_RIGHT"
-                            invoke="moveNextMonth"/>
-                <dateField id="dateField" align="MIDDLE_LEFT" resolution="MONTH" stylename="simple"/>
+                            invoke="showNextMonth"/>
+                <dateField id="monthSelector" align="MIDDLE_LEFT" resolution="MONTH" stylename="simple"/>
             </hbox>
             <label id="monthLabel"
                    align="MIDDLE_CENTER"

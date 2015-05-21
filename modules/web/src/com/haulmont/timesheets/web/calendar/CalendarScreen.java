@@ -5,9 +5,13 @@ package com.haulmont.timesheets.web.calendar;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.DateField;
+import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
@@ -21,8 +25,8 @@ import com.haulmont.timesheets.service.ProjectsService;
 import com.haulmont.timesheets.web.toolkit.ui.TimeSheetsCalendar;
 import com.vaadin.event.Action;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Calendar;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents;
 import com.vaadin.ui.components.calendar.CalendarDateRange;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
@@ -30,9 +34,7 @@ import com.vaadin.ui.components.calendar.event.CalendarEventProvider;
 import org.apache.commons.lang.time.DateUtils;
 
 import javax.inject.Inject;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author gorelov
@@ -45,11 +47,13 @@ public class CalendarScreen extends AbstractWindow {
     @Inject
     protected Label monthLabel;
     @Inject
-    protected DateField dateField;
+    protected DateField monthSelector;
     @Inject
     protected UserSession userSession;
     @Inject
     protected Messages messages;
+    @Inject
+    private TimeSource timeSource;
 
     protected TimeSheetsCalendar calendar;
 
@@ -59,10 +63,28 @@ public class CalendarScreen extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
+        firstDayOfMonth = TimeUtils.getFirstDayOfMonth(timeSource.currentTimestamp());
 
-        firstDayOfMonth = TimeUtils.getFirstDayOfMonth(new Date());
         dataSource = new TimeSheetsCalendarEventProvider(userSession.getUser());
+        dataSource.addEventSetChangeListener(new CalendarEventProvider.EventSetChangeListener() {
+            @Override
+            public void eventSetChange(CalendarEventProvider.EventSetChangeEvent changeEvent) {
+                updateSummaryColumn();
+            }
+        });
 
+        initCalendar();
+
+        monthSelector.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                firstDayOfMonth = TimeUtils.getFirstDayOfMonth((Date) value);
+                updateCalendarRange();
+            }
+        });
+    }
+
+    private void initCalendar() {
         calendar = new TimeSheetsCalendar(dataSource);
         calendar.setWidth("100%");
         calendar.setHeight("89%");
@@ -94,37 +116,33 @@ public class CalendarScreen extends AbstractWindow {
         });
         calendar.addActionHandler(new CalendarActionHandler());
 
-        updateCalendarRange();
-        updateMonthCaption();
-
         Layout calendarLayout = WebComponentsHelper.unwrap(calBox);
         calendarLayout.addComponent(calendar);
 
-        updateSummary();
-        dataSource.addEventSetChangeListener(new CalendarEventProvider.EventSetChangeListener() {
-            @Override
-            public void eventSetChange(CalendarEventProvider.EventSetChangeEvent changeEvent) {
-                updateSummary();
-            }
-        });
-
-        dateField.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                firstDayOfMonth = TimeUtils.getFirstDayOfMonth((Date) value);
-                updateCalendarRange();
-                updateMonthCaption();
-            }
-        });
-    }
-
-    public void setCurrentDate() {
-        firstDayOfMonth = TimeUtils.getFirstDayOfMonth(new Date());
         updateCalendarRange();
-        updateMonthCaption();
+        updateSummaryColumn();
     }
 
-    protected void updateSummary() {
+    public void setToday() {
+        firstDayOfMonth = TimeUtils.getFirstDayOfMonth(timeSource.currentTimestamp());
+        updateCalendarRange();
+    }
+
+    public void showNextMonth() {
+        firstDayOfMonth = DateUtils.addMonths(firstDayOfMonth, 1);
+        updateCalendarRange();
+    }
+
+    public void showPreviousMonth() {
+        firstDayOfMonth = DateUtils.addMonths(firstDayOfMonth, -1);
+        updateCalendarRange();
+    }
+
+    public void addTimeEntry() {
+        editTimeEntry(new TimeEntry());
+    }
+
+    protected void updateSummaryColumn() {
         summaryBox.removeAll();
         CubaVerticalActionsLayout summaryLayout = WebComponentsHelper.unwrap(summaryBox);
         CubaVerticalActionsLayout upperSpacer = new CubaVerticalActionsLayout();
@@ -172,27 +190,25 @@ public class CalendarScreen extends AbstractWindow {
         return summariesByWeeks;
     }
 
-    public void updateCalendarRange() {
+    protected void updateCalendarRange() {
         calendar.setStartDate(firstDayOfMonth);
         calendar.setEndDate(TimeUtils.getLastDayOfMonth(firstDayOfMonth));
 
-        updateSummary();
-    }
-
-    public void moveNextMonth() {
-        firstDayOfMonth = DateUtils.addMonths(firstDayOfMonth, 1);
-        updateCalendarRange();
+        updateSummaryColumn();
         updateMonthCaption();
     }
 
-    public void movePreviousMonth() {
-        firstDayOfMonth = DateUtils.addMonths(firstDayOfMonth, -1);
-        updateCalendarRange();
-        updateMonthCaption();
+    protected void updateMonthCaption() {
+        monthLabel.setValue(String.format("%s %s", getMonthName(firstDayOfMonth), getYear(firstDayOfMonth)));
     }
 
-    public void addTimeEntry() {
-        editTimeEntry(new TimeEntry());
+    protected String getMonthName(Date firstDayOfMonth) {
+        return DateUtils.toCalendar(firstDayOfMonth).getDisplayName(java.util.Calendar.MONTH, java.util.Calendar.LONG, userSession.getLocale());
+    }
+
+
+    protected int getYear(Date firstDayOfMonth) {
+        return DateUtils.toCalendar(firstDayOfMonth).get(java.util.Calendar.YEAR);
     }
 
     protected void editTimeEntry(TimeEntry timeEntry) {
@@ -217,19 +233,6 @@ public class CalendarScreen extends AbstractWindow {
                 }
             }
         });
-    }
-
-    protected void updateMonthCaption() {
-        monthLabel.setValue(String.format("%s %s", getMonthName(firstDayOfMonth), getYear(firstDayOfMonth)));
-    }
-
-    protected String getMonthName(Date firstDayOfMonth) {
-        return DateUtils.toCalendar(firstDayOfMonth).getDisplayName(java.util.Calendar.MONTH, java.util.Calendar.LONG, userSession.getLocale());
-    }
-
-
-    protected int getYear(Date firstDayOfMonth) {
-        return DateUtils.toCalendar(firstDayOfMonth).get(java.util.Calendar.YEAR);
     }
 
     protected class CalendarActionHandler implements Action.Handler {
