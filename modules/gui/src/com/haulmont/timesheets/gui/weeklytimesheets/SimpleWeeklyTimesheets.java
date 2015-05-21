@@ -71,6 +71,51 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     public void init(Map<String, Object> params) {
         firstDayOfWeek = TimeUtils.getFirstDayOfWeek(new Date());
 
+        initWeeklyEntriesTable();
+
+        initDateField();
+
+        updateWeek();
+
+        initCommandLine();
+    }
+
+    protected void initDateField() {
+        dateField.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                firstDayOfWeek = TimeUtils.getFirstDayOfWeek((Date) value);
+                updateWeek();
+            }
+        });
+    }
+
+    protected void initCommandLine() {
+        commandLine.setTimeEntriesHandler(new CommandLineFrameController.ResultTimeEntriesHandler() {
+            @Override
+            public void handle(List<TimeEntry> resultTimeEntries) {
+                if (CollectionUtils.isNotEmpty(resultTimeEntries)) {
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(TimeUtils.TIME_FORMAT);
+                    TimeEntry timeEntry = resultTimeEntries.get(0);
+                    //todo eude what if there are more than 1 entry
+                    String spentTimeStr = simpleDateFormat.format(timeEntry.getTime());
+
+                    WeeklyReportEntry weeklyReportEntry = new WeeklyReportEntry();
+                    weeklyReportEntry.setTask(timeEntry.getTask());
+                    weeklyReportEntry.setProject(timeEntry.getTask().getProject());
+                    weeklyReportEntry.setMondayTime(spentTimeStr);
+                    weeklyReportEntry.setTuesdayTime(spentTimeStr);
+                    weeklyReportEntry.setWednesdayTime(spentTimeStr);
+                    weeklyReportEntry.setThursdayTime(spentTimeStr);
+                    weeklyReportEntry.setFridayTime(spentTimeStr);
+
+                    weeklyTsTable.getDatasource().addItem(weeklyReportEntry);
+                }
+            }
+        });
+    }
+
+    protected void initWeeklyEntriesTable() {
         weeklyTsTable.addAction(new WeeklyReportEntryRemoveAction(weeklyTsTable));
 
         final String projectColumnId = "project";
@@ -231,38 +276,6 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         }
                         labelsCache.remove(getKeyForEntity(entry, totalColumnId));
                     }
-                }
-            }
-        });
-
-        dateField.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                firstDayOfWeek = TimeUtils.getFirstDayOfWeek((Date) value);
-                updateWeek();
-            }
-        });
-
-        updateWeek();
-
-        commandLine.setTimeEntriesHandler(new CommandLineFrameController.ResultTimeEntriesHandler() {
-            @Override
-            public void handle(List<TimeEntry> resultTimeEntries) {
-                if (CollectionUtils.isNotEmpty(resultTimeEntries)) {
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(TimeUtils.TIME_FORMAT);
-                    TimeEntry timeEntry = resultTimeEntries.get(0);
-                    String spentTimeStr = simpleDateFormat.format(timeEntry.getTime());
-
-                    WeeklyReportEntry weeklyReportEntry = new WeeklyReportEntry();
-                    weeklyReportEntry.setTask(timeEntry.getTask());
-                    weeklyReportEntry.setProject(timeEntry.getTask().getProject());
-                    weeklyReportEntry.setMondayTime(spentTimeStr);
-                    weeklyReportEntry.setTuesdayTime(spentTimeStr);
-                    weeklyReportEntry.setWednesdayTime(spentTimeStr);
-                    weeklyReportEntry.setThursdayTime(spentTimeStr);
-                    weeklyReportEntry.setFridayTime(spentTimeStr);
-
-                    weeklyTsTable.getDatasource().addItem(weeklyReportEntry);
                 }
             }
         });
