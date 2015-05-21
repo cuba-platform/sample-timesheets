@@ -10,7 +10,6 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -22,10 +21,9 @@ import java.util.regex.Pattern;
  * @author gorelov
  * @version $Id$
  */
+
+//todo eude, gorelov - move the logic to bean
 public class TimeUtils {
-    protected static Messages messages = AppBeans.get(Messages.NAME);
-    protected static DateFormat dateFormat;
-    
     public static final String TIME_FORMAT = "hh:mm";
 
     public static Date parse(String time) {
@@ -51,15 +49,15 @@ public class TimeUtils {
         return result;
     }
 
-    protected static int findHours(String time) {
-        return findTimeValue(time, messages.getMessage(TimeUtils.class, "timeHours"));
+    private static int findHours(String time) {
+        return findTimeValue(time, messages().getMessage(TimeUtils.class, "timeHours"));
     }
 
-    protected static int findMinutes(String time) {
-        return findTimeValue(time, messages.getMessage(TimeUtils.class, "timeMinutes"));
+    private static int findMinutes(String time) {
+        return findTimeValue(time, messages().getMessage(TimeUtils.class, "timeMinutes"));
     }
 
-    protected static int findTimeValue(String time, String units) {
+    private static int findTimeValue(String time, String units) {
         String regex = "\\d+\\s*(" + units + ")";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(time);
@@ -107,10 +105,8 @@ public class TimeUtils {
     }
 
     public static DateFormat getDateFormat() {
-        return dateFormat;
+        return new SimpleDateFormat(messages().getMainMessage("dateFormat"));
     }
 
-    public static void setDateFormat(DateFormat dateFormat) {
-        TimeUtils.dateFormat = dateFormat;
-    }
+    private static Messages messages() {return AppBeans.get(Messages.NAME, Messages.class);}
 }
