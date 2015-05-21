@@ -1,58 +1,93 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/5.4/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
         caption="msg://approveScreen"
         class="com.haulmont.timesheets.gui.approve.ApproveScreen"
         messagesPack="com.haulmont.timesheets.gui.approve">
     <dsContext>
-        <groupDatasource id="timeEntriesDs"
-                         class="com.haulmont.timesheets.entity.TimeEntry"
-                         view="timeEntry-full">
+        <collectionDatasource id="usersDs"
+                              class="com.haulmont.timesheets.entity.ExtUser"
+                              view="_local">
             <query>
-                <![CDATA[select e from ts$TimeEntry e join e.task t join t.project pr join pr.participants p where p.user.id = :session$userId and (p.role.code = 'manager' or p.role.code = 'approver') and e.status = 'new']]>
+                <![CDATA[select e.user from ts$ProjectParticipant e
+                join e.project pr join pr.participants p where p.user.id = :session$userId
+                and (p.role.code = 'manager' or p.role.code = 'approver')]]>
             </query>
-        </groupDatasource>
+        </collectionDatasource>
+        <collectionDatasource id="weeklyEntriesDs"
+                              allowCommit="false"
+                              class="com.haulmont.timesheets.entity.WeeklyReportEntry"
+                              refreshMode="NEVER"/>
     </dsContext>
-    <layout expand="timeEntriesTable" spacing="true">
-        <filter id="filter"
-                datasource="timeEntriesDs">
-            <properties include=".*"/>
-        </filter>
-        <groupTable id="timeEntriesTable"
-                    multiselect="true"
-                    width="100%">
-            <actions>
-                <action id="approve"
-                        icon="icons/ok.png"
-                        caption="msg://approve"
-                        invoke="approve"/>
-                <action id="reject"
-                        icon="icons/cancel.png"
-                        caption="msg://reject"
-                        invoke="reject"/>
-                <action id="edit"/>
-            </actions>
-            <columns>
-                <group>
-                    <column id="user"/>
-                </group>
-                <column id="task.project.client"/>
-                <column id="task.project"/>
-                <column id="task.name" caption="msg://com.haulmont.timesheets.entity/Task"/>
-                <column id="date"/>
-                <column id="time"/>
-                <column id="status"/>
-            </columns>
-            <rows datasource="timeEntriesDs"/>
-            <rowsCount/>
-            <buttonsPanel id="buttonsPanel"
-                          alwaysVisible="true">
-                <button id="approveBtn"
-                        action="timeEntriesTable.approve"/>
-                <button id="rejectBtn"
-                        action="timeEntriesTable.reject"/>
-                <button id="editBtn"
-                        action="timeEntriesTable.edit"/>
-            </buttonsPanel>
-        </groupTable>
+    <layout spacing="true" expand="split">
+        <buttonsPanel width="100%">
+            <hbox/>
+            <label id="weekCaption" stylename="h2" align="MIDDLE_CENTER"/>
+            <hbox id="weekNavigationBox"
+                  spacing="true"
+                  align="BOTTOM_RIGHT">
+                <dateField id="dateField"
+                           resolution="DAY"
+                           stylename="simple"
+                           align="MIDDLE_RIGHT"/>
+                <linkButton icon="font-icon:CHEVRON_LEFT"
+                            align="MIDDLE_RIGHT"
+                            invoke="movePreviousWeek"/>
+                <linkButton caption="msg://today"
+                            invoke="setCurrentWeek"
+                            align="MIDDLE_RIGHT"/>
+                <linkButton icon="font-icon:CHEVRON_RIGHT"
+                            align="MIDDLE_RIGHT"
+                            invoke="moveNextWeek"/>
+            </hbox>
+        </buttonsPanel>
+        <split id="split"
+               orientation="horizontal"
+               pos="30"
+               width="100%">
+            <vbox height="100%"
+                  margin="false,true,false,false"
+                  expand="usersTable"
+                  spacing="true">
+                <table id="usersTable"
+                       width="100%">
+                    <columns>
+                        <column id="lastName"/>
+                        <column id="firstName"/>
+                        <column id="actions" caption="Actions"
+                                width="100px"/>
+                    </columns>
+                    <rows datasource="usersDs"/>
+                </table>
+            </vbox>
+            <vbox height="100%"
+                  margin="false,false,false,true"
+                  expand="weeklyReportsTable"
+                  spacing="true">
+                <table id="weeklyReportsTable"
+                       width="100%">
+                    <columns>
+                        <column id="project"/>
+                        <column id="task"/>
+                        <column id="monday"
+                                width="80px"/>
+                        <column id="tuesday"
+                                width="80px"/>
+                        <column id="wednesday"
+                                width="80px"/>
+                        <column id="thursday"
+                                width="80px"/>
+                        <column id="friday"
+                                width="80px"/>
+                        <column id="saturday"
+                                width="80px"/>
+                        <column id="sunday"
+                                width="80px"/>
+                        <column id="actions" caption="Actions"
+                                width="100px"/>
+                    </columns>
+                    <rows datasource="weeklyEntriesDs"/>
+                </table>
+            </vbox>
+        </split>
     </layout>
 </window>

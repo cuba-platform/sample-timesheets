@@ -28,7 +28,9 @@ public interface ProjectsService {
     @Nullable
     <T extends Entity> T getEntityByCode(Class<T> clazz, String code, @Nullable String viewName);
 
-    List<TimeEntry> getTimeEntriesForPeriod(Date start, Date end, User user);
+    List<TimeEntry> getTimeEntriesForPeriod(Date start, Date end, User user, @Nullable TimeEntryStatus status);
+
+    List<TimeEntry> getApprovableTimeEntriesForPeriod(Date start, Date end, User approver, User user, @Nullable TimeEntryStatus status);
 
     List<TimeEntry> getTimeEntriesForUser(User user);
 
@@ -37,6 +39,8 @@ public interface ProjectsService {
     void removeTimeEntry(TimeEntry timeEntry);
 
     void removeTimeEntries(List<TimeEntry> timeEntries);
+
+    void updateTimeEntriesStatus(List<TimeEntry> timeEntries, TimeEntryStatus status);
 
     List<Task> getActiveTasksForUser(User user);
 

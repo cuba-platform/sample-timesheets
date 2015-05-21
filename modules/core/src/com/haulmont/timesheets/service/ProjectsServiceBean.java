@@ -77,13 +77,41 @@ public class ProjectsServiceBean implements ProjectsService {
     }
 
     @Override
-    public List<TimeEntry> getTimeEntriesForPeriod(Date start, Date end, User user) {
+    public List<TimeEntry> getTimeEntriesForPeriod(Date start, Date end, User user, @Nullable TimeEntryStatus status) {
         LoadContext loadContext = new LoadContext(TimeEntry.class)
                 .setView("timeEntry-full");
-        loadContext.setQueryString("select e from ts$TimeEntry e where e.user.id = :userId and (e.date between :start and :end)")
+        String queryStr = "select e from ts$TimeEntry e where e.user.id = :userId and (e.date between :start and :end)";
+        if (status != null) {
+            queryStr += " and e.status = :status";
+        }
+        LoadContext.Query query = loadContext.setQueryString(queryStr)
                 .setParameter("start", start)
                 .setParameter("end", end)
                 .setParameter("userId", user.getId());
+        if (status != null) {
+            query.setParameter("status", status.getId());
+        }
+        return dataManager.loadList(loadContext);
+    }
+
+    @Override
+    public List<TimeEntry> getApprovableTimeEntriesForPeriod(Date start, Date end, User approver, User user, @Nullable TimeEntryStatus status) {
+        LoadContext loadContext = new LoadContext(TimeEntry.class)
+                .setView("timeEntry-full");
+        String queryStr = "select e from ts$TimeEntry e join e.task t join t.project pr join pr.participants p " +
+                "where p.user.id = :approverId and (p.role.code = 'manager' or p.role.code = 'approver') " +
+                "and e.user.id = :userId and (e.date between :start and :end)";
+        if (status != null) {
+            queryStr += " and e.status = :status";
+        }
+        LoadContext.Query query = loadContext.setQueryString(queryStr)
+                .setParameter("start", start)
+                .setParameter("end", end)
+                .setParameter("approverId", approver.getId())
+                .setParameter("userId", user.getId());
+        if (status != null) {
+            query.setParameter("status", status.getId());
+        }
         return dataManager.loadList(loadContext);
     }
 
@@ -114,6 +142,16 @@ public class ProjectsServiceBean implements ProjectsService {
     public void removeTimeEntries(List<TimeEntry> timeEntries) {
         CommitContext commitContext = new CommitContext();
         commitContext.getRemoveInstances().addAll(timeEntries);
+        dataManager.commit(commitContext);
+    }
+
+    @Override
+    public void updateTimeEntriesStatus(List<TimeEntry> timeEntries, TimeEntryStatus status) {
+        CommitContext commitContext = new CommitContext();
+        for (TimeEntry entry : timeEntries) {
+            entry.setStatus(status);
+            commitContext.getCommitInstances().add(entry);
+        }
         dataManager.commit(commitContext);
     }
 

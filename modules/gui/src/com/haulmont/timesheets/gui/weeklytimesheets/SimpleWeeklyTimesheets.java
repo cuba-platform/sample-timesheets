@@ -348,7 +348,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     }
 
     protected void fillExistingTimeEntries() {
-        List<TimeEntry> timeEntries = projectsService.getTimeEntriesForPeriod(firstDayOfWeek, DateUtils.addDays(firstDayOfWeek, 6), userSession.getUser());
+        List<TimeEntry> timeEntries = projectsService.getTimeEntriesForPeriod(firstDayOfWeek,
+                DateUtils.addDays(firstDayOfWeek, 6), userSession.getUser(), null);
         for (TimeEntry timeEntry : timeEntries) {
             addTimeEntryToMap(timeEntry);
         }
