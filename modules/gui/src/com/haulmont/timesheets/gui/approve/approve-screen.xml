@@ -63,6 +63,7 @@
                   margin="false,false,false,true"
                   expand="weeklyReportsTable"
                   spacing="true">
+                <optionsGroup id="statusOption" orientation="horizontal" multiselect="true"/>
                 <table id="weeklyReportsTable"
                        width="100%">
                     <columns>

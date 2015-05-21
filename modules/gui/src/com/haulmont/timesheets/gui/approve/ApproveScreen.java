@@ -16,6 +16,7 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.global.TimeUtils;
+import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.service.ProjectsService;
 import org.apache.commons.lang.time.DateUtils;
 
@@ -36,6 +37,8 @@ public class ApproveScreen extends AbstractWindow {
     protected DateField dateField;
     @Inject
     protected Label weekCaption;
+    @Inject
+    protected OptionsGroup statusOption;
     @Inject
     protected ComponentsFactory componentsFactory;
     @Inject
@@ -59,14 +62,8 @@ public class ApproveScreen extends AbstractWindow {
 
         initUsersTable();
         initUserReportsTable();
-
-        dateField.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                firstDayOfWeek = TimeUtils.getFirstDayOfWeek((Date) value);
-                updateWeek();
-            }
-        });
+        initDateField();
+        initStatusOption();
 
         updateWeek();
     }
@@ -196,8 +193,39 @@ public class ApproveScreen extends AbstractWindow {
             @Nullable
             @Override
             public String getStyleName(Entity entity, String property) {
-                // TODO: gg styles for weekends and time entry status
+                WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
+                DayOfWeek day = DayOfWeek.fromId(property);
+                if (day != null) {
+                    TimeEntry timeEntry = reportEntry.getDayOfWeekTimeEntry(day);
+                    if (timeEntry != null) {
+                        return ComponentsHelper.getTimeEntryStatusStyleBg(timeEntry);
+                    }
+                }
                 return null;
+            }
+        });
+    }
+
+    protected void initDateField() {
+        dateField.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                firstDayOfWeek = TimeUtils.getFirstDayOfWeek((Date) value);
+                updateWeek();
+            }
+        });
+    }
+
+    protected void initStatusOption() {
+        statusOption.setOptionsList(Arrays.asList(TimeEntryStatus.values()));
+        List<TimeEntryStatus> initValue = new ArrayList<>(1);
+        initValue.add(TimeEntryStatus.NEW);
+        statusOption.setValue(initValue);
+
+        statusOption.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+                updateReportTable();
             }
         });
     }
@@ -239,8 +267,7 @@ public class ApproveScreen extends AbstractWindow {
     }
 
     protected void fillExistingTimeEntries(User user) {
-        List<TimeEntry> timeEntries = projectsService.getApprovableTimeEntriesForPeriod(firstDayOfWeek,
-                DateUtils.addDays(firstDayOfWeek, 6), userSession.getUser(), user, TimeEntryStatus.NEW);
+        List<TimeEntry> timeEntries = getUserTimeEntries(user);
         for (TimeEntry timeEntry : timeEntries) {
             addTimeEntryToMap(timeEntry);
         }
@@ -256,6 +283,20 @@ public class ApproveScreen extends AbstractWindow {
                 }
             }
         }
+    }
+
+    protected List<TimeEntry> getUserTimeEntries(User user) {
+        if (statusOption.getValue() == null) {
+            return Collections.emptyList();
+        }
+
+        List<TimeEntry> timeEntries = new ArrayList<>();
+        Collection<TimeEntryStatus> statuses = statusOption.getValue();
+        for (TimeEntryStatus status : statuses) {
+            timeEntries.addAll(projectsService.getApprovableTimeEntriesForPeriod(firstDayOfWeek,
+                    DateUtils.addDays(firstDayOfWeek, 6), userSession.getUser(), user, status));
+        }
+        return timeEntries;
     }
 
     protected void addTimeEntryToMap(TimeEntry timeEntry) {
@@ -309,8 +350,7 @@ public class ApproveScreen extends AbstractWindow {
 
         @Override
         protected List<TimeEntry> getTimeEntries() {
-            return projectsService.getApprovableTimeEntriesForPeriod(firstDayOfWeek,
-                    DateUtils.addDays(firstDayOfWeek, 6), userSession.getUser(), user, TimeEntryStatus.NEW);
+            return getUserTimeEntries(user);
         }
     }
 

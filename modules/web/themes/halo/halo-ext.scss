@@ -70,4 +70,40 @@
     border: 0px;
     top: 0px;
   }
+
+  .v-table-cell-content-time-entry-new-bg {
+    background-color: #ffcd9f;
+  }
+
+  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-new-bg {
+    border-left-color: #d4d4d4;
+  }
+
+  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-new-bg .v-button-link {
+    color: #197de1;
+  }
+
+  .v-table-cell-content-time-entry-approved-bg {
+    background-color: #cdffcd;
+  }
+
+  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-approved-bg {
+    border-left-color: #d4d4d4;
+  }
+
+  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-approved-bg .v-button-link {
+    color: #197de1;
+  }
+
+  .v-table-cell-content-time-entry-rejected-bg {
+    background-color: #ffcdcd;
+  }
+
+  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-rejected-bg {
+    border-left-color: #d4d4d4;
+  }
+
+  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-rejected-bg .v-button-link {
+    color: #197de1;
+  }
 }

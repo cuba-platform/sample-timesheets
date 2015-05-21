@@ -175,6 +175,11 @@ public class ComponentsHelper {
         }
     }
 
+    public static String getTimeEntryStatusStyleBg(TimeEntry timeEntry) {
+        String style = getTimeEntryStatusStyle(timeEntry);
+        return style != null ? style + "-bg" : null;
+    }
+
     public static class EntityCodeGenerationListener<T extends Entity> extends DsListenerAdapter<T> {
         @Override
         public void valueChanged(T source, String property, Object prevValue, Object value) {
