@@ -2,7 +2,8 @@
 <menu-config xmlns="http://schemas.haulmont.com/cuba/5.4/menu.xsd">
     <menu id="timesheets"
           insertBefore="administration">
-        <item id="simple-weekly-timesheets"/>
+        <item id="simple-weekly-timesheets"
+              shortcut="CTRL-ALT-W"/>
         <item id="calendar-screen"/>
         <item id="ts$TimeEntry.browse"/>
         <item id="ts$Task.browse"/>
@@ -10,15 +11,19 @@
     <menu id="projects"
           insertAfter="timesheets">
         <item id="ts$Client.browse"/>
-        <item id="ts$Project.browse"/>
-        <item id="approve-screen"/>
+        <item id="ts$Project.browse"
+              shortcut="CTRL-ALT-P"/>
+        <item id="approve-screen"
+              shortcut="CTRL-ALT-A"/>
     </menu>
     <menu id="timesheet-settings"
           insertAfter="projects">
+        <item id="work-time-settings"/>
         <item id="ts$TaskType.browse"/>
         <item id="ts$Holiday.browse"/>
-        <item id="ts$TagType.browse"/>
-        <item id="ts$Tag.browse"/>
-        <item id="work-time-settings"/>
+        <menu id="tags">
+            <item id="ts$TagType.browse"/>
+            <item id="ts$Tag.browse"/>
+        </menu>
     </menu>
 </menu-config>
