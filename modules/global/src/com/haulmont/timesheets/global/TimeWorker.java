@@ -24,19 +24,19 @@ import java.util.regex.Pattern;
 public class TimeWorker {
     public static final String NAME = "timesheets_DateWorker";
 
-    public static Date parse(String time) {
+    public Date parse(String time) {
         if (StringUtils.isBlank(time)) {
             return null;
         }
 
         try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(TimeUtils.TIME_FORMAT);
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateTimeUtils.TIME_FORMAT);
             return simpleDateFormat.parse(time);
         } catch (ParseException e) {
             //do nothing, let following code to parse it
         }
 
-        Date result = TimeUtils.getDateWithoutTime(new Date());
+        Date result = DateTimeUtils.getDateWithoutTime(new Date());
         if (StringUtils.isNumeric(time)) {
             return DateUtils.addHours(result, Integer.parseInt(time));
         }
@@ -48,11 +48,11 @@ public class TimeWorker {
     }
 
     private static int findHours(String time) {
-        return findTimeValue(time, messages().getMessage(TimeUtils.class, "timeHours"));
+        return findTimeValue(time, messages().getMessage(DateTimeUtils.class, "timeHours"));
     }
 
     private static int findMinutes(String time) {
-        return findTimeValue(time, messages().getMessage(TimeUtils.class, "timeMinutes"));
+        return findTimeValue(time, messages().getMessage(DateTimeUtils.class, "timeMinutes"));
     }
 
     private static int findTimeValue(String time, String units) {

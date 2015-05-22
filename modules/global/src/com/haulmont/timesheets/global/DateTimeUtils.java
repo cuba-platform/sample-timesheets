@@ -18,7 +18,7 @@ import java.util.Date;
  * @version $Id$
  */
 
-public class TimeUtils {
+public class DateTimeUtils {
 
     public static final String TIME_FORMAT = "hh:mm";
 
@@ -51,6 +51,10 @@ public class TimeUtils {
         java.util.Calendar calendar = getCalendarWithoutTime(date);
         calendar.set(java.util.Calendar.DAY_OF_MONTH, calendar.getActualMaximum(java.util.Calendar.DAY_OF_MONTH));
         return calendar.getTime();
+    }
+
+    public static int getCalendarDayOfWeek(Date date) {
+        return DateUtils.toCalendar(date).get(Calendar.DAY_OF_WEEK);
     }
 
     public static DateFormat getDateFormat() {

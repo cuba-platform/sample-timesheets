@@ -11,7 +11,7 @@ import com.haulmont.timesheets.entity.Task;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.entity.TimeEntryStatus;
 import com.haulmont.timesheets.global.CommandLineUtils;
-import com.haulmont.timesheets.global.TimeUtils;
+import com.haulmont.timesheets.global.TimeWorker;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;
@@ -28,6 +28,8 @@ import java.util.List;
 public class CommandLineServiceBean implements CommandLineService {
     @Inject
     protected SystemDataManager systemDataManager;
+    @Inject
+    protected TimeWorker timeWorker;
 
     @Inject
     protected TimeSource timeSource;
@@ -43,7 +45,7 @@ public class CommandLineServiceBean implements CommandLineService {
             timeEntry.setTask(task);
             String spentTime = commandLineUtils.getSpentTime();
             if (spentTime != null) {
-                Date parsedTime = TimeUtils.parse(spentTime);
+                Date parsedTime = timeWorker.parse(spentTime);
                 timeEntry.setTime(parsedTime);
             }
 

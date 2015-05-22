@@ -15,7 +15,7 @@ import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.haulmont.timesheets.entity.Holiday;
 import com.haulmont.timesheets.entity.TimeEntry;
-import com.haulmont.timesheets.global.TimeUtils;
+import com.haulmont.timesheets.global.DateTimeUtils;
 import com.haulmont.timesheets.gui.holiday.HolidayEdit;
 import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
 import com.haulmont.timesheets.service.ProjectsService;
@@ -62,7 +62,7 @@ public class CalendarScreen extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
-        firstDayOfMonth = TimeUtils.getFirstDayOfMonth(timeSource.currentTimestamp());
+        firstDayOfMonth = DateTimeUtils.getFirstDayOfMonth(timeSource.currentTimestamp());
 
         dataSource = new TimeSheetsCalendarEventProvider(userSession.getUser());
         dataSource.addEventSetChangeListener(new CalendarEventProvider.EventSetChangeListener() {
@@ -77,7 +77,7 @@ public class CalendarScreen extends AbstractWindow {
         monthSelector.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                firstDayOfMonth = TimeUtils.getFirstDayOfMonth((Date) value);
+                firstDayOfMonth = DateTimeUtils.getFirstDayOfMonth((Date) value);
                 updateCalendarRange();
             }
         });
@@ -123,7 +123,7 @@ public class CalendarScreen extends AbstractWindow {
     }
 
     public void setToday() {
-        firstDayOfMonth = TimeUtils.getFirstDayOfMonth(timeSource.currentTimestamp());
+        firstDayOfMonth = DateTimeUtils.getFirstDayOfMonth(timeSource.currentTimestamp());
         updateCalendarRange();
     }
 
@@ -179,7 +179,7 @@ public class CalendarScreen extends AbstractWindow {
         java.util.Calendar javaCalendar = java.util.Calendar.getInstance(userSession.getLocale());
         javaCalendar.setTime(firstDayOfMonth);
         int countOfWeeksInTheMonth = javaCalendar.getActualMaximum(java.util.Calendar.WEEK_OF_MONTH);
-        Date end = TimeUtils.getLastDayOfMonth(firstDayOfMonth);
+        Date end = DateTimeUtils.getLastDayOfMonth(firstDayOfMonth);
         List<CalendarEvent> events = dataSource.getEvents(start, end);
         HoursAndMinutes[] summariesByWeeks = new HoursAndMinutes[countOfWeeksInTheMonth + 1];
         for (CalendarEvent event : events) {
@@ -201,7 +201,7 @@ public class CalendarScreen extends AbstractWindow {
 
     protected void updateCalendarRange() {
         calendar.setStartDate(firstDayOfMonth);
-        calendar.setEndDate(TimeUtils.getLastDayOfMonth(firstDayOfMonth));
+        calendar.setEndDate(DateTimeUtils.getLastDayOfMonth(firstDayOfMonth));
 
         updateSummaryColumn();
         updateMonthCaption();

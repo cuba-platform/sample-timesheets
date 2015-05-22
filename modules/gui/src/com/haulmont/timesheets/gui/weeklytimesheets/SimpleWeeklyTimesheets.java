@@ -15,7 +15,7 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
-import com.haulmont.timesheets.global.TimeUtils;
+import com.haulmont.timesheets.global.DateTimeUtils;
 import com.haulmont.timesheets.global.TimeWorker;
 import com.haulmont.timesheets.global.WeeklyReportConverterBean;
 import com.haulmont.timesheets.gui.ComponentsHelper;
@@ -24,6 +24,7 @@ import com.haulmont.timesheets.service.ProjectsService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -72,7 +73,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
-        firstDayOfWeek = TimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp());
+        firstDayOfWeek = DateTimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp());
 
         initWeeklyEntriesTable();
 
@@ -87,7 +88,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         dateField.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                firstDayOfWeek = TimeUtils.getFirstDayOfWeek((Date) value);
+                firstDayOfWeek = DateTimeUtils.getFirstDayOfWeek((Date) value);
                 updateWeek();
             }
         });
@@ -98,7 +99,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             @Override
             public void handle(List<TimeEntry> resultTimeEntries) {
                 if (CollectionUtils.isNotEmpty(resultTimeEntries)) {
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(TimeUtils.TIME_FORMAT);
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateTimeUtils.TIME_FORMAT);
                     TimeEntry timeEntry = resultTimeEntries.get(0);
                     //todo eude what if there are more than 1 entry
                     String spentTimeStr = simpleDateFormat.format(timeEntry.getTime());
@@ -286,6 +287,19 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                 }
             }
         });
+
+        weeklyTsTable.setStyleProvider(new Table.StyleProvider() {
+            @Nullable
+            @Override
+            public String getStyleName(Entity entity, String property) {
+                DayOfWeek day = DayOfWeek.fromId(property);
+                if (day != null) {
+                    Date date = DateUtils.addDays(firstDayOfWeek, DayOfWeek.getDayOffset(day));
+                    return ComponentsHelper.getWeeklyReportTableCellStyle(date);
+                }
+                return null;
+            }
+        });
     }
 
     public void addReport() {
@@ -317,7 +331,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     }
 
     public void setToday() {
-        firstDayOfWeek = TimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp());
+        firstDayOfWeek = DateTimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp());
         updateWeek();
     }
 
@@ -342,8 +356,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
     protected void updateWeekCaption() {
         weekCaption.setValue(String.format("%s - %s",
-                TimeUtils.getDateFormat().format(firstDayOfWeek),
-                TimeUtils.getDateFormat().format(DateUtils.addDays(firstDayOfWeek, 6))));
+                DateTimeUtils.getDateFormat().format(firstDayOfWeek),
+                DateTimeUtils.getDateFormat().format(DateUtils.addDays(firstDayOfWeek, 6))));
     }
 
     protected void updateWeek() {

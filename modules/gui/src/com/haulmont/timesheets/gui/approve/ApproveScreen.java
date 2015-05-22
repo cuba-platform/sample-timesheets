@@ -16,7 +16,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
-import com.haulmont.timesheets.global.TimeUtils;
+import com.haulmont.timesheets.global.DateTimeUtils;
 import com.haulmont.timesheets.global.WeeklyReportConverterBean;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.service.ProjectsService;
@@ -62,7 +62,7 @@ public class ApproveScreen extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
-        firstDayOfWeek = TimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp());
+        firstDayOfWeek = DateTimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp());
 
         initUsersTable();
         initUserReportsTable();
@@ -199,7 +199,7 @@ public class ApproveScreen extends AbstractWindow {
         dateField.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                firstDayOfWeek = TimeUtils.getFirstDayOfWeek((Date) value);
+                firstDayOfWeek = DateTimeUtils.getFirstDayOfWeek((Date) value);
                 updateWeek();
             }
         });
@@ -218,7 +218,7 @@ public class ApproveScreen extends AbstractWindow {
     }
 
     public void setToday() {
-        firstDayOfWeek = TimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp());
+        firstDayOfWeek = DateTimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp());
         updateWeek();
     }
 
@@ -249,8 +249,8 @@ public class ApproveScreen extends AbstractWindow {
 
     protected void updateWeekCaption() {
         weekCaption.setValue(String.format("%s - %s",
-                TimeUtils.getDateFormat().format(firstDayOfWeek),
-                TimeUtils.getDateFormat().format(DateUtils.addDays(firstDayOfWeek, 6))));
+                DateTimeUtils.getDateFormat().format(firstDayOfWeek),
+                DateTimeUtils.getDateFormat().format(DateUtils.addDays(firstDayOfWeek, 6))));
     }
 
     protected void fillExistingTimeEntries(User user) {
