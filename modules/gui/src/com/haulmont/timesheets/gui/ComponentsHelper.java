@@ -6,6 +6,8 @@ package com.haulmont.timesheets.gui;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -14,12 +16,12 @@ import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.timesheets.entity.Project;
-import com.haulmont.timesheets.entity.Task;
-import com.haulmont.timesheets.entity.TaskStatus;
-import com.haulmont.timesheets.entity.TimeEntry;
+import com.haulmont.timesheets.entity.*;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.time.DateUtils;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,7 +31,12 @@ import java.util.Set;
  */
 public class ComponentsHelper {
 
+    public static final String COMMON_DAY_NUMBER_STYLE = "%s %d";
+    public static final String TODAY_DAY_NUMBER_STYLE = "<strong><font color=\"blue\">%s %d</font></strong>";
+
     protected static ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.NAME);
+    protected static Messages messages = AppBeans.get(Messages.NAME);
+    protected static TimeSource timeSource = AppBeans.get(TimeSource.NAME);
 
     public static FieldGroup.CustomFieldGenerator getCustomTextArea() {
         return new FieldGroup.CustomFieldGenerator() {
@@ -75,6 +82,22 @@ public class ComponentsHelper {
         linkButton.setAlignment(Component.Alignment.MIDDLE_CENTER);
         linkButton.setAction(action);
         return linkButton;
+    }
+
+    public static void updateWeeklyReportTableCaptions(Table table, Date firstDayOfWeek) {
+        for (DayOfWeek day : DayOfWeek.values()) {
+            updateColumnCaption(table.getColumn(day.getId()),
+                    DateUtils.addDays(firstDayOfWeek, DayOfWeek.getDayOffset(day)));
+        }
+    }
+
+    public static void updateColumnCaption(Table.Column column, Date date) {
+        String caption = messages.getMessage(WeeklyReportEntry.class, "WeeklyReportEntry." + column.getId());
+        String format = DateUtils.isSameDay(timeSource.currentTimestamp(), date)
+                ? ComponentsHelper.TODAY_DAY_NUMBER_STYLE
+                : ComponentsHelper.COMMON_DAY_NUMBER_STYLE;
+        caption = String.format(format, caption, DateUtils.toCalendar(date).get(Calendar.DAY_OF_MONTH));
+        column.setCaption(caption);
     }
 
     public static class EntityRemoveAction extends CaptionlessRemoveAction {

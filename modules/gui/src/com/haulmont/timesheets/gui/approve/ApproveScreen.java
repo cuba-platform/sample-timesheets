@@ -89,7 +89,7 @@ public class ApproveScreen extends AbstractWindow {
             @Override
             public void itemChanged(Datasource<ExtUser> ds, ExtUser prevItem, ExtUser item) {
                 super.itemChanged(ds, prevItem, item);
-                updateReportTable();
+                updateReportTableItems();
             }
         });
     }
@@ -212,7 +212,7 @@ public class ApproveScreen extends AbstractWindow {
         statusOption.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
-                updateReportTable();
+                updateReportTableItems();
             }
         });
     }
@@ -234,10 +234,11 @@ public class ApproveScreen extends AbstractWindow {
 
     protected void updateWeek() {
         updateWeekCaption();
-        updateReportTable();
+        ComponentsHelper.updateWeeklyReportTableCaptions(weeklyReportsTable, firstDayOfWeek);
+        updateReportTableItems();
     }
 
-    protected void updateReportTable() {
+    protected void updateReportTableItems() {
         weeklyEntriesDs.clear();
         User user = usersTable.getSingleSelected();
         if (user != null) {
@@ -289,7 +290,7 @@ public class ApproveScreen extends AbstractWindow {
         public void actionPerform(Component component) {
 
             projectsService.updateTimeEntriesStatus(getTimeEntries(), status);
-            updateReportTable();
+            updateReportTableItems();
         }
 
         protected abstract List<TimeEntry> getTimeEntries();

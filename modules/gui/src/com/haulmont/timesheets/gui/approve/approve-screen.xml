@@ -56,6 +56,9 @@
                   margin="false,true,false,false"
                   expand="usersTable"
                   spacing="true">
+                <hbox height="28px">
+                    <label value="msg://usersTitle" align="MIDDLE_LEFT" stylename="h2"/>
+                </hbox>
                 <table id="usersTable"
                        width="100%">
                     <columns>
@@ -71,7 +74,7 @@
                   margin="false,false,false,true"
                   expand="weeklyReportsTable"
                   spacing="true">
-                <optionsGroup id="statusOption" orientation="horizontal" multiselect="true"/>
+                <optionsGroup id="statusOption" orientation="horizontal" multiselect="true" height="28px"/>
                 <table id="weeklyReportsTable"
                        width="100%">
                     <columns>

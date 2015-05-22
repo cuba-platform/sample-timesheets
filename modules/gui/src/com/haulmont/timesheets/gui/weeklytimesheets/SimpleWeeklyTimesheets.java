@@ -4,10 +4,7 @@
 package com.haulmont.timesheets.gui.weeklytimesheets;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.DataManager;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.ViewRepository;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -60,6 +57,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     protected ViewRepository viewRepository;
     @Inject
     protected WeeklyReportConverterBean reportConverterBean;
+    @Inject
+    protected TimeSource timeSource;
 
     protected Map<String, Label> labelsCache = new HashMap<>();
     protected Map<String, LookupField> lookupFieldsCache = new HashMap<>();
@@ -70,7 +69,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
-        firstDayOfWeek = TimeUtils.getFirstDayOfWeek(new Date());
+        firstDayOfWeek = TimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp());
 
         initWeeklyEntriesTable();
 
@@ -314,8 +313,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         weeklyTsTable.repaint();
     }
 
-    public void setCurrentWeek() {
-        firstDayOfWeek = TimeUtils.getFirstDayOfWeek(new Date());
+    public void setToday() {
+        firstDayOfWeek = TimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp());
         updateWeek();
     }
 
@@ -328,12 +327,12 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         return commitedEntities.size() == 1 ? (TimeEntry) commitedEntities.iterator().next() : null;
     }
 
-    public void movePreviousWeek() {
+    public void showPreviousWeek() {
         firstDayOfWeek = DateUtils.addDays(firstDayOfWeek, -7);
         updateWeek();
     }
 
-    public void moveNextWeek() {
+    public void showNextWeek() {
         firstDayOfWeek = DateUtils.addDays(firstDayOfWeek, 7);
         updateWeek();
     }
@@ -349,6 +348,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         updateWeekCaption();
         fillExistingTimeEntries();
         weeklyTsTable.repaint();
+        ComponentsHelper.updateWeeklyReportTableCaptions(weeklyTsTable, firstDayOfWeek);
     }
 
     protected void fillExistingTimeEntries() {

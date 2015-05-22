@@ -75,13 +75,13 @@
                                align="MIDDLE_RIGHT"/>
                     <linkButton icon="font-icon:CHEVRON_LEFT"
                                 align="MIDDLE_RIGHT"
-                                invoke="movePreviousWeek"/>
+                                invoke="showPreviousWeek"/>
                     <linkButton caption="msg://today"
-                                invoke="setCurrentWeek"
+                                invoke="setToday"
                                 align="MIDDLE_RIGHT"/>
                     <linkButton icon="font-icon:CHEVRON_RIGHT"
                                 align="MIDDLE_RIGHT"
-                                invoke="moveNextWeek"/>
+                                invoke="showNextWeek"/>
                 </hbox>
             </buttonsPanel>
         </table>
