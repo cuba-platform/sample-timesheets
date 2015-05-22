@@ -32,8 +32,9 @@ import java.util.Set;
  */
 public class ComponentsHelper {
 
-    public static final String COMMON_DAY_NUMBER_STYLE = "%s %d";
-    public static final String TODAY_DAY_NUMBER_STYLE = "<strong><font color=\"blue\">%s %d</font></strong>";
+    public static final String COMMON_DAY_CAPTION_STYLE = "%s %d";
+    public static final String TODAY_CAPTION_STYLE = "<strong><span style=\"text-decoration: underline;\">%s</span></strong>";
+    public static final String HOLIDAY_CAPTION_STYLE = "<font color=\"#EF525B\">%s</font>";
 
     protected static ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.NAME);
     protected static Messages messages = AppBeans.get(Messages.NAME);
@@ -86,6 +87,7 @@ public class ComponentsHelper {
         return linkButton;
     }
 
+    // TODO: gg move to bean?
     public static void updateWeeklyReportTableCaptions(Table table, Date firstDayOfWeek) {
         for (DayOfWeek day : DayOfWeek.values()) {
             updateColumnCaption(table.getColumn(day.getId()),
@@ -95,9 +97,14 @@ public class ComponentsHelper {
 
     public static void updateColumnCaption(Table.Column column, Date date) {
         String caption = messages.getMessage(WeeklyReportEntry.class, "WeeklyReportEntry." + column.getId());
-        String format = DateUtils.isSameDay(timeSource.currentTimestamp(), date)
-                ? ComponentsHelper.TODAY_DAY_NUMBER_STYLE
-                : ComponentsHelper.COMMON_DAY_NUMBER_STYLE;
+        String format = COMMON_DAY_CAPTION_STYLE;
+
+        if (dateWorker.isHoliday(date) || dateWorker.isWeekend(date)) {
+            format = String.format(HOLIDAY_CAPTION_STYLE, format);
+        }
+        if (DateUtils.isSameDay(timeSource.currentTimestamp(), date)) {
+            format = String.format(TODAY_CAPTION_STYLE, format);
+        }
         caption = String.format(format, caption, DateUtils.toCalendar(date).get(Calendar.DAY_OF_MONTH));
         column.setCaption(caption);
     }
@@ -136,7 +143,6 @@ public class ComponentsHelper {
                 if (task.getStatus() != null) {
                     task.setStatus(task.getStatus().inverted());
                     target.getDatasource().commit();
-//                    target.refresh();
                 }
             }
         }
@@ -207,13 +213,6 @@ public class ComponentsHelper {
             default:
                 return null;
         }
-    }
-
-    public static String getWeeklyReportTableCellStyle(Date date) {
-        if (dateWorker.isHoliday(date) || dateWorker.isWeekend(date)) {
-            return "holiday";
-        }
-        return null;
     }
 
     public static String getTimeEntryStatusStyleBg(TimeEntry timeEntry) {

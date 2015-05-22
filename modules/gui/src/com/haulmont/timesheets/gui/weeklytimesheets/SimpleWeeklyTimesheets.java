@@ -219,6 +219,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         } else {
                             TextField timeField = componentsFactory.createComponent(TextField.NAME);
                             timeField.setWidth("100%");
+                            timeField.setHeight("22px");
                             timeField.setDatasource(weeklyTsTable.getItemDatasource(entity), day.getId() + "Time");
                             timeFieldsCache.put(key, timeField);
                             return timeField;
@@ -285,19 +286,6 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         labelsCache.remove(getKeyForEntity(entry, totalColumnId));
                     }
                 }
-            }
-        });
-
-        weeklyTsTable.setStyleProvider(new Table.StyleProvider() {
-            @Nullable
-            @Override
-            public String getStyleName(Entity entity, String property) {
-                DayOfWeek day = DayOfWeek.fromId(property);
-                if (day != null) {
-                    Date date = DateUtils.addDays(firstDayOfWeek, DayOfWeek.getDayOffset(day));
-                    return ComponentsHelper.getWeeklyReportTableCellStyle(date);
-                }
-                return null;
             }
         });
     }
