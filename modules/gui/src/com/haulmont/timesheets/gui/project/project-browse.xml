@@ -9,7 +9,7 @@
         <hierarchicalDatasource id="projectsDs"
                                 class="com.haulmont.timesheets.entity.Project"
                                 hierarchyProperty="parent"
-                                view="project-full">
+                                view="_local">
             <query>
                 <![CDATA[select e
                          from
@@ -49,7 +49,7 @@
                   spacing="true"
                   expand="projectsTable">
                 <treeTable id="projectsTable"
-                           width="100%">
+                           width="100%" multiselect="true">
                     <actions>
                         <action id="create"/>
                         <action id="edit"/>
@@ -71,7 +71,8 @@
                                 action="projectsTable.edit"/>
                         <button id="removeBtn"
                                 action="projectsTable.remove"/>
-                    </buttonsPanel>
+                        <popupButton id="assignBtn" caption="msg://caption.assign"/>
+                    </buttonsPanel >
                 </treeTable>
             </vbox>
             <vbox height="100%" margin="false,false,false,true">
@@ -112,7 +113,7 @@
                         <table id="participantsTable"
                                columnControlVisible="false"
                                editable="true"
-                               width="100%">
+                               width="100%" multiselect="true">
                             <actions>
                                 <action id="create"/>
                                 <action id="edit"/>

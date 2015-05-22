@@ -8,6 +8,7 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.entity.*;
 
 import javax.annotation.Nullable;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -49,4 +50,6 @@ public interface ProjectsService {
     Map<String, Task> getActiveTasksForUserAndProject(User user, Project project);
 
     List<Project> getActiveProjectsForUser(User user);
+
+    boolean assignUsersToProjects(Collection<User> users, Collection<Project> projects, ProjectRole projectRole);
 }
