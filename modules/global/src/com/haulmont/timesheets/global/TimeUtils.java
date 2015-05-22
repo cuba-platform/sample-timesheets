@@ -22,56 +22,9 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 
-//todo eude, gorelov - move the logic to bean
 public class TimeUtils {
+
     public static final String TIME_FORMAT = "hh:mm";
-
-    public static Date parse(String time) {
-        if (StringUtils.isBlank(time)) {
-            return null;
-        }
-
-        try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(TIME_FORMAT);
-            return simpleDateFormat.parse(time);
-        } catch (ParseException e) {
-            //do nothing, let following code to parse it
-        }
-
-        Date result = getDateWithoutTime(new Date());
-        if (StringUtils.isNumeric(time)) {
-            return DateUtils.addHours(result, Integer.parseInt(time));
-        }
-
-        result = DateUtils.addHours(result, findHours(time));
-        result = DateUtils.addMinutes(result, findMinutes(time));
-
-        return result;
-    }
-
-    private static int findHours(String time) {
-        return findTimeValue(time, messages().getMessage(TimeUtils.class, "timeHours"));
-    }
-
-    private static int findMinutes(String time) {
-        return findTimeValue(time, messages().getMessage(TimeUtils.class, "timeMinutes"));
-    }
-
-    private static int findTimeValue(String time, String units) {
-        String regex = "\\d+\\s*(" + units + ")";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(time);
-        if (matcher.find()) {
-            String value = matcher.group();
-            regex = "\\d+";
-            pattern = Pattern.compile(regex);
-            matcher = pattern.matcher(value);
-            if (matcher.find()) {
-                return Integer.valueOf(matcher.group());
-            }
-        }
-        return 0;
-    }
 
     public static Calendar getCalendarWithoutTime(Date date) {
         java.util.Calendar calendar = DateUtils.toCalendar(date);

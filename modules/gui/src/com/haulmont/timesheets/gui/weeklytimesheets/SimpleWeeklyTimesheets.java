@@ -16,6 +16,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.global.TimeUtils;
+import com.haulmont.timesheets.global.TimeWorker;
 import com.haulmont.timesheets.global.WeeklyReportConverterBean;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.gui.commandline.CommandLineFrameController;
@@ -57,6 +58,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     protected ViewRepository viewRepository;
     @Inject
     protected WeeklyReportConverterBean reportConverterBean;
+    @Inject
+    protected TimeWorker timeWorker;
     @Inject
     protected TimeSource timeSource;
 
@@ -295,7 +298,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             if (reportEntry.getTask() != null) {
                 for (final DayOfWeek day : DayOfWeek.values()) {
                     String timeStr = reportEntry.getDayOfWeekTime(day);
-                    Date time = TimeUtils.parse(timeStr);
+                    Date time = timeWorker.parse(timeStr);
                     if (time != null) {
                         TimeEntry timeEntry = new TimeEntry();
                         timeEntry.setStatus(TimeEntryStatus.NEW);
