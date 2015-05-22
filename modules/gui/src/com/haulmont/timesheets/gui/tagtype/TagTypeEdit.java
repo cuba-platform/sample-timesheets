@@ -8,7 +8,6 @@ import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.timesheets.entity.TagType;
-import com.haulmont.timesheets.entity.TaskType;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 
 import javax.inject.Inject;

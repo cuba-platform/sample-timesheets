@@ -22,9 +22,9 @@ import java.util.Collection;
 import java.util.List;
 
 /**
-* @author degtyarjov
-* @version $Id$
-*/
+ * @author degtyarjov
+ * @version $Id$
+ */
 public class CommandLineSuggester implements Suggester {
     protected SourceCodeEditor sourceCodeEditor;
     protected ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);

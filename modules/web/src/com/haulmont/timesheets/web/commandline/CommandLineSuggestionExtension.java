@@ -4,7 +4,6 @@
 
 package com.haulmont.timesheets.web.commandline;
 
-import com.vaadin.annotations.StyleSheet;
 import org.vaadin.aceeditor.Suggester;
 import org.vaadin.aceeditor.SuggestionExtension;
 

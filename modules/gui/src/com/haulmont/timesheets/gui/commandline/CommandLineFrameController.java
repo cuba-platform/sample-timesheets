@@ -5,7 +5,9 @@
 package com.haulmont.timesheets.gui.commandline;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractFrame;
+import com.haulmont.cuba.gui.components.BoxLayout;
+import com.haulmont.cuba.gui.components.SourceCodeEditor;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.service.CommandLineService;
@@ -31,7 +33,7 @@ public class CommandLineFrameController extends AbstractFrame {
     @Inject
     private CommandLineService commandLineService;
 
-    protected  ResultTimeEntriesHandler timeEntriesHandler;
+    protected ResultTimeEntriesHandler timeEntriesHandler;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -48,7 +50,7 @@ public class CommandLineFrameController extends AbstractFrame {
         commandLine.setSuggester(new CommandLineSuggester(commandLine));
     }
 
-    public void apply(){
+    public void apply() {
         if (timeEntriesHandler != null) {
             List<TimeEntry> timeEntries =
                     commandLineService.createTimeEntriesForTheCommandLine(String.valueOf(commandLine.getValue()));

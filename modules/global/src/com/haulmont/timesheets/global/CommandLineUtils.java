@@ -23,15 +23,15 @@ public class CommandLineUtils {
         this.commandLine = commandLine;
     }
 
-    public String getProjectCode(){
+    public String getProjectCode() {
         return getMatchedSubstring(PROJECT_CODE_PATTERN);
     }
 
-    public String getTaskCode(){
+    public String getTaskCode() {
         return getMatchedSubstring(TASK_CODE_PATTERN);
     }
 
-    public String getSpentTime(){
+    public String getSpentTime() {
         return getMatchedSubstring(SPENT_TIME_PATTERN);
     }
 

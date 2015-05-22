@@ -49,6 +49,7 @@ public class Project extends StandardEntity {
 
     @OneToMany(mappedBy = "project")
     protected Set<Task> tasks;
+
     public ProjectStatus getStatus() {
         return status == null ? null : ProjectStatus.fromId(status);
     }
@@ -65,7 +66,6 @@ public class Project extends StandardEntity {
         this.code = code;
     }
 
-
     public void setParticipants(Set<ProjectParticipant> participants) {
         this.participants = participants;
     }
@@ -73,7 +73,6 @@ public class Project extends StandardEntity {
     public Set<ProjectParticipant> getParticipants() {
         return participants;
     }
-
 
     public void setTasks(Set<Task> tasks) {
         this.tasks = tasks;
@@ -114,6 +113,4 @@ public class Project extends StandardEntity {
     public String getName() {
         return name;
     }
-
-
 }

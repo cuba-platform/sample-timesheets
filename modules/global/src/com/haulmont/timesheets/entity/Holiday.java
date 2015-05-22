@@ -64,6 +64,4 @@ public class Holiday extends StandardEntity {
     public String getDescription() {
         return description;
     }
-
-
 }

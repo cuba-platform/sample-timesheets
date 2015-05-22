@@ -14,7 +14,10 @@ import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
-import com.haulmont.timesheets.entity.*;
+import com.haulmont.timesheets.entity.Project;
+import com.haulmont.timesheets.entity.Task;
+import com.haulmont.timesheets.entity.TaskStatus;
+import com.haulmont.timesheets.entity.TimeEntry;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.HashSet;
@@ -196,7 +199,6 @@ public class ComponentsHelper {
                     String newCode = newName.toUpperCase().replaceAll(" ", "_");
                     source.setValue("code", newCode);
                 }
-
             }
         }
     }

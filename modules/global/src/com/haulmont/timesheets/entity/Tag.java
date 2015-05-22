@@ -41,7 +41,6 @@ public class Tag extends StandardEntity {
         this.code = code;
     }
 
-
     public TagType getTagType() {
         return tagType;
     }
@@ -49,7 +48,6 @@ public class Tag extends StandardEntity {
     public void setTagType(TagType tagType) {
         this.tagType = tagType;
     }
-
 
     public void setName(String name) {
         this.name = name;

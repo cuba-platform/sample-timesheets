@@ -4,7 +4,10 @@
 package com.haulmont.timesheets.service;
 
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.core.global.CommitContext;
+import com.haulmont.cuba.core.global.DataManager;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.SystemDataManager;
 import com.haulmont.timesheets.entity.*;
@@ -63,7 +66,8 @@ public class ProjectsServiceBean implements ProjectsService {
     public ProjectRole getUserProjectRole(Project project, User user) {
         LoadContext loadContext = new LoadContext(ProjectParticipant.class)
                 .setView("projectParticipant-full");
-        loadContext.setQueryString("select e from ts$ProjectParticipant e where e.user.id = :userId and e.project.id = :projectId")
+        loadContext.setQueryString("select e from ts$ProjectParticipant e " +
+                "where e.user.id = :userId and e.project.id = :projectId")
                 .setParameter("userId", user.getId())
                 .setParameter("projectId", project.getId());
         ProjectParticipant participant = dataManager.load(loadContext);
@@ -95,7 +99,9 @@ public class ProjectsServiceBean implements ProjectsService {
     }
 
     @Override
-    public List<TimeEntry> getApprovableTimeEntriesForPeriod(Date start, Date end, User approver, User user, @Nullable TimeEntryStatus status) {
+    public List<TimeEntry> getApprovableTimeEntriesForPeriod(
+            Date start, Date end, User approver, User user, @Nullable TimeEntryStatus status
+    ) {
         LoadContext loadContext = new LoadContext(TimeEntry.class)
                 .setView("timeEntry-full");
         String queryStr = "select e from ts$TimeEntry e join e.task t join t.project pr join pr.participants p " +
@@ -186,7 +192,8 @@ public class ProjectsServiceBean implements ProjectsService {
                 .setParameter("userId", user.getId());
         List<Task> assignedTasks = dataManager.loadList(loadContext);
         loadContext.setQueryString("select e from ts$Task e join e.project pr join pr.participants p " +
-                "where p.user.id = :userId and e.project.id = :projectId and e.participants is null and e.status = 'active' order by e.project")
+                "where p.user.id = :userId and e.project.id = :projectId and e.participants is null " +
+                "and e.status = 'active' order by e.project")
                 .setParameter("projectId", project.getId())
                 .setParameter("userId", user.getId());
         List<Task> commonTasks = dataManager.loadList(loadContext);

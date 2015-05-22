@@ -6,16 +6,11 @@ package com.haulmont.timesheets.gui.projectparticipant;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.LookupPickerField;
 import com.haulmont.cuba.gui.components.PickerField;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
-import com.haulmont.cuba.security.entity.User;
-import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.ProjectParticipant;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 
-import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.*;
+import java.util.Map;
 
 /**
  * @author gorelov

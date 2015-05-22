@@ -48,7 +48,7 @@ values ('Monkey Code, Inc.', '007', 1, '2015-04-29 02:54:57', null, null, null, 
 
 insert into TS_TASK_TYPE
 (NAME, CODE, DESCRIPTION, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
-values ('Developing', '001', null, 1, '2015-04-24 04:48:09', null, null, null, '3e31ca9a-943d-f272-cc82-5d8f47f604d3', '2015-04-24 04:48:09', 'admin');
+values ('Development', '001', null, 1, '2015-04-24 04:48:09', null, null, null, '3e31ca9a-943d-f272-cc82-5d8f47f604d3', '2015-04-24 04:48:09', 'admin');
 
 insert into TS_TASK_TYPE
 (NAME, CODE, DESCRIPTION, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
@@ -58,7 +58,7 @@ values ('Testing', '002', null, 1, '2015-04-24 08:09:48', null, null, null, 'dbf
 
 insert into TS_TAG_TYPE
 (NAME, CODE, DESCRIPTION, PROJECT_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
-values ('Developing', '001', null, null, 1, '2015-04-24 05:01:41', null, null, null, '9ad8c4a4-cb19-342f-545f-425083ddb811', '2015-04-24 05:01:41', 'admin');
+values ('Development', '001', null, null, 1, '2015-04-24 05:01:41', null, null, null, '9ad8c4a4-cb19-342f-545f-425083ddb811', '2015-04-24 05:01:41', 'admin');
 
 insert into TS_TAG_TYPE
 (NAME, CODE, DESCRIPTION, PROJECT_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
@@ -126,7 +126,7 @@ values ('683f3fa9-4f91-510d-1b29-93426970e67c', '9ee57d7f-f599-6a22-d7bf-ea8c828
 
 insert into TS_TASK
 (NAME, CODE, DESCRIPTION, PROJECT_ID, TYPE_ID, STATUS, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
-values ('Developing (common)', 'PL_DEV', null, '9ee57d7f-f599-6a22-d7bf-ea8c828aa9ca', '3e31ca9a-943d-f272-cc82-5d8f47f604d3', 'active', 1, '2015-05-20 09:56:19', null, null, null, 'db5a82ab-648c-9597-fe4a-63566aa67cb4', '2015-05-20 09:56:19', 'admin');
+values ('Development (common)', 'PL_DEV', null, '9ee57d7f-f599-6a22-d7bf-ea8c828aa9ca', '3e31ca9a-943d-f272-cc82-5d8f47f604d3', 'active', 1, '2015-05-20 09:56:19', null, null, null, 'db5a82ab-648c-9597-fe4a-63566aa67cb4', '2015-05-20 09:56:19', 'admin');
 
 insert into TS_TASK
 (NAME, CODE, DESCRIPTION, PROJECT_ID, TYPE_ID, STATUS, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
@@ -134,7 +134,7 @@ values ('Testing', 'PL_TEST', null, '9ee57d7f-f599-6a22-d7bf-ea8c828aa9ca', 'dbf
 
 insert into TS_TASK
 (NAME, CODE, DESCRIPTION, PROJECT_ID, TYPE_ID, STATUS, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
-values ('Developing', 'TS_DEV', null, 'df7778dd-0451-84c9-40e7-2144118fb83b', '3e31ca9a-943d-f272-cc82-5d8f47f604d3', 'active', 2, '2015-05-20 10:02:05', 'glebfox', null, null, '9e4da6c7-0e86-5bbb-c9ee-30a6ade5875d', '2015-05-20 09:58:34', 'admin');
+values ('Development', 'TS_DEV', null, 'df7778dd-0451-84c9-40e7-2144118fb83b', '3e31ca9a-943d-f272-cc82-5d8f47f604d3', 'active', 2, '2015-05-20 10:02:05', 'glebfox', null, null, '9e4da6c7-0e86-5bbb-c9ee-30a6ade5875d', '2015-05-20 09:58:34', 'admin');
 
 insert into TS_TASK
 (NAME, CODE, DESCRIPTION, PROJECT_ID, TYPE_ID, STATUS, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
@@ -142,6 +142,6 @@ values ('Testing', 'TS_TEST', null, 'df7778dd-0451-84c9-40e7-2144118fb83b', 'dbf
 
 insert into TS_TASK
 (NAME, CODE, DESCRIPTION, PROJECT_ID, TYPE_ID, STATUS, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
-values ('Developing', 'TS_DEMO_DEV', null, '898fcc5a-3316-b8a1-0ad2-c1c45f84da9b', '3e31ca9a-943d-f272-cc82-5d8f47f604d3', 'active', 2, '2015-05-20 10:04:16', 'glebfox', null, null, '8d5f8d57-8dac-7702-32d9-d58f423a9edb', '2015-05-20 10:04:06', 'admin');
+values ('Development', 'TS_DEMO_DEV', null, '898fcc5a-3316-b8a1-0ad2-c1c45f84da9b', '3e31ca9a-943d-f272-cc82-5d8f47f604d3', 'active', 2, '2015-05-20 10:04:16', 'glebfox', null, null, '8d5f8d57-8dac-7702-32d9-d58f423a9edb', '2015-05-20 10:04:06', 'admin');
 
 ------------------------------------------------------------------------------------------------------------------------

@@ -41,7 +41,6 @@ public class TagType extends StandardEntity {
         return project;
     }
 
-
     public String getCode() {
         return code;
     }

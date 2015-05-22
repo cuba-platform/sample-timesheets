@@ -9,7 +9,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.View;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;

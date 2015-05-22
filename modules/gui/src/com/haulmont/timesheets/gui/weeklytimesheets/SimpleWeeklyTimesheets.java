@@ -139,7 +139,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         return lookupFieldsCache.get(key);
                     } else {
                         @SuppressWarnings("unchecked")
-                        Datasource<WeeklyReportEntry> ds = (Datasource<WeeklyReportEntry>) weeklyTsTable.getItemDatasource(entity);
+                        Datasource<WeeklyReportEntry> ds =
+                                (Datasource<WeeklyReportEntry>) weeklyTsTable.getItemDatasource(entity);
                         final LookupField lookupField = componentsFactory.createComponent(LookupField.NAME);
                         lookupField.setDatasource(ds, projectColumnId);
                         lookupField.setOptionsDatasource(projectsDs);
@@ -171,7 +172,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         return lookupFieldsCache.get(key);
                     } else {
                         @SuppressWarnings("unchecked")
-                        Datasource<WeeklyReportEntry> ds = (Datasource<WeeklyReportEntry>) weeklyTsTable.getItemDatasource(entity);
+                        Datasource<WeeklyReportEntry> ds =
+                                (Datasource<WeeklyReportEntry>) weeklyTsTable.getItemDatasource(entity);
                         final LookupField lookupField = componentsFactory.createComponent(LookupField.NAME);
                         lookupField.setDatasource(ds, taskColumnId);
                         lookupField.setWidth("100%");
@@ -182,14 +184,16 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                                 if ("project".equals(property)) {
                                     Project project = (Project) value;
                                     lookupField.setValue(null);
-                                    Map<String, Task> tasks = projectsService.getActiveTasksForUserAndProject(userSession.getUser(), project);
+                                    Map<String, Task> tasks =
+                                            projectsService.getActiveTasksForUserAndProject(userSession.getUser(), project);
                                     lookupField.setOptionsMap((Map) tasks);
                                 }
                             }
                         });
                         final Project project = ds.getItem().getProject();
                         if (project != null) {
-                            Map<String, Task> tasks = projectsService.getActiveTasksForUserAndProject(userSession.getUser(), project);
+                            Map<String, Task> tasks =
+                                    projectsService.getActiveTasksForUserAndProject(userSession.getUser(), project);
                             lookupField.setOptionsMap((Map) tasks);
                         }
                         lookupFieldsCache.put(key, lookupField);

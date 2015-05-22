@@ -9,9 +9,6 @@ import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.DateField;
-import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
@@ -25,8 +22,8 @@ import com.haulmont.timesheets.service.ProjectsService;
 import com.haulmont.timesheets.web.toolkit.ui.TimeSheetsCalendar;
 import com.vaadin.event.Action;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.*;
 import com.vaadin.ui.Calendar;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents;
 import com.vaadin.ui.components.calendar.CalendarDateRange;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
@@ -34,7 +31,9 @@ import com.vaadin.ui.components.calendar.event.CalendarEventProvider;
 import org.apache.commons.lang.time.DateUtils;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author gorelov
@@ -284,18 +283,21 @@ public class CalendarScreen extends AbstractWindow {
                     timeEntry.setDate(date);
                     editTimeEntry(timeEntry);
                 } else {
-                    showNotification(messages.getMessage(getClass(), "cantAddTimeEntry"), NotificationType.WARNING);
+                    showNotification(messages.getMessage(getClass(), "cantAddTimeEntry"),
+                            NotificationType.WARNING);
                 }
             } else if (action == deleteEventAction) {
                 // Check if the action was clicked on top of an event
                 if (target instanceof HolidayCalendarEventAdapter) {
-                    showNotification(messages.getMessage(getClass(), "cantDeleteHoliday"), NotificationType.WARNING);
+                    showNotification(messages.getMessage(getClass(), "cantDeleteHoliday"),
+                            NotificationType.WARNING);
                 } else if (target instanceof TimeEntryCalendarEventAdapter) {
                     TimeEntryCalendarEventAdapter event = (TimeEntryCalendarEventAdapter) target;
                     confirmAndRemove(event);
 
                 } else {
-                    showNotification(messages.getMessage(getClass(), "cantDeleteTimeEntry"), NotificationType.WARNING);
+                    showNotification(messages.getMessage(getClass(), "cantDeleteTimeEntry"),
+                            NotificationType.WARNING);
                 }
             }
         }

@@ -30,7 +30,9 @@ public interface ProjectsService {
 
     List<TimeEntry> getTimeEntriesForPeriod(Date start, Date end, User user, @Nullable TimeEntryStatus status);
 
-    List<TimeEntry> getApprovableTimeEntriesForPeriod(Date start, Date end, User approver, User user, @Nullable TimeEntryStatus status);
+    List<TimeEntry> getApprovableTimeEntriesForPeriod(
+            Date start, Date end, User approver, User user, @Nullable TimeEntryStatus status
+    );
 
     List<TimeEntry> getTimeEntriesForUser(User user);
 

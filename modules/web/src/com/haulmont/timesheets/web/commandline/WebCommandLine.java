@@ -7,7 +7,6 @@ package com.haulmont.timesheets.web.commandline;
 import com.haulmont.cuba.gui.components.autocomplete.Suggester;
 import com.haulmont.cuba.web.gui.components.WebSourceCodeEditor;
 import com.haulmont.timesheets.gui.commandline.CommandLine;
-import com.haulmont.timesheets.gui.commandline.CommandLineFrameController;
 
 /**
  * @author degtyarjov

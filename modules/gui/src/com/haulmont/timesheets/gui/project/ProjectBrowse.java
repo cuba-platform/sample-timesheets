@@ -8,7 +8,6 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractLookup;
-import com.haulmont.cuba.gui.components.ListComponent;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
@@ -85,7 +84,7 @@ public class ProjectBrowse extends AbstractLookup {
     }
 
     private void initTasksTable() {
-        tasksTable.addAction(new CreateAction(tasksTable){
+        tasksTable.addAction(new CreateAction(tasksTable) {
             @Override
             public Map<String, Object> getInitialValues() {
                 return ParamsMap.of("project", projectsTable.getSingleSelected());

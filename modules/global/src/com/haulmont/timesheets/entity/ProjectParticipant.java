@@ -12,7 +12,7 @@ import javax.persistence.*;
  * @author gorelov
  */
 @Table(name = "TS_PROJECT_PARTICIPANT", uniqueConstraints = {
-    @UniqueConstraint(name = "IDX_TS_PROJECT_PARTICIPANT_UNIQ_USER_PROJECT", columnNames = {"USER_ID", "PROJECT_ID"})
+        @UniqueConstraint(name = "IDX_TS_PROJECT_PARTICIPANT_UNIQ_USER_PROJECT", columnNames = {"USER_ID", "PROJECT_ID"})
 })
 @Entity(name = "ts$ProjectParticipant")
 public class ProjectParticipant extends StandardEntity {
@@ -39,7 +39,6 @@ public class ProjectParticipant extends StandardEntity {
         return role;
     }
 
-
     public void setUser(User user) {
         this.user = user;
     }
@@ -55,6 +54,4 @@ public class ProjectParticipant extends StandardEntity {
     public Project getProject() {
         return project;
     }
-
-
 }

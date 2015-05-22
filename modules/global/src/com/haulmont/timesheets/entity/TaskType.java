@@ -37,7 +37,6 @@ public class TaskType extends StandardEntity {
         this.code = code;
     }
 
-
     public void setName(String name) {
         this.name = name;
     }
@@ -53,6 +52,4 @@ public class TaskType extends StandardEntity {
     public String getDescription() {
         return description;
     }
-
-
 }
