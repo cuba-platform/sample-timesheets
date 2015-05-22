@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 @ManagedBean(TimeParser.NAME)
 public class TimeParser {
 
-    public static final String NAME = "timesheets_DateWorker";
+    public static final String NAME = "timesheets_TimeParser";
 
     @Inject
     protected Messages messages;
