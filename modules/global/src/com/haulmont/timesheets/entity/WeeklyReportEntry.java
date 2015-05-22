@@ -338,10 +338,6 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
             }
         }
 
-        if (timeEntries != null) {
-            return timeEntries;
-        } else {
-            return Collections.emptyList();
-        }
+        return timeEntries != null ? timeEntries : Collections.<TimeEntry>emptyList();
     }
 }
