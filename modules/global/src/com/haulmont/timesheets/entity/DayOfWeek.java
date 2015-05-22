@@ -42,6 +42,26 @@ public enum DayOfWeek implements EnumClass<String> {
         return null;
     }
 
+    public static DayOfWeek fromCalendarDay(int calendarDay) {
+        switch (calendarDay) {
+            case Calendar.MONDAY:
+                return DayOfWeek.MONDAY;
+            case Calendar.TUESDAY:
+                return DayOfWeek.TUESDAY;
+            case Calendar.WEDNESDAY:
+                return DayOfWeek.WEDNESDAY;
+            case Calendar.THURSDAY:
+                return DayOfWeek.THURSDAY;
+            case Calendar.FRIDAY:
+                return DayOfWeek.FRIDAY;
+            case Calendar.SATURDAY:
+                return DayOfWeek.SATURDAY;
+            case Calendar.SUNDAY:
+                return DayOfWeek.SUNDAY;
+        }
+        return null;
+    }
+
     public static DayOfWeek fromAbbreviation(String abb) {
         for (DayOfWeek at : DayOfWeek.values()) {
             if (at.getId().substring(0, 3).equals(abb.toLowerCase())) {
@@ -71,6 +91,7 @@ public enum DayOfWeek implements EnumClass<String> {
     }
 
     public static int convertToDayOfWeekNumber(DayOfWeek day, Locale locale) {
+        // TODO: gg use calendar with locale?
         int firstDayOfWeek = Calendar.getInstance(locale).getFirstDayOfWeek();
         int offset = firstDayOfWeek - 1;
 

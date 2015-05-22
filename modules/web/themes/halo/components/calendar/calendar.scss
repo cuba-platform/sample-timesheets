@@ -30,12 +30,12 @@
   }
 
   .v-calendar .v-calendar-event-holiday:before {
-    color: brown;
+    color: #EF525B;
   }
 
   .v-calendar .v-calendar-event-holiday-all-day {
     color: $ts-all-day-text-color;
-    background-color: brown;
+    background-color: #EF525B;
   }
 
   .v-calendar-event-month .v-calendar-event-time {
