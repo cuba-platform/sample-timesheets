@@ -20,8 +20,9 @@ import java.util.regex.Pattern;
  * @author gorelov
  * @version $Id$
  */
-@ManagedBean
+@ManagedBean(TimeParser.NAME)
 public class TimeParser {
+
     public static final String NAME = "timesheets_DateWorker";
 
     @Inject

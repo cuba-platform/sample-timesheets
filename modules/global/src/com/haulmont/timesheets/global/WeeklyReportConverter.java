@@ -16,7 +16,7 @@ import java.util.*;
  * @author gorelov
  * @version $Id$
  */
-@ManagedBean
+@ManagedBean(WeeklyReportConverter.NAME)
 public class WeeklyReportConverter {
 
     public static final String NAME = "timesheets_WeeklyReportConverterBean";
