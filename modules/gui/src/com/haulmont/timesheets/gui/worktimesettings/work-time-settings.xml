@@ -10,9 +10,7 @@
             <textField id="workHoursTextField"
                        datatype="double"/>
         </hbox>
-        <groupBox id="workDaysGroupBox"
-                  spacing="true"
-                  caption="msg://workDays"/>
+        <optionsGroup id="workDaysOptions" caption="msg://workDays" multiselect="true" stylename="h2"/>
         <iframe id="windowActions"
                 screen="editWindowActions"
                 stylename="window-actions"/>

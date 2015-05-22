@@ -11,9 +11,7 @@ import com.haulmont.timesheets.entity.DayOfWeek;
 import com.haulmont.timesheets.global.WorkTimeConfigBean;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author gorelov
@@ -27,9 +25,7 @@ public class WorkTimeSettings extends AbstractWindow {
     @Inject
     protected TextField workHoursTextField;
     @Inject
-    protected GroupBoxLayout workDaysGroupBox;
-    @Inject
-    protected ComponentsFactory componentsFactory;
+    protected OptionsGroup workDaysOptions;
 
     @Override
 
@@ -50,7 +46,7 @@ public class WorkTimeSettings extends AbstractWindow {
             public void actionPerform(Component component) {
                 double workHoursValue = workHoursTextField.getValue();
                 workTimeConfigBean.setWorkHourForWeek(workHoursValue);
-                workTimeConfigBean.setWorkDays(getWorkDays());
+                workTimeConfigBean.setWorkDays(workDaysOptions.<List<DayOfWeek>>getValue());
                 close(getId());
             }
         };
@@ -72,30 +68,7 @@ public class WorkTimeSettings extends AbstractWindow {
     }
 
     protected void initWorkDays() {
-        List<DayOfWeek> workDays = workTimeConfigBean.getWorkDays();
-        for (DayOfWeek day : DayOfWeek.values()) {
-            HBoxLayout hBoxLayout = componentsFactory.createComponent(HBoxLayout.NAME);
-            CheckBox checkBox = componentsFactory.createComponent(CheckBox.NAME);
-            checkBox.setId(day.getId());
-            checkBox.setValue(workDays.contains(day));
-            hBoxLayout.add(checkBox);
-
-            Label label = componentsFactory.createComponent(Label.NAME);
-            label.setValue(messages.getMessage(DayOfWeek.class, DayOfWeek.getDayOfWeekLocalizationKey(day)));
-            hBoxLayout.add(label);
-
-            workDaysGroupBox.add(hBoxLayout);
-        }
-    }
-
-    protected List<DayOfWeek> getWorkDays() {
-        List<DayOfWeek> workDays = new ArrayList<>();
-        for (DayOfWeek day : DayOfWeek.values()) {
-            CheckBox checkBox = getComponent(day.getId());
-            if (checkBox != null && (Boolean) checkBox.getValue()) {
-                workDays.add(day);
-            }
-        }
-        return workDays;
+        workDaysOptions.setOptionsList(Arrays.asList(DayOfWeek.values()));
+        workDaysOptions.setValue(workTimeConfigBean.getWorkDays());
     }
 }

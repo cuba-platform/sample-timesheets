@@ -9,10 +9,7 @@ import com.haulmont.timesheets.entity.DayOfWeek;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author gorelov
@@ -54,13 +51,18 @@ public class WorkTimeConfigBean {
         return workDays;
     }
 
-    public void setWorkDays(List<DayOfWeek> workDays) {
+    public void setWorkDays(Collection<DayOfWeek> workDays) {
+        if (workDays.isEmpty()) {
+            workTimeConfig.setWorkDays("");
+            return;
+        }
+        int i = 0;
         int count = 3;
+        int iMax = workDays.size() - 1;
         StringBuilder sb = new StringBuilder(workDays.size() * count);
-        int length = workDays.size();
-        for (int i = 0; i < length; i++) {
-            sb.append(workDays.get(i).getId().substring(0, count));
-            if (i < length - 1) {
+        for (DayOfWeek day : workDays) {
+            sb.append(day.getId().substring(0, count));
+            if (i++ < iMax) {
                 sb.append("|");
             }
         }
