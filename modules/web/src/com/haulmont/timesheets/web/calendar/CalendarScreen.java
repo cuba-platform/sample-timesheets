@@ -6,7 +6,6 @@ package com.haulmont.timesheets.web.calendar;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.TimeSource;
-import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.ValueListener;
@@ -16,6 +15,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.haulmont.timesheets.entity.Holiday;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.global.DateTimeUtils;
+import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.gui.holiday.HolidayEdit;
 import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
 import com.haulmont.timesheets.service.ProjectsService;
@@ -54,10 +54,10 @@ public class CalendarScreen extends AbstractWindow {
     @Inject
     private TimeSource timeSource;
 
+    protected ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);
+
     protected TimeSheetsCalendar calendar;
-
     protected Date firstDayOfMonth;
-
     protected TimeSheetsCalendarEventProvider dataSource;
 
     @Override
@@ -247,9 +247,6 @@ public class CalendarScreen extends AbstractWindow {
     protected class CalendarActionHandler implements Action.Handler {
         protected Action addEventAction = new Action(messages.getMessage(getClass(), "addTimeEntry"));
         protected Action deleteEventAction = new Action(messages.getMessage(getClass(), "deleteTimeEntry"));
-        protected String confirmationMessage;
-        protected String confirmationTitle;
-        protected ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);
 
         @Override
         public Action[] getActions(Object target, Object sender) {
@@ -293,50 +290,28 @@ public class CalendarScreen extends AbstractWindow {
                             NotificationType.WARNING);
                 } else if (target instanceof TimeEntryCalendarEventAdapter) {
                     TimeEntryCalendarEventAdapter event = (TimeEntryCalendarEventAdapter) target;
-                    confirmAndRemove(event);
-
+                    new EventRemoveAction("eventRemove", getFrame(), event).actionPerform(null);
                 } else {
                     showNotification(messages.getMessage(getClass(), "cantDeleteTimeEntry"),
                             NotificationType.WARNING);
                 }
             }
         }
+    }
 
-        protected void confirmAndRemove(final TimeEntryCalendarEventAdapter event) {
-            final String messagesPackage = AppConfig.getMessagesPack();
-            getFrame().showOptionDialog(
-                    getConfirmationTitle(messagesPackage),
-                    getConfirmationMessage(messagesPackage),
-                    MessageType.CONFIRMATION,
-                    new com.haulmont.cuba.gui.components.Action[]{
-                            new DialogAction(DialogAction.Type.OK) {
-                                @Override
-                                public void actionPerform(Component component) {
-                                    calendar.removeEvent(event);
-                                    doRemove(event.getTimeEntry());
-                                }
-                            },
-                            new DialogAction(DialogAction.Type.CANCEL)
-                    }
-            );
+    protected class EventRemoveAction extends ComponentsHelper.CustomRemoveAction {
+
+        protected TimeEntryCalendarEventAdapter event;
+
+        protected EventRemoveAction(String id, IFrame frame, TimeEntryCalendarEventAdapter event) {
+            super(id, frame);
+            this.event = event;
         }
 
-        protected void doRemove(TimeEntry timeEntry) {
-            projectsService.removeTimeEntry(timeEntry);
-        }
-
-        protected String getConfirmationMessage(String messagesPackage) {
-            if (confirmationMessage != null)
-                return confirmationMessage;
-            else
-                return messages.getMessage(messagesPackage, "dialogs.Confirmation.Remove");
-        }
-
-        protected String getConfirmationTitle(String messagesPackage) {
-            if (confirmationTitle != null)
-                return confirmationTitle;
-            else
-                return messages.getMessage(messagesPackage, "dialogs.Confirmation");
+        @Override
+        protected void doRemove() {
+            calendar.removeEvent(event);
+            projectsService.removeTimeEntry(event.getTimeEntry());
         }
     }
 
