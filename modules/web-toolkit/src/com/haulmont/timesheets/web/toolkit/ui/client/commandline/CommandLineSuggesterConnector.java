@@ -18,6 +18,12 @@ import org.vaadin.aceeditor.client.gwt.GwtAceKeyboardEvent;
 @Connect(CommandLineSuggestionExtension.class)
 public class CommandLineSuggesterConnector extends SuggesterConnector {
     @Override
+    protected void startSuggesting() {
+        super.startSuggesting();
+        popup.setWidth("300px");
+    }
+
+    @Override
     public Command handleKeyboard(JavaScriptObject data, int hashId,
                                   String keyString, int keyCode, GwtAceKeyboardEvent e) {
         if (suggesting) {
