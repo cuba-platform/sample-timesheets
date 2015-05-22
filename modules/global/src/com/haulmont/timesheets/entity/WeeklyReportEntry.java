@@ -8,6 +8,7 @@ import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import org.apache.commons.lang.time.DateUtils;
 
+import javax.annotation.Nullable;
 import java.util.*;
 
 /**
@@ -256,7 +257,7 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
         }
     }
 
-    public void changeDayOfWeekTimeEntry(DayOfWeek day, TimeEntry timeEntry) {
+    public void changeDayOfWeekTimeEntry(DayOfWeek day, @Nullable TimeEntry timeEntry) {
         switch (day) {
             case MONDAY:
                 setMonday(timeEntry);

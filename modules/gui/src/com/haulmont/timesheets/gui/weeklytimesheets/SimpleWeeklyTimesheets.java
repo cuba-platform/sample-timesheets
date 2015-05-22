@@ -24,7 +24,6 @@ import com.haulmont.timesheets.service.ProjectsService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -67,7 +66,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     protected Map<String, Label> labelsCache = new HashMap<>();
     protected Map<String, LookupField> lookupFieldsCache = new HashMap<>();
     protected Map<String, TextField> timeFieldsCache = new HashMap<>();
-    protected Map<String, EntityLinkField> linkFieldsCache = new HashMap<>();
+    protected Map<String, HBoxLayout> hBoxesCache = new HashMap<>();
 
     protected Date firstDayOfWeek;
 
@@ -209,43 +208,65 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         final String totalColumnId = "total";
         for (final DayOfWeek day : DayOfWeek.values()) {
             weeklyTsTable.addGeneratedColumn(day.getId(), new Table.ColumnGenerator() {
-                @Override
-                public Component generateCell(final Entity entity) {
-                    final WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
-                    final String key = getKeyForEntity(entity, day.getId());
-                    if (reportEntry.getDayOfWeekTimeEntry(day) == null) {
-                        if (timeFieldsCache.containsKey(key)) {
-                            return timeFieldsCache.get(key);
-                        } else {
-                            TextField timeField = componentsFactory.createComponent(TextField.NAME);
-                            timeField.setWidth("100%");
-                            timeField.setHeight("22px");
-                            timeField.setDatasource(weeklyTsTable.getItemDatasource(entity), day.getId() + "Time");
-                            timeFieldsCache.put(key, timeField);
-                            return timeField;
-                        }
-                    } else {
-                        if (linkFieldsCache.containsKey(key)) {
-                            return linkFieldsCache.get(key);
-                        } else {
-                            EntityLinkField linkField = componentsFactory.createComponent(EntityLinkField.NAME);
-                            linkField.setOwner(weeklyTsTable);
-                            linkField.setScreenOpenType(WindowManager.OpenType.DIALOG);
-                            linkField.setDatasource(weeklyTsTable.getItemDatasource(entity), day.getId());
-                            linkField.addListener(new ValueListener() {
-                                @Override
-                                public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                                    Label total = labelsCache.get(getKeyForEntity(entity, totalColumnId));
-                                    total.setValue(reportEntry.getTotal());
+                        @Override
+                        public Component generateCell(final Entity entity) {
+                            final WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
+                            final String key = getKeyForEntity(entity, day.getId());
+                            if (reportEntry.getDayOfWeekTimeEntry(day) == null) {
+                                if (timeFieldsCache.containsKey(key)) {
+                                    return timeFieldsCache.get(key);
+                                } else {
+                                    TextField timeField = componentsFactory.createComponent(TextField.NAME);
+                                    timeField.setWidth("100%");
+                                    timeField.setHeight("22px");
+                                    timeField.setDatasource(weeklyTsTable.getItemDatasource(entity), day.getId() + "Time");
+                                    timeFieldsCache.put(key, timeField);
+                                    return timeField;
                                 }
-                            });
-                            linkFieldsCache.put(key, linkField);
-                            timeFieldsCache.remove(key);
-                            return linkField;
+                            } else {
+                                if (hBoxesCache.containsKey(key)) {
+                                    return hBoxesCache.get(key);
+                                } else {
+                                    HBoxLayout hBox = componentsFactory.createComponent(HBoxLayout.NAME);
+                                    hBox.setSpacing(true);
+
+                                    EntityLinkField linkField = componentsFactory.createComponent(EntityLinkField.NAME);
+                                    linkField.setAlignment(Alignment.MIDDLE_LEFT);
+                                    linkField.setOwner(weeklyTsTable);
+                                    linkField.setScreenOpenType(WindowManager.OpenType.DIALOG);
+                                    linkField.setDatasource(weeklyTsTable.getItemDatasource(entity), day.getId());
+                                    linkField.addListener(new ValueListener() {
+                                        @Override
+                                        public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                                            Label total = labelsCache.get(getKeyForEntity(entity, totalColumnId));
+                                            total.setValue(reportEntry.getTotal());
+                                        }
+                                    });
+                                    hBox.add(linkField);
+
+                                    LinkButton removeButton = componentsFactory.createComponent(LinkButton.NAME);
+                                    removeButton.setIcon("icons/remove.png");
+                                    removeButton.setAlignment(Alignment.MIDDLE_RIGHT);
+                                    removeButton.setAction(new ComponentsHelper.CustomRemoveAction("timeEntryRemove", getFrame()) {
+                                        @Override
+                                        protected void doRemove() {
+                                            projectsService.removeTimeEntry(reportEntry.getDayOfWeekTimeEntry(day));
+                                            reportEntry.changeDayOfWeekTimeEntry(day, null);
+                                            hBoxesCache.remove(key);
+                                            weeklyTsTable.repaint();
+                                        }
+                                    });
+                                    hBox.add(removeButton);
+
+                                    hBoxesCache.put(key, hBox);
+                                    timeFieldsCache.remove(key);
+
+                                    return hBox;
+                                }
+                            }
                         }
                     }
-                }
-            });
+            );
         }
 
         weeklyTsTable.addGeneratedColumn(totalColumnId, new Table.ColumnGenerator() {
@@ -281,7 +302,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         for (final DayOfWeek day : DayOfWeek.values()) {
                             String key = getKeyForEntity(entry, day.getId());
                             timeFieldsCache.remove(key);
-                            linkFieldsCache.remove(key);
+                            hBoxesCache.remove(key);
                         }
                         labelsCache.remove(getKeyForEntity(entry, totalColumnId));
                     }

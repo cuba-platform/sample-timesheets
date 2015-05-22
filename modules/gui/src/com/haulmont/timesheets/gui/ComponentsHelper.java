@@ -8,6 +8,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.gui.AppConfig;
 import com.haulmont.cuba.gui.DialogParams;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -54,20 +55,6 @@ public class ComponentsHelper {
         };
     }
 
-    public static void addRemoveColumn(final Table table, String columnName) {
-        table.addGeneratedColumn(columnName, new Table.ColumnGenerator() {
-            @Override
-            public Component generateCell(Entity entity) {
-                LinkButton removeButton = componentsFactory.createComponent(LinkButton.NAME);
-                removeButton.setIcon("icons/remove.png");
-                removeButton.setAction(new EntityRemoveAction(table, entity));
-                return removeButton;
-            }
-        });
-        table.setColumnCaption(columnName, "");
-        table.setColumnWidth(columnName, 35);
-    }
-
     public static PickerField.LookupAction createLookupAction(PickerField pickerField) {
         PickerField.LookupAction lookupAction = new PickerField.LookupAction(pickerField);
         lookupAction.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
@@ -109,24 +96,55 @@ public class ComponentsHelper {
         column.setCaption(caption);
     }
 
-    public static class EntityRemoveAction extends CaptionlessRemoveAction {
+    public static abstract class CustomRemoveAction extends AbstractAction {
 
-        private Entity entity;
+        protected IFrame frame;
+        protected String confirmationMessage;
+        protected String confirmationTitle;
 
-        public EntityRemoveAction(ListComponent target, Entity entity) {
-            super(target);
-            this.entity = entity;
+        protected CustomRemoveAction(String id, IFrame frame) {
+            super(id);
+            this.frame = frame;
         }
 
         @Override
         public void actionPerform(Component component) {
-            if (!isEnabled()) {
-                return;
-            }
+            final String messagesPackage = AppConfig.getMessagesPack();
+            frame.showOptionDialog(
+                    getConfirmationTitle(messagesPackage),
+                    getConfirmationMessage(messagesPackage),
+                    IFrame.MessageType.CONFIRMATION,
+                    new com.haulmont.cuba.gui.components.Action[]{
+                            new DialogAction(DialogAction.Type.OK) {
+                                @Override
+                                public void actionPerform(Component component) {
+                                    doRemove();
+                                }
+                            },
+                            new DialogAction(DialogAction.Type.CANCEL)
+                    }
+            );
+        }
 
-            Set<Entity> selected = new HashSet<>(1);
-            selected.add(entity);
-            confirmAndRemove(selected);
+        @Override
+        public String getCaption() {
+            return null;
+        }
+
+        protected abstract void doRemove();
+
+        protected String getConfirmationMessage(String messagesPackage) {
+            if (confirmationMessage != null)
+                return confirmationMessage;
+            else
+                return messages.getMessage(messagesPackage, "dialogs.Confirmation.Remove");
+        }
+
+        protected String getConfirmationTitle(String messagesPackage) {
+            if (confirmationTitle != null)
+                return confirmationTitle;
+            else
+                return messages.getMessage(messagesPackage, "dialogs.Confirmation");
         }
     }
 
