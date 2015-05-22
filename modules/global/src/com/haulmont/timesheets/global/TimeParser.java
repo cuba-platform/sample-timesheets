@@ -4,12 +4,12 @@
 
 package com.haulmont.timesheets.global;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 
 import javax.annotation.ManagedBean;
+import javax.inject.Inject;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -21,8 +21,11 @@ import java.util.regex.Pattern;
  * @version $Id$
  */
 @ManagedBean
-public class TimeWorker {
+public class TimeParser {
     public static final String NAME = "timesheets_DateWorker";
+
+    @Inject
+    protected Messages messages;
 
     public Date parse(String time) {
         if (StringUtils.isBlank(time)) {
@@ -47,15 +50,15 @@ public class TimeWorker {
         return result;
     }
 
-    private static int findHours(String time) {
-        return findTimeValue(time, messages().getMessage(DateTimeUtils.class, "timeHours"));
+    private int findHours(String time) {
+        return findTimeValue(time, messages.getMessage(DateTimeUtils.class, "timeHours"));
     }
 
-    private static int findMinutes(String time) {
-        return findTimeValue(time, messages().getMessage(DateTimeUtils.class, "timeMinutes"));
+    private int findMinutes(String time) {
+        return findTimeValue(time, messages.getMessage(DateTimeUtils.class, "timeMinutes"));
     }
 
-    private static int findTimeValue(String time, String units) {
+    private int findTimeValue(String time, String units) {
         String regex = "\\d+\\s*(" + units + ")";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(time);
@@ -70,6 +73,4 @@ public class TimeWorker {
         }
         return 0;
     }
-
-    private static Messages messages() {return AppBeans.get(Messages.NAME, Messages.class);}
 }

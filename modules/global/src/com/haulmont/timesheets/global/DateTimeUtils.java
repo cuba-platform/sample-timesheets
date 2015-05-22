@@ -18,9 +18,11 @@ import java.util.Date;
  * @version $Id$
  */
 
-public class DateTimeUtils {
+public final class DateTimeUtils {
+    public static final String TIME_FORMAT = "HH:mm";
 
-    public static final String TIME_FORMAT = "hh:mm";
+    private DateTimeUtils() {
+    }
 
     public static Calendar getCalendarWithoutTime(Date date) {
         java.util.Calendar calendar = DateUtils.toCalendar(date);

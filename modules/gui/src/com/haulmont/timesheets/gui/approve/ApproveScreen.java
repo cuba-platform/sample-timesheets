@@ -17,7 +17,7 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.global.DateTimeUtils;
-import com.haulmont.timesheets.global.WeeklyReportConverterBean;
+import com.haulmont.timesheets.global.WeeklyReportConverter;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.service.ProjectsService;
 import org.apache.commons.lang.time.DateUtils;
@@ -56,7 +56,7 @@ public class ApproveScreen extends AbstractWindow {
     @Inject
     protected TimeSource timeSource;
     @Inject
-    protected WeeklyReportConverterBean reportConverterBean;
+    protected WeeklyReportConverter reportConverterBean;
 
     protected Date firstDayOfWeek;
 

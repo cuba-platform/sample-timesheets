@@ -11,12 +11,15 @@ import com.haulmont.timesheets.entity.Task;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.entity.TimeEntryStatus;
 import com.haulmont.timesheets.global.CommandLineUtils;
-import com.haulmont.timesheets.global.TimeWorker;
+import com.haulmont.timesheets.global.DateTimeUtils;
+import com.haulmont.timesheets.global.TimeParser;
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -29,7 +32,7 @@ public class CommandLineServiceBean implements CommandLineService {
     @Inject
     protected SystemDataManager systemDataManager;
     @Inject
-    protected TimeWorker timeWorker;
+    protected TimeParser timeParser;
 
     @Inject
     protected TimeSource timeSource;
@@ -45,8 +48,10 @@ public class CommandLineServiceBean implements CommandLineService {
             timeEntry.setTask(task);
             String spentTime = commandLineUtils.getSpentTime();
             if (spentTime != null) {
-                Date parsedTime = timeWorker.parse(spentTime);
+                Date parsedTime = timeParser.parse(spentTime);
                 timeEntry.setTime(parsedTime);
+            } else {
+                timeEntry.setTime(DateTimeUtils.getDateWithoutTime(timeSource.currentTimestamp()));
             }
 
             timeEntry.setDate(timeSource.currentTimestamp());

@@ -16,8 +16,8 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.global.DateTimeUtils;
-import com.haulmont.timesheets.global.TimeWorker;
-import com.haulmont.timesheets.global.WeeklyReportConverterBean;
+import com.haulmont.timesheets.global.TimeParser;
+import com.haulmont.timesheets.global.WeeklyReportConverter;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.gui.commandline.CommandLineFrameController;
 import com.haulmont.timesheets.service.ProjectsService;
@@ -58,9 +58,9 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     @Inject
     protected ViewRepository viewRepository;
     @Inject
-    protected WeeklyReportConverterBean reportConverterBean;
+    protected WeeklyReportConverter reportConverterBean;
     @Inject
-    protected TimeWorker timeWorker;
+    protected TimeParser timeParser;
     @Inject
     protected TimeSource timeSource;
 
@@ -295,7 +295,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                 DayOfWeek day = DayOfWeek.fromId(property);
                 if (day != null) {
                     Date date = DateUtils.addDays(firstDayOfWeek, DayOfWeek.getDayOffset(day));
-                    return ComponentsHelper.getWeeklyReportTableCellStyle(date);
+//                    return ComponentsHelper.getWeeklyReportTableCellStyle(date);
                 }
                 return null;
             }
@@ -312,7 +312,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             if (reportEntry.getTask() != null) {
                 for (final DayOfWeek day : DayOfWeek.values()) {
                     String timeStr = reportEntry.getDayOfWeekTime(day);
-                    Date time = timeWorker.parse(timeStr);
+                    Date time = timeParser.parse(timeStr);
                     if (time != null) {
                         TimeEntry timeEntry = new TimeEntry();
                         timeEntry.setStatus(TimeEntryStatus.NEW);
