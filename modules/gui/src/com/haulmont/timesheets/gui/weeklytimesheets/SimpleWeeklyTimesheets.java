@@ -371,7 +371,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     protected void fillExistingTimeEntries() {
         List<TimeEntry> timeEntries = projectsService.getTimeEntriesForPeriod(firstDayOfWeek,
                 DateUtils.addDays(firstDayOfWeek, 6), userSession.getUser(), null);
-        List<WeeklyReportEntry> reportEntries = reportConverterBean.convertFromTimeEtnries(timeEntries);
+        List<WeeklyReportEntry> reportEntries = reportConverterBean.convertFromTimeEntries(timeEntries);
         for (WeeklyReportEntry entry : reportEntries) {
             weeklyEntriesDs.addItem(entry);
         }

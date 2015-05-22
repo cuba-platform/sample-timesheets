@@ -19,9 +19,9 @@ import java.util.*;
 @ManagedBean(WeeklyReportConverter.NAME)
 public class WeeklyReportConverter {
 
-    public static final String NAME = "timesheets_WeeklyReportConverterBean";
+    public static final String NAME = "timesheets_WeeklyReportConverter";
 
-    public List<WeeklyReportEntry> convertFromTimeEtnries(List<TimeEntry> timeEntries) {
+    public List<WeeklyReportEntry> convertFromTimeEntries(List<TimeEntry> timeEntries) {
 
         if (timeEntries.isEmpty()) {
             return Collections.emptyList();

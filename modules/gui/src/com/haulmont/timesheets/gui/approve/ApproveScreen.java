@@ -255,7 +255,7 @@ public class ApproveScreen extends AbstractWindow {
 
     protected void fillExistingTimeEntries(User user) {
         List<TimeEntry> timeEntries = getUserTimeEntries(user);
-        List<WeeklyReportEntry> reportEntries = reportConverterBean.convertFromTimeEtnries(timeEntries);
+        List<WeeklyReportEntry> reportEntries = reportConverterBean.convertFromTimeEntries(timeEntries);
         for (WeeklyReportEntry entry : reportEntries) {
             weeklyEntriesDs.addItem(entry);
         }
