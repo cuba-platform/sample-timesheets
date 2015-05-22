@@ -6,16 +6,12 @@ package com.haulmont.timesheets.global;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @author gorelov
@@ -34,7 +30,7 @@ public class TimeUtils {
         calendar.set(java.util.Calendar.MILLISECOND, 0);
         return calendar;
     }
-    
+
     public static Date getDateWithoutTime(Date date) {
         return getCalendarWithoutTime(date).getTime();
     }
@@ -61,5 +57,7 @@ public class TimeUtils {
         return new SimpleDateFormat(messages().getMainMessage("dateFormat"));
     }
 
-    private static Messages messages() {return AppBeans.get(Messages.NAME, Messages.class);}
+    private static Messages messages() {
+        return AppBeans.get(Messages.NAME, Messages.class);
+    }
 }
