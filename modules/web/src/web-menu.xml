@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <menu-config xmlns="http://schemas.haulmont.com/cuba/5.4/menu.xsd">
     <menu id="timesheets"
-          insertBefore="administration">
+          insertBefore="reports">
         <item id="simple-weekly-timesheets"
               shortcut="CTRL-ALT-W"/>
         <item id="calendar-screen"
@@ -23,9 +23,8 @@
               openType="DIALOG"/>
         <item id="ts$TaskType.browse"/>
         <item id="ts$Holiday.browse"/>
-        <menu id="tags">
-            <item id="ts$TagType.browse"/>
-            <item id="ts$Tag.browse"/>
-        </menu>
+        <separator/>
+        <item id="ts$TagType.browse"/>
+        <item id="ts$Tag.browse"/>
     </menu>
 </menu-config>
