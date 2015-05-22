@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  ~ Copyright (c) ${YEAR} ${PACKAGE_NAME}
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
+        caption="msg://browseCaption"
+        class="com.haulmont.cuba.gui.app.security.user.browse.UserLookup"
+        extends="/com/haulmont/cuba/gui/app/security/user/browse/user-lookup.xml"
+        messagesPack="com.haulmont.timesheets.gui.extuser">
+    <layout>
+        <table id="usersTable" editable="false" width="100%" multiselect="true">
+            <columns/>
+        </table>
+    </layout>
+</window>

@@ -3,6 +3,9 @@
 alter table TS_TIME_ENTRY add column INDEX_FIELD varchar(200)
 GENERATED ALWAYS AS (USER_ID || ' ' || TASK_ID || ' ' || DATE_ || ' ' || case when DELETE_TS is not null then '-'||DELETE_TS else '-NOT_DELETED' end )^
 create unique index IDX_TS_TIME_ENTRY_UNIQ_TASK_DATE on TS_TIME_ENTRY (INDEX_FIELD)^
+alter table TS_PROJECT_PARTICIPANT add column INDEX_FIELD varchar(200)
+GENERATED ALWAYS AS (USER_ID || ' ' || PROJECT_ID || case when DELETE_TS is not null then '-'||DELETE_TS else '-NOT_DELETED' end )^
+create unique index IDX_TS_PROJECT_PARTICIPANT_UNIQ_USER_PROJECT on TS_PROJECT_PARTICIPANT (INDEX_FIELD)^
 ------------------------------------------------------------------------------------------------------------------------
 insert into TS_PROJECT_ROLE
 (ID, NAME, CODE, DESCRIPTION, VERSION, CREATE_TS)

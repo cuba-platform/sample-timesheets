@@ -5,24 +5,28 @@ package com.haulmont.timesheets.gui.project;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.AbstractLookup;
-import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.components.TreeTable;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.security.entity.RoleType;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.timesheets.entity.Project;
+import com.haulmont.timesheets.entity.ProjectRole;
 import com.haulmont.timesheets.entity.Task;
 import com.haulmont.timesheets.gui.ComponentsHelper;
+import com.haulmont.timesheets.service.ProjectsService;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,7 +42,11 @@ public class ProjectBrowse extends AbstractLookup {
     protected Table participantsTable;
     @Inject
     protected UserSessionSource userSessionSource;
+    @Inject
+    private PopupButton assignBtn;
 
+    @Inject
+    private ProjectsService projectsService;
     @Named("participantsTable.create")
     protected CreateAction participantsTableCreate;
     @Named("participantsTable.edit")
@@ -121,6 +129,36 @@ public class ProjectBrowse extends AbstractLookup {
                 projectsTable.refresh();
             }
         });
+
+        LoadContext loadContext = new LoadContext(ProjectRole.class);
+        loadContext.setQueryString("select pr from ts$ProjectRole pr order by pr.name");
+        List<ProjectRole> projectRoles = getDsContext().getDataSupplier().loadList(loadContext);
+        for (final ProjectRole projectRole : projectRoles) {
+            assignBtn.addAction(new AbstractAction("assign" + projectRole.getCode()) {
+                @Override
+                public String getCaption() {
+                    return (getMessage("caption.assign" + StringUtils.capitalize(projectRole.getCode().toLowerCase())));
+                }
+
+                @Override
+                public void actionPerform(Component component) {
+                    openLookup("sec$User.lookup", new Handler() {
+                        @Override
+                        public void handleLookup(Collection items) {
+                            if (CollectionUtils.isNotEmpty(items)) {
+                                Collection<Project> selectedProjects = (Collection) projectsTable.getSelected();
+                                Collection<User> selectedUsers = (Collection) items;
+                                boolean needToRefresh =
+                                        projectsService.assignUsersToProjects(selectedUsers, selectedProjects, projectRole);
+                                if (needToRefresh) {
+                                    participantsTable.refresh();
+                                }
+                            }
+                        }
+                    }, WindowManager.OpenType.THIS_TAB);
+                }
+            });
+        }
 
         projectsTable.setStyleProvider(new Table.StyleProvider() {
             @Nullable

@@ -3,6 +3,8 @@
  */
 package com.haulmont.timesheets.service;
 
+import com.haulmont.cuba.core.Persistence;
+import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.DataManager;
@@ -11,6 +13,7 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.SystemDataManager;
 import com.haulmont.timesheets.entity.*;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +31,9 @@ public class ProjectsServiceBean implements ProjectsService {
 
     @Inject
     protected SystemDataManager systemDataManager;
+
+    @Inject
+    protected Persistence persistence;
 
     protected List<Project> getAllProjects() {
         LoadContext loadContext = new LoadContext(Project.class)
@@ -219,5 +225,48 @@ public class ProjectsServiceBean implements ProjectsService {
                         .setParameter("userId", user.getId());
         loadContext.setQuery(query);
         return dataManager.loadList(loadContext);
+    }
+
+    public boolean assignUsersToProjects(Collection<User> users, Collection<Project> projects, ProjectRole projectRole) {
+        List<ProjectParticipant> result = new ArrayList<>();
+        Transaction tx = persistence.createTransaction();
+        try {
+            List<UUID> ids = new ArrayList<>();
+            for (Project project : projects) {
+                ids.add(project.getId());
+            }
+
+            projects = persistence.getEntityManager().createQuery("select pr from ts$Project pr where pr.id in (:ids)", Project.class)
+                    .setViewName("project-full")
+                    .setParameter("ids", ids)
+                    .getResultList();
+
+            for (Project project : projects) {
+                Set<User> assignedUsers = new HashSet<User>();
+                for (ProjectParticipant projectParticipant : project.getParticipants()) {
+                    assignedUsers.add(projectParticipant.getUser());
+                }
+
+                for (User user : users) {
+                    if (!assignedUsers.contains(user)) {
+                        ProjectParticipant projectParticipant = new ProjectParticipant();
+                        projectParticipant.setRole(projectRole);
+                        projectParticipant.setUser(user);
+                        projectParticipant.setProject(project);
+                        result.add(projectParticipant);
+                    }
+                }
+            }
+
+            for (ProjectParticipant projectParticipant : result) {
+                persistence.getEntityManager().persist(projectParticipant);
+            }
+
+            tx.commit();
+        } finally {
+            tx.end();
+        }
+
+        return CollectionUtils.isNotEmpty(result);
     }
 }
