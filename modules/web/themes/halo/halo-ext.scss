@@ -83,6 +83,15 @@
     background-image: unquote("linear-gradient(to bottom,#FFC5C5 2%,#FAAFAF 98%)");
   }
 
+  .v-table-cell-content-holiday {
+    background: #EF525B;
+  }
+
+  .v-table-cell-content-holiday .v-button-link {
+    color: white;
+  }
+
+  .v-table [class*="-row"].v-selected .v-table-cell-content-holiday,
   .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-new-bg,
   .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-approved-bg,
   .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-rejected-bg {
@@ -96,6 +105,10 @@
   }
 
   .v-caption-h2 {
+    font-size: 14px;
+  }
+
+  .ace_editor {
     font-size: 14px;
   }
 }

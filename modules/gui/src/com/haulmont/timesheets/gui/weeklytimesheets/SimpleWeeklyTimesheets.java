@@ -295,7 +295,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                 DayOfWeek day = DayOfWeek.fromId(property);
                 if (day != null) {
                     Date date = DateUtils.addDays(firstDayOfWeek, DayOfWeek.getDayOffset(day));
-//                    return ComponentsHelper.getWeeklyReportTableCellStyle(date);
+                    return ComponentsHelper.getWeeklyReportTableCellStyle(date);
                 }
                 return null;
             }

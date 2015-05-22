@@ -17,6 +17,7 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.timesheets.entity.*;
+import com.haulmont.timesheets.global.DateWorker;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 
@@ -37,6 +38,7 @@ public class ComponentsHelper {
     protected static ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.NAME);
     protected static Messages messages = AppBeans.get(Messages.NAME);
     protected static TimeSource timeSource = AppBeans.get(TimeSource.NAME);
+    protected static DateWorker dateWorker = AppBeans.get(DateWorker.NAME);
 
     public static FieldGroup.CustomFieldGenerator getCustomTextArea() {
         return new FieldGroup.CustomFieldGenerator() {
@@ -205,6 +207,13 @@ public class ComponentsHelper {
             default:
                 return null;
         }
+    }
+
+    public static String getWeeklyReportTableCellStyle(Date date) {
+        if (dateWorker.isHoliday(date) || dateWorker.isWeekend(date)) {
+            return "holiday";
+        }
+        return null;
     }
 
     public static String getTimeEntryStatusStyleBg(TimeEntry timeEntry) {
