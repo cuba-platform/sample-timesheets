@@ -11,7 +11,13 @@
                                 hierarchyProperty="parent"
                                 view="project-full">
             <query>
-                <![CDATA[select e from ts$Project e left join e.participants p where p.user.id = :session$userId or :param$superuser = true]]>
+                <![CDATA[select e
+                         from
+                            ts$Project e left join e.participants p
+                         where
+                            (p.user.id = :session$userId and (p.role.code = 'manager' or p.role.code = 'approver')) or
+                            :param$superuser = true
+                         ]]>
             </query>
         </hierarchicalDatasource>
         <collectionDatasource id="tasksDs"
