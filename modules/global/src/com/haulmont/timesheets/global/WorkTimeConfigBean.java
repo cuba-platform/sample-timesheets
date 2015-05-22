@@ -48,7 +48,7 @@ public class WorkTimeConfigBean {
         for (String day : days) {
             workDays.add(DayOfWeek.fromAbbreviation(day));
         }
-        return workDays;
+        return Collections.unmodifiableList(workDays);
     }
 
     public void setWorkDays(Collection<DayOfWeek> workDays) {
@@ -69,11 +69,11 @@ public class WorkTimeConfigBean {
         workTimeConfig.setWorkDays(sb.toString());
     }
 
-    public DayOfWeek[] getWeekends() {
+    public List<DayOfWeek> getWeekends() {
         List<DayOfWeek> days = new ArrayList<>(Arrays.asList(DayOfWeek.values()));
         for (DayOfWeek day : getWorkDays()) {
             days.remove(day);
         }
-        return days.toArray(new DayOfWeek[days.size()]);
+        return Collections.unmodifiableList(days);
     }
 }
