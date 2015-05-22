@@ -355,11 +355,15 @@ values (20, 'ts$TaskType:read', 1, 'd85439b8-cbd9-5b5b-974b-96502853b1ab', 1, '2
 
 insert into SEC_PERMISSION
 (PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
+values (20, 'ts$TimeEntry:read', 1, 'd85439b8-cbd9-5b5b-974b-96502853b1ab', 1, '2015-05-22 11:20:48', null, null, null, '12d1a63d-f3a2-53cb-95ac-1cabb3f868b0', '2015-05-22 11:20:48', 'admin');
+
+insert into SEC_PERMISSION
+(PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
 values (20, 'ts$ProjectRole:read', 1, 'd85439b8-cbd9-5b5b-974b-96502853b1ab', 1, '2015-05-22 11:22:00', null, null, null, 'b67028f4-d47e-02b0-bf5a-8ee1052c72d6', '2015-05-22 11:22:00', 'admin');
 
 insert into SEC_PERMISSION
 (PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
-values (20, 'ts$TimeEntry:read', 1, 'd85439b8-cbd9-5b5b-974b-96502853b1ab', 1, '2015-05-22 11:20:48', null, null, null, '12d1a63d-f3a2-53cb-95ac-1cabb3f868b0', '2015-05-22 11:20:48', 'admin');
+values (20, 'ts$Tag:update', 1, 'd85439b8-cbd9-5b5b-974b-96502853b1ab', 1, '2015-05-22 13:17:51', null, null, null, 'a630c537-4d28-1b24-f9c3-19b7f0507a14', '2015-05-22 13:17:51', 'admin');
 
 insert into SEC_PERMISSION
 (PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
@@ -399,6 +403,10 @@ values (20, 'ts$Task:read', 1, 'd85439b8-cbd9-5b5b-974b-96502853b1ab', 1, '2015-
 
 insert into SEC_PERMISSION
 (PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
+values (20, 'ts$Tag:delete', 1, 'd85439b8-cbd9-5b5b-974b-96502853b1ab', 1, '2015-05-22 13:17:51', null, null, null, '66ca6fd4-5f3d-2ea8-90fa-ad14852364eb', '2015-05-22 13:17:51', 'admin');
+
+insert into SEC_PERMISSION
+(PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
 values (20, 'ts$Client:read', 1, 'd85439b8-cbd9-5b5b-974b-96502853b1ab', 1, '2015-05-22 11:22:00', null, null, null, 'b5efd698-4bce-ad82-c8ab-75ee789f9dbc', '2015-05-22 11:22:00', 'admin');
 
 insert into SEC_PERMISSION
@@ -416,6 +424,10 @@ values (10, 'timesheets', 1, 'd85439b8-cbd9-5b5b-974b-96502853b1ab', 1, '2015-05
 insert into SEC_PERMISSION
 (PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
 values (10, 'projects', 1, 'd85439b8-cbd9-5b5b-974b-96502853b1ab', 1, '2015-05-22 11:20:48', null, null, null, '988cb9a5-7e5c-a079-c48a-d08a3da286aa', '2015-05-22 11:20:48', 'admin');
+
+insert into SEC_PERMISSION
+(PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
+values (20, 'ts$Tag:create', 1, 'd85439b8-cbd9-5b5b-974b-96502853b1ab', 1, '2015-05-22 13:17:51', null, null, null, 'ae9f3dac-bda3-38e9-9886-75486dce9297', '2015-05-22 13:17:51', 'admin');
 
 insert into SEC_ROLE
 (NAME, LOC_NAME, DESCRIPTION, ROLE_TYPE, IS_DEFAULT_ROLE, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
@@ -447,6 +459,10 @@ values (20, 'ts$ProjectRole:read', 1, 'd771afba-33c9-caf0-47ed-df2d2b2631f2', 1,
 
 insert into SEC_PERMISSION
 (PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
+values (20, 'ts$TagType:create', 1, 'd771afba-33c9-caf0-47ed-df2d2b2631f2', 1, '2015-05-22 13:15:43', null, null, null, '1fe1f345-9f7e-2a0e-231a-8d62baf157ce', '2015-05-22 13:15:43', 'admin');
+
+insert into SEC_PERMISSION
+(PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
 values (10, 'tags', 1, 'd771afba-33c9-caf0-47ed-df2d2b2631f2', 1, '2015-05-22 10:55:38', null, null, null, 'a02f8bf0-281e-6ccf-012c-2d92dadf7be5', '2015-05-22 10:55:38', 'admin');
 
 insert into SEC_PERMISSION
@@ -471,15 +487,15 @@ values (20, 'ts$ProjectParticipant:read', 1, 'd771afba-33c9-caf0-47ed-df2d2b2631
 
 insert into SEC_PERMISSION
 (PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
+values (20, 'ts$ProjectParticipant:update', 1, 'd771afba-33c9-caf0-47ed-df2d2b2631f2', 1, '2015-05-22 11:04:24', null, null, null, '3f9218cd-21ac-dd00-f3e6-e4db7d78959d', '2015-05-22 11:04:24', 'admin');
+
+insert into SEC_PERMISSION
+(PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
 values (10, 'ts$TaskType.browse', 1, 'd771afba-33c9-caf0-47ed-df2d2b2631f2', 1, '2015-05-22 10:55:38', null, null, null, 'c50d78d9-5dad-2dbc-d412-4b25e3ce0fbe', '2015-05-22 10:55:38', 'admin');
 
 insert into SEC_PERMISSION
 (PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
 values (10, 'timesheets', 1, 'd771afba-33c9-caf0-47ed-df2d2b2631f2', 1, '2015-05-22 10:55:38', null, null, null, 'd7b8e2d9-2b7e-f8df-a047-9f29954cc220', '2015-05-22 10:55:38', 'admin');
-
-insert into SEC_PERMISSION
-(PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
-values (20, 'ts$ProjectParticipant:update', 1, 'd771afba-33c9-caf0-47ed-df2d2b2631f2', 1, '2015-05-22 11:04:24', null, null, null, '3f9218cd-21ac-dd00-f3e6-e4db7d78959d', '2015-05-22 11:04:24', 'admin');
 
 insert into SEC_PERMISSION
 (PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
@@ -515,11 +531,19 @@ values (20, 'ts$Task:delete', 1, 'd771afba-33c9-caf0-47ed-df2d2b2631f2', 1, '201
 
 insert into SEC_PERMISSION
 (PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
+values (20, 'ts$TagType:delete', 1, 'd771afba-33c9-caf0-47ed-df2d2b2631f2', 1, '2015-05-22 13:15:43', null, null, null, 'c7f96b29-f287-5f5e-fa64-0fcad0759864', '2015-05-22 13:15:43', 'admin');
+
+insert into SEC_PERMISSION
+(PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
 values (20, 'ts$Holiday:read', 1, 'd771afba-33c9-caf0-47ed-df2d2b2631f2', 1, '2015-05-22 11:04:24', null, null, null, 'ad62e90e-e05a-dc4c-c6d5-0fb51424cb27', '2015-05-22 11:04:24', 'admin');
 
 insert into SEC_PERMISSION
 (PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
 values (20, 'ts$Tag:create', 1, 'd771afba-33c9-caf0-47ed-df2d2b2631f2', 1, '2015-05-22 11:04:24', null, null, null, '39dbb33e-b86a-982a-6c08-beb98ec29c6a', '2015-05-22 11:04:24', 'admin');
+
+insert into SEC_PERMISSION
+(PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
+values (20, 'ts$TagType:update', 1, 'd771afba-33c9-caf0-47ed-df2d2b2631f2', 1, '2015-05-22 13:15:43', null, null, null, '1503d42a-f68c-5fbb-c13a-c5dc884ecd42', '2015-05-22 13:15:43', 'admin');
 
 insert into SEC_PERMISSION
 (PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
@@ -547,8 +571,7 @@ values (20, 'ts$ProjectParticipant:delete', 1, 'd771afba-33c9-caf0-47ed-df2d2b26
 
 insert into SEC_PERMISSION
 (PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
-values (20, 'ts$TimeEntry:read', 1, 'd771afba-33c9-caf0-47ed-df2d2b2631f2', 1, '2015-05-22 11:04:24', null, null, null, 'e9dfd076-3fb6-527b-4ee0-61570cbce4b3', '2015-05-22 11:04:24', 'admin');
-------------------------------------------------------------------------------------------------------------------------
+values (20, 'ts$TimeEntry:read', 1, 'd771afba-33c9-caf0-47ed-df2d2b2631f2', 1, '2015-05-22 11:04:24', null, null, null, 'e9dfd076-3fb6-527b-4ee0-61570cbce4b3', '2015-05-22 11:04:24', 'admin');------------------------------------------------------------------------------------------------------------------------
 
 insert into SEC_USER
 (WORK_HOURS_FOR_WEEK, LOGIN, LOGIN_LC, PASSWORD, NAME, FIRST_NAME, LAST_NAME, MIDDLE_NAME, POSITION_, EMAIL, LANGUAGE_, TIME_ZONE, TIME_ZONE_AUTO, ACTIVE, CHANGE_PASSWORD_AT_LOGON, GROUP_ID, IP_MASK, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
