@@ -19,7 +19,8 @@
     </menu>
     <menu id="timesheet-settings"
           insertAfter="projects">
-        <item id="work-time-settings"/>
+        <item id="work-time-settings"
+              openType="DIALOG"/>
         <item id="ts$TaskType.browse"/>
         <item id="ts$Holiday.browse"/>
         <menu id="tags">
