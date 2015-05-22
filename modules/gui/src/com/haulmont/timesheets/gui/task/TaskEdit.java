@@ -24,8 +24,6 @@ import java.util.*;
 public class TaskEdit extends AbstractEditor<Task> {
 
     @Inject
-    protected Table participantsTable;
-    @Inject
     protected FieldGroup fieldGroup;
     @Inject
     protected Datasource<Task> taskDs;
@@ -51,7 +49,6 @@ public class TaskEdit extends AbstractEditor<Task> {
     public void init(Map<String, Object> params) {
 
         fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
-        ComponentsHelper.addRemoveColumn(participantsTable, "remove");
 
         projectField.addAction(ComponentsHelper.createLookupAction(projectField));
         typeField.addAction(ComponentsHelper.createLookupAction(typeField));

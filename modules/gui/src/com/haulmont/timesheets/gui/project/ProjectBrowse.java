@@ -79,8 +79,6 @@ public class ProjectBrowse extends AbstractLookup {
         });
         participantsTableCreate.setOpenType(WindowManager.OpenType.DIALOG);
         participantsTableEdit.setOpenType(WindowManager.OpenType.DIALOG);
-
-        ComponentsHelper.addRemoveColumn(participantsTable, "remove");
     }
 
     private void initTasksTable() {
