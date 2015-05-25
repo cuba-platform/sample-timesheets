@@ -31,6 +31,10 @@ import java.util.*;
  */
 public class ApproveScreen extends AbstractWindow {
 
+    public interface Companion {
+        void initTable(Table table);
+    }
+
     @Inject
     protected Table usersTable;
     @Inject
@@ -57,11 +61,17 @@ public class ApproveScreen extends AbstractWindow {
     protected TimeSource timeSource;
     @Inject
     protected WeeklyReportConverter reportConverterBean;
+    @Inject
+    protected Companion companion;
 
     protected Date firstDayOfWeek;
 
     @Override
     public void init(Map<String, Object> params) {
+        if (companion != null) {
+            companion.initTable(weeklyReportsTable);
+        }
+
         firstDayOfWeek = DateTimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp());
 
         initUsersTable();

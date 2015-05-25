@@ -3,6 +3,9 @@
         caption="msg://approveScreen"
         class="com.haulmont.timesheets.gui.approve.ApproveScreen"
         messagesPack="com.haulmont.timesheets.gui.approve">
+    <companions>
+        <web class="com.haulmont.timesheets.web.approve.WebApproveScreenCompanion"/>
+    </companions>
     <dsContext>
         <collectionDatasource id="usersDs"
                               class="com.haulmont.timesheets.entity.ExtUser"
