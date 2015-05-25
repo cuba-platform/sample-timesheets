@@ -15,10 +15,7 @@ import com.haulmont.timesheets.service.ProjectsService;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author gorelov
@@ -72,6 +69,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
                             }
                         }
                         allTagsDs.refresh(ParamsMap.of("requiredTagTypes", ids));
+                        tagsTokenList.setEnabled(tagsDs.getItems().isEmpty());
                     }
                     updateStatusField();
                     setDefaultStatus(getItem());
@@ -97,7 +95,19 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         super.postInit();
         TimeEntry timeEntry = getItem();
         if (TimeEntryStatus.APPROVED.equals(timeEntry.getStatus()) && userIsWorker()) {
-            setReadOnly();
+            // set read only
+            fieldGroup.setEnabled(false);
+            tagsTokenList.setEnabled(false);
+        }
+        Task task = timeEntry.getTask();
+        if (task != null && task.getDefaultTags() != null) {
+            Set<Tag> defaultTags = task.getDefaultTags();
+            if (!defaultTags.isEmpty()) {
+                tagsTokenList.setEnabled(false);
+                if (!defaultTags.equals(timeEntry.getTags())) {
+                    timeEntry.setTags(defaultTags);
+                }
+            }
         }
         updateStatusField();
     }
@@ -114,11 +124,6 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         }
         ProjectRole userRole = projectsService.getUserProjectRole(project, userSession.getUser());
         return userRole == null || workerRole.equals(userRole);
-    }
-
-    protected void setReadOnly() {
-        fieldGroup.setEnabled(false);
-        tagsTokenList.setEnabled(false);
     }
 
     protected void updateStatusField() {
