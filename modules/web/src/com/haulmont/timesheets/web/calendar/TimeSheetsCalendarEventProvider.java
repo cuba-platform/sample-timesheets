@@ -29,7 +29,7 @@ public class TimeSheetsCalendarEventProvider extends BasicEventProvider {
 
     public TimeSheetsCalendarEventProvider(User user) {
         ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);
-        List<TimeEntry> timeEntries = projectsService.getTimeEntriesForUser(user);
+        List<TimeEntry> timeEntries = projectsService.getTimeEntriesForUser(user, "timeEntry-full");
 
         for (TimeEntry entry : timeEntries) {
             eventList.add(new TimeEntryCalendarEventAdapter(entry));

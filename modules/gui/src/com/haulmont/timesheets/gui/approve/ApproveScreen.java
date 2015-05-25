@@ -6,6 +6,7 @@ package com.haulmont.timesheets.gui.approve;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -77,7 +78,7 @@ public class ApproveScreen extends AbstractWindow {
         }
 
         firstDayOfWeek = DateTimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp());
-        approvableProjects = projectsService.getActiveManagedProjectsForUser(userSession.getUser());
+        approvableProjects = projectsService.getActiveManagedProjectsForUser(userSession.getUser(), View.LOCAL);
 
         initUsersTable();
         initUserReportsTable();
@@ -315,9 +316,9 @@ public class ApproveScreen extends AbstractWindow {
     private Collection<? extends TimeEntry> getTimeEntriesForPeriod(
             Date start, Date end, User approver, User user, TimeEntryStatus status, boolean isApprovable) {
         if (isApprovable) {
-            return projectsService.getApprovableTimeEntriesForPeriod(start, end, approver, user, status);
+            return projectsService.getApprovableTimeEntriesForPeriod(start, end, approver, user, status, "timeEntry-full");
         } else {
-            return projectsService.getTimeEntriesForPeriod(start, end, user, status);
+            return projectsService.getTimeEntriesForPeriod(start, end, user, status, "timeEntry-full");
         }
     }
 

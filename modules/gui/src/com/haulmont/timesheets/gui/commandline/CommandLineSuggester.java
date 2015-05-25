@@ -6,6 +6,7 @@ package com.haulmont.timesheets.gui.commandline;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.components.SourceCodeEditor;
 import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.components.autocomplete.Suggester;
@@ -46,7 +47,7 @@ public class CommandLineSuggester implements Suggester {
         }
 
         if (text.charAt(cursorPosition - 1) == '@') {
-            List<Project> projects = projectsService.getActiveProjectsForUser(currentUser);
+            List<Project> projects = projectsService.getActiveProjectsForUser(currentUser, View.LOCAL);
             for (Project project : projects) {
                 Suggestion suggestion = suggestion(project.getInstanceName(), project.getCode(), cursorPosition);
                 suggestions.add(suggestion);
@@ -56,10 +57,10 @@ public class CommandLineSuggester implements Suggester {
             Collection<Task> tasks;
             if (projectCode != null) {
                 Project project = projectsService.getEntityByCode(Project.class, projectCode, null);
-                tasks = projectsService.getActiveTasksForUserAndProject(currentUser, project).values();
+                tasks = projectsService.getActiveTasksForUserAndProject(currentUser, project, "task-full").values();
 
             } else {
-                tasks = projectsService.getActiveTasksForUser(currentUser);
+                tasks = projectsService.getActiveTasksForUser(currentUser, "task-full");
             }
 
             for (Task task : tasks) {

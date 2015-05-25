@@ -82,7 +82,7 @@ public class ProjectEdit extends AbstractEditor<Project> {
         Project project = getItem();
         projectsDs.excludeItem(project);
 
-        List<Project> childrenProjects = projectsService.getChildren(project);
+        List<Project> childrenProjects = projectsService.getProjectChildren(project);
         for (Project child : childrenProjects) {
             projectsDs.excludeItem(child);
         }
@@ -99,9 +99,9 @@ public class ProjectEdit extends AbstractEditor<Project> {
     protected boolean postCommit(boolean committed, boolean close) {
         if (committed) {
             Client client = getItem().getClient();
-            List<Project> childrenProjects = projectsService.getChildren(getItem());
+            List<Project> childrenProjects = projectsService.getProjectChildren(getItem());
             for (Project child : childrenProjects) {
-                projectsService.setClient(child, client);
+                projectsService.setProjectClient(child, client);
             }
         }
         return super.postCommit(committed, close);

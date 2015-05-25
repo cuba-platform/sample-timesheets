@@ -187,7 +187,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                                     Project project = (Project) value;
                                     lookupField.setValue(null);
                                     Map<String, Task> tasks =
-                                            projectsService.getActiveTasksForUserAndProject(userSession.getUser(), project);
+                                            projectsService.getActiveTasksForUserAndProject(userSession.getUser(), project, "task-full");
                                     lookupField.setOptionsMap((Map) tasks);
                                 }
                             }
@@ -195,7 +195,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         final Project project = ds.getItem().getProject();
                         if (project != null) {
                             Map<String, Task> tasks =
-                                    projectsService.getActiveTasksForUserAndProject(userSession.getUser(), project);
+                                    projectsService.getActiveTasksForUserAndProject(userSession.getUser(), project, "task-full");
                             lookupField.setOptionsMap((Map) tasks);
                         }
                         lookupFieldsCache.put(key, lookupField);
@@ -379,7 +379,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
     protected void fillExistingTimeEntries() {
         List<TimeEntry> timeEntries = projectsService.getTimeEntriesForPeriod(firstDayOfWeek,
-                DateUtils.addDays(firstDayOfWeek, 6), userSession.getUser(), null);
+                DateUtils.addDays(firstDayOfWeek, 6), userSession.getUser(), null, "timeEntry-full");
         List<WeeklyReportEntry> reportEntries = reportConverterBean.convertFromTimeEntries(timeEntries);
         for (WeeklyReportEntry entry : reportEntries) {
             weeklyEntriesDs.addItem(entry);

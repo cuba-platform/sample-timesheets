@@ -35,7 +35,7 @@ public class ProjectLookup extends AbstractLookup {
         Project project = (Project) params.get("parentProject");
         if (project != null) {
             projectsDs.excludeItem(project);
-            List<Project> childrenProjects = projectsService.getChildren(project);
+            List<Project> childrenProjects = projectsService.getProjectChildren(project);
             for (Project child : childrenProjects) {
                 projectsDs.excludeItem(child);
             }

@@ -46,14 +46,14 @@ public class ProjectsServiceBean implements ProjectsService {
 
     @Override
     @Transactional
-    public List<Project> getChildren(Project parent) {
+    public List<Project> getProjectChildren(Project parent) {
         List<Project> projects = getAllProjects();
         if (!projects.isEmpty()) {
             List<Project> children = new ArrayList<>();
             for (Project project : projects) {
                 if (parent.equals(project.getParent())) {
                     children.add(project);
-                    children.addAll(getChildren(project));
+                    children.addAll(getProjectChildren(project));
                 }
             }
             return children;
@@ -62,7 +62,7 @@ public class ProjectsServiceBean implements ProjectsService {
     }
 
     @Override
-    public void setClient(Project project, @Nullable Client client) {
+    public void setProjectClient(Project project, @Nullable Client client) {
         project.setClient(client);
         dataManager.commit(project);
     }
@@ -87,9 +87,11 @@ public class ProjectsServiceBean implements ProjectsService {
     }
 
     @Override
-    public List<TimeEntry> getTimeEntriesForPeriod(Date start, Date end, User user, @Nullable TimeEntryStatus status) {
-        LoadContext loadContext = new LoadContext(TimeEntry.class)
-                .setView("timeEntry-full");
+    public List<TimeEntry> getTimeEntriesForPeriod(Date start, Date end, User user, @Nullable TimeEntryStatus status, @Nullable String viewName) {
+        LoadContext loadContext = new LoadContext(TimeEntry.class);
+        if (viewName != null) {
+            loadContext.setView(viewName);
+        }
         String queryStr = "select e from ts$TimeEntry e where e.user.id = :userId and (e.date between :start and :end)";
         if (status != null) {
             queryStr += " and e.status = :status";
@@ -106,10 +108,12 @@ public class ProjectsServiceBean implements ProjectsService {
 
     @Override
     public List<TimeEntry> getApprovableTimeEntriesForPeriod(
-            Date start, Date end, User approver, User user, @Nullable TimeEntryStatus status
+            Date start, Date end, User approver, User user, @Nullable TimeEntryStatus status, @Nullable String viewName
     ) {
-        LoadContext loadContext = new LoadContext(TimeEntry.class)
-                .setView("timeEntry-full");
+        LoadContext loadContext = new LoadContext(TimeEntry.class);
+        if (viewName != null) {
+            loadContext.setView(viewName);
+        }
         String queryStr = "select e from ts$TimeEntry e join e.task t join t.project pr join pr.participants p " +
                 "where p.user.id = :approverId and (p.role.code = 'manager' or p.role.code = 'approver') " +
                 "and e.user.id = :userId and (e.date between :start and :end)";
@@ -128,9 +132,11 @@ public class ProjectsServiceBean implements ProjectsService {
     }
 
     @Override
-    public List<TimeEntry> getTimeEntriesForUser(User user) {
-        LoadContext loadContext = new LoadContext(TimeEntry.class)
-                .setView("timeEntry-full");
+    public List<TimeEntry> getTimeEntriesForUser(User user, @Nullable String viewName) {
+        LoadContext loadContext = new LoadContext(TimeEntry.class);
+        if (viewName != null) {
+            loadContext.setView(viewName);
+        }
         loadContext.setQueryString("select e from ts$TimeEntry e where e.user.id = :userId")
                 .setParameter("userId", user.getId());
         return dataManager.loadList(loadContext);
@@ -168,9 +174,11 @@ public class ProjectsServiceBean implements ProjectsService {
     }
 
     @Override
-    public List<Task> getActiveTasksForUser(User user) {
-        LoadContext loadContext = new LoadContext(Task.class)
-                .setView("task-full");
+    public List<Task> getActiveTasksForUser(User user, @Nullable String viewName) {
+        LoadContext loadContext = new LoadContext(Task.class);
+        if (viewName != null) {
+            loadContext.setView(viewName);
+        }
         loadContext.setQueryString("select e from ts$Task e join e.participants p " +
                 "where p.user.id = :userId and e.status = 'active' order by e.project")
                 .setParameter("userId", user.getId());
@@ -189,9 +197,11 @@ public class ProjectsServiceBean implements ProjectsService {
     }
 
     @Override
-    public Map<String, Task> getActiveTasksForUserAndProject(User user, Project project) {
-        LoadContext loadContext = new LoadContext(Task.class)
-                .setView("task-full");
+    public Map<String, Task> getActiveTasksForUserAndProject(User user, Project project, @Nullable String viewName) {
+        LoadContext loadContext = new LoadContext(Task.class);
+        if (viewName != null) {
+            loadContext.setView(viewName);
+        }
         loadContext.setQueryString("select e from ts$Task e join e.participants p " +
                 "where p.user.id = :userId and e.project.id = :projectId and e.status = 'active' order by e.project")
                 .setParameter("projectId", project.getId())
@@ -216,9 +226,11 @@ public class ProjectsServiceBean implements ProjectsService {
         return tasksMap;
     }
 
-    public List<Project> getActiveProjectsForUser(User user) {
-        LoadContext loadContext = new LoadContext(Project.class)
-                .setView(View.LOCAL);
+    public List<Project> getActiveProjectsForUser(User user, @Nullable String viewName) {
+        LoadContext loadContext = new LoadContext(Project.class);
+        if (viewName != null) {
+            loadContext.setView(viewName);
+        }
         LoadContext.Query query =
                 new LoadContext.Query("select pr from ts$Project pr, in(pr.participants) p " +
                         "where p.user.id = :userId and pr.status = 'open'")
@@ -227,9 +239,11 @@ public class ProjectsServiceBean implements ProjectsService {
         return dataManager.loadList(loadContext);
     }
 
-    public List<Project> getActiveManagedProjectsForUser(User user) {
-        LoadContext loadContext = new LoadContext(Project.class)
-                .setView(View.LOCAL);
+    public List<Project> getActiveManagedProjectsForUser(User user, @Nullable String viewName) {
+        LoadContext loadContext = new LoadContext(Project.class);
+        if (viewName != null) {
+            loadContext.setView(viewName);
+        }
         LoadContext.Query query =
                 new LoadContext.Query("select pr from ts$Project pr, in(pr.participants) p " +
                         "where p.user.id = :userId and (p.role.code = 'manager' or p.role.code = 'approver') and pr.status = 'open'")
@@ -238,6 +252,7 @@ public class ProjectsServiceBean implements ProjectsService {
         return dataManager.loadList(loadContext);
     }
 
+    @Override
     public boolean assignUsersToProjects(Collection<User> users, Collection<Project> projects, ProjectRole projectRole) {
         List<ProjectParticipant> result = new ArrayList<>();
         Transaction tx = persistence.createTransaction();

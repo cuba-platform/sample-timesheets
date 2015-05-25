@@ -25,7 +25,7 @@ public class TasksCollectionDatasource extends CollectionDatasourceImpl<Task, UU
     @Override
     protected void loadData(Map<String, Object> params) {
 
-        for (Task task : projectsService.getActiveTasksForUser(userSession.getUser())) {
+        for (Task task : projectsService.getActiveTasksForUser(userSession.getUser(), "task-full")) {
             data.put(task.getId(), task);
             attachListener(task);
         }

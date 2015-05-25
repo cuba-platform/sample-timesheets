@@ -19,9 +19,9 @@ import java.util.Map;
 public interface ProjectsService {
     String NAME = "ts_ProjectsService";
 
-    List<Project> getChildren(Project parent);
+    List<Project> getProjectChildren(Project parent);
 
-    void setClient(Project project, @Nullable Client client);
+    void setProjectClient(Project project, @Nullable Client client);
 
     @Nullable
     ProjectRole getUserProjectRole(Project project, User user);
@@ -29,13 +29,13 @@ public interface ProjectsService {
     @Nullable
     <T extends Entity> T getEntityByCode(Class<T> clazz, String code, @Nullable String viewName);
 
-    List<TimeEntry> getTimeEntriesForPeriod(Date start, Date end, User user, @Nullable TimeEntryStatus status);
+    List<TimeEntry> getTimeEntriesForPeriod(Date start, Date end, User user, @Nullable TimeEntryStatus status, @Nullable String viewName);
 
     List<TimeEntry> getApprovableTimeEntriesForPeriod(
-            Date start, Date end, User approver, User user, @Nullable TimeEntryStatus status
+            Date start, Date end, User approver, User user, @Nullable TimeEntryStatus status, @Nullable String viewName
     );
 
-    List<TimeEntry> getTimeEntriesForUser(User user);
+    List<TimeEntry> getTimeEntriesForUser(User user, @Nullable String viewName);
 
     List<Holiday> getHolidays();
 
@@ -45,13 +45,13 @@ public interface ProjectsService {
 
     void updateTimeEntriesStatus(List<TimeEntry> timeEntries, TimeEntryStatus status);
 
-    List<Task> getActiveTasksForUser(User user);
+    List<Task> getActiveTasksForUser(User user, @Nullable String viewName);
 
-    Map<String, Task> getActiveTasksForUserAndProject(User user, Project project);
+    Map<String, Task> getActiveTasksForUserAndProject(User user, Project project, @Nullable String viewName);
 
-    List<Project> getActiveProjectsForUser(User user);
+    List<Project> getActiveProjectsForUser(User user, @Nullable String viewName);
 
-    List<Project> getActiveManagedProjectsForUser(User user);
+    List<Project> getActiveManagedProjectsForUser(User user, @Nullable String viewName);
 
     boolean assignUsersToProjects(Collection<User> users, Collection<Project> projects, ProjectRole projectRole);
 }
