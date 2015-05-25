@@ -20,7 +20,8 @@ public class ClientEdit extends AbstractEditor<Client> {
 
     @Override
     public void init(Map<String, Object> params) {
-        super.init(params);
+        getDialogParams().setWidthAuto();
+
         clientDs.addListener(new ComponentsHelper.EntityCodeGenerationListener<Client>());
     }
 }

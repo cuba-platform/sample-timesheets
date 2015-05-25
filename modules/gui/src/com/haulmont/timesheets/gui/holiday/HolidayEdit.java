@@ -21,6 +21,8 @@ public class HolidayEdit extends AbstractEditor<Holiday> {
 
     @Override
     public void init(Map<String, Object> params) {
+        getDialogParams().setWidthAuto();
+
         fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
     }
 }

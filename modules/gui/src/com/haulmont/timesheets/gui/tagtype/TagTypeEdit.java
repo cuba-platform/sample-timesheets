@@ -30,6 +30,8 @@ public class TagTypeEdit extends AbstractEditor<TagType> {
 
     @Override
     public void init(Map<String, Object> params) {
+        getDialogParams().setWidthAuto();
+
         projectField.addAction(ComponentsHelper.createLookupAction(projectField));
         fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
         tagTypeDs.addListener(new ComponentsHelper.EntityCodeGenerationListener<TagType>());

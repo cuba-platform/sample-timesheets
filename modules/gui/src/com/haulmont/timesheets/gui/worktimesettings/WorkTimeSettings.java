@@ -30,6 +30,7 @@ public class WorkTimeSettings extends AbstractWindow {
     @Override
 
     public void init(Map<String, Object> params) {
+        getDialogParams().setWidthAuto();
 
         workHoursTextField.setValue(workTimeConfigBean.getWorkHourForWeek());
 

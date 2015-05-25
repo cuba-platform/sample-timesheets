@@ -47,6 +47,8 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
 
     @Override
     public void init(Map<String, Object> params) {
+        getDialogParams().setWidthAuto();
+
         taskField.addAction(ComponentsHelper.createLookupAction(taskField));
         taskField.addClearAction();
         fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());

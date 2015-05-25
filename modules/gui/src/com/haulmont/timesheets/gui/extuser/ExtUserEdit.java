@@ -9,6 +9,7 @@ import com.haulmont.timesheets.entity.ExtUser;
 import com.haulmont.timesheets.global.WorkTimeConfigBean;
 
 import javax.inject.Inject;
+import java.util.Map;
 
 /**
  * @author gorelov
@@ -17,6 +18,11 @@ public class ExtUserEdit extends UserEditor {
 
     @Inject
     protected WorkTimeConfigBean workTimeConfigBean;
+
+    @Override
+    public void init(Map<String, Object> params) {
+        getDialogParams().setWidthAuto();
+    }
 
     @Override
     protected void initNewItem(User item) {

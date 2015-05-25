@@ -49,7 +49,7 @@
                        caption="msg://com.haulmont.timesheets.entity/TimeEntry.tags"
                        datasource="tagsDs"
                        inline="true"
-                       width="480px">
+                       width="397px">
                 <button icon="icons/plus-btn.png"/>
                 <lookup optionsDatasource="allTagsDs"/>
             </tokenList>

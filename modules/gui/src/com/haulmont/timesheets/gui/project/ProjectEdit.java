@@ -43,6 +43,8 @@ public class ProjectEdit extends AbstractEditor<Project> {
 
     @Override
     public void init(final Map<String, Object> params) {
+        getDialogParams().setWidthAuto();
+
         clientField.addAction(ComponentsHelper.createLookupAction(clientField));
         clientField.addClearAction();
 
