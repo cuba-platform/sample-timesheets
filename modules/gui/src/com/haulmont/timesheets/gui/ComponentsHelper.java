@@ -18,14 +18,12 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.timesheets.entity.*;
-import com.haulmont.timesheets.global.DateWorker;
+import com.haulmont.timesheets.global.DateTools;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author gorelov
@@ -40,7 +38,7 @@ public class ComponentsHelper {
     protected static ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.NAME);
     protected static Messages messages = AppBeans.get(Messages.NAME);
     protected static TimeSource timeSource = AppBeans.get(TimeSource.NAME);
-    protected static DateWorker dateWorker = AppBeans.get(DateWorker.NAME);
+    protected static DateTools dateTools = AppBeans.get(DateTools.NAME);
 
     public static FieldGroup.CustomFieldGenerator getCustomTextArea() {
         return new FieldGroup.CustomFieldGenerator() {
@@ -86,7 +84,7 @@ public class ComponentsHelper {
         String caption = messages.getMessage(WeeklyReportEntry.class, "WeeklyReportEntry." + column.getId());
         String format = COMMON_DAY_CAPTION_STYLE;
 
-        if (dateWorker.isHoliday(date) || dateWorker.isWeekend(date)) {
+        if (dateTools.isHoliday(date) || dateTools.isWeekend(date)) {
             format = String.format(HOLIDAY_CAPTION_STYLE, format);
         }
         if (DateUtils.isSameDay(timeSource.currentTimestamp(), date)) {

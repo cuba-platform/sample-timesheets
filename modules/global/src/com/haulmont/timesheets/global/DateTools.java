@@ -7,7 +7,6 @@ package com.haulmont.timesheets.global;
 import com.haulmont.timesheets.entity.DayOfWeek;
 import com.haulmont.timesheets.entity.Holiday;
 import com.haulmont.timesheets.service.ProjectsService;
-import org.apache.commons.lang.time.DateUtils;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -18,8 +17,8 @@ import java.util.List;
  * @author gorelov
  * @version $Id$
  */
-@ManagedBean(DateWorker.NAME)
-public class DateWorker {
+@ManagedBean(DateTools.NAME)
+public class DateTools {
 
     public static final String NAME = "timesheets_DateWorker";
 
