@@ -19,5 +19,6 @@ public class TimeSheetsCalendarState extends CalendarState {
 
     public List<Integer> weekends = new ArrayList<>();
     public Set<String> holidays = new HashSet<>();
+    public String moreMsgFormat = "";
 
 }

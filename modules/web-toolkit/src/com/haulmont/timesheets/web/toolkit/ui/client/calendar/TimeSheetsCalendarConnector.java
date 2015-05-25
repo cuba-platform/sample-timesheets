@@ -30,6 +30,7 @@ public class TimeSheetsCalendarConnector extends CalendarConnector {
     public void onStateChanged(StateChangeEvent stateChangeEvent) {
         getWidget().setWeekends(getState().weekends);
         getWidget().setHolidays(getState().holidays);
+        getWidget().setMoreMsgFormat(getState().moreMsgFormat);
         super.onStateChanged(stateChangeEvent);
     }
 }

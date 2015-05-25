@@ -25,6 +25,8 @@ import java.util.Set;
  */
 public class TimeSheetsCalendar extends Calendar {
 
+    protected String moreMsgFormat = "";
+
     public TimeSheetsCalendar(CalendarEventProvider eventProvider) {
         super(eventProvider);
 
@@ -45,6 +47,15 @@ public class TimeSheetsCalendar extends Calendar {
     public void beforeClientResponse(boolean initial) {
         super.beforeClientResponse(initial);
         getState().holidays = getHolidays();
+        getState().moreMsgFormat = getMoreMsgFormat();
+    }
+
+    public String getMoreMsgFormat() {
+        return moreMsgFormat;
+    }
+
+    public void setMoreMsgFormat(String moreMsgFormat) {
+        this.moreMsgFormat = moreMsgFormat;
     }
 
     protected Set<String> getHolidays() {

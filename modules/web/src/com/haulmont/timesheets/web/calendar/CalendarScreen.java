@@ -88,6 +88,7 @@ public class CalendarScreen extends AbstractWindow {
         calendar.setWidth("100%");
         calendar.setHeight("89%");
         calendar.setTimeFormat(Calendar.TimeFormat.Format24H);
+        calendar.setMoreMsgFormat(messages.getMessage(getClass(), "calendar.moreMsgFormat"));
         calendar.setDropHandler(null);
         calendar.setHandler(new CalendarComponentEvents.EventMoveHandler() {
             @Override
