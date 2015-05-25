@@ -127,4 +127,13 @@
         <property name="tasks"
                   view="task-full"/>
     </view>
+    <view class="com.haulmont.timesheets.entity.Project"
+          name="project-with-parent">
+        <property name="name"/>
+        <property name="code"/>
+        <property name="parent"
+                  view="_minimal"/>
+        <property name="description"/>
+        <property name="status"/>
+    </view>
 </views>

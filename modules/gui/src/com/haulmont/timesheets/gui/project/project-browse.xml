@@ -9,7 +9,7 @@
         <hierarchicalDatasource id="projectsDs"
                                 class="com.haulmont.timesheets.entity.Project"
                                 hierarchyProperty="parent"
-                                view="_local">
+                                view="project-with-parent">
             <query>
                 <![CDATA[select e
                          from
