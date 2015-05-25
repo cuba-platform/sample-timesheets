@@ -576,6 +576,6 @@ values (20, 'ts$ProjectParticipant:delete', 1, 'd771afba-33c9-caf0-47ed-df2d2b26
 
 insert into SEC_PERMISSION
 (PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
-values (20, 'ts$TimeEntry:read', 1, 'd771afba-33c9-caf0-47ed-df2d2b2631f2', 1, '2015-05-22 11:04:24', null, null, null, 'e9dfd076-3fb6-527b-4ee0-61570cbce4b3', '2015-05-22 11:04:24', 'admin');------------------------------------------------------------------------------------------------------------------------
+values (20, 'ts$TimeEntry:read', 1, 'd771afba-33c9-caf0-47ed-df2d2b2631f2', 1, '2015-05-22 11:04:24', null, null, null, 'e9dfd076-3fb6-527b-4ee0-61570cbce4b3', '2015-05-22 11:04:24', 'admin');
 
 ------------------------------------------------------------------------------------------------------------------------
