@@ -132,7 +132,10 @@
         <property name="name"/>
         <property name="code"/>
         <property name="parent"
-                  view="_minimal"/>
+                  view="_minimal">
+            <property name="client"
+                      view="_minimal"/>
+        </property>
         <property name="description"/>
         <property name="status"/>
     </view>
