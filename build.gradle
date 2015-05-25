@@ -16,8 +16,8 @@ buildscript {
         maven {
             url 'http://repository.haulmont.com:8587/nexus/content/groups/work'
             credentials {
-                username(rootProject.hasProperty('repoUser') ? rootProject['repoUser'] : 'degtyarjov')
-                password(rootProject.hasProperty('repoPass') ? rootProject['repoPass'] : 'Ltunzhtd!')
+                username(rootProject.hasProperty('repoUser') ? rootProject['repoUser'] : System.getenv('HAULMONT_REPOSITORY_USER'))
+                password(rootProject.hasProperty('repoPass') ? rootProject['repoPass'] : System.getenv('HAULMONT_REPOSITORY_PASSWORD'))
             }
         }
     }
