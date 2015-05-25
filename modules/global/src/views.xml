@@ -35,6 +35,8 @@
                     </property>
                 </property>
             </property>
+            <property name="defaultTags"
+                      view="_minimal"/>
         </property>
         <property name="taskName"/>
         <property name="user"
