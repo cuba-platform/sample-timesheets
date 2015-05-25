@@ -20,7 +20,7 @@ import java.util.List;
 @ManagedBean(DateTools.NAME)
 public class DateTools {
 
-    public static final String NAME = "timesheets_DateWorker";
+    public static final String NAME = "timesheets_DateTools";
 
     @Inject
     protected WorkTimeConfigBean workTimeConfigBean;
