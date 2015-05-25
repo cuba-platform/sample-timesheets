@@ -69,7 +69,6 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
                             }
                         }
                         allTagsDs.refresh(ParamsMap.of("requiredTagTypes", ids));
-                        tagsTokenList.setEnabled(tagsDs.getItems().isEmpty());
                     }
                     updateStatusField();
                     setDefaultStatus(getItem());
@@ -95,21 +94,24 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         super.postInit();
         TimeEntry timeEntry = getItem();
         if (TimeEntryStatus.APPROVED.equals(timeEntry.getStatus()) && userIsWorker()) {
-            // set read only
-            fieldGroup.setEnabled(false);
-            tagsTokenList.setEnabled(false);
+            setReadOnly();
         }
+        updateStatusField();
+    }
+
+    @Override
+    protected void postValidate(ValidationErrors errors) {
+        super.postValidate(errors);
+        TimeEntry timeEntry = getItem();
         Task task = timeEntry.getTask();
-        if (task != null && task.getDefaultTags() != null) {
+        if (task.getDefaultTags() != null) {
             Set<Tag> defaultTags = task.getDefaultTags();
             if (!defaultTags.isEmpty()) {
-                tagsTokenList.setEnabled(false);
                 if (!defaultTags.equals(timeEntry.getTags())) {
-                    timeEntry.setTags(defaultTags);
+                    errors.add(messages.getMessage(getClass(), "requiredTagsError"));
                 }
             }
         }
-        updateStatusField();
     }
 
     protected boolean userIsWorker() {
@@ -124,6 +126,11 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         }
         ProjectRole userRole = projectsService.getUserProjectRole(project, userSession.getUser());
         return userRole == null || workerRole.equals(userRole);
+    }
+
+    protected void setReadOnly() {
+        fieldGroup.setEnabled(false);
+        tagsTokenList.setEnabled(false);
     }
 
     protected void updateStatusField() {
