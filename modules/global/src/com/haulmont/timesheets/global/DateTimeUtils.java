@@ -59,6 +59,16 @@ public final class DateTimeUtils {
         return DateUtils.toCalendar(date).get(Calendar.DAY_OF_WEEK);
     }
 
+    public static double timeStringToDouble(String time) {
+        if (time.contains(":")) {
+            String[] parts = time.split(":");
+            return Integer.parseInt(parts[0]) + Integer.parseInt(parts[1]) / 60.0;
+        } else {
+            TimeParser timeParser = AppBeans.get(TimeParser.NAME);
+            return timeParser.findHours(time) + timeParser.findMinutes(time) / 60.0;
+        }
+    }
+
     public static DateFormat getDateFormat() {
         return new SimpleDateFormat(messages().getMainMessage("dateFormat"));
     }

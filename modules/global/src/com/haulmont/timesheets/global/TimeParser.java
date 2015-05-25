@@ -51,11 +51,11 @@ public class TimeParser {
         return result;
     }
 
-    private int findHours(String time) {
+    public int findHours(String time) {
         return findTimeValue(time, messages.getMessage(DateTimeUtils.class, "timeHours"));
     }
 
-    private int findMinutes(String time) {
+    public int findMinutes(String time) {
         return findTimeValue(time, messages.getMessage(DateTimeUtils.class, "timeMinutes"));
     }
 

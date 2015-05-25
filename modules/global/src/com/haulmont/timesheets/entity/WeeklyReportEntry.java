@@ -18,6 +18,7 @@ import java.util.*;
 public class WeeklyReportEntry extends AbstractNotPersistentEntity {
 
     private static final long serialVersionUID = -3857876540680481596L;
+    public static final String TOTAL_FORMAT = "%02d:%02d";
 
     @MetaProperty(mandatory = true)
     protected Project project;
@@ -83,7 +84,7 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
         }
         hours += minutes / 60;
         minutes %= 60;
-        return String.format("%02d:%02d", hours, minutes);
+        return String.format(TOTAL_FORMAT, hours, minutes);
     }
 
     public void setMondayTime(String mondayTime) {
