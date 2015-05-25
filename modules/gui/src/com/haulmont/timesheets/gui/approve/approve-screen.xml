@@ -77,7 +77,10 @@
                   margin="false,false,false,true"
                   expand="weeklyReportsTable"
                   spacing="true">
-                <optionsGroup id="statusOption" orientation="horizontal" multiselect="true" height="28px"/>
+                <hbox spacing="true" height="28px" width="100%">
+                    <optionsGroup id="statusOption" orientation="horizontal" multiselect="true"/>
+                    <optionsGroup id="typeOption" orientation="horizontal" align="MIDDLE_RIGHT"/>
+                </hbox>
                 <table id="weeklyReportsTable"
                        width="100%">
                     <columns>

@@ -51,5 +51,7 @@ public interface ProjectsService {
 
     List<Project> getActiveProjectsForUser(User user);
 
+    List<Project> getActiveManagedProjectsForUser(User user);
+
     boolean assignUsersToProjects(Collection<User> users, Collection<Project> projects, ProjectRole projectRole);
 }

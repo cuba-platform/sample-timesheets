@@ -227,6 +227,17 @@ public class ProjectsServiceBean implements ProjectsService {
         return dataManager.loadList(loadContext);
     }
 
+    public List<Project> getActiveManagedProjectsForUser(User user) {
+        LoadContext loadContext = new LoadContext(Project.class)
+                .setView(View.LOCAL);
+        LoadContext.Query query =
+                new LoadContext.Query("select pr from ts$Project pr, in(pr.participants) p " +
+                        "where p.user.id = :userId and (p.role.code = 'manager' or p.role.code = 'approver') and pr.status = 'open'")
+                        .setParameter("userId", user.getId());
+        loadContext.setQuery(query);
+        return dataManager.loadList(loadContext);
+    }
+
     public boolean assignUsersToProjects(Collection<User> users, Collection<Project> projects, ProjectRole projectRole) {
         List<ProjectParticipant> result = new ArrayList<>();
         Transaction tx = persistence.createTransaction();

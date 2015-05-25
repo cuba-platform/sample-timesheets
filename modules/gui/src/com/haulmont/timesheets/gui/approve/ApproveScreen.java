@@ -20,6 +20,7 @@ import com.haulmont.timesheets.global.DateTimeUtils;
 import com.haulmont.timesheets.global.WeeklyReportConverter;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.service.ProjectsService;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 
 import javax.annotation.Nullable;
@@ -46,6 +47,8 @@ public class ApproveScreen extends AbstractWindow {
     @Inject
     protected OptionsGroup statusOption;
     @Inject
+    protected OptionsGroup typeOption;
+    @Inject
     protected ComponentsFactory componentsFactory;
     @Inject
     protected CollectionDatasource<ExtUser, UUID> usersDs;
@@ -65,6 +68,7 @@ public class ApproveScreen extends AbstractWindow {
     protected Companion companion;
 
     protected Date firstDayOfWeek;
+    protected List<Project> approvableProjects;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -73,11 +77,13 @@ public class ApproveScreen extends AbstractWindow {
         }
 
         firstDayOfWeek = DateTimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp());
+        approvableProjects = projectsService.getActiveManagedProjectsForUser(userSession.getUser());
 
         initUsersTable();
         initUserReportsTable();
         initDateField();
         initStatusOption();
+        initTypeOptions();
 
         updateWeek();
     }
@@ -165,10 +171,10 @@ public class ApproveScreen extends AbstractWindow {
                 WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
                 User user = usersTable.getSingleSelected();
 
-                return getApproveControls(
+                return isApprovableEntry(reportEntry) ? getApproveControls(
                         new WeeklyReportChangeStatusAction("approve", user, reportEntry, TimeEntryStatus.APPROVED),
                         new WeeklyReportChangeStatusAction("reject", user, reportEntry, TimeEntryStatus.REJECTED)
-                );
+                ) : null;
             }
         });
 
@@ -205,6 +211,10 @@ public class ApproveScreen extends AbstractWindow {
         return hBoxLayout;
     }
 
+    protected boolean isApprovableEntry(WeeklyReportEntry reportEntry) {
+        return approvableProjects.contains(reportEntry.getProject());
+    }
+
     protected void initDateField() {
         dateField.addListener(new ValueListener() {
             @Override
@@ -220,6 +230,19 @@ public class ApproveScreen extends AbstractWindow {
         statusOption.setValue(Collections.singletonList(TimeEntryStatus.NEW));
 
         statusOption.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
+                updateReportTableItems();
+            }
+        });
+    }
+
+    protected void initTypeOptions() {
+        String approvable = messages.getMessage(getClass(), "approvable");
+        typeOption.setOptionsList(Arrays.asList(approvable, messages.getMessage(getClass(), "all")));
+        typeOption.setValue(approvable);
+
+        typeOption.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
                 updateReportTableItems();
@@ -263,15 +286,19 @@ public class ApproveScreen extends AbstractWindow {
                 DateTimeUtils.getDateFormat().format(DateUtils.addDays(firstDayOfWeek, 6))));
     }
 
+    protected boolean showApprovable() {
+        return StringUtils.equals(messages.getMessage(getClass(), "approvable"), (String) typeOption.getValue());
+    }
+
     protected void fillExistingTimeEntries(User user) {
-        List<TimeEntry> timeEntries = getUserTimeEntries(user);
+        List<TimeEntry> timeEntries = getUserTimeEntries(user, showApprovable());
         List<WeeklyReportEntry> reportEntries = reportConverterBean.convertFromTimeEntries(timeEntries);
         for (WeeklyReportEntry entry : reportEntries) {
             weeklyEntriesDs.addItem(entry);
         }
     }
 
-    protected List<TimeEntry> getUserTimeEntries(User user) {
+    protected List<TimeEntry> getUserTimeEntries(User user, boolean isApprovable) {
         if (statusOption.getValue() == null) {
             return Collections.emptyList();
         }
@@ -279,10 +306,19 @@ public class ApproveScreen extends AbstractWindow {
         List<TimeEntry> timeEntries = new ArrayList<>();
         Collection<TimeEntryStatus> statuses = statusOption.getValue();
         for (TimeEntryStatus status : statuses) {
-            timeEntries.addAll(projectsService.getApprovableTimeEntriesForPeriod(firstDayOfWeek,
-                    DateUtils.addDays(firstDayOfWeek, 6), userSession.getUser(), user, status));
+            timeEntries.addAll(getTimeEntriesForPeriod(firstDayOfWeek,
+                    DateUtils.addDays(firstDayOfWeek, 6), userSession.getUser(), user, status, isApprovable));
         }
         return timeEntries;
+    }
+
+    private Collection<? extends TimeEntry> getTimeEntriesForPeriod(
+            Date start, Date end, User approver, User user, TimeEntryStatus status, boolean isApprovable) {
+        if (isApprovable) {
+            return projectsService.getApprovableTimeEntriesForPeriod(start, end, approver, user, status);
+        } else {
+            return projectsService.getTimeEntriesForPeriod(start, end, user, status);
+        }
     }
 
     protected abstract class AbstractChangeStatusAction extends AbstractAction {
@@ -319,7 +355,7 @@ public class ApproveScreen extends AbstractWindow {
 
         @Override
         protected List<TimeEntry> getTimeEntries() {
-            return getUserTimeEntries(user);
+            return getUserTimeEntries(user, true);
         }
     }
 
