@@ -11,9 +11,7 @@ import javax.persistence.*;
 /**
  * @author gorelov
  */
-@Table(name = "TS_PROJECT_PARTICIPANT", uniqueConstraints = {
-        @UniqueConstraint(name = "IDX_TS_PROJECT_PARTICIPANT_UNIQ_USER_PROJECT", columnNames = {"USER_ID", "PROJECT_ID"})
-})
+@Table(name = "TS_PROJECT_PARTICIPANT")
 @Entity(name = "ts$ProjectParticipant")
 public class ProjectParticipant extends StandardEntity {
 
