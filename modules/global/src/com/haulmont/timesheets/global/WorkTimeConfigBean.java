@@ -9,6 +9,7 @@ import com.haulmont.timesheets.entity.DayOfWeek;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -23,15 +24,15 @@ public class WorkTimeConfigBean {
     @Inject
     protected WorkTimeConfig workTimeConfig;
 
-    public double getWorkHourForDay() {
-        return getWorkHourForWeek() / getWorkDaysCount();
+    public BigDecimal getWorkHourForDay() {
+        return getWorkHourForWeek().divide(new BigDecimal(getWorkDaysCount()), BigDecimal.ROUND_HALF_UP);
     }
 
-    public double getWorkHourForWeek() {
+    public BigDecimal getWorkHourForWeek() {
         return workTimeConfig.getWorkHourForWeek();
     }
 
-    public void setWorkHourForWeek(double hours) {
+    public void setWorkHourForWeek(BigDecimal hours) {
         workTimeConfig.setWorkHourForWeek(hours);
     }
 
@@ -40,11 +41,11 @@ public class WorkTimeConfigBean {
     }
 
     public List<DayOfWeek> getWorkDays() {
-        String[] days = workTimeConfig.getWorkDays().split("[|]");
-        if (days.length == 0) {
+        List<String> days = workTimeConfig.getWorkDays();
+        if (days.isEmpty()) {
             return Collections.emptyList();
         }
-        List<DayOfWeek> workDays = new ArrayList<>(days.length);
+        List<DayOfWeek> workDays = new ArrayList<>(days.size());
         for (String day : days) {
             workDays.add(DayOfWeek.fromAbbreviation(day));
         }
@@ -53,20 +54,15 @@ public class WorkTimeConfigBean {
 
     public void setWorkDays(Collection<DayOfWeek> workDays) {
         if (workDays.isEmpty()) {
-            workTimeConfig.setWorkDays("");
+            workTimeConfig.setWorkDays(Collections.<String>emptyList());
             return;
         }
-        int i = 0;
         int count = 3;
-        int iMax = workDays.size() - 1;
-        StringBuilder sb = new StringBuilder(workDays.size() * count);
+        List<String> days = new ArrayList<>(workDays.size());
         for (DayOfWeek day : workDays) {
-            sb.append(day.getId().substring(0, count));
-            if (i++ < iMax) {
-                sb.append("|");
-            }
+            days.add(day.getId().substring(0, count));
         }
-        workTimeConfig.setWorkDays(sb.toString());
+        workTimeConfig.setWorkDays(days);
     }
 
     public List<DayOfWeek> getWeekends() {

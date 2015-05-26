@@ -200,8 +200,7 @@ create table TS_TASK_TAG_LINK (
     primary key (TASK_ID, TAG_ID)
 )^
 -- end TS_TASK_TAG_LINK
--- begin SEC_USER
-alter table SEC_USER add column WORK_HOURS_FOR_WEEK double precision ^
-update SEC_USER set WORK_HOURS_FOR_WEEK = 0 where WORK_HOURS_FOR_WEEK is null ;
-alter table SEC_USER alter column WORK_HOURS_FOR_WEEK set not null ;
+-- begin SEC_USERalter table SEC_USER add column WORK_HOURS_FOR_WEEK decimal(19, 2) ^
+update SEC_USER set WORK_HOURS_FOR_WEEK = 0 where WORK_HOURS_FOR_WEEK is null ^
+alter table SEC_USER alter column WORK_HOURS_FOR_WEEK set not null ^
 -- end SEC_USER

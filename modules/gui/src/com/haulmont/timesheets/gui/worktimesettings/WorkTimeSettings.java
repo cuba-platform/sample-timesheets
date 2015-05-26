@@ -6,12 +6,14 @@ package com.haulmont.timesheets.gui.worktimesettings;
 import com.haulmont.cuba.client.ClientConfig;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.timesheets.entity.DayOfWeek;
 import com.haulmont.timesheets.global.WorkTimeConfigBean;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author gorelov
@@ -45,7 +47,7 @@ public class WorkTimeSettings extends AbstractWindow {
 
             @Override
             public void actionPerform(Component component) {
-                double workHoursValue = workHoursTextField.getValue();
+                BigDecimal workHoursValue = workHoursTextField.getValue();
                 workTimeConfigBean.setWorkHourForWeek(workHoursValue);
                 workTimeConfigBean.setWorkDays(workDaysOptions.<List<DayOfWeek>>getValue());
                 close(getId());

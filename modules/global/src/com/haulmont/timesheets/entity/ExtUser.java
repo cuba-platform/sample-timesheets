@@ -10,6 +10,7 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.*;
 import java.text.MessageFormat;
+import java.math.BigDecimal;
 
 /**
  * @author gorelov
@@ -24,14 +25,13 @@ public class ExtUser extends User {
     private static final long serialVersionUID = 4909893210504413352L;
 
     @Column(name = "WORK_HOURS_FOR_WEEK", nullable = false)
-    protected Double workHoursForWeek;
-
-    public void setWorkHoursForWeek(Double workHoursForWeek) {
-        this.workHoursForWeek = workHoursForWeek;
+    protected BigDecimal workHoursForWeek;
+    public BigDecimal getWorkHoursForWeek() {
+        return workHoursForWeek;
     }
 
-    public Double getWorkHoursForWeek() {
-        return workHoursForWeek;
+    public void setWorkHoursForWeek(BigDecimal workHoursForWeek) {
+        this.workHoursForWeek = workHoursForWeek;
     }
 
     @Override

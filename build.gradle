@@ -47,7 +47,6 @@ configure([globalModule, coreModule, guiModule, webModule, webToolkitModule]) {
 
     dependencies {
         testCompile('junit:junit:4.5')
-        compile 'org.apache.commons:commons-math3:3.2'
     }
 
     task sourceJar(type: Jar) {

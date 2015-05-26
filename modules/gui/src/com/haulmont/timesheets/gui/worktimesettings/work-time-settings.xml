@@ -8,7 +8,7 @@
         <hbox spacing="true">
             <label value="msg://forkHoursForWeek" align="MIDDLE_LEFT"/>
             <textField id="workHoursTextField"
-                       datatype="double"/>
+                       datatype="decimal"/>
         </hbox>
         <optionsGroup id="workDaysOptions" caption="msg://workDays" multiselect="true" stylename="h2"/>
         <iframe id="windowActions"
