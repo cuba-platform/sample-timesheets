@@ -239,9 +239,9 @@ public class ApproveScreen extends AbstractWindow {
     }
 
     protected void initTypeOptions() {
-        String approvable = messages.getMessage(getClass(), "approvable");
-        typeOption.setOptionsList(Arrays.asList(approvable, messages.getMessage(getClass(), "all")));
-        typeOption.setValue(approvable);
+        String all = messages.getMessage(getClass(), "all");
+        typeOption.setOptionsList(Arrays.asList(messages.getMessage(getClass(), "approvable"), all));
+        typeOption.setValue(all);
 
         typeOption.addListener(new ValueListener() {
             @Override
