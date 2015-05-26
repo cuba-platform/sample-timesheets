@@ -77,7 +77,9 @@
                 <property name="name"/>
             </property>
         </property>
-        <property name="participants">
+        <property name="requiredTagTypes"
+                  view="_minimal"/>
+        <property name="exclusiveParticipants">
             <property name="user">
                 <property name="login"/>
                 <property name="name"/>
@@ -86,8 +88,6 @@
             <property name="role"
                       view="_minimal"/>
         </property>
-        <property name="requiredTagTypes"
-                  view="_minimal"/>
     </view>
     <view class="com.haulmont.timesheets.entity.ProjectParticipant"
           name="projectParticipant-full">

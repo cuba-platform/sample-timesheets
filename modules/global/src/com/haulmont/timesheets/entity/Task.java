@@ -55,15 +55,24 @@ public class Task extends StandardEntity {
     protected Set<Tag> defaultTags;
 
     @JoinTable(name = "TS_TASK_PROJECT_PARTICIPANT_LINK",
-            joinColumns = @JoinColumn(name = "TASK_ID"),
-            inverseJoinColumns = @JoinColumn(name = "PROJECT_PARTICIPANT_ID"))
+        joinColumns = @JoinColumn(name = "TASK_ID"),
+        inverseJoinColumns = @JoinColumn(name = "PROJECT_PARTICIPANT_ID"))
     @ManyToMany
-    protected Set<ProjectParticipant> participants;
+    protected Set<ProjectParticipant> exclusiveParticipants;
 
     @Composition
     @OnDelete(DeletePolicy.CASCADE)
     @OneToMany(mappedBy = "task")
     protected Set<TimeEntry> timeEntries;
+
+    public void setExclusiveParticipants(Set<ProjectParticipant> exclusiveParticipants) {
+        this.exclusiveParticipants = exclusiveParticipants;
+    }
+
+    public Set<ProjectParticipant> getExclusiveParticipants() {
+        return exclusiveParticipants;
+    }
+
 
     public TaskStatus getStatus() {
         return status == null ? null : TaskStatus.fromId(status);
@@ -87,14 +96,6 @@ public class Task extends StandardEntity {
 
     public Set<TimeEntry> getTimeEntries() {
         return timeEntries;
-    }
-
-    public void setParticipants(Set<ProjectParticipant> participants) {
-        this.participants = participants;
-    }
-
-    public Set<ProjectParticipant> getParticipants() {
-        return participants;
     }
 
     public String getCode() {

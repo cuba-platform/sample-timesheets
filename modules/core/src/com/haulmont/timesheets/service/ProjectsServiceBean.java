@@ -179,12 +179,12 @@ public class ProjectsServiceBean implements ProjectsService {
         if (viewName != null) {
             loadContext.setView(viewName);
         }
-        loadContext.setQueryString("select e from ts$Task e join e.participants p " +
+        loadContext.setQueryString("select e from ts$Task e join e.exclusiveParticipants p " +
                 "where p.user.id = :userId and e.status = 'active' order by e.project")
                 .setParameter("userId", user.getId());
         List<Task> assignedTasks = dataManager.loadList(loadContext);
         loadContext.setQueryString("select e from ts$Task e join e.project pr join pr.participants p " +
-                "where p.user.id = :userId and e.participants is null and e.status = 'active' order by e.project")
+                "where p.user.id = :userId and e.exclusiveParticipants is null and e.status = 'active' order by e.project")
                 .setParameter("userId", user.getId());
         List<Task> commonTasks = dataManager.loadList(loadContext);
         if (assignedTasks.isEmpty() && commonTasks.isEmpty()) {
@@ -202,13 +202,13 @@ public class ProjectsServiceBean implements ProjectsService {
         if (viewName != null) {
             loadContext.setView(viewName);
         }
-        loadContext.setQueryString("select e from ts$Task e join e.participants p " +
+        loadContext.setQueryString("select e from ts$Task e join e.exclusiveParticipants p " +
                 "where p.user.id = :userId and e.project.id = :projectId and e.status = 'active' order by e.project")
                 .setParameter("projectId", project.getId())
                 .setParameter("userId", user.getId());
         List<Task> assignedTasks = dataManager.loadList(loadContext);
         loadContext.setQueryString("select e from ts$Task e join e.project pr join pr.participants p " +
-                "where p.user.id = :userId and e.project.id = :projectId and e.participants is null " +
+                "where p.user.id = :userId and e.project.id = :projectId and e.exclusiveParticipants is null " +
                 "and e.status = 'active' order by e.project")
                 .setParameter("projectId", project.getId())
                 .setParameter("userId", user.getId());
