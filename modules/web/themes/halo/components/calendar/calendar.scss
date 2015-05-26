@@ -3,30 +3,30 @@
   $ts-all-day-text-color: white;
 
   .v-calendar .v-calendar-event-time-entry-new:before {
-      color: orange;
+      color: #F0C419;
   }
 
   .v-calendar .v-calendar-event-time-entry-new-all-day {
     color: $ts-all-day-text-color;
-    background-color: orange;
+    background-color: #F0C419;
   }
 
   .v-calendar .v-calendar-event-time-entry-approved:before {
-    color: green;
+    color: #4EBA6F;
   }
 
   .v-calendar .v-calendar-event-time-entry-approved-all-day {
     color: $ts-all-day-text-color;
-    background-color: green;
+    background-color: #4EBA6F;
   }
 
   .v-calendar .v-calendar-event-time-entry-rejected:before {
-    color: red;
+    color: #F15A5A;
   }
 
   .v-calendar .v-calendar-event-time-entry-rejected-all-day {
     color: $ts-all-day-text-color;
-    background-color: red;
+    background-color: #F15A5A;
   }
 
   .v-calendar .v-calendar-event-holiday:before {
