@@ -25,7 +25,7 @@ public class WorkTimeConfigBean {
     protected WorkTimeConfig workTimeConfig;
 
     public BigDecimal getWorkHourForDay() {
-        return getWorkHourForWeek().divide(new BigDecimal(getWorkDaysCount()), BigDecimal.ROUND_HALF_UP);
+        return getWorkHourForWeek().divide(BigDecimal.valueOf(getWorkDaysCount()), BigDecimal.ROUND_HALF_UP);
     }
 
     public BigDecimal getWorkHourForWeek() {

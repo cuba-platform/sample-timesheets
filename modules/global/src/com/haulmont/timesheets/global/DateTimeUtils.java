@@ -8,6 +8,7 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import org.apache.commons.lang.time.DateUtils;
 
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -43,6 +44,10 @@ public final class DateTimeUtils {
         return calendar.getTime();
     }
 
+    public static Date getLastDayOfWeek(Date date) {
+        return DateUtils.addDays(getFirstDayOfWeek(date), 6);
+    }
+
     public static Date getFirstDayOfMonth(Date date) {
         java.util.Calendar calendar = getCalendarWithoutTime(date);
         calendar.set(java.util.Calendar.DAY_OF_MONTH, 1);
@@ -59,13 +64,13 @@ public final class DateTimeUtils {
         return DateUtils.toCalendar(date).get(Calendar.DAY_OF_WEEK);
     }
 
-    public static double timeStringToDouble(String time) {
+    public static BigDecimal timeStringToBigDecimal(String time) {
         if (time.contains(":")) {
             String[] parts = time.split(":");
-            return Integer.parseInt(parts[0]) + Integer.parseInt(parts[1]) / 60.0;
+            return BigDecimal.valueOf(Integer.parseInt(parts[0]) + Integer.parseInt(parts[1]) / 60.0);
         } else {
             TimeParser timeParser = AppBeans.get(TimeParser.NAME);
-            return timeParser.findHours(time) + timeParser.findMinutes(time) / 60.0;
+            return BigDecimal.valueOf(timeParser.findHours(time) + timeParser.findMinutes(time) / 60.0);
         }
     }
 
