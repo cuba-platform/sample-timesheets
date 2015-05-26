@@ -6,18 +6,16 @@ package com.haulmont.timesheets.gui.project;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
-import com.haulmont.cuba.security.entity.RoleType;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.ProjectRole;
 import com.haulmont.timesheets.entity.Task;
 import com.haulmont.timesheets.gui.ComponentsHelper;
+import com.haulmont.timesheets.gui.SecurityAssistant;
 import com.haulmont.timesheets.service.ProjectsService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -33,7 +31,6 @@ import java.util.Map;
  * @author gorelov
  */
 public class ProjectBrowse extends AbstractLookup {
-
     @Inject
     protected TreeTable projectsTable;
     @Inject
@@ -41,12 +38,12 @@ public class ProjectBrowse extends AbstractLookup {
     @Inject
     protected Table participantsTable;
     @Inject
-    protected UserSessionSource userSessionSource;
+    protected PopupButton assignBtn;
     @Inject
-    private PopupButton assignBtn;
+    protected SecurityAssistant securityAssistant;
+    @Inject
+    protected ProjectsService projectsService;
 
-    @Inject
-    private ProjectsService projectsService;
     @Named("participantsTable.create")
     protected CreateAction participantsTableCreate;
     @Named("participantsTable.edit")
@@ -54,16 +51,8 @@ public class ProjectBrowse extends AbstractLookup {
 
     @Override
     public void init(Map<String, Object> params) {
-        User user = userSessionSource.getUserSession().getUser();
-        if (CollectionUtils.isEmpty(user.getUserRoles())) {
+        if (securityAssistant.isSuperUser()) {
             params.put("superuser", true);
-        }
-
-        for (UserRole userRole : user.getUserRoles()) {
-            if (userRole.getRole().getType() == RoleType.SUPER) {
-                params.put("superuser", true);
-                break;
-            }
         }
 
         initProjectsTable();

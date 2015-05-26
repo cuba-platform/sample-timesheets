@@ -9,10 +9,10 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
  * @author gorelov
  */
 public enum TimeEntryStatus implements EnumClass<String> {
-
     NEW("new"),
     APPROVED("approved"),
-    REJECTED("rejected");
+    REJECTED("rejected"),
+    CLOSED("closed");
 
     private String id;
 
