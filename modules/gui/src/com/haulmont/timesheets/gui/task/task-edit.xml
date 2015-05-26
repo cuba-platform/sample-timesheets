@@ -14,7 +14,7 @@
             <collectionDatasource id="defaultTagsDs"
                                   property="defaultTags"/>
             <collectionDatasource id="participantsDs"
-                                  property="participants"/>
+                                  property="exclusiveParticipants"/>
         </datasource>
         <collectionDatasource id="taskTypesDs"
                               class="com.haulmont.timesheets.entity.TaskType">
@@ -92,7 +92,7 @@
                     <lookup optionsDatasource="allTagsDs"/>
                 </tokenList>
                 <groupBox id="participantsBox"
-                          caption="msg://com.haulmont.timesheets.entity/Task.participants">
+                          caption="msg://com.haulmont.timesheets.entity/Task.exclusiveParticipants">
                     <table id="participantsTable"
                            columnControlVisible="false"
                            height="100%"
