@@ -3,15 +3,44 @@
 alter table TS_TIME_ENTRY add column INDEX_FIELD varchar(200)
 GENERATED ALWAYS AS (USER_ID || ' ' || TASK_ID || ' ' || DATE_ || ' ' || case when DELETE_TS is not null then '-'||DELETE_TS else '-NOT_DELETED' end )^
 create unique index IDX_TS_TIME_ENTRY_UNIQ_TASK_DATE on TS_TIME_ENTRY (INDEX_FIELD)^
+
 alter table TS_PROJECT_PARTICIPANT add column INDEX_FIELD varchar(200)
 GENERATED ALWAYS AS (USER_ID || ' ' || PROJECT_ID || case when DELETE_TS is not null then '-'||DELETE_TS else '-NOT_DELETED' end )^
 create unique index IDX_TS_PROJECT_PARTICIPANT_UNIQ_USER_PROJECT on TS_PROJECT_PARTICIPANT (INDEX_FIELD)^
+
+alter table TS_PROJECT add column INDEX_FIELD varchar(200)
+GENERATED ALWAYS AS (CODE || case when DELETE_TS is not null then '-'||DELETE_TS else '-NOT_DELETED' end )^
+create unique index IDX_TS_PROJECT_UNIQ_CODE on TS_PROJECT (INDEX_FIELD)^
+
+alter table TS_CLIENT add column INDEX_FIELD varchar(200)
+GENERATED ALWAYS AS (CODE || case when DELETE_TS is not null then '-'||DELETE_TS else '-NOT_DELETED' end )^
+create unique index IDX_TS_CLIENT_UNIQ_CODE on TS_CLIENT (INDEX_FIELD)^
+
+alter table TS_PROJECT_ROLE add column INDEX_FIELD varchar(200)
+GENERATED ALWAYS AS (CODE || case when DELETE_TS is not null then '-'||DELETE_TS else '-NOT_DELETED' end )^
+create unique index IDX_TS_PROJECT_ROLE_UNIQ_CODE on TS_PROJECT_ROLE (INDEX_FIELD)^
+
+alter table TS_TAG add column INDEX_FIELD varchar(200)
+GENERATED ALWAYS AS (CODE || case when DELETE_TS is not null then '-'||DELETE_TS else '-NOT_DELETED' end )^
+create unique index IDX_TS_TAG_UNIQ_CODE on TS_TAG (INDEX_FIELD)^
+
+alter table TS_TAG_TYPE add column INDEX_FIELD varchar(200)
+GENERATED ALWAYS AS (CODE || case when DELETE_TS is not null then '-'||DELETE_TS else '-NOT_DELETED' end )^
+create unique index IDX_TS_TAG_TYPE_UNIQ_CODE on TS_TAG_TYPE (INDEX_FIELD)^
+
+alter table TS_TASK add column INDEX_FIELD varchar(200)
+GENERATED ALWAYS AS (CODE || case when DELETE_TS is not null then '-'||DELETE_TS else '-NOT_DELETED' end )^
+create unique index IDX_TS_TASK_UNIQ_CODE on TS_TASK (INDEX_FIELD)^
+
+alter table TS_TASK_TYPE add column INDEX_FIELD varchar(200)
+GENERATED ALWAYS AS (CODE || case when DELETE_TS is not null then '-'||DELETE_TS else '-NOT_DELETED' end )^
+create unique index IDX_TS_TASK_TYPE_UNIQ_CODE on TS_TASK_TYPE (INDEX_FIELD)^
 
 ------------------------------------------------------------------------------------------------------------------------
 
 insert into TS_PROJECT_ROLE
 (ID, NAME, CODE, DESCRIPTION, VERSION, CREATE_TS)
-values ('5bc577ab-44f3-a652-da29-4ae06c02d43b', 'Manager', 'manager', 'Can create sub-projects, tasks, change project properties, approve tomsheets', 0, current_timestamp);
+values ('5bc577ab-44f3-a652-da29-4ae06c02d43b', 'Manager', 'manager', 'Can create sub-projects, tasks, change project properties, approve timesheets', 0, current_timestamp);
 
 insert into TS_PROJECT_ROLE
 (ID, NAME, CODE, DESCRIPTION, VERSION, CREATE_TS)

@@ -23,7 +23,7 @@ public class Client extends StandardEntity {
     @Column(name = "NAME", nullable = false)
     protected String name;
 
-    @Column(name = "CODE", nullable = false, unique = true, length = 50)
+    @Column(name = "CODE", nullable = false, length = 50)
     protected String code;
 
     public String getCode() {
