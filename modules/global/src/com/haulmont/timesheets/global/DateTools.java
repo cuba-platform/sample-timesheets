@@ -48,6 +48,6 @@ public class DateTools {
     }
 
     public boolean isWorkday(Date date) {
-        return !isHoliday(date) && !isWeekend(date);
+        return !isWeekend(date) && !isHoliday(date);
     }
 }
