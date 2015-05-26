@@ -46,4 +46,8 @@ public class DateTools {
         }
         return false;
     }
+
+    public boolean isWorkday(Date date) {
+        return !isHoliday(date) && !isWeekend(date);
+    }
 }
