@@ -61,6 +61,10 @@ values ('Base role', 'Базовая роль', null, 0, true, 3, '2015-05-22 10
 
 insert into SEC_PERMISSION
 (PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
+values (10, 'reports', 0, 'daba747f-8376-b3b5-ccfa-e19e8e841fa2', 1, '2015-05-26 12:24:45', null, null, null, '042ad508-625e-b16c-8143-37e71d731f34', '2015-05-26 12:24:45', 'admin');
+
+insert into SEC_PERMISSION
+(PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
 values (20, 'ts$Project:update', 0, 'daba747f-8376-b3b5-ccfa-e19e8e841fa2', 1, '2015-05-22 10:57:56', null, null, null, '48f19459-a075-daf6-265c-7c61aee243cd', '2015-05-22 10:57:56', 'admin');
 
 insert into SEC_PERMISSION
