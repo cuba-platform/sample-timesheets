@@ -11,6 +11,7 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.gui.ComponentsHelper;
+import com.haulmont.timesheets.gui.SecurityAssistant;
 import com.haulmont.timesheets.service.ProjectsService;
 
 import javax.inject.Inject;
@@ -36,6 +37,8 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     protected CollectionDatasource<Tag, UUID> tagsDs;
     @Inject
     protected CollectionDatasource<Tag, UUID> allTagsDs;
+    @Inject
+    protected SecurityAssistant securityAssistant;
 
     @Named("fieldGroup.task")
     protected LookupPickerField taskField;
@@ -85,12 +88,23 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     protected void postInit() {
         super.postInit();
         TimeEntry timeEntry = getItem();
+
+        if (TimeEntryStatus.CLOSED.equals(timeEntry.getStatus()) && !securityAssistant.isSuperUser()) {
+            setReadOnly();
+        }
+
         if (TimeEntryStatus.APPROVED.equals(timeEntry.getStatus()) && userIsWorker()) {
             setReadOnly();
         }
+
         updateStatusField();
+
         if (timeEntry.getTask() != null) {
             allTagsDs.refresh(ParamsMap.of("project", timeEntry.getTask().getProject()));
+        }
+
+        if (!securityAssistant.isSuperUser()) {
+            statusField.setOptionsList(Arrays.asList(TimeEntryStatus.NEW, TimeEntryStatus.APPROVED, TimeEntryStatus.REJECTED));
         }
     }
 
@@ -110,6 +124,10 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     }
 
     protected boolean userIsWorker() {
+        if (securityAssistant.isSuperUser()) {
+            return false;
+        }
+
         ProjectRole workerRole = projectsService.getEntityByCode(ProjectRole.class, "worker", null);
         if (workerRole == null) {
             return true;
