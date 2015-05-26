@@ -60,15 +60,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
                         for (Tag tag : task.getDefaultTags()) {
                             tagsDs.includeItem(tag);
                         }
-
-                        List<UUID> ids = null;
-                        if (!task.getRequiredTagTypes().isEmpty()) {
-                            ids = new ArrayList<>();
-                            for (TagType type : task.getRequiredTagTypes()) {
-                                ids.add(type.getId());
-                            }
-                        }
-                        allTagsDs.refresh(ParamsMap.of("requiredTagTypes", ids));
+                        allTagsDs.refresh(ParamsMap.of("project", task.getProject()));
                     }
                     updateStatusField();
                     setDefaultStatus(getItem());
@@ -97,6 +89,9 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
             setReadOnly();
         }
         updateStatusField();
+        if (timeEntry.getTask() != null) {
+            allTagsDs.refresh(ParamsMap.of("project", timeEntry.getTask().getProject()));
+        }
     }
 
     @Override
