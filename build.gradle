@@ -32,7 +32,7 @@ def guiModule = project(':app-gui')
 def webModule = project(':app-web')
 def webToolkitModule = project(':app-web-toolkit')
 
-def hsql = 'org.hsqldb:hsqldb:2.2.9'
+def postgres = 'postgresql:postgresql:9.1-901.jdbc4'
 def servletApi = 'org.apache.tomcat:tomcat-servlet-api:7.0.53'
 
 
@@ -85,8 +85,8 @@ configure(coreModule) {
     dependencies {
         compile(globalModule)
         provided(servletApi)
-        jdbc(hsql)
-        testRuntime(hsql)
+        jdbc(postgres)
+        testRuntime(postgres)
         compile("com.haulmont.cuba:cuba-core:$cubaVersion")
         testCompile("com.haulmont.cuba:cuba-core:$cubaVersion:tests")
         testCompile("com.haulmont.cuba:cuba-shared-lib:$cubaVersion")
@@ -112,19 +112,19 @@ configure(coreModule) {
     }
 
     task createDb(dependsOn: assembleDbScripts, description: 'Creates local database', type: CubaDbCreation) {
-        dbms = 'hsql'
+        dbms = 'postgres'
         host = 'localhost'
         dbName = 'ts'
-        dbUser = 'sa'
-        dbPassword = ''
+        dbUser = 'root'
+        dbPassword = 'root'
     }
 
     task updateDb(dependsOn: assembleDbScripts, description: 'Updates local database', type: CubaDbUpdate) {
-        dbms = 'hsql'
+        dbms = 'postgres'
         host = 'localhost'
         dbName = 'ts'
-        dbUser = 'sa'
-        dbPassword = ''
+        dbUser = 'root'
+        dbPassword = 'root'
     }
 }
 
