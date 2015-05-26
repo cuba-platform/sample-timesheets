@@ -21,6 +21,8 @@ public class ExtUserEdit extends UserEditor {
 
     @Override
     public void init(Map<String, Object> params) {
+        super.init(params);
+
         getDialogParams().setWidthAuto();
     }
 
