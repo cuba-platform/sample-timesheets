@@ -9,51 +9,27 @@
   @include ts-calendar;
 
   .v-button-remove {
-    color: red;
+    color: #F15A5A;
   }
 
   .v-button-remove:hover {
-    color: green;
-  }
-
-  .v-table-cell-content-project-open {
-    color: green;
-  }
-
-  .v-table [class*="-row"].v-selected .v-table-cell-content-project-open {
-    color: lime;
-  }
-
-  .v-table-cell-content-project-closed {
     color: red;
   }
 
-  .v-table-cell-content-task-active {
-    color: green;
+  .v-table-cell-content-project-open,
+  .v-table-cell-content-task-active,
+  .v-table-cell-content-time-entry-approved {
+    color: #4EBA6F;
   }
 
-  .v-table [class*="-row"].v-selected .v-table-cell-content-task-active {
-    color: lime;
-  }
-
-  .v-table-cell-content-task-inactive {
-    color: red;
+  .v-table-cell-content-project-closed,
+  .v-table-cell-content-task-inactive,
+  .v-table-cell-content-time-entry-rejected {
+    color: #F15A5A;
   }
 
   .v-table-cell-content-time-entry-new {
-    color: orange;
-  }
-
-  .v-table-cell-content-time-entry-approved {
-    color: green;
-  }
-
-  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-approved {
-    color: lime;
-  }
-
-  .v-table-cell-content-time-entry-rejected {
-    color: red;
+    color: #F0C419;
   }
 
   .cuba-datefield-composition-simple .cuba-datefield {
