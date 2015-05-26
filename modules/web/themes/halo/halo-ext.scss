@@ -48,15 +48,15 @@
   }
 
   .v-table-cell-content-time-entry-new-bg {
-    background-image: unquote("linear-gradient(to bottom,#F4F94C 2%,#F5DA4F 98%)");
+    @include valo-gradient(#FFDC00);
   }
 
   .v-table-cell-content-time-entry-approved-bg {
-    background-image: unquote("linear-gradient(to bottom,#9BEA7F 2%,#5AE43C 98%)");
+    @include valo-gradient(#20BF00);
   }
 
   .v-table-cell-content-time-entry-rejected-bg {
-    background-image: unquote("linear-gradient(to bottom,#FFC5C5 2%,#FAAFAF 98%)");
+    @include valo-gradient(#FF837E);
   }
 
   .v-table-cell-content-holiday {
