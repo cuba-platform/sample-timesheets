@@ -29,6 +29,8 @@
                 screen="command-line-frame"/>
         <table id="weeklyTsTable"
                editable="true"
+               reorderingAllowed="false"
+               multiselect="true"
                aggregatable="true"
                width="100%">
             <actions>
@@ -36,27 +38,13 @@
                         icon="icons/plus-btn.png"
                         invoke="addReport"/>
                 <action id="remove"/>
-                <action id="submitAll"
+                <action id="submitAll" shortcut="CTRL-ENTER"
                         caption="msg://submitAll"
                         invoke="submitAll"/>
             </actions>
             <columns>
                 <column id="project"/>
                 <column id="task"/>
-                <column id="monday"
-                        width="80px"/>
-                <column id="tuesday"
-                        width="80px"/>
-                <column id="wednesday"
-                        width="80px"/>
-                <column id="thursday"
-                        width="80px"/>
-                <column id="friday"
-                        width="80px"/>
-                <column id="saturday"
-                        width="80px"/>
-                <column id="sunday"
-                        width="80px"/>
             </columns>
             <rows datasource="weeklyEntriesDs"/>
             <buttonsPanel width="100%">

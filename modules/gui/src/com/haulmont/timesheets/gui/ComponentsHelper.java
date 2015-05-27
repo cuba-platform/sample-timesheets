@@ -72,16 +72,8 @@ public class ComponentsHelper {
         return linkButton;
     }
 
-    // TODO: gg move to bean?
-    public static void updateWeeklyReportTableCaptions(Table table, Date firstDayOfWeek) {
-        for (DayOfWeek day : DayOfWeek.values()) {
-            updateColumnCaption(table.getColumn(day.getId()),
-                    DateUtils.addDays(firstDayOfWeek, DayOfWeek.getDayOffset(day)));
-        }
-    }
-
-    public static void updateColumnCaption(Table.Column column, Date date) {
-        String caption = messages.getMessage(WeeklyReportEntry.class, "WeeklyReportEntry." + column.getId());
+    public static String getColumnCaption(String columnId, Date date) {
+        String caption = messages.getMessage(WeeklyReportEntry.class, "WeeklyReportEntry." + columnId);
         String format = COMMON_DAY_CAPTION_STYLE;
 
         if (dateTools.isHoliday(date) || dateTools.isWeekend(date)) {
@@ -90,8 +82,7 @@ public class ComponentsHelper {
         if (DateUtils.isSameDay(timeSource.currentTimestamp(), date)) {
             format = String.format(TODAY_CAPTION_STYLE, format);
         }
-        caption = String.format(format, caption, DateUtils.toCalendar(date).get(Calendar.DAY_OF_MONTH));
-        column.setCaption(caption);
+        return String.format(format, caption, DateUtils.toCalendar(date).get(Calendar.DAY_OF_MONTH));
     }
 
     public static abstract class CustomRemoveAction extends AbstractAction {

@@ -69,6 +69,7 @@ public class ApproveScreen extends AbstractWindow {
     protected Companion companion;
 
     protected Date firstDayOfWeek;
+    protected Date lastDayOfWeek;
     protected List<Project> approvableProjects;
 
     @Override
@@ -77,7 +78,7 @@ public class ApproveScreen extends AbstractWindow {
             companion.initTable(weeklyReportsTable);
         }
 
-        firstDayOfWeek = DateTimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp());
+        setWeekRange(DateTimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp()));
         approvableProjects = projectsService.getActiveManagedProjectsForUser(userSession.getUser(), View.LOCAL);
 
         initUsersTable();
@@ -90,7 +91,8 @@ public class ApproveScreen extends AbstractWindow {
     }
 
     protected void initUsersTable() {
-        usersTable.addGeneratedColumn("actions", new Table.ColumnGenerator() {
+        final String actionsColumnId = "actions";
+        usersTable.addGeneratedColumn(actionsColumnId, new Table.ColumnGenerator() {
             @Override
             public Component generateCell(Entity entity) {
                 User user = (User) entity;
@@ -101,6 +103,9 @@ public class ApproveScreen extends AbstractWindow {
                 );
             }
         });
+        Table.Column column = usersTable.getColumn(actionsColumnId);
+        column.setWidth(80);
+        column.setCaption(messages.getMessage(getClass(), actionsColumnId));
 
         usersDs.addListener(new CollectionDsListenerAdapter<ExtUser>() {
             @Override
@@ -135,8 +140,10 @@ public class ApproveScreen extends AbstractWindow {
         });
 
         final String totalColumnId = "total";
-        for (final DayOfWeek day : DayOfWeek.values()) {
-            weeklyReportsTable.addGeneratedColumn(day.getId(), new Table.ColumnGenerator() {
+        for (Date current = firstDayOfWeek; current.getTime() <= lastDayOfWeek.getTime(); current = DateUtils.addDays(current, 1)) {
+            final DayOfWeek day = DayOfWeek.fromCalendarDay(DateUtils.toCalendar(current).get(Calendar.DAY_OF_WEEK));
+            final String columnId = day.getId() + "Column";
+            weeklyReportsTable.addGeneratedColumn(columnId, new Table.ColumnGenerator() {
                 @Override
                 public Component generateCell(final Entity entity) {
                     EntityLinkField linkField = componentsFactory.createComponent(EntityLinkField.NAME);
@@ -152,6 +159,9 @@ public class ApproveScreen extends AbstractWindow {
                     return linkField;
                 }
             });
+            Table.Column column = weeklyReportsTable.getColumn(columnId);
+            column.setWidth(80);
+            column.setCaption(ComponentsHelper.getColumnCaption(day.getId(), current));
         }
 
         weeklyReportsTable.addGeneratedColumn(totalColumnId, new Table.ColumnGenerator() {
@@ -166,7 +176,8 @@ public class ApproveScreen extends AbstractWindow {
         weeklyReportsTable.setColumnWidth(totalColumnId, 80);
         weeklyReportsTable.setColumnCaption(totalColumnId, messages.getMessage(getClass(), "total"));
 
-        weeklyReportsTable.addGeneratedColumn("actions", new Table.ColumnGenerator() {
+        final String actionsColumnId = "actions";
+        weeklyReportsTable.addGeneratedColumn(actionsColumnId, new Table.ColumnGenerator() {
             @Override
             public Component generateCell(Entity entity) {
                 WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
@@ -178,6 +189,9 @@ public class ApproveScreen extends AbstractWindow {
                 ) : null;
             }
         });
+        Table.Column column = weeklyReportsTable.getColumn(actionsColumnId);
+        column.setWidth(80);
+        column.setCaption(messages.getMessage(getClass(), actionsColumnId));
 
         weeklyReportsTable.setStyleProvider(new Table.StyleProvider() {
             @Nullable
@@ -220,7 +234,7 @@ public class ApproveScreen extends AbstractWindow {
         dateField.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                firstDayOfWeek = DateTimeUtils.getFirstDayOfWeek((Date) value);
+                setWeekRange(DateTimeUtils.getFirstDayOfWeek((Date) value));
                 updateWeek();
             }
         });
@@ -251,24 +265,28 @@ public class ApproveScreen extends AbstractWindow {
         });
     }
 
+    protected void setWeekRange(Date start) {
+        firstDayOfWeek = start;
+        lastDayOfWeek = DateTimeUtils.getLastDayOfWeek(firstDayOfWeek);
+    }
+
     public void setToday() {
-        firstDayOfWeek = DateTimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp());
+        setWeekRange(DateTimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp()));
         updateWeek();
     }
 
     public void showPreviousWeek() {
-        firstDayOfWeek = DateUtils.addWeeks(firstDayOfWeek, -1);
+        setWeekRange(DateUtils.addWeeks(firstDayOfWeek, -1));
         updateWeek();
     }
 
     public void showNextWeek() {
-        firstDayOfWeek = DateUtils.addWeeks(firstDayOfWeek, 1);
+        setWeekRange(DateUtils.addWeeks(firstDayOfWeek, 1));
         updateWeek();
     }
 
     protected void updateWeek() {
         updateWeekCaption();
-        ComponentsHelper.updateWeeklyReportTableCaptions(weeklyReportsTable, firstDayOfWeek);
         updateReportTableItems();
     }
 
@@ -284,7 +302,7 @@ public class ApproveScreen extends AbstractWindow {
     protected void updateWeekCaption() {
         weekCaption.setValue(String.format("%s - %s",
                 DateTimeUtils.getDateFormat().format(firstDayOfWeek),
-                DateTimeUtils.getDateFormat().format(DateUtils.addDays(firstDayOfWeek, 6))));
+                DateTimeUtils.getDateFormat().format(lastDayOfWeek)));
     }
 
     protected boolean showApprovable() {
@@ -308,7 +326,7 @@ public class ApproveScreen extends AbstractWindow {
         Collection<TimeEntryStatus> statuses = statusOption.getValue();
         for (TimeEntryStatus status : statuses) {
             timeEntries.addAll(getTimeEntriesForPeriod(firstDayOfWeek,
-                    DateUtils.addDays(firstDayOfWeek, 6), userSession.getUser(), user, status, isApprovable));
+                    lastDayOfWeek, userSession.getUser(), user, status, isApprovable));
         }
         return timeEntries;
     }

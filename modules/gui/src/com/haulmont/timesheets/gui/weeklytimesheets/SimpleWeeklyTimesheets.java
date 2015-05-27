@@ -69,17 +69,16 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     protected Map<String, HBoxLayout> hBoxesCache = new HashMap<>();
 
     protected Date firstDayOfWeek;
+    protected Date lastDayOfWeek;
 
     @Override
     public void init(Map<String, Object> params) {
-        firstDayOfWeek = DateTimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp());
+        setWeekRange(DateTimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp()));
 
+        updateWeekCaption();
+        fillExistingTimeEntries();
         initWeeklyEntriesTable();
-
         initDateField();
-
-        updateWeek();
-
         initCommandLine();
     }
 
@@ -87,7 +86,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         dateField.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                firstDayOfWeek = DateTimeUtils.getFirstDayOfWeek((Date) value);
+                setWeekRange(DateTimeUtils.getFirstDayOfWeek((Date) value));
                 updateWeek();
             }
         });
@@ -187,7 +186,10 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                                     Project project = (Project) value;
                                     lookupField.setValue(null);
                                     Map<String, Task> tasks =
-                                            projectsService.getActiveTasksForUserAndProject(userSession.getUser(), project, "task-full");
+                                            projectsService.getActiveTasksForUserAndProject(
+                                                    userSession.getUser(),
+                                                    project,
+                                                    "task-full");
                                     lookupField.setOptionsMap((Map) tasks);
                                 }
                             }
@@ -195,7 +197,10 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         final Project project = ds.getItem().getProject();
                         if (project != null) {
                             Map<String, Task> tasks =
-                                    projectsService.getActiveTasksForUserAndProject(userSession.getUser(), project, "task-full");
+                                    projectsService.getActiveTasksForUserAndProject(
+                                            userSession.getUser(),
+                                            project,
+                                            "task-full");
                             lookupField.setOptionsMap((Map) tasks);
                         }
                         lookupFieldsCache.put(key, lookupField);
@@ -206,12 +211,15 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         });
 
         final String totalColumnId = "total";
-        for (final DayOfWeek day : DayOfWeek.values()) {
-            weeklyTsTable.addGeneratedColumn(day.getId(), new Table.ColumnGenerator() {
+
+        for (Date current = firstDayOfWeek; current.getTime() <= lastDayOfWeek.getTime(); current = DateUtils.addDays(current, 1)) {
+            final DayOfWeek day = DayOfWeek.fromCalendarDay(DateUtils.toCalendar(current).get(Calendar.DAY_OF_WEEK));
+            final String columnId = day.getId() + "Column";
+            weeklyTsTable.addGeneratedColumn(columnId, new Table.ColumnGenerator() {
                         @Override
                         public Component generateCell(final Entity entity) {
                             final WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
-                            final String key = getKeyForEntity(entity, day.getId());
+                            final String key = getKeyForEntity(entity, columnId);
                             if (reportEntry.getDayOfWeekTimeEntry(day) == null) {
                                 if (timeFieldsCache.containsKey(key)) {
                                     return timeFieldsCache.get(key);
@@ -267,6 +275,9 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         }
                     }
             );
+            Table.Column column = weeklyTsTable.getColumn(columnId);
+            column.setWidth(80);
+            column.setCaption(ComponentsHelper.getColumnCaption(day.getId(), current));
         }
 
         weeklyTsTable.addGeneratedColumn(totalColumnId, new Table.ColumnGenerator() {
@@ -340,7 +351,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     }
 
     public void setToday() {
-        firstDayOfWeek = DateTimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp());
+        setWeekRange(DateTimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp()));
         updateWeek();
     }
 
@@ -354,19 +365,24 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     }
 
     public void showPreviousWeek() {
-        firstDayOfWeek = DateUtils.addWeeks(firstDayOfWeek, -1);
+        setWeekRange(DateUtils.addWeeks(firstDayOfWeek, -1));
         updateWeek();
     }
 
     public void showNextWeek() {
-        firstDayOfWeek = DateUtils.addWeeks(firstDayOfWeek, 1);
+        setWeekRange(DateUtils.addWeeks(firstDayOfWeek, 1));
         updateWeek();
     }
 
     protected void updateWeekCaption() {
         weekCaption.setValue(String.format("%s - %s",
                 DateTimeUtils.getDateFormat().format(firstDayOfWeek),
-                DateTimeUtils.getDateFormat().format(DateUtils.addDays(firstDayOfWeek, 6))));
+                DateTimeUtils.getDateFormat().format(lastDayOfWeek)));
+    }
+
+    protected void setWeekRange(Date start) {
+        firstDayOfWeek = start;
+        lastDayOfWeek = DateTimeUtils.getLastDayOfWeek(firstDayOfWeek);
     }
 
     protected void updateWeek() {
@@ -374,12 +390,11 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         updateWeekCaption();
         fillExistingTimeEntries();
         weeklyTsTable.repaint();
-        ComponentsHelper.updateWeeklyReportTableCaptions(weeklyTsTable, firstDayOfWeek);
     }
 
     protected void fillExistingTimeEntries() {
         List<TimeEntry> timeEntries = projectsService.getTimeEntriesForPeriod(firstDayOfWeek,
-                DateUtils.addDays(firstDayOfWeek, 6), userSession.getUser(), null, "timeEntry-full");
+                lastDayOfWeek, userSession.getUser(), null, "timeEntry-full");
         List<WeeklyReportEntry> reportEntries = reportConverterBean.convertFromTimeEntries(timeEntries);
         for (WeeklyReportEntry entry : reportEntries) {
             weeklyEntriesDs.addItem(entry);
@@ -398,9 +413,11 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
         @Override
         public void actionPerform(Component component) {
-            WeeklyReportEntry entry = target.getSingleSelected();
-            if (entry != null) {
-                projectsService.removeTimeEntries(entry.getExistTimeEntries());
+            Set<WeeklyReportEntry> entries = target.getSelected();
+            if (!entries.isEmpty()) {
+                for (WeeklyReportEntry entry : entries) {
+                    projectsService.removeTimeEntries(entry.getExistTimeEntries());
+                }
             }
             super.actionPerform(component);
         }

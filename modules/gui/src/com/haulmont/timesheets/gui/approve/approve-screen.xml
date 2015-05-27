@@ -68,8 +68,6 @@
                     <columns>
                         <column id="lastName"/>
                         <column id="firstName"/>
-                        <column id="actions" caption="Actions"
-                                width="80px"/>
                     </columns>
                     <rows datasource="usersDs"/>
                 </table>
@@ -83,26 +81,11 @@
                     <optionsGroup id="typeOption" orientation="horizontal" align="MIDDLE_RIGHT"/>
                 </hbox>
                 <table id="weeklyReportsTable"
+                       reorderingAllowed="false"
                        width="100%">
                     <columns>
                         <column id="project"/>
                         <column id="task"/>
-                        <column id="monday"
-                                width="80px"/>
-                        <column id="tuesday"
-                                width="80px"/>
-                        <column id="wednesday"
-                                width="80px"/>
-                        <column id="thursday"
-                                width="80px"/>
-                        <column id="friday"
-                                width="80px"/>
-                        <column id="saturday"
-                                width="80px"/>
-                        <column id="sunday"
-                                width="80px"/>
-                        <column id="actions" caption="Actions"
-                                width="80px"/>
                     </columns>
                     <rows datasource="weeklyEntriesDs"/>
                 </table>
