@@ -97,6 +97,7 @@ public class CalendarScreen extends AbstractWindow {
                 adapter.getTimeEntry().setDate(event.getNewStart());
                 TimeEntry committed = getDsContext().getDataSupplier().commit(adapter.getTimeEntry());
                 adapter.setTimeEntry(committed);
+                updateSummaryColumn();
             }
         });   // Do not work for month view
         calendar.setHandler((CalendarComponentEvents.WeekClickHandler) null);
