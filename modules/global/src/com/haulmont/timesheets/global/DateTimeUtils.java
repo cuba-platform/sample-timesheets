@@ -6,6 +6,7 @@ package com.haulmont.timesheets.global;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.time.DateUtils;
 
 import java.math.BigDecimal;
@@ -13,6 +14,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * @author gorelov
@@ -39,8 +41,12 @@ public final class DateTimeUtils {
     }
 
     public static Date getFirstDayOfWeek(Date date) {
+        return getFirstDayOfWeek(date, userSession().getLocale());
+    }
+
+    public static Date getFirstDayOfWeek(Date date, Locale locale) {
         Calendar calendar = getCalendarWithoutTime(date);
-        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        calendar.set(Calendar.DAY_OF_WEEK, Calendar.getInstance(locale).getFirstDayOfWeek());
         return calendar.getTime();
     }
 
@@ -80,5 +86,9 @@ public final class DateTimeUtils {
 
     private static Messages messages() {
         return AppBeans.get(Messages.NAME, Messages.class);
+    }
+
+    private static UserSession userSession() {
+        return AppBeans.get(UserSession.class);
     }
 }
