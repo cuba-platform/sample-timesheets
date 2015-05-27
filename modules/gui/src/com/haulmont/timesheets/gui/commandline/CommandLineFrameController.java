@@ -11,6 +11,7 @@ import com.haulmont.cuba.gui.components.SourceCodeEditor;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.service.CommandLineService;
+import org.apache.commons.collections.CollectionUtils;
 
 import javax.inject.Inject;
 import java.util.Collections;
@@ -52,9 +53,16 @@ public class CommandLineFrameController extends AbstractFrame {
 
     public void apply() {
         if (timeEntriesHandler != null) {
-            List<TimeEntry> timeEntries =
-                    commandLineService.createTimeEntriesForTheCommandLine(String.valueOf(commandLine.getValue()));
-            timeEntriesHandler.handle(timeEntries != null ? timeEntries : Collections.<TimeEntry>emptyList());
+            try {
+                List<TimeEntry> timeEntries =
+                        commandLineService.createTimeEntriesForTheCommandLine(String.valueOf(commandLine.getValue()));
+                if (CollectionUtils.isEmpty(timeEntries)) {
+                    showNotification(getMessage("notification.emptyCommandResult"), NotificationType.HUMANIZED);
+                }
+                timeEntriesHandler.handle(timeEntries != null ? timeEntries : Collections.<TimeEntry>emptyList());
+            } catch (Exception e) {
+                showNotification(getMessage("error.commandLine"), NotificationType.WARNING);
+            }
         } else {
             throw new GuiDevelopmentException("ResultTimeEntriesHandler is not set for CommandLineFrameController", getFrame().getId());
         }

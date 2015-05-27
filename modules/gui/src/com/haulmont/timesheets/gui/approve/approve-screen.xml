@@ -61,7 +61,7 @@
                   expand="usersTable"
                   spacing="true">
                 <hbox height="28px">
-                    <label value="msg://usersTitle" align="MIDDLE_LEFT" stylename="h2"/>
+                    <label value="msg://participantsTitle" align="MIDDLE_LEFT" stylename="h2"/>
                 </hbox>
                 <table id="usersTable"
                        width="100%">
