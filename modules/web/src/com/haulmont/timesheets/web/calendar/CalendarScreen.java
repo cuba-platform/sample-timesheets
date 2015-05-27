@@ -15,6 +15,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.haulmont.timesheets.entity.Holiday;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.global.DateTimeUtils;
+import com.haulmont.timesheets.global.ValidationTools;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.gui.holiday.HolidayEdit;
 import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
@@ -31,6 +32,7 @@ import com.vaadin.ui.components.calendar.event.CalendarEventProvider;
 import org.apache.commons.lang.time.DateUtils;
 
 import javax.inject.Inject;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +44,7 @@ public class CalendarScreen extends AbstractWindow {
     @Inject
     protected BoxLayout calBox;
     @Inject
-    private BoxLayout summaryBox;
+    protected BoxLayout summaryBox;
     @Inject
     protected Label monthLabel;
     @Inject
@@ -52,7 +54,9 @@ public class CalendarScreen extends AbstractWindow {
     @Inject
     protected Messages messages;
     @Inject
-    private TimeSource timeSource;
+    protected TimeSource timeSource;
+    @Inject
+    protected ValidationTools validationTools;
 
     protected ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);
 
@@ -158,17 +162,24 @@ public class CalendarScreen extends AbstractWindow {
         summaryCaptionVbox.setComponentAlignment(summaryCaption, com.vaadin.ui.Alignment.MIDDLE_CENTER);
         summaryLayout.addComponent(summaryCaptionVbox);
 
-        HoursAndMinutes[] summariesByWeeks = calculateSummariesByWeeks();
+        FactAndPlan[] summariesByWeeks = calculateSummariesByWeeks();
 
         for (int i = 1; i < summariesByWeeks.length; i++) {
             com.vaadin.ui.Label hourLabel = new com.vaadin.ui.Label();
             hourLabel.setContentMode(ContentMode.HTML);
-            HoursAndMinutes summaryForTheWeek = summariesByWeeks[i];
+            FactAndPlan summaryForTheWeek = summariesByWeeks[i];
             if (summaryForTheWeek == null) {
-                summaryForTheWeek = new HoursAndMinutes();
+                summaryForTheWeek = new FactAndPlan();
             }
-            hourLabel.setValue(formatMessage("label.hoursSummary",
-                    summaryForTheWeek.getSummaryHours(), summaryForTheWeek.getSummaryMinutes()));
+            if (summaryForTheWeek.isMatch()) {
+                hourLabel.setValue(formatMessage("label.hoursSummary",
+                        summaryForTheWeek.fact.getHours(), summaryForTheWeek.fact.getMinutes()));
+            } else {
+                hourLabel.setValue(formatMessage("label.hoursSummaryNotMatch",
+                        summaryForTheWeek.fact.getHours(), summaryForTheWeek.fact.getMinutes(),
+                        summaryForTheWeek.plan.getHours(), summaryForTheWeek.plan.getMinutes()));
+                hourLabel.addStyleName("overtime");
+            }
             hourLabel.setWidthUndefined();
             summaryLayout.addComponent(hourLabel);
             summaryLayout.setExpandRatio(hourLabel, 1);
@@ -176,28 +187,34 @@ public class CalendarScreen extends AbstractWindow {
         }
     }
 
-    protected HoursAndMinutes[] calculateSummariesByWeeks() {
+    protected FactAndPlan[] calculateSummariesByWeeks() {
         Date start = firstDayOfMonth;
         java.util.Calendar javaCalendar = java.util.Calendar.getInstance(userSession.getLocale());
         javaCalendar.setTime(firstDayOfMonth);
         int countOfWeeksInTheMonth = javaCalendar.getActualMaximum(java.util.Calendar.WEEK_OF_MONTH);
-        Date end = DateTimeUtils.getLastDayOfMonth(firstDayOfMonth);
-        List<CalendarEvent> events = dataSource.getEvents(start, end);
-        HoursAndMinutes[] summariesByWeeks = new HoursAndMinutes[countOfWeeksInTheMonth + 1];
-        for (CalendarEvent event : events) {
-            javaCalendar.setTime(event.getEnd());
-            int numberOfWeekForTheEvent = javaCalendar.get(java.util.Calendar.WEEK_OF_MONTH);
-            HoursAndMinutes summaryForTheWeek = summariesByWeeks[numberOfWeekForTheEvent];
-            if (summaryForTheWeek == null) {
-                summaryForTheWeek = new HoursAndMinutes();
+        Date lastDayOfMonth = DateTimeUtils.getLastDayOfMonth(firstDayOfMonth);
+
+        FactAndPlan[] summariesByWeeks = new FactAndPlan[countOfWeeksInTheMonth + 1];
+        int weekIndex = 0;
+        for (; start.getTime() <= lastDayOfMonth.getTime(); start = DateUtils.addWeeks(start, 1)) {
+            Date firstDayOfWeek = DateTimeUtils.getFirstDayOfWeek(start);
+            Date lastDayOfWeek = DateTimeUtils.getLastDayOfWeek(start);
+
+            if (firstDayOfWeek.getTime() < firstDayOfMonth.getTime()) {
+                firstDayOfWeek = firstDayOfMonth;
             }
-            summaryForTheWeek.hours = summaryForTheWeek.hours + javaCalendar.get(java.util.Calendar.HOUR_OF_DAY);
-            summaryForTheWeek.minutes = summaryForTheWeek.minutes + javaCalendar.get(java.util.Calendar.MINUTE);
-
-            summariesByWeeks[numberOfWeekForTheEvent] = summaryForTheWeek;
+            if (lastDayOfWeek.getTime() > lastDayOfMonth.getTime()) {
+                lastDayOfWeek = lastDayOfMonth;
+            }
+            FactAndPlan summaryForTheWeek = new FactAndPlan();
+            summaryForTheWeek.fact.setTime(
+                    validationTools.userWorkHoursForPeriod(firstDayOfWeek, lastDayOfWeek, userSession.getUser())
+            );
+            summaryForTheWeek.plan.setTime(
+                    validationTools.workHoursForPeriod(firstDayOfWeek, lastDayOfWeek)
+            );
+            summariesByWeeks[++weekIndex] = summaryForTheWeek;
         }
-
-        //todo eude calculate planned hours for each week
         return summariesByWeeks;
     }
 
@@ -318,15 +335,37 @@ public class CalendarScreen extends AbstractWindow {
     }
 
     protected static class HoursAndMinutes {
-        protected int hours = 0;
-        protected int minutes = 0;
 
-        protected int getSummaryHours() {
-            return hours + minutes / 60;
+        protected BigDecimal time = BigDecimal.ZERO;
+
+        protected BigDecimal getTime() {
+            return time;
         }
 
-        protected int getSummaryMinutes() {
-            return minutes % 60;
+        protected void setTime(BigDecimal time) {
+            this.time = time;
+        }
+
+        protected int getHours() {
+            return time.intValue();
+        }
+
+        protected int getMinutes() {
+            return time.remainder(BigDecimal.ONE)
+                    .multiply(BigDecimal.valueOf(60))
+                    .intValue();
+        }
+    }
+
+    protected static class FactAndPlan {
+
+        protected HoursAndMinutes fact = new HoursAndMinutes();
+        protected HoursAndMinutes plan = new HoursAndMinutes();
+
+        protected boolean isMatch() {
+            BigDecimal factTime = fact.getTime().setScale(ValidationTools.SCALE, BigDecimal.ROUND_HALF_UP);
+            BigDecimal planTime = plan.getTime().setScale(ValidationTools.SCALE, BigDecimal.ROUND_HALF_UP);
+            return planTime.equals(factTime);
         }
     }
 }
