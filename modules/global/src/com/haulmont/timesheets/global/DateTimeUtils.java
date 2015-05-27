@@ -6,6 +6,7 @@ package com.haulmont.timesheets.global;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.time.DateUtils;
 
 import java.math.BigDecimal;
@@ -13,6 +14,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 /**
  * @author gorelov
@@ -26,11 +28,16 @@ public final class DateTimeUtils {
     }
 
     public static Calendar getCalendarWithoutTime(Date date) {
-        java.util.Calendar calendar = DateUtils.toCalendar(date);
-        calendar.set(java.util.Calendar.HOUR_OF_DAY, 0);
-        calendar.set(java.util.Calendar.MINUTE, 0);
-        calendar.set(java.util.Calendar.SECOND, 0);
-        calendar.set(java.util.Calendar.MILLISECOND, 0);
+        return getCalendarWithoutTime(date, userSession().getLocale());
+    }
+
+    public static Calendar getCalendarWithoutTime(Date date, Locale locale) {
+        Calendar calendar = Calendar.getInstance(locale);
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
         return calendar;
     }
 
@@ -39,8 +46,12 @@ public final class DateTimeUtils {
     }
 
     public static Date getFirstDayOfWeek(Date date) {
-        Calendar calendar = getCalendarWithoutTime(date);
-        calendar.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        return getFirstDayOfWeek(date, userSession().getLocale());
+    }
+
+    public static Date getFirstDayOfWeek(Date date, Locale locale) {
+        Calendar calendar = getCalendarWithoutTime(date, locale);
+        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
         return calendar.getTime();
     }
 
@@ -49,14 +60,14 @@ public final class DateTimeUtils {
     }
 
     public static Date getFirstDayOfMonth(Date date) {
-        java.util.Calendar calendar = getCalendarWithoutTime(date);
-        calendar.set(java.util.Calendar.DAY_OF_MONTH, 1);
+        Calendar calendar = getCalendarWithoutTime(date);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
         return calendar.getTime();
     }
 
     public static Date getLastDayOfMonth(Date date) {
-        java.util.Calendar calendar = getCalendarWithoutTime(date);
-        calendar.set(java.util.Calendar.DAY_OF_MONTH, calendar.getActualMaximum(java.util.Calendar.DAY_OF_MONTH));
+        Calendar calendar = getCalendarWithoutTime(date);
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
         return calendar.getTime();
     }
 
@@ -80,5 +91,9 @@ public final class DateTimeUtils {
 
     private static Messages messages() {
         return AppBeans.get(Messages.NAME, Messages.class);
+    }
+
+    private static UserSession userSession() {
+        return AppBeans.get(UserSession.class);
     }
 }

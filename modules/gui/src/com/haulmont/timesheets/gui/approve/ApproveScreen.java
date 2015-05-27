@@ -257,12 +257,12 @@ public class ApproveScreen extends AbstractWindow {
     }
 
     public void showPreviousWeek() {
-        firstDayOfWeek = DateUtils.addDays(firstDayOfWeek, -7);
+        firstDayOfWeek = DateUtils.addWeeks(firstDayOfWeek, -1);
         updateWeek();
     }
 
     public void showNextWeek() {
-        firstDayOfWeek = DateUtils.addDays(firstDayOfWeek, 7);
+        firstDayOfWeek = DateUtils.addWeeks(firstDayOfWeek, 1);
         updateWeek();
     }
 

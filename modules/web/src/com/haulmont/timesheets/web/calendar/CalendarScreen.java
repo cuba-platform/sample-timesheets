@@ -86,7 +86,7 @@ public class CalendarScreen extends AbstractWindow {
     private void initCalendar() {
         calendar = new TimeSheetsCalendar(dataSource);
         calendar.setWidth("100%");
-        calendar.setHeight("89%");
+        calendar.setHeight("88%");
         calendar.setTimeFormat(Calendar.TimeFormat.Format24H);
         calendar.setMoreMsgFormat(messages.getMessage(getClass(), "calendar.moreMsgFormat"));
         calendar.setDropHandler(null);
@@ -99,7 +99,7 @@ public class CalendarScreen extends AbstractWindow {
                 adapter.setTimeEntry(committed);
                 updateSummaryColumn();
             }
-        });   // Do not work for month view
+        });
         calendar.setHandler((CalendarComponentEvents.WeekClickHandler) null);
         calendar.setHandler((CalendarComponentEvents.DateClickHandler) null);
         calendar.setHandler((CalendarComponentEvents.EventResizeHandler) null);
