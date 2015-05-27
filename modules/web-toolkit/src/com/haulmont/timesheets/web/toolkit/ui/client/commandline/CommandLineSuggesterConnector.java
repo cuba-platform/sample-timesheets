@@ -33,7 +33,9 @@ public class CommandLineSuggesterConnector extends SuggesterConnector {
             return Command.DEFAULT;
         }
 
-        if ((keyCode == 32 && e.isCtrlKey())) {//Ctrl+Space
+        if (keyCode == 13) {//Enter
+            return Command.NULL;//ignore enter
+        } else if ((keyCode == 32 && e.isCtrlKey())) {//Ctrl+Space
             startSuggesting();
             return Command.NULL;
         } else if ((keyCode == 50 && e.isShiftKey())//@
