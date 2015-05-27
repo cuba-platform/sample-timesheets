@@ -128,7 +128,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             public void collectionChanged(CollectionDatasource ds, Operation operation, List<WeeklyReportEntry> items) {
                 if (Operation.REMOVE.equals(operation) || Operation.CLEAR.equals(operation)) {
                     for (WeeklyReportEntry entry : items) {
-                        totalLabelsMap.remove(getKeyForEntity(entry, totalColumnId));
+                        totalLabelsMap.remove(ComponentsHelper.getCacheKeyForEntity(entry, totalColumnId));
                     }
                 }
             }
@@ -295,7 +295,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                 WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
                 Label label = componentsFactory.createComponent(Label.NAME);
                 label.setValue(reportEntry.getTotal());
-                totalLabelsMap.put(getKeyForEntity(reportEntry, totalColumnId), label);
+                totalLabelsMap.put(ComponentsHelper.getCacheKeyForEntity(reportEntry, totalColumnId), label);
                 return label;
             }
         });
@@ -314,7 +314,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                     TimeEntry committed = getDsContext().getDataSupplier().commit(editor.getItem());
                     reportEntry.changeDayOfWeekSingleTimeEntry(day, committed);
                     linkButton.setCaption(reportEntry.getTotalForDay(day));
-                    Label totalLabel = totalLabelsMap.get(getKeyForEntity(reportEntry, totalColumnId));
+                    Label totalLabel = totalLabelsMap.get(ComponentsHelper.getCacheKeyForEntity(reportEntry, totalColumnId));
                     totalLabel.setValue(reportEntry.getTotal());
                 }
             }
@@ -388,10 +388,6 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         for (WeeklyReportEntry entry : reportEntries) {
             weeklyEntriesDs.addItem(entry);
         }
-    }
-
-    protected String getKeyForEntity(Entity entity, String column) {
-        return String.format("%s.%s", entity.getId(), column);
     }
 
     protected class WeeklyReportEntryRemoveAction extends ComponentsHelper.CaptionlessRemoveAction {

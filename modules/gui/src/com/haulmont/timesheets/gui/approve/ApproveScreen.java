@@ -3,6 +3,7 @@
  */
 package com.haulmont.timesheets.gui.approve;
 
+import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.TimeSource;
@@ -20,7 +21,9 @@ import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.global.DateTimeUtils;
 import com.haulmont.timesheets.global.WeeklyReportConverter;
 import com.haulmont.timesheets.gui.ComponentsHelper;
+import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
 import com.haulmont.timesheets.service.ProjectsService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 
@@ -67,6 +70,10 @@ public class ApproveScreen extends AbstractWindow {
     protected WeeklyReportConverter reportConverterBean;
     @Inject
     protected Companion companion;
+
+    protected final String totalColumnId = "total";
+
+    protected Map<String, Label> totalLabelsMap = new HashMap<>();
 
     protected Date firstDayOfWeek;
     protected Date lastDayOfWeek;
@@ -117,6 +124,46 @@ public class ApproveScreen extends AbstractWindow {
     }
 
     protected void initUserReportsTable() {
+
+        initProjectColumn();
+        initTaskColumn();
+        initDaysColumns();
+        initTotalColumn();
+        initActionsColumn();
+
+        weeklyEntriesDs.addListener(new CollectionDsListenerAdapter<WeeklyReportEntry>() {
+            @Override
+            public void collectionChanged(CollectionDatasource ds, Operation operation, List<WeeklyReportEntry> items) {
+                if (Operation.REMOVE.equals(operation) || Operation.CLEAR.equals(operation)) {
+                    for (WeeklyReportEntry entry : items) {
+                        totalLabelsMap.remove(ComponentsHelper.getCacheKeyForEntity(entry, totalColumnId));
+                    }
+                }
+            }
+        });
+
+        weeklyReportsTable.setStyleProvider(new Table.StyleProvider() {
+            @Nullable
+            @Override
+            public String getStyleName(Entity entity, String property) {
+                WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
+                String id = null;
+                if (property != null && property.endsWith("Column")) {
+                    id = property.replace("Column", "");
+                }
+                DayOfWeek day = DayOfWeek.fromId(id != null ? id : property);
+                if (day != null) {
+                    List<TimeEntry> timeEntries = reportEntry.getDayOfWeekTimeEntries(day);
+                    if (CollectionUtils.isNotEmpty(timeEntries)) {
+                        return ComponentsHelper.getTimeEntryStatusStyleBg(timeEntries);
+                    }
+                }
+                return null;
+            }
+        });
+    }
+
+    protected void initProjectColumn() {
         final String projectColumnId = "project";
         weeklyReportsTable.addGeneratedColumn(projectColumnId, new Table.ColumnGenerator() {
             @Override
@@ -127,7 +174,9 @@ public class ApproveScreen extends AbstractWindow {
                 return label;
             }
         });
+    }
 
+    protected void initTaskColumn() {
         final String taskColumnId = "task";
         weeklyReportsTable.addGeneratedColumn(taskColumnId, new Table.ColumnGenerator() {
             @Override
@@ -138,44 +187,80 @@ public class ApproveScreen extends AbstractWindow {
                 return label;
             }
         });
+    }
 
-        final String totalColumnId = "total";
+    protected void initDaysColumns() {
         for (Date current = firstDayOfWeek; current.getTime() <= lastDayOfWeek.getTime(); current = DateUtils.addDays(current, 1)) {
             final DayOfWeek day = DayOfWeek.fromCalendarDay(DateUtils.toCalendar(current).get(Calendar.DAY_OF_WEEK));
             final String columnId = day.getId() + "Column";
+            final Date finalCurrent = current;
             weeklyReportsTable.addGeneratedColumn(columnId, new Table.ColumnGenerator() {
                 @Override
                 public Component generateCell(final Entity entity) {
-                    EntityLinkField linkField = componentsFactory.createComponent(EntityLinkField.NAME);
-                    linkField.setOwner(weeklyReportsTable);
-                    linkField.setScreenOpenType(WindowManager.OpenType.DIALOG);
-                    linkField.setDatasource(weeklyReportsTable.getItemDatasource(entity), day.getId());
-                    linkField.addListener(new ValueListener() {
-                        @Override
-                        public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                            weeklyReportsTable.refresh();
+                    final WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
+                    List<TimeEntry> timeEntries = reportEntry.getDayOfWeekTimeEntries(day);
+                    if (CollectionUtils.isNotEmpty(timeEntries)) {
+                        if (timeEntries.size() == 1) {
+                            final TimeEntry timeEntry = timeEntries.get(0);
+                            final LinkButton linkButton = componentsFactory.createComponent(LinkButton.NAME);
+                            linkButton.setCaption(reportEntry.getTotalForDay(day));
+                            linkButton.setAction(new AbstractAction("edit") {
+                                @Override
+                                public void actionPerform(Component component) {
+                                    openTimeEntryEditor(timeEntry, linkButton, reportEntry, day);
+                                }
+                            });
+                            return linkButton;
+                        } else {
+                            final LinkButton linkButton = componentsFactory.createComponent(LinkButton.NAME);
+                            linkButton.setCaption(reportEntry.getTotalForDay(day));
+                            linkButton.setAction(new AbstractAction("edit") {
+
+                                @Override
+                                public void actionPerform(Component component) {
+                                    openLookup(
+                                            "ts$TimeEntry.lookup",
+                                            new Lookup.Handler() {
+                                                @Override
+                                                public void handleLookup(Collection items) {
+                                                    if (CollectionUtils.isNotEmpty(items)) {
+                                                        TimeEntry timeEntry = (TimeEntry) items.iterator().next();
+                                                        openTimeEntryEditor(timeEntry, linkButton, reportEntry, day);
+                                                    }
+                                                }
+                                            },
+                                            WindowManager.OpenType.DIALOG,
+                                            ParamsMap.of("date", finalCurrent, "taskId", reportEntry.getTask().getId()));
+                                }
+                            });
+                            return linkButton;
                         }
-                    });
-                    return linkField;
+                    }
+                    return null;
                 }
             });
             Table.Column column = weeklyReportsTable.getColumn(columnId);
             column.setWidth(80);
             column.setCaption(ComponentsHelper.getColumnCaption(day.getId(), current));
         }
+    }
 
+    protected void initTotalColumn() {
         weeklyReportsTable.addGeneratedColumn(totalColumnId, new Table.ColumnGenerator() {
             @Override
             public Component generateCell(Entity entity) {
                 WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
                 Label label = componentsFactory.createComponent(Label.NAME);
                 label.setValue(reportEntry.getTotal());
+                totalLabelsMap.put(ComponentsHelper.getCacheKeyForEntity(reportEntry, totalColumnId), label);
                 return label;
             }
         });
         weeklyReportsTable.setColumnWidth(totalColumnId, 80);
         weeklyReportsTable.setColumnCaption(totalColumnId, messages.getMessage(getClass(), "total"));
+    }
 
+    protected void initActionsColumn() {
         final String actionsColumnId = "actions";
         weeklyReportsTable.addGeneratedColumn(actionsColumnId, new Table.ColumnGenerator() {
             @Override
@@ -192,20 +277,18 @@ public class ApproveScreen extends AbstractWindow {
         Table.Column column = weeklyReportsTable.getColumn(actionsColumnId);
         column.setWidth(80);
         column.setCaption(messages.getMessage(getClass(), actionsColumnId));
+    }
 
-        weeklyReportsTable.setStyleProvider(new Table.StyleProvider() {
-            @Nullable
+    protected void openTimeEntryEditor(
+            TimeEntry timeEntry, final LinkButton linkButton, final WeeklyReportEntry reportEntry, final DayOfWeek day) {
+        final TimeEntryEdit editor = openEditor(
+                "ts$TimeEntry.edit", timeEntry, WindowManager.OpenType.DIALOG);
+        editor.addListener(new CloseListener() {
             @Override
-            public String getStyleName(Entity entity, String property) {
-                WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
-                DayOfWeek day = DayOfWeek.fromId(property);
-                if (day != null) {
-//                    TimeEntry timeEntry = reportEntry.getDayOfWeekTimeEntries(day);
-//                    if (timeEntry != null) {
-//                        return ComponentsHelper.getTimeEntryStatusStyleBg(timeEntry);
-//                    }
+            public void windowClosed(String actionId) {
+                if (COMMIT_ACTION_ID.equals(actionId)) {
+                    updateReportTableItems();
                 }
-                return null;
             }
         });
     }

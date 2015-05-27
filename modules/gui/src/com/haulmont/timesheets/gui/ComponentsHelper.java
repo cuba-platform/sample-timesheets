@@ -24,6 +24,7 @@ import org.apache.commons.lang.time.DateUtils;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * @author gorelov
@@ -222,9 +223,22 @@ public class ComponentsHelper {
         }
     }
 
-    public static String getTimeEntryStatusStyleBg(TimeEntry timeEntry) {
-        String style = getTimeEntryStatusStyle(timeEntry);
+    public static String getTimeEntryStatusStyleBg(List<TimeEntry> timeEntries) {
+        if (timeEntries.isEmpty()) {
+            return null;
+        }
+        TimeEntryStatus status = timeEntries.get(0).getStatus();
+        for (TimeEntry timeEntry : timeEntries) {
+            if (!status.equals(timeEntry.getStatus())) {
+                return null;
+            }
+        }
+        String style = getTimeEntryStatusStyle(timeEntries.get(0));
         return style != null ? style + "-bg" : null;
+    }
+
+    public static String getCacheKeyForEntity(Entity entity, String column) {
+        return String.format("%s.%s", entity.getId(), column);
     }
 
     public static class EntityCodeGenerationListener<T extends Entity> extends DsListenerAdapter<T> {
