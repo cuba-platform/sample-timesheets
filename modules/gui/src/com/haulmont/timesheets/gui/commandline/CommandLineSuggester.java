@@ -43,6 +43,18 @@ public class CommandLineSuggester implements Suggester {
         CommandLineUtils commandLineUtils = new CommandLineUtils(text);
 
         if (StringUtils.isBlank(text)) {
+            List<Project> projects = projectsService.getActiveProjectsForUser(currentUser, View.LOCAL);
+            for (Project project : projects) {
+                Suggestion suggestion = suggestion("@" + project.getInstanceName(), "@" + project.getCode(), cursorPosition);
+                suggestions.add(suggestion);
+            }
+
+            Collection<Task> tasks = projectsService.getActiveTasksForUser(currentUser, "task-full");
+            for (Task task : tasks) {
+                Suggestion suggestion = suggestion("#" + task.getInstanceName(), "#" + task.getCode(), cursorPosition);
+                suggestions.add(suggestion);
+            }
+
             return suggestions;
         }
 

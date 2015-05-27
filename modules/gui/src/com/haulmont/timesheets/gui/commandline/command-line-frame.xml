@@ -9,5 +9,6 @@
         <hbox id="commandLineHBox" spacing="true">
             <button id="apply" invoke="apply" caption="msg://caption.apply"/>
         </hbox>
+        <hbox><label htmlEnabled="true" value="msg://caption.commandLine.help"/></hbox>
     </layout>
 </window>
