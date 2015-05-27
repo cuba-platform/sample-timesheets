@@ -200,10 +200,10 @@ public class ApproveScreen extends AbstractWindow {
                 WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
                 DayOfWeek day = DayOfWeek.fromId(property);
                 if (day != null) {
-                    TimeEntry timeEntry = reportEntry.getDayOfWeekTimeEntry(day);
-                    if (timeEntry != null) {
-                        return ComponentsHelper.getTimeEntryStatusStyleBg(timeEntry);
-                    }
+//                    TimeEntry timeEntry = reportEntry.getDayOfWeekTimeEntries(day);
+//                    if (timeEntry != null) {
+//                        return ComponentsHelper.getTimeEntryStatusStyleBg(timeEntry);
+//                    }
                 }
                 return null;
             }

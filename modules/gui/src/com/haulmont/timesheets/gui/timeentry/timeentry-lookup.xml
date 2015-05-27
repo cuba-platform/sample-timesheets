@@ -10,7 +10,7 @@
                               class="com.haulmont.timesheets.entity.TimeEntry"
                               view="timeEntry-full">
             <query>
-                <![CDATA[select e from ts$TimeEntry e where e.user.id = :session$userId]]>
+                <![CDATA[select e from ts$TimeEntry e where e.user.id = :session$userId and e.date = :param$date and e.task.id = :param$taskId]]>
             </query>
         </collectionDatasource>
     </dsContext>
@@ -25,9 +25,6 @@
                width="100%">
             <columns>
                 <column id="task"/>
-                <column id="taskName"/>
-                <column id="user"/>
-                <column id="date"/>
                 <column id="time"/>
                 <column id="status"/>
                 <column id="description"

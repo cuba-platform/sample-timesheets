@@ -6,9 +6,11 @@ package com.haulmont.timesheets.entity;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
 
 import javax.annotation.Nullable;
+import java.sql.Time;
 import java.util.*;
 
 /**
@@ -27,25 +29,25 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
     protected Task task;
 
     @MetaProperty
-    protected TimeEntry monday;
+    protected List<TimeEntry> monday;
 
     @MetaProperty
-    protected TimeEntry tuesday;
+    protected List<TimeEntry> tuesday;
 
     @MetaProperty
-    protected TimeEntry wednesday;
+    protected List<TimeEntry> wednesday;
 
     @MetaProperty
-    protected TimeEntry thursday;
+    protected List<TimeEntry> thursday;
 
     @MetaProperty
-    protected TimeEntry friday;
+    protected List<TimeEntry> friday;
 
     @MetaProperty
-    protected TimeEntry saturday;
+    protected List<TimeEntry> saturday;
 
     @MetaProperty
-    protected TimeEntry sunday;
+    protected List<TimeEntry> sunday;
 
     @MetaProperty
     protected String mondayTime;
@@ -67,25 +69,6 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
 
     @MetaProperty
     protected String sundayTime;
-
-    public String getTotal() {
-        int hours = 0;
-        int minutes = 0;
-        for (DayOfWeek day : DayOfWeek.values()) {
-            TimeEntry timeEntry = getDayOfWeekTimeEntry(day);
-            if (timeEntry != null) {
-                Date time = timeEntry.getTime();
-                if (time != null) {
-                    Calendar calendar = DateUtils.toCalendar(time);
-                    hours += calendar.get(Calendar.HOUR_OF_DAY);
-                    minutes += calendar.get(Calendar.MINUTE);
-                }
-            }
-        }
-        hours += minutes / 60;
-        minutes %= 60;
-        return String.format(TOTAL_FORMAT, hours, minutes);
-    }
 
     public void setMondayTime(String mondayTime) {
         this.mondayTime = mondayTime;
@@ -159,64 +142,89 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
         return task;
     }
 
-    public void setMonday(TimeEntry monday) {
+    public void setMonday(List<TimeEntry> monday) {
         this.monday = monday;
     }
 
-    public TimeEntry getMonday() {
+    public List<TimeEntry> getMonday() {
         return monday;
     }
 
-    public void setTuesday(TimeEntry tuesday) {
+    public void setTuesday(List<TimeEntry> tuesday) {
         this.tuesday = tuesday;
     }
 
-    public TimeEntry getTuesday() {
+    public List<TimeEntry> getTuesday() {
         return tuesday;
     }
 
-    public void setWednesday(TimeEntry wednesday) {
+    public void setWednesday(List<TimeEntry> wednesday) {
         this.wednesday = wednesday;
     }
 
-    public TimeEntry getWednesday() {
+    public List<TimeEntry> getWednesday() {
         return wednesday;
     }
 
-    public void setThursday(TimeEntry thursday) {
+    public void setThursday(List<TimeEntry> thursday) {
         this.thursday = thursday;
     }
 
-    public TimeEntry getThursday() {
+    public List<TimeEntry> getThursday() {
         return thursday;
     }
 
-    public void setFriday(TimeEntry friday) {
+    public void setFriday(List<TimeEntry> friday) {
         this.friday = friday;
     }
 
-    public TimeEntry getFriday() {
+    public List<TimeEntry> getFriday() {
         return friday;
     }
 
-    public void setSaturday(TimeEntry saturday) {
+    public void setSaturday(List<TimeEntry> saturday) {
         this.saturday = saturday;
     }
 
-    public TimeEntry getSaturday() {
+    public List<TimeEntry> getSaturday() {
         return saturday;
     }
 
-    public void setSunday(TimeEntry sunday) {
+    public void setSunday(List<TimeEntry> sunday) {
         this.sunday = sunday;
     }
 
-    public TimeEntry getSunday() {
+    public List<TimeEntry> getSunday() {
         return sunday;
     }
 
+    public String getTotal() {
+        return getTotalForTimeEntries(getExistTimeEntries());
+    }
 
-    public TimeEntry getDayOfWeekTimeEntry(DayOfWeek day) {
+    public String getTotalForDay(DayOfWeek day) {
+        return getTotalForTimeEntries(getDayOfWeekTimeEntries(day));
+    }
+
+    protected String getTotalForTimeEntries(List<TimeEntry> timeEntries) {
+        int hours = 0;
+        int minutes = 0;
+        if (CollectionUtils.isNotEmpty(timeEntries)) {
+            for (TimeEntry timeEntry : timeEntries) {
+                Date time = timeEntry.getTime();
+                if (time != null) {
+                    Calendar calendar = DateUtils.toCalendar(time);
+                    hours += calendar.get(Calendar.HOUR_OF_DAY);
+                    minutes += calendar.get(Calendar.MINUTE);
+                }
+            }
+        }
+        hours += minutes / 60;
+        minutes %= 60;
+        return String.format(TOTAL_FORMAT, hours, minutes);
+    }
+
+    public List<TimeEntry> getDayOfWeekTimeEntries(DayOfWeek day) {
         switch (day) {
             case MONDAY:
                 return getMonday();
@@ -233,7 +241,7 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
             case SUNDAY:
                 return getSunday();
             default:
-                return null;
+                return Collections.emptyList();
         }
     }
 
@@ -258,7 +266,7 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
         }
     }
 
-    public void changeDayOfWeekTimeEntry(DayOfWeek day, @Nullable TimeEntry timeEntry) {
+    public void changeDayOfWeekTimeEntries(DayOfWeek day, @Nullable List<TimeEntry> timeEntry) {
         switch (day) {
             case MONDAY:
                 setMonday(timeEntry);
@@ -291,37 +299,31 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
         }
     }
 
-    public void updateTimeEntry(TimeEntry timeEntry) {
-        int day = DateUtils.toCalendar(timeEntry.getDate()).get(Calendar.DAY_OF_WEEK);
+    public void changeDayOfWeekSingleTimeEntry(DayOfWeek day, @Nullable TimeEntry timeEntry) {
+        List<TimeEntry> timeEntries = getDayOfWeekTimeEntries(day);
+        if (CollectionUtils.isNotEmpty(timeEntries)) {
+            timeEntries.remove(timeEntry);
+            timeEntries.add(timeEntry);
+        }
+    }
 
-        switch (day) {
-            case Calendar.MONDAY:
-                setMonday(timeEntry);
-                break;
-            case Calendar.TUESDAY:
-                setTuesday(timeEntry);
-                break;
-            case Calendar.WEDNESDAY:
-                setWednesday(timeEntry);
-                break;
-            case Calendar.THURSDAY:
-                setThursday(timeEntry);
-                break;
-            case Calendar.FRIDAY:
-                setFriday(timeEntry);
-                break;
-            case Calendar.SATURDAY:
-                setSaturday(timeEntry);
-                break;
-            case Calendar.SUNDAY:
-                setSunday(timeEntry);
-                break;
+    public void addTimeEntry(TimeEntry timeEntry) {
+        int dayNumber = DateUtils.toCalendar(timeEntry.getDate()).get(Calendar.DAY_OF_WEEK);
+        DayOfWeek day = DayOfWeek.fromCalendarDay(dayNumber);
+        List<TimeEntry> timeEntries = getDayOfWeekTimeEntries(day);
+        if (timeEntries == null) {
+            List<TimeEntry> list = new ArrayList<>();
+            list.add(timeEntry);
+            changeDayOfWeekTimeEntries(day, list);
+        } else {
+            timeEntries.add(timeEntry);
         }
     }
 
     public boolean hasTimeEntries() {
         for (DayOfWeek day : DayOfWeek.values()) {
-            if (getDayOfWeekTimeEntry(day) != null) {
+            List<TimeEntry> timeEntries = getDayOfWeekTimeEntries(day);
+            if (CollectionUtils.isNotEmpty(timeEntries)) {
                 return true;
             }
         }
@@ -331,12 +333,12 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
     public List<TimeEntry> getExistTimeEntries() {
         List<TimeEntry> timeEntries = null;
         for (DayOfWeek day : DayOfWeek.values()) {
-            TimeEntry current = getDayOfWeekTimeEntry(day);
-            if (current != null) {
+            List<TimeEntry> current = getDayOfWeekTimeEntries(day);
+            if (CollectionUtils.isNotEmpty(current)) {
                 if (timeEntries == null) {
                     timeEntries = new ArrayList<>();
                 }
-                timeEntries.add(current);
+                timeEntries.addAll(current);
             }
         }
 

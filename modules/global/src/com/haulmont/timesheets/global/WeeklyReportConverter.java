@@ -44,7 +44,7 @@ public class WeeklyReportConverter {
                 reportEntry.setProject(projectEntry.getKey());
                 reportEntry.setTask(taskEntry.getKey());
                 for (TimeEntry timeEntry : taskEntry.getValue()) {
-                    reportEntry.updateTimeEntry(timeEntry);
+                    reportEntry.addTimeEntry(timeEntry);
                 }
                 reportEntries.add(reportEntry);
             }

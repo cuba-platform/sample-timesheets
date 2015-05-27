@@ -23,6 +23,9 @@ public class TimeEntryLookup extends AbstractLookup {
 
     @Override
     public void init(Map<String, Object> params) {
+        getDialogParams().setWidth(800);
+        getDialogParams().setHeight(500);
+
         timeEntriesTable.setStyleProvider(new Table.StyleProvider() {
             @Nullable
             @Override
