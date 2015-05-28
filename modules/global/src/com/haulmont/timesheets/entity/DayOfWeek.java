@@ -6,6 +6,7 @@ package com.haulmont.timesheets.entity;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
+import javax.annotation.Nonnull;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -42,6 +43,7 @@ public enum DayOfWeek implements EnumClass<String> {
         return null;
     }
 
+    @Nonnull
     public static DayOfWeek fromCalendarDay(int calendarDay) {
         switch (calendarDay) {
             case Calendar.MONDAY:
@@ -59,7 +61,7 @@ public enum DayOfWeek implements EnumClass<String> {
             case Calendar.SUNDAY:
                 return DayOfWeek.SUNDAY;
         }
-        return null;
+        throw new IllegalArgumentException("Wrong java.util.Calendar number of day: " + calendarDay);
     }
 
     public static DayOfWeek fromAbbreviation(String abb) {
@@ -94,6 +96,7 @@ public enum DayOfWeek implements EnumClass<String> {
                 return 0;
         }
     }
+
     public int getJavaCalendarDay() {
         switch (this) {
             case SUNDAY:

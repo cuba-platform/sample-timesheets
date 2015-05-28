@@ -41,6 +41,9 @@ import java.util.*;
  */
 public class ApproveScreen extends AbstractWindow {
 
+    protected static final String COLUMN_SUFFIX = "Column";
+    protected static final String TOTAL_COLUMN_ID = "totalColumn";
+
     public interface Companion {
         void initTable(Table table);
     }
@@ -77,8 +80,6 @@ public class ApproveScreen extends AbstractWindow {
     protected Companion companion;
     @Inject
     protected ValidationTools validationTools;
-
-    protected final String totalColumnId = "totalColumn";
 
     protected Map<String, Label> totalLabelsMap = new HashMap<>();
 
@@ -142,7 +143,7 @@ public class ApproveScreen extends AbstractWindow {
             public void collectionChanged(CollectionDatasource ds, Operation operation, List<WeeklyReportEntry> items) {
                 if (Operation.REMOVE.equals(operation) || Operation.CLEAR.equals(operation)) {
                     for (WeeklyReportEntry entry : items) {
-                        totalLabelsMap.remove(ComponentsHelper.getCacheKeyForEntity(entry, totalColumnId));
+                        totalLabelsMap.remove(ComponentsHelper.getCacheKeyForEntity(entry, TOTAL_COLUMN_ID));
                     }
                 }
             }
@@ -153,8 +154,8 @@ public class ApproveScreen extends AbstractWindow {
             @Override
             public String getStyleName(Entity entity, String property) {
                 String id = null;
-                if (property != null && property.endsWith("Column")) {
-                    id = property.replace("Column", "");
+                if (property != null && property.endsWith(COLUMN_SUFFIX)) {
+                    id = property.replace(COLUMN_SUFFIX, "");
                 }
                 DayOfWeek day = DayOfWeek.fromId(id != null ? id : property);
                 if (entity == null && usersTable.getSingleSelected() != null) {
@@ -163,7 +164,7 @@ public class ApproveScreen extends AbstractWindow {
                         calendar.set(Calendar.DAY_OF_WEEK, day.getJavaCalendarDay());
                         return validationTools.isWorkTimeMatchToPlanForDay(
                                 calendar.getTime(), usersTable.<User>getSingleSelected()) ? null : "overtime";
-                    } else if (totalColumnId.equals(property)) {
+                    } else if (TOTAL_COLUMN_ID.equals(property)) {
                         return validationTools.isWorkTimeMatchToPlanForWeek(
                                 firstDayOfWeek, usersTable.<User>getSingleSelected()) ? null : "overtime";
                     }
@@ -208,7 +209,7 @@ public class ApproveScreen extends AbstractWindow {
     protected void initDaysColumns() {
         for (Date current = firstDayOfWeek; current.getTime() <= lastDayOfWeek.getTime(); current = DateUtils.addDays(current, 1)) {
             final DayOfWeek day = DayOfWeek.fromCalendarDay(DateUtils.toCalendar(current).get(Calendar.DAY_OF_WEEK));
-            final String columnId = day.getId() + "Column";
+            final String columnId = day.getId() + COLUMN_SUFFIX;
             final Date finalCurrent = current;
             weeklyReportsTable.addGeneratedColumn(columnId, new Table.ColumnGenerator() {
                 @Override
@@ -234,21 +235,24 @@ public class ApproveScreen extends AbstractWindow {
 
                                 @Override
                                 public void actionPerform(Component component) {
-                                    openLookup(
-                                            "ts$TimeEntry.lookup",
-                                            new Lookup.Handler() {
-                                                @Override
-                                                public void handleLookup(Collection items) {
-                                                    if (CollectionUtils.isNotEmpty(items)) {
-                                                        TimeEntry timeEntry = (TimeEntry) items.iterator().next();
-                                                        openTimeEntryEditor(timeEntry);
+                                    User user = usersTable.getSingleSelected();
+                                    if (user != null) {
+                                        openLookup(
+                                                "ts$TimeEntry.lookup",
+                                                new Lookup.Handler() {
+                                                    @Override
+                                                    public void handleLookup(Collection items) {
+                                                        if (CollectionUtils.isNotEmpty(items)) {
+                                                            TimeEntry timeEntry = (TimeEntry) items.iterator().next();
+                                                            openTimeEntryEditor(timeEntry);
+                                                        }
                                                     }
-                                                }
-                                            },
-                                            WindowManager.OpenType.DIALOG,
-                                            ParamsMap.of("date", finalCurrent,
-                                                    "taskId", reportEntry.getTask().getId(),
-                                                    "userId", usersTable.getSingleSelected().getId()));
+                                                },
+                                                WindowManager.OpenType.DIALOG,
+                                                ParamsMap.of("date", finalCurrent,
+                                                        "taskId", reportEntry.getTask().getId(),
+                                                        "userId", user.getId()));
+                                    }
                                 }
                             });
                             return linkButton;
@@ -258,7 +262,6 @@ public class ApproveScreen extends AbstractWindow {
                 }
             });
             weeklyReportsTable.setColumnWidth(columnId, 80);
-            weeklyReportsTable.setColumnCaption(columnId, ComponentsHelper.getColumnCaption(day.getId(), current));
 
             Table.Column column = weeklyReportsTable.getColumn(columnId);
             column.setAggregation(ComponentsHelper.createAggregationInfo(
@@ -269,20 +272,20 @@ public class ApproveScreen extends AbstractWindow {
     }
 
     protected void initTotalColumn() {
-        weeklyReportsTable.addGeneratedColumn(totalColumnId, new Table.ColumnGenerator() {
+        weeklyReportsTable.addGeneratedColumn(TOTAL_COLUMN_ID, new Table.ColumnGenerator() {
             @Override
             public Component generateCell(Entity entity) {
                 WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
                 Label label = componentsFactory.createComponent(Label.NAME);
                 label.setValue(reportEntry.getTotal());
-                totalLabelsMap.put(ComponentsHelper.getCacheKeyForEntity(reportEntry, totalColumnId), label);
+                totalLabelsMap.put(ComponentsHelper.getCacheKeyForEntity(reportEntry, TOTAL_COLUMN_ID), label);
                 return label;
             }
         });
-        weeklyReportsTable.setColumnWidth(totalColumnId, 80);
-        weeklyReportsTable.setColumnCaption(totalColumnId, messages.getMessage(getClass(), "total"));
+        weeklyReportsTable.setColumnWidth(TOTAL_COLUMN_ID, 80);
+        weeklyReportsTable.setColumnCaption(TOTAL_COLUMN_ID, messages.getMessage(getClass(), "total"));
 
-        Table.Column column = weeklyReportsTable.getColumn(totalColumnId);
+        Table.Column column = weeklyReportsTable.getColumn(TOTAL_COLUMN_ID);
         column.setAggregation(ComponentsHelper.createAggregationInfo(
                 projectsService.getEntityMetaPropertyPath(WeeklyReportEntry.class, "total"),
                 new TotalColumnAggregation()
@@ -399,6 +402,7 @@ public class ApproveScreen extends AbstractWindow {
     protected void updateWeek() {
         updateWeekCaption();
         updateReportTableItems();
+        updateDayColumnsCaptions();
     }
 
     protected void updateReportTableItems() {
@@ -414,6 +418,14 @@ public class ApproveScreen extends AbstractWindow {
         weekCaption.setValue(String.format("%s - %s",
                 DateTimeUtils.getDateFormat().format(firstDayOfWeek),
                 DateTimeUtils.getDateFormat().format(lastDayOfWeek)));
+    }
+
+    protected void updateDayColumnsCaptions() {
+        for (Date current = firstDayOfWeek; current.getTime() <= lastDayOfWeek.getTime(); current = DateUtils.addDays(current, 1)) {
+            DayOfWeek day = DayOfWeek.fromCalendarDay(DateTimeUtils.getCalendarDayOfWeek(current));
+            String columnId = day.getId() + COLUMN_SUFFIX;
+            weeklyReportsTable.setColumnCaption(columnId, ComponentsHelper.getColumnCaption(day.getId(), current));
+        }
     }
 
     protected boolean showApprovable() {
