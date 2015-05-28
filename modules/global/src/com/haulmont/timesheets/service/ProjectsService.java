@@ -49,4 +49,6 @@ public interface ProjectsService {
     List<Project> getActiveManagedProjectsForUser(User user, @Nullable String viewName);
 
     boolean assignUsersToProjects(Collection<User> users, Collection<Project> projects, ProjectRole projectRole);
+
+    List<Tag> getTagsForTheProject(@Nullable Project project, @Nullable String viewName);
 }

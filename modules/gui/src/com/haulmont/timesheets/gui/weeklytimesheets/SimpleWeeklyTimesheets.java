@@ -4,10 +4,9 @@
 package com.haulmont.timesheets.gui.weeklytimesheets;
 
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
@@ -63,6 +62,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     protected TimeParser timeParser;
     @Inject
     protected TimeSource timeSource;
+    @Inject
+    protected UuidSource uuidSource;
 
     protected final String totalColumnId = "totalColumn";
 
@@ -99,23 +100,47 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                 if (CollectionUtils.isNotEmpty(resultTimeEntries)) {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateTimeUtils.TIME_FORMAT);
                     TimeEntry timeEntry = resultTimeEntries.get(0);
+
                     //todo eude what if there are more than 1 entry
                     String spentTimeStr = simpleDateFormat.format(timeEntry.getTime());
 
                     WeeklyReportEntry weeklyReportEntry = new WeeklyReportEntry();
                     weeklyReportEntry.setTask(timeEntry.getTask());
                     weeklyReportEntry.setProject(timeEntry.getTask().getProject());
+
+                    weeklyReportEntry.setMonday(copyToList(timeEntry));
                     weeklyReportEntry.setMondayTime(spentTimeStr);
+
+                    weeklyReportEntry.setTuesday(copyToList(timeEntry));
                     weeklyReportEntry.setTuesdayTime(spentTimeStr);
+
+                    weeklyReportEntry.setWednesday(copyToList(timeEntry));
                     weeklyReportEntry.setWednesdayTime(spentTimeStr);
+
+                    weeklyReportEntry.setThursday(copyToList(timeEntry));
                     weeklyReportEntry.setThursdayTime(spentTimeStr);
+
+                    weeklyReportEntry.setFriday(copyToList(timeEntry));
                     weeklyReportEntry.setFridayTime(spentTimeStr);
 
                     weeklyTsTable.getDatasource().addItem(weeklyReportEntry);
                 }
             }
+
+            private List<TimeEntry> copyToList(TimeEntry timeEntry) {
+                List<TimeEntry> timeEntries = new ArrayList<>();
+                timeEntries.add(doCopy(timeEntry));
+                return timeEntries;
+            }
+
+            private TimeEntry doCopy(TimeEntry timeEntry) {
+                TimeEntry copy = (TimeEntry) InstanceUtils.copy(timeEntry);
+                copy.setId(uuidSource.createUuid());
+                return copy;
+            }
         });
     }
+
 
     protected void initWeeklyEntriesTable() {
         weeklyTsTable.addAction(new WeeklyReportEntryRemoveAction(weeklyTsTable));
@@ -219,7 +244,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         public Component generateCell(final Entity entity) {
                             final WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
                             List<TimeEntry> timeEntries = reportEntry.getDayOfWeekTimeEntries(day);
-                            if (CollectionUtils.isEmpty(timeEntries)) {
+                            if (CollectionUtils.isEmpty(timeEntries)
+                                    || timeEntries.size() == 1 && PersistenceHelper.isNew(timeEntries.get(0))) {
                                 TextField timeField = componentsFactory.createComponent(TextField.NAME);
                                 timeField.setWidth("100%");
                                 timeField.setHeight("22px");
@@ -344,18 +370,31 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         Collection<WeeklyReportEntry> entries = weeklyEntriesDs.getItems();
         if (!entries.isEmpty()) {
             CommitContext commitContext = new CommitContext();
-            for (WeeklyReportEntry reportEntry : entries) {
-                if (reportEntry.getTask() != null) {
+            for (WeeklyReportEntry weeklyReportEntry : entries) {
+                if (weeklyReportEntry.getTask() != null) {
                     for (final DayOfWeek day : DayOfWeek.values()) {
-                        String timeStr = reportEntry.getDayOfWeekTime(day);
+                        String timeStr = weeklyReportEntry.getDayOfWeekTime(day);
                         Date time = timeParser.parse(timeStr);
                         if (time != null) {
-                            TimeEntry timeEntry = new TimeEntry();
+                            List<TimeEntry> alreadyCreatedEntries = weeklyReportEntry.getDayOfWeekTimeEntries(day);
+                            Set<Tag> defaultTags = weeklyReportEntry.getTask().getDefaultTags();
+
+                            TimeEntry timeEntry = alreadyCreatedEntries != null
+                                    ? alreadyCreatedEntries.get(0)
+                                    : new TimeEntry();
                             timeEntry.setStatus(TimeEntryStatus.NEW);
                             timeEntry.setUser(userSession.getUser());
-                            timeEntry.setTask(reportEntry.getTask());
+                            timeEntry.setTask(weeklyReportEntry.getTask());
                             timeEntry.setTime(time);
-                            timeEntry.setTags(reportEntry.getTask().getDefaultTags());
+                            if (CollectionUtils.isNotEmpty(timeEntry.getTags())) {
+                                HashSet<Tag> tags = new HashSet<>(timeEntry.getTags());
+                                if (defaultTags != null) {
+                                    tags.addAll(defaultTags);
+                                }
+                                timeEntry.setTags(tags);
+                            }  else {
+                                timeEntry.setTags(defaultTags);
+                            }
                             timeEntry.setDate(DateUtils.addDays(firstDayOfWeek, DayOfWeek.getDayOffset(day)));
 
                             commitContext.getCommitInstances().add(timeEntry);
@@ -363,10 +402,12 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                     }
                 }
             }
+
             getDsContext().getDataSupplier().commit(commitContext);
             updateWeek();
         }
     }
+
 
     public void setToday() {
         setWeekRange(DateTimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp()));

@@ -13,6 +13,7 @@ import com.haulmont.cuba.gui.components.autocomplete.Suggester;
 import com.haulmont.cuba.gui.components.autocomplete.Suggestion;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.entity.Project;
+import com.haulmont.timesheets.entity.Tag;
 import com.haulmont.timesheets.entity.Task;
 import com.haulmont.timesheets.global.CommandLineUtils;
 import com.haulmont.timesheets.service.ProjectsService;
@@ -77,6 +78,24 @@ public class CommandLineSuggester implements Suggester {
 
             for (Task task : tasks) {
                 Suggestion suggestion = suggestion(task.getInstanceName(), task.getCode(), cursorPosition);
+                suggestions.add(suggestion);
+            }
+        } else if (text.charAt(cursorPosition - 1) == '$') {
+            Project project = null;
+            String projectCode = commandLineUtils.getProjectCode();
+            String taskCode = commandLineUtils.getTaskCode();
+            if (projectCode != null) {
+                project = projectsService.getEntityByCode(Project.class, projectCode, View.MINIMAL);
+            } else if (taskCode != null) {
+                Task task = projectsService.getEntityByCode(Task.class, taskCode, "task-full");
+                if (task != null) {
+                    project = task.getProject();
+                }
+            }
+
+            List<Tag> tags = projectsService.getTagsForTheProject(project, "tag-with-type");
+            for (Tag tag : tags) {
+                Suggestion suggestion = suggestion(tag.getInstanceName(), tag.getCode(), cursorPosition);
                 suggestions.add(suggestion);
             }
         }

@@ -269,4 +269,17 @@ public class ProjectsServiceBean implements ProjectsService {
 
         return CollectionUtils.isNotEmpty(result);
     }
+
+    public List<Tag> getTagsForTheProject(@Nullable Project project, @Nullable String viewName) {
+        LoadContext loadContext = new LoadContext(Tag.class);
+        if (viewName != null) {
+            loadContext.setView(viewName);
+        }
+        LoadContext.Query query =
+                new LoadContext.Query("select e from ts$Tag e, in(e.tagType) tt where tt.project.id is null" +
+                        " or (tt.project.id = :project)")
+                        .setParameter("project", project);
+        loadContext.setQuery(query);
+        return dataManager.loadList(loadContext);
+    }
 }

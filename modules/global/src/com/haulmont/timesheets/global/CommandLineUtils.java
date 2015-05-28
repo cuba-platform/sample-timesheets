@@ -5,6 +5,8 @@
 package com.haulmont.timesheets.global;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,6 +17,7 @@ import java.util.regex.Pattern;
 public class CommandLineUtils {
     public static final Pattern PROJECT_CODE_PATTERN = Pattern.compile("@([^ ]+?) +");
     public static final Pattern TASK_CODE_PATTERN = Pattern.compile("#([^ ]+?) +");
+    public static final Pattern TAG_CODE_PATTERN = Pattern.compile("\\$([^ ]+?) +");
     public static final Pattern SPENT_TIME_PATTERN = Pattern.compile(" ([0-9]{1,2}[h,ч,:]([0-9]{1,2}[m,м]?)?)");
 
     protected String commandLine;
@@ -23,27 +26,36 @@ public class CommandLineUtils {
         this.commandLine = commandLine;
     }
 
+    @Nullable
     public String getProjectCode() {
-        return getMatchedSubstring(PROJECT_CODE_PATTERN);
-    }
-
-    public String getTaskCode() {
-        return getMatchedSubstring(TASK_CODE_PATTERN);
-    }
-
-    public String getSpentTime() {
-        return getMatchedSubstring(SPENT_TIME_PATTERN);
+        List<String> projects = getMatchedSubstring(PROJECT_CODE_PATTERN);
+        return !projects.isEmpty() ? projects.get(0) : null;
     }
 
     @Nullable
-    protected String getMatchedSubstring(Pattern pattern) {
+    public String getTaskCode() {
+        List<String> tasks = getMatchedSubstring(TASK_CODE_PATTERN);
+        return !tasks.isEmpty() ? tasks.get(0) : null;
+    }
+
+    @Nullable
+    public String getSpentTime() {
+        List<String> times = getMatchedSubstring(SPENT_TIME_PATTERN);
+        return !times.isEmpty() ? times.get(0) : null;
+    }
+
+    public List<String> getTagCodes() {
+        return getMatchedSubstring(TAG_CODE_PATTERN);
+    }
+
+    protected List<String> getMatchedSubstring(Pattern pattern) {
+        List<String> result = new ArrayList<>();
         Matcher matcher = pattern.matcher(commandLine);
         if (matcher.find()) {
             String matched = matcher.group(1);
-            return matched;
+            result.add(matched);
         }
 
-        return null;
+        return result;
     }
-
 }
