@@ -82,6 +82,7 @@
                 </hbox>
                 <table id="weeklyReportsTable"
                        reorderingAllowed="false"
+                       aggregatable="true"
                        width="100%">
                     <columns>
                         <column id="project"/>

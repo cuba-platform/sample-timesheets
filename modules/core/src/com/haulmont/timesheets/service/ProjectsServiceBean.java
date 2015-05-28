@@ -3,6 +3,7 @@
  */
 package com.haulmont.timesheets.service;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.Entity;
@@ -76,6 +77,11 @@ public class ProjectsServiceBean implements ProjectsService {
     @Override
     public <T extends Entity> T getEntityByCode(Class<T> clazz, String code, String viewName) {
         return systemDataManager.getEntityByCode(clazz, code, viewName);
+    }
+
+    @Override
+    public <T extends Entity> MetaPropertyPath getEntityMetaPropertyPath(Class<T> clazz, String property) {
+        return systemDataManager.getEntityMetaPropertyPath(clazz, property);
     }
 
     @Override

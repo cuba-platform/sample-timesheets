@@ -5,6 +5,7 @@
 package com.haulmont.timesheets;
 
 import com.haulmont.chile.core.model.MetaClass;
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
@@ -35,5 +36,10 @@ public class SystemDataManager {
             loadContext.setView(viewName);
         }
         return dataManager.load(loadContext);
+    }
+
+    public <T extends Entity> MetaPropertyPath getEntityMetaPropertyPath(Class<T> clazz, String property) {
+        MetaClass metaClass = metadata.getSession().getClassNN(clazz);
+        return metaClass.getPropertyPath(property);
     }
 }

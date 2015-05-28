@@ -18,6 +18,7 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
+import com.haulmont.timesheets.global.AggregationHelper;
 import com.haulmont.timesheets.global.DateTimeUtils;
 import com.haulmont.timesheets.global.TimeParser;
 import com.haulmont.timesheets.global.WeeklyReportConverter;
@@ -63,7 +64,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     @Inject
     protected TimeSource timeSource;
 
-    protected final String totalColumnId = "total";
+    protected final String totalColumnId = "totalColumn";
 
     protected Map<String, Label> totalLabelsMap = new HashMap<>();
 
@@ -231,7 +232,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                                 if (timeEntries.size() == 1) {
                                     final TimeEntry timeEntry = timeEntries.get(0);
                                     final LinkButton linkButton = componentsFactory.createComponent(LinkButton.NAME);
-                                    linkButton.setCaption(reportEntry.getTotalForDay(day));
+                                    linkButton.setCaption(AggregationHelper.getDayAggregationString(reportEntry.getTotalForDay(day)));
                                     linkButton.setAction(new AbstractAction("edit") {
                                         @Override
                                         public void actionPerform(Component component) {
@@ -242,7 +243,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                                     hBox.add(linkButton);
                                 } else {
                                     final LinkButton linkButton = componentsFactory.createComponent(LinkButton.NAME);
-                                    linkButton.setCaption(reportEntry.getTotalForDay(day));
+                                    linkButton.setCaption(AggregationHelper.getDayAggregationString(reportEntry.getTotalForDay(day)));
                                     linkButton.setAction(new AbstractAction("edit") {
 
                                         @Override
@@ -259,7 +260,9 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                                                         }
                                                     },
                                                     WindowManager.OpenType.DIALOG,
-                                                    ParamsMap.of("date", finalCurrent, "taskId", reportEntry.getTask().getId()));
+                                                    ParamsMap.of("date", finalCurrent,
+                                                            "taskId", reportEntry.getTask().getId(),
+                                                            "userId", userSession.getUser().getId()));
                                         }
                                     });
                                     hBox.add(linkButton);
@@ -285,6 +288,12 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             );
             weeklyTsTable.setColumnWidth(columnId, 80);
             weeklyTsTable.setColumnCaption(columnId, ComponentsHelper.getColumnCaption(day.getId(), current));
+
+            Table.Column column = weeklyTsTable.getColumn(columnId);
+            column.setAggregation(ComponentsHelper.createAggregationInfo(
+                    projectsService.getEntityMetaPropertyPath(WeeklyReportEntry.class, day.getId()),
+                    new TimeEntryAggregation()
+            ));
         }
     }
 
@@ -301,6 +310,12 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         });
         weeklyTsTable.setColumnWidth(totalColumnId, 80);
         weeklyTsTable.setColumnCaption(totalColumnId, messages.getMessage(getClass(), "total"));
+
+        Table.Column column = weeklyTsTable.getColumn(totalColumnId);
+        column.setAggregation(ComponentsHelper.createAggregationInfo(
+                projectsService.getEntityMetaPropertyPath(WeeklyReportEntry.class, "total"),
+                new TotalColumnAggregation()
+        ));
     }
 
     protected void openTimeEntryEditor(
@@ -313,7 +328,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                 if (COMMIT_ACTION_ID.equals(actionId)) {
                     TimeEntry committed = getDsContext().getDataSupplier().commit(editor.getItem());
                     reportEntry.changeDayOfWeekSingleTimeEntry(day, committed);
-                    linkButton.setCaption(reportEntry.getTotalForDay(day));
+                    linkButton.setCaption(AggregationHelper.getDayAggregationString(reportEntry.getTotalForDay(day)));
                     Label totalLabel = totalLabelsMap.get(ComponentsHelper.getCacheKeyForEntity(reportEntry, totalColumnId));
                     totalLabel.setValue(reportEntry.getTotal());
                 }

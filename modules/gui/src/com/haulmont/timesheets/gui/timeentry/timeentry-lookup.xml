@@ -10,7 +10,7 @@
                               class="com.haulmont.timesheets.entity.TimeEntry"
                               view="timeEntry-full">
             <query>
-                <![CDATA[select e from ts$TimeEntry e where e.user.id = :session$userId and e.date = :param$date and e.task.id = :param$taskId]]>
+                <![CDATA[select e from ts$TimeEntry e where e.user.id = :param$userId and e.date = :param$date and e.task.id = :param$taskId]]>
             </query>
         </collectionDatasource>
     </dsContext>

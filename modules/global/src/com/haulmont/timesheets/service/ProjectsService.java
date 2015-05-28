@@ -3,6 +3,7 @@
  */
 package com.haulmont.timesheets.service;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.entity.*;
@@ -26,6 +27,8 @@ public interface ProjectsService {
 
     @Nullable
     <T extends Entity> T getEntityByCode(Class<T> clazz, String code, @Nullable String viewName);
+
+    <T extends Entity> MetaPropertyPath getEntityMetaPropertyPath(Class<T> clazz, String property);
 
     List<TimeEntry> getTimeEntriesForPeriod(
             Date start, Date end, User user, @Nullable TimeEntryStatus status, @Nullable String viewName);

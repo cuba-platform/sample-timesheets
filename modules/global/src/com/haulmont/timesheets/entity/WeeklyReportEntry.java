@@ -6,11 +6,12 @@ package com.haulmont.timesheets.entity;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import com.haulmont.timesheets.global.AggregationHelper;
+import com.haulmont.timesheets.global.HoursAndMinutes;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
 
 import javax.annotation.Nullable;
-import java.sql.Time;
 import java.util.*;
 
 /**
@@ -20,7 +21,6 @@ import java.util.*;
 public class WeeklyReportEntry extends AbstractNotPersistentEntity {
 
     private static final long serialVersionUID = -3857876540680481596L;
-    public static final String TOTAL_FORMAT = "%02d:%02d";
 
     @MetaProperty(mandatory = true)
     protected Project project;
@@ -198,30 +198,28 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
         return sunday;
     }
 
+    @MetaProperty
     public String getTotal() {
-        return getTotalForTimeEntries(getExistTimeEntries());
+        return AggregationHelper.getTaskAggregationString(getTotalForTimeEntries(getExistTimeEntries()));
     }
 
-    public String getTotalForDay(DayOfWeek day) {
+    public HoursAndMinutes getTotalForDay(DayOfWeek day) {
         return getTotalForTimeEntries(getDayOfWeekTimeEntries(day));
     }
 
-    protected String getTotalForTimeEntries(List<TimeEntry> timeEntries) {
-        int hours = 0;
-        int minutes = 0;
+    protected HoursAndMinutes getTotalForTimeEntries(List<TimeEntry> timeEntries) {
+        HoursAndMinutes total = new HoursAndMinutes();
         if (CollectionUtils.isNotEmpty(timeEntries)) {
             for (TimeEntry timeEntry : timeEntries) {
                 Date time = timeEntry.getTime();
                 if (time != null) {
                     Calendar calendar = DateUtils.toCalendar(time);
-                    hours += calendar.get(Calendar.HOUR_OF_DAY);
-                    minutes += calendar.get(Calendar.MINUTE);
+                    total.addHours(calendar.get(Calendar.HOUR_OF_DAY));
+                    total.addMinutes(calendar.get(Calendar.MINUTE));
                 }
             }
         }
-        hours += minutes / 60;
-        minutes %= 60;
-        return String.format(TOTAL_FORMAT, hours, minutes);
+        return total;
     }
 
     public List<TimeEntry> getDayOfWeekTimeEntries(DayOfWeek day) {

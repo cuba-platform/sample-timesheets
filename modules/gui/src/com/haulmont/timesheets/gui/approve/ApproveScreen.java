@@ -19,10 +19,13 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
+import com.haulmont.timesheets.global.AggregationHelper;
 import com.haulmont.timesheets.global.DateTimeUtils;
 import com.haulmont.timesheets.global.WeeklyReportConverter;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
+import com.haulmont.timesheets.gui.weeklytimesheets.TimeEntryAggregation;
+import com.haulmont.timesheets.gui.weeklytimesheets.TotalColumnAggregation;
 import com.haulmont.timesheets.service.ProjectsService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -72,7 +75,7 @@ public class ApproveScreen extends AbstractWindow {
     @Inject
     protected Companion companion;
 
-    protected final String totalColumnId = "total";
+    protected final String totalColumnId = "totalColumn";
 
     protected Map<String, Label> totalLabelsMap = new HashMap<>();
 
@@ -146,16 +149,18 @@ public class ApproveScreen extends AbstractWindow {
             @Nullable
             @Override
             public String getStyleName(Entity entity, String property) {
-                WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
-                String id = null;
-                if (property != null && property.endsWith("Column")) {
-                    id = property.replace("Column", "");
-                }
-                DayOfWeek day = DayOfWeek.fromId(id != null ? id : property);
-                if (day != null) {
-                    List<TimeEntry> timeEntries = reportEntry.getDayOfWeekTimeEntries(day);
-                    if (CollectionUtils.isNotEmpty(timeEntries)) {
-                        return ComponentsHelper.getTimeEntryStatusStyleBg(timeEntries);
+                if (entity instanceof WeeklyReportEntry) {
+                    WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
+                    String id = null;
+                    if (property != null && property.endsWith("Column")) {
+                        id = property.replace("Column", "");
+                    }
+                    DayOfWeek day = DayOfWeek.fromId(id != null ? id : property);
+                    if (day != null) {
+                        List<TimeEntry> timeEntries = reportEntry.getDayOfWeekTimeEntries(day);
+                        if (CollectionUtils.isNotEmpty(timeEntries)) {
+                            return ComponentsHelper.getTimeEntryStatusStyleBg(timeEntries);
+                        }
                     }
                 }
                 return null;
@@ -203,7 +208,7 @@ public class ApproveScreen extends AbstractWindow {
                         if (timeEntries.size() == 1) {
                             final TimeEntry timeEntry = timeEntries.get(0);
                             final LinkButton linkButton = componentsFactory.createComponent(LinkButton.NAME);
-                            linkButton.setCaption(reportEntry.getTotalForDay(day));
+                            linkButton.setCaption(AggregationHelper.getDayAggregationString(reportEntry.getTotalForDay(day)));
                             linkButton.setAction(new AbstractAction("edit") {
                                 @Override
                                 public void actionPerform(Component component) {
@@ -213,7 +218,7 @@ public class ApproveScreen extends AbstractWindow {
                             return linkButton;
                         } else {
                             final LinkButton linkButton = componentsFactory.createComponent(LinkButton.NAME);
-                            linkButton.setCaption(reportEntry.getTotalForDay(day));
+                            linkButton.setCaption(AggregationHelper.getDayAggregationString(reportEntry.getTotalForDay(day)));
                             linkButton.setAction(new AbstractAction("edit") {
 
                                 @Override
@@ -230,7 +235,9 @@ public class ApproveScreen extends AbstractWindow {
                                                 }
                                             },
                                             WindowManager.OpenType.DIALOG,
-                                            ParamsMap.of("date", finalCurrent, "taskId", reportEntry.getTask().getId()));
+                                            ParamsMap.of("date", finalCurrent,
+                                                    "taskId", reportEntry.getTask().getId(),
+                                                    "userId", usersTable.getSingleSelected().getId()));
                                 }
                             });
                             return linkButton;
@@ -241,6 +248,12 @@ public class ApproveScreen extends AbstractWindow {
             });
             weeklyReportsTable.setColumnWidth(columnId, 80);
             weeklyReportsTable.setColumnCaption(columnId, ComponentsHelper.getColumnCaption(day.getId(), current));
+
+            Table.Column column = weeklyReportsTable.getColumn(columnId);
+            column.setAggregation(ComponentsHelper.createAggregationInfo(
+                    projectsService.getEntityMetaPropertyPath(WeeklyReportEntry.class, day.getId()),
+                    new TimeEntryAggregation()
+            ));
         }
     }
 
@@ -257,6 +270,12 @@ public class ApproveScreen extends AbstractWindow {
         });
         weeklyReportsTable.setColumnWidth(totalColumnId, 80);
         weeklyReportsTable.setColumnCaption(totalColumnId, messages.getMessage(getClass(), "total"));
+
+        Table.Column column = weeklyReportsTable.getColumn(totalColumnId);
+        column.setAggregation(ComponentsHelper.createAggregationInfo(
+                projectsService.getEntityMetaPropertyPath(WeeklyReportEntry.class, "total"),
+                new TotalColumnAggregation()
+        ));
     }
 
     protected void initActionsColumn() {

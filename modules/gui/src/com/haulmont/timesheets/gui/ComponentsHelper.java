@@ -4,6 +4,7 @@
 
 package com.haulmont.timesheets.gui;
 
+import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
@@ -15,6 +16,7 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.timesheets.entity.*;
@@ -71,6 +73,13 @@ public class ComponentsHelper {
         linkButton.setAlignment(Component.Alignment.MIDDLE_CENTER);
         linkButton.setAction(action);
         return linkButton;
+    }
+
+    public static AggregationInfo createAggregationInfo(MetaPropertyPath path, AggregationStrategy strategy) {
+        AggregationInfo info = new AggregationInfo();
+        info.setPropertyPath(path);
+        info.setStrategy(strategy);
+        return info;
     }
 
     public static String getColumnCaption(String columnId, Date date) {

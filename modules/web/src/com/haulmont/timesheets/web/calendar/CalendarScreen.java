@@ -3,7 +3,6 @@
  */
 package com.haulmont.timesheets.web.calendar;
 
-import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.WindowManager;
@@ -15,11 +14,11 @@ import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.haulmont.timesheets.entity.Holiday;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.global.DateTimeUtils;
+import com.haulmont.timesheets.global.HoursAndMinutes;
 import com.haulmont.timesheets.global.ValidationTools;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.gui.holiday.HolidayEdit;
 import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
-import com.haulmont.timesheets.service.ProjectsService;
 import com.haulmont.timesheets.web.toolkit.ui.TimeSheetsCalendar;
 import com.vaadin.event.Action;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -57,8 +56,6 @@ public class CalendarScreen extends AbstractWindow {
     protected TimeSource timeSource;
     @Inject
     protected ValidationTools validationTools;
-
-    protected ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);
 
     protected TimeSheetsCalendar calendar;
     protected Date firstDayOfMonth;
@@ -331,29 +328,6 @@ public class CalendarScreen extends AbstractWindow {
         protected void doRemove() {
             calendar.removeEvent(event);
             getDsContext().getDataSupplier().remove(event.getTimeEntry());
-        }
-    }
-
-    protected static class HoursAndMinutes {
-
-        protected BigDecimal time = BigDecimal.ZERO;
-
-        protected BigDecimal getTime() {
-            return time;
-        }
-
-        protected void setTime(BigDecimal time) {
-            this.time = time;
-        }
-
-        protected int getHours() {
-            return time.intValue();
-        }
-
-        protected int getMinutes() {
-            return time.remainder(BigDecimal.ONE)
-                    .multiply(BigDecimal.valueOf(60))
-                    .intValue();
         }
     }
 

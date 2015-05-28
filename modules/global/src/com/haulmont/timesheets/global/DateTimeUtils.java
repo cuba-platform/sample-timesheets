@@ -10,6 +10,7 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.time.DateUtils;
 
+import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -84,6 +85,17 @@ public final class DateTimeUtils {
             TimeParser timeParser = AppBeans.get(TimeParser.NAME);
             return BigDecimal.valueOf(timeParser.findHours(time) + timeParser.findMinutes(time) / 60.0);
         }
+    }
+
+    public static BigDecimal dateToBigDecimal(@Nullable Date date) {
+        if (date == null) {
+            return BigDecimal.ZERO;
+        }
+        HoursAndMinutes time = new HoursAndMinutes();
+        Calendar calendar = DateUtils.toCalendar(date);
+        time.addHours(calendar.get(Calendar.HOUR_OF_DAY));
+        time.addMinutes(calendar.get(Calendar.MINUTE));
+        return time.getTime();
     }
 
     public static DateFormat getDateFormat() {
