@@ -6,6 +6,7 @@ package com.haulmont.timesheets.global;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.global.UserSession;
 import org.apache.commons.lang.time.DateUtils;
 
@@ -94,6 +95,6 @@ public final class DateTimeUtils {
     }
 
     private static UserSession userSession() {
-        return AppBeans.get(UserSession.class);
+        return AppBeans.get(UserSessionSource.class).getUserSession();
     }
 }
