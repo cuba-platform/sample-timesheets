@@ -282,9 +282,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         }
                     }
             );
-            Table.Column column = weeklyTsTable.getColumn(columnId);
-            column.setWidth(80);
-            column.setCaption(ComponentsHelper.getColumnCaption(day.getId(), current));
+            weeklyTsTable.setColumnWidth(columnId, 80);
+            weeklyTsTable.setColumnCaption(columnId, ComponentsHelper.getColumnCaption(day.getId(), current));
         }
     }
 

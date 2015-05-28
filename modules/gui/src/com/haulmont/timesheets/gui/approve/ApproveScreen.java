@@ -110,9 +110,8 @@ public class ApproveScreen extends AbstractWindow {
                 );
             }
         });
-        Table.Column column = usersTable.getColumn(actionsColumnId);
-        column.setWidth(80);
-        column.setCaption(messages.getMessage(getClass(), actionsColumnId));
+        usersTable.setColumnWidth(actionsColumnId, 90);
+        usersTable.setColumnCaption(actionsColumnId, messages.getMessage(getClass(), actionsColumnId));
 
         usersDs.addListener(new CollectionDsListenerAdapter<ExtUser>() {
             @Override
@@ -239,9 +238,8 @@ public class ApproveScreen extends AbstractWindow {
                     return null;
                 }
             });
-            Table.Column column = weeklyReportsTable.getColumn(columnId);
-            column.setWidth(80);
-            column.setCaption(ComponentsHelper.getColumnCaption(day.getId(), current));
+            weeklyReportsTable.setColumnWidth(columnId, 80);
+            weeklyReportsTable.setColumnCaption(columnId, ComponentsHelper.getColumnCaption(day.getId(), current));
         }
     }
 
@@ -274,9 +272,8 @@ public class ApproveScreen extends AbstractWindow {
                 ) : null;
             }
         });
-        Table.Column column = weeklyReportsTable.getColumn(actionsColumnId);
-        column.setWidth(80);
-        column.setCaption(messages.getMessage(getClass(), actionsColumnId));
+        weeklyReportsTable.setColumnWidth(actionsColumnId, 90);
+        weeklyReportsTable.setColumnCaption(actionsColumnId, messages.getMessage(getClass(), actionsColumnId));
     }
 
     protected void openTimeEntryEditor(
