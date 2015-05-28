@@ -17,10 +17,7 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
-import com.haulmont.timesheets.global.StringFormatHelper;
-import com.haulmont.timesheets.global.DateTimeUtils;
-import com.haulmont.timesheets.global.TimeParser;
-import com.haulmont.timesheets.global.WeeklyReportConverter;
+import com.haulmont.timesheets.global.*;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.gui.commandline.CommandLineFrameController;
 import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
@@ -28,6 +25,7 @@ import com.haulmont.timesheets.service.ProjectsService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -64,6 +62,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     protected TimeSource timeSource;
     @Inject
     protected UuidSource uuidSource;
+    @Inject
+    protected ValidationTools validationTools;
 
     protected final String totalColumnId = "totalColumn";
 
@@ -158,6 +158,30 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         totalLabelsMap.remove(ComponentsHelper.getCacheKeyForEntity(entry, totalColumnId));
                     }
                 }
+            }
+        });
+
+        weeklyTsTable.setStyleProvider(new Table.StyleProvider() {
+            @Nullable
+            @Override
+            public String getStyleName(Entity entity, String property) {
+                String id = null;
+                if (property != null && property.endsWith("Column")) {
+                    id = property.replace("Column", "");
+                }
+                DayOfWeek day = DayOfWeek.fromId(id != null ? id : property);
+                if (entity == null) {
+                    if (day != null) {
+                        Calendar calendar = DateUtils.toCalendar(firstDayOfWeek);
+                        calendar.set(Calendar.DAY_OF_WEEK, day.getJavaCalendarDay());
+                        return validationTools.isWorkTimeMatchToPlanForDay(
+                                calendar.getTime(), userSession.getUser()) ? null : "overtime";
+                    } else if (totalColumnId.equals(property)) {
+                        return validationTools.isWorkTimeMatchToPlanForWeek(
+                                firstDayOfWeek, userSession.getUser()) ? null : "overtime";
+                    }
+                }
+                return null;
             }
         });
     }
@@ -392,7 +416,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                                     tags.addAll(defaultTags);
                                 }
                                 timeEntry.setTags(tags);
-                            }  else {
+                            } else {
                                 timeEntry.setTags(defaultTags);
                             }
                             timeEntry.setDate(DateUtils.addDays(firstDayOfWeek, DayOfWeek.getDayOffset(day)));

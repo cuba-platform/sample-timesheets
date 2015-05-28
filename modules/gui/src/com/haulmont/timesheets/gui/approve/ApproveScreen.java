@@ -19,8 +19,9 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
-import com.haulmont.timesheets.global.StringFormatHelper;
 import com.haulmont.timesheets.global.DateTimeUtils;
+import com.haulmont.timesheets.global.StringFormatHelper;
+import com.haulmont.timesheets.global.ValidationTools;
 import com.haulmont.timesheets.global.WeeklyReportConverter;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
@@ -74,6 +75,8 @@ public class ApproveScreen extends AbstractWindow {
     protected WeeklyReportConverter reportConverterBean;
     @Inject
     protected Companion companion;
+    @Inject
+    protected ValidationTools validationTools;
 
     protected final String totalColumnId = "totalColumn";
 
@@ -149,18 +152,26 @@ public class ApproveScreen extends AbstractWindow {
             @Nullable
             @Override
             public String getStyleName(Entity entity, String property) {
-                if (entity instanceof WeeklyReportEntry) {
-                    WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
-                    String id = null;
-                    if (property != null && property.endsWith("Column")) {
-                        id = property.replace("Column", "");
-                    }
-                    DayOfWeek day = DayOfWeek.fromId(id != null ? id : property);
+                String id = null;
+                if (property != null && property.endsWith("Column")) {
+                    id = property.replace("Column", "");
+                }
+                DayOfWeek day = DayOfWeek.fromId(id != null ? id : property);
+                if (entity == null && usersTable.getSingleSelected() != null) {
                     if (day != null) {
-                        List<TimeEntry> timeEntries = reportEntry.getDayOfWeekTimeEntries(day);
-                        if (CollectionUtils.isNotEmpty(timeEntries)) {
-                            return ComponentsHelper.getTimeEntryStatusStyleBg(timeEntries);
-                        }
+                        Calendar calendar = DateUtils.toCalendar(firstDayOfWeek);
+                        calendar.set(Calendar.DAY_OF_WEEK, day.getJavaCalendarDay());
+                        return validationTools.isWorkTimeMatchToPlanForDay(
+                                calendar.getTime(), usersTable.<User>getSingleSelected()) ? null : "overtime";
+                    } else if (totalColumnId.equals(property)) {
+                        return validationTools.isWorkTimeMatchToPlanForWeek(
+                                firstDayOfWeek, usersTable.<User>getSingleSelected()) ? null : "overtime";
+                    }
+                } else if (entity instanceof WeeklyReportEntry && day != null) {
+                    WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
+                    List<TimeEntry> timeEntries = reportEntry.getDayOfWeekTimeEntries(day);
+                    if (CollectionUtils.isNotEmpty(timeEntries)) {
+                        return ComponentsHelper.getTimeEntryStatusStyleBg(timeEntries);
                     }
                 }
                 return null;

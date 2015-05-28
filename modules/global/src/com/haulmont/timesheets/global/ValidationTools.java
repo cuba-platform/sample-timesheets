@@ -92,6 +92,10 @@ public class ValidationTools {
         return plan.equals(fact);
     }
 
+    public boolean isWorkTimeMatchToPlanForDay(Date date, User user) {
+        return isWorkTimeMatchToPlanForPeriod(date, date, user);
+    }
+
     public boolean isWorkTimeMatchToPlanForWeek(Date date, User user) {
         return isWorkTimeMatchToPlanForPeriod(
                 DateTimeUtils.getFirstDayOfWeek(date),

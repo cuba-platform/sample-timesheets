@@ -114,6 +114,26 @@ public enum DayOfWeek implements EnumClass<String> {
                 return 0;
         }
     }
+    public int getJavaCalendarDay() {
+        switch (this) {
+            case SUNDAY:
+                return Calendar.SUNDAY;
+            case MONDAY:
+                return Calendar.MONDAY;
+            case TUESDAY:
+                return Calendar.TUESDAY;
+            case WEDNESDAY:
+                return Calendar.WEDNESDAY;
+            case THURSDAY:
+                return Calendar.THURSDAY;
+            case FRIDAY:
+                return Calendar.FRIDAY;
+            case SATURDAY:
+                return Calendar.SATURDAY;
+            default:
+                return 0;
+        }
+    }
 
     protected static int getComputedNumber(int origin, int offset) {
         int value = origin - offset;
