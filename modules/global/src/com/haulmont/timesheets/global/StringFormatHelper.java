@@ -7,7 +7,7 @@ import com.haulmont.cuba.core.global.Messages;
  * @author gorelov
  * @version $Id$
  */
-public class AggregationHelper {
+public class StringFormatHelper {
 
     protected static Messages messages = AppBeans.get(Messages.NAME);
 
@@ -15,19 +15,19 @@ public class AggregationHelper {
         return String.format(format, time.getHours(), time.getMinutes());
     }
 
-    public static String getDayAggregationString(HoursAndMinutes time) {
-        return timeToString(messages.getMessage(AggregationHelper.class, "aggregation.dayHoursSummary"), time);
+    public static String getDayHoursString(HoursAndMinutes time) {
+        return timeToString(messages.getMessage(StringFormatHelper.class, "format.dayHoursSummary"), time);
     }
 
     public static String getTotalDayAggregationString(HoursAndMinutes time) {
-        return timeToString(messages.getMessage(AggregationHelper.class, "aggregation.totalDayHoursSummary"), time);
+        return timeToString(messages.getMessage(StringFormatHelper.class, "format.totalDayHoursSummary"), time);
     }
 
     public static String getTaskAggregationString(HoursAndMinutes time) {
-        return timeToString(messages.getMessage(AggregationHelper.class, "aggregation.taskHoursSummary"), time);
+        return timeToString(messages.getMessage(StringFormatHelper.class, "format.taskHoursSummary"), time);
     }
 
     public static String getWeekAggregationString(HoursAndMinutes time) {
-        return timeToString(messages.getMessage(AggregationHelper.class, "aggregation.weekHoursSummary"), time);
+        return timeToString(messages.getMessage(StringFormatHelper.class, "format.weekHoursSummary"), time);
     }
 }

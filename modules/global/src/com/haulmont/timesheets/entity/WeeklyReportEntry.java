@@ -6,7 +6,7 @@ package com.haulmont.timesheets.entity;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
-import com.haulmont.timesheets.global.AggregationHelper;
+import com.haulmont.timesheets.global.StringFormatHelper;
 import com.haulmont.timesheets.global.HoursAndMinutes;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -200,7 +200,7 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
 
     @MetaProperty
     public String getTotal() {
-        return AggregationHelper.getTaskAggregationString(getTotalForTimeEntries(getExistTimeEntries()));
+        return StringFormatHelper.getTaskAggregationString(getTotalForTimeEntries(getExistTimeEntries()));
     }
 
     public HoursAndMinutes getTotalForDay(DayOfWeek day) {

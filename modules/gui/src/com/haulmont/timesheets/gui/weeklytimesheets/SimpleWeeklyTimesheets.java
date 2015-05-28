@@ -18,7 +18,7 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
-import com.haulmont.timesheets.global.AggregationHelper;
+import com.haulmont.timesheets.global.StringFormatHelper;
 import com.haulmont.timesheets.global.DateTimeUtils;
 import com.haulmont.timesheets.global.TimeParser;
 import com.haulmont.timesheets.global.WeeklyReportConverter;
@@ -232,7 +232,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                                 if (timeEntries.size() == 1) {
                                     final TimeEntry timeEntry = timeEntries.get(0);
                                     final LinkButton linkButton = componentsFactory.createComponent(LinkButton.NAME);
-                                    linkButton.setCaption(AggregationHelper.getDayAggregationString(reportEntry.getTotalForDay(day)));
+                                    linkButton.setCaption(StringFormatHelper.getDayHoursString(reportEntry.getTotalForDay(day)));
                                     linkButton.setAction(new AbstractAction("edit") {
                                         @Override
                                         public void actionPerform(Component component) {
@@ -243,7 +243,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                                     hBox.add(linkButton);
                                 } else {
                                     final LinkButton linkButton = componentsFactory.createComponent(LinkButton.NAME);
-                                    linkButton.setCaption(AggregationHelper.getDayAggregationString(reportEntry.getTotalForDay(day)));
+                                    linkButton.setCaption(StringFormatHelper.getDayHoursString(reportEntry.getTotalForDay(day)));
                                     linkButton.setAction(new AbstractAction("edit") {
 
                                         @Override
@@ -328,7 +328,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                 if (COMMIT_ACTION_ID.equals(actionId)) {
                     TimeEntry committed = getDsContext().getDataSupplier().commit(editor.getItem());
                     reportEntry.changeDayOfWeekSingleTimeEntry(day, committed);
-                    linkButton.setCaption(AggregationHelper.getDayAggregationString(reportEntry.getTotalForDay(day)));
+                    linkButton.setCaption(StringFormatHelper.getDayHoursString(reportEntry.getTotalForDay(day)));
                     Label totalLabel = totalLabelsMap.get(ComponentsHelper.getCacheKeyForEntity(reportEntry, totalColumnId));
                     totalLabel.setValue(reportEntry.getTotal());
                 }

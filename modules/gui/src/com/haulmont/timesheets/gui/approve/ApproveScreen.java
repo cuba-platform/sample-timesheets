@@ -19,7 +19,7 @@ import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
-import com.haulmont.timesheets.global.AggregationHelper;
+import com.haulmont.timesheets.global.StringFormatHelper;
 import com.haulmont.timesheets.global.DateTimeUtils;
 import com.haulmont.timesheets.global.WeeklyReportConverter;
 import com.haulmont.timesheets.gui.ComponentsHelper;
@@ -208,7 +208,7 @@ public class ApproveScreen extends AbstractWindow {
                         if (timeEntries.size() == 1) {
                             final TimeEntry timeEntry = timeEntries.get(0);
                             final LinkButton linkButton = componentsFactory.createComponent(LinkButton.NAME);
-                            linkButton.setCaption(AggregationHelper.getDayAggregationString(reportEntry.getTotalForDay(day)));
+                            linkButton.setCaption(StringFormatHelper.getDayHoursString(reportEntry.getTotalForDay(day)));
                             linkButton.setAction(new AbstractAction("edit") {
                                 @Override
                                 public void actionPerform(Component component) {
@@ -218,7 +218,7 @@ public class ApproveScreen extends AbstractWindow {
                             return linkButton;
                         } else {
                             final LinkButton linkButton = componentsFactory.createComponent(LinkButton.NAME);
-                            linkButton.setCaption(AggregationHelper.getDayAggregationString(reportEntry.getTotalForDay(day)));
+                            linkButton.setCaption(StringFormatHelper.getDayHoursString(reportEntry.getTotalForDay(day)));
                             linkButton.setAction(new AbstractAction("edit") {
 
                                 @Override

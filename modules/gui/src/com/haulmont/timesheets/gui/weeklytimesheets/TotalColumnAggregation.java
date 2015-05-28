@@ -5,7 +5,7 @@
 package com.haulmont.timesheets.gui.weeklytimesheets;
 
 import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
-import com.haulmont.timesheets.global.AggregationHelper;
+import com.haulmont.timesheets.global.StringFormatHelper;
 import com.haulmont.timesheets.global.DateTimeUtils;
 import com.haulmont.timesheets.global.HoursAndMinutes;
 
@@ -23,7 +23,7 @@ public class TotalColumnAggregation implements AggregationStrategy<String, Strin
         for (String time : propertyValues) {
             total.addTime(DateTimeUtils.timeStringToBigDecimal(time));
         }
-        return AggregationHelper.getWeekAggregationString(total);
+        return StringFormatHelper.getWeekAggregationString(total);
     }
 
     @Override
