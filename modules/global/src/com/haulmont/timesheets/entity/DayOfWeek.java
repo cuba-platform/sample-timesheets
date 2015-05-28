@@ -71,31 +71,11 @@ public enum DayOfWeek implements EnumClass<String> {
         return null;
     }
 
-    public static int getDayOffset(DayOfWeek day) {
-        switch (day) {
-            case TUESDAY:
-                return 1;
-            case WEDNESDAY:
-                return 2;
-            case THURSDAY:
-                return 3;
-            case FRIDAY:
-                return 4;
-            case SATURDAY:
-                return 5;
-            case SUNDAY:
-                return 6;
-            default:
-                return 0;
-        }
-    }
-
-    public static int convertToDayOfWeekNumber(DayOfWeek day, Locale locale) {
-        // TODO: gg use calendar with locale?
+    public int convertToDayOfWeekNumber(Locale locale) {
         int firstDayOfWeek = Calendar.getInstance(locale).getFirstDayOfWeek();
         int offset = firstDayOfWeek - 1;
 
-        switch (day) {
+        switch (this) {
             case SUNDAY:
                 return getComputedNumber(1, offset);
             case MONDAY:
@@ -135,7 +115,7 @@ public enum DayOfWeek implements EnumClass<String> {
         }
     }
 
-    protected static int getComputedNumber(int origin, int offset) {
+    protected int getComputedNumber(int origin, int offset) {
         int value = origin - offset;
         return value > 0 ? value : 7 - value;
     }

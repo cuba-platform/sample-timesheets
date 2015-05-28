@@ -419,7 +419,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                             } else {
                                 timeEntry.setTags(defaultTags);
                             }
-                            timeEntry.setDate(DateUtils.addDays(firstDayOfWeek, DayOfWeek.getDayOffset(day)));
+                            timeEntry.setDate(DateTimeUtils.getSpecificDayOfWeek(firstDayOfWeek, day.getJavaCalendarDay()));
 
                             commitContext.getCommitInstances().add(timeEntry);
                         }

@@ -61,6 +61,16 @@ public final class DateTimeUtils {
         return DateUtils.addDays(getFirstDayOfWeek(date), 6);
     }
 
+    public static Date getSpecificDayOfWeek(Date date, int javaCalendarDayNumber) {
+        return getSpecificDayOfWeek(date, javaCalendarDayNumber, userSession().getLocale());
+    }
+
+    public static Date getSpecificDayOfWeek(Date date, int javaCalendarDayNumber, Locale locale) {
+        Calendar calendar = getCalendarWithoutTime(date, locale);
+        calendar.set(Calendar.DAY_OF_WEEK, javaCalendarDayNumber);
+        return calendar.getTime();
+    }
+
     public static Date getFirstDayOfMonth(Date date) {
         Calendar calendar = getCalendarWithoutTime(date);
         calendar.set(Calendar.DAY_OF_MONTH, 1);
