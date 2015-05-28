@@ -4,6 +4,7 @@
 package com.haulmont.timesheets.gui.project;
 
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.LookupPickerField;
@@ -100,9 +101,12 @@ public class ProjectEdit extends AbstractEditor<Project> {
         if (committed) {
             Client client = getItem().getClient();
             List<Project> childrenProjects = projectsService.getProjectChildren(getItem());
+            CommitContext commitContext = new CommitContext();
             for (Project child : childrenProjects) {
-                projectsService.setProjectClient(child, client);
+                child.setClient(client);
+                commitContext.getCommitInstances().add(child);
             }
+            getDsContext().getDataSupplier().commit(commitContext);
         }
         return super.postCommit(committed, close);
     }

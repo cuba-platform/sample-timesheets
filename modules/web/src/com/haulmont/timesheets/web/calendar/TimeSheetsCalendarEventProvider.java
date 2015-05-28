@@ -11,6 +11,7 @@ import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.service.ProjectsService;
 import com.vaadin.ui.components.calendar.event.BasicEventProvider;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
 
 import javax.annotation.Nullable;
@@ -42,7 +43,7 @@ public class TimeSheetsCalendarEventProvider extends BasicEventProvider {
     }
 
     public Set<String> getHolidays(Date startDate, Date endDate) {
-        if (holidays == null || holidays.isEmpty()) {
+        if (CollectionUtils.isEmpty(holidays)) {
             return Collections.emptySet();
         }
         Set<String> stringHolidays = new HashSet<>();

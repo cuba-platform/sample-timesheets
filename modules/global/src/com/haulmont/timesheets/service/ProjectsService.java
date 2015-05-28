@@ -21,29 +21,21 @@ public interface ProjectsService {
 
     List<Project> getProjectChildren(Project parent);
 
-    void setProjectClient(Project project, @Nullable Client client);
-
     @Nullable
     ProjectRole getUserProjectRole(Project project, User user);
 
     @Nullable
     <T extends Entity> T getEntityByCode(Class<T> clazz, String code, @Nullable String viewName);
 
-    List<TimeEntry> getTimeEntriesForPeriod(Date start, Date end, User user, @Nullable TimeEntryStatus status, @Nullable String viewName);
+    List<TimeEntry> getTimeEntriesForPeriod(
+            Date start, Date end, User user, @Nullable TimeEntryStatus status, @Nullable String viewName);
 
     List<TimeEntry> getApprovableTimeEntriesForPeriod(
-            Date start, Date end, User approver, User user, @Nullable TimeEntryStatus status, @Nullable String viewName
-    );
+            Date start, Date end, User approver, User user, @Nullable TimeEntryStatus status, @Nullable String viewName);
 
     List<TimeEntry> getTimeEntriesForUser(User user, @Nullable String viewName);
 
     List<Holiday> getHolidays();
-
-    void removeTimeEntry(TimeEntry timeEntry);
-
-    void removeTimeEntries(List<TimeEntry> timeEntries);
-
-    void updateTimeEntriesStatus(List<TimeEntry> timeEntries, TimeEntryStatus status);
 
     List<Task> getActiveTasksForUser(User user, @Nullable String viewName);
 

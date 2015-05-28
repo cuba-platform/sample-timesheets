@@ -5,6 +5,7 @@ package com.haulmont.timesheets.gui.approve;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.View;
@@ -206,7 +207,7 @@ public class ApproveScreen extends AbstractWindow {
                             linkButton.setAction(new AbstractAction("edit") {
                                 @Override
                                 public void actionPerform(Component component) {
-                                    openTimeEntryEditor(timeEntry, linkButton, reportEntry, day);
+                                    openTimeEntryEditor(timeEntry);
                                 }
                             });
                             return linkButton;
@@ -224,7 +225,7 @@ public class ApproveScreen extends AbstractWindow {
                                                 public void handleLookup(Collection items) {
                                                     if (CollectionUtils.isNotEmpty(items)) {
                                                         TimeEntry timeEntry = (TimeEntry) items.iterator().next();
-                                                        openTimeEntryEditor(timeEntry, linkButton, reportEntry, day);
+                                                        openTimeEntryEditor(timeEntry);
                                                     }
                                                 }
                                             },
@@ -277,7 +278,7 @@ public class ApproveScreen extends AbstractWindow {
     }
 
     protected void openTimeEntryEditor(
-            TimeEntry timeEntry, final LinkButton linkButton, final WeeklyReportEntry reportEntry, final DayOfWeek day) {
+            TimeEntry timeEntry) {
         final TimeEntryEdit editor = openEditor(
                 "ts$TimeEntry.edit", timeEntry, WindowManager.OpenType.DIALOG);
         editor.addListener(new CloseListener() {
@@ -433,8 +434,13 @@ public class ApproveScreen extends AbstractWindow {
 
         @Override
         public void actionPerform(Component component) {
+            CommitContext commitContext = new CommitContext();
+            for (TimeEntry entry : getTimeEntries()) {
+                entry.setStatus(status);
+                commitContext.getCommitInstances().add(entry);
+            }
+            getDsContext().getDataSupplier().commit(commitContext);
 
-            projectsService.updateTimeEntriesStatus(getTimeEntries(), status);
             updateReportTableItems();
         }
 

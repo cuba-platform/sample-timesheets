@@ -5,6 +5,7 @@ package com.haulmont.timesheets.gui.weeklytimesheets;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.WindowManager;
@@ -270,7 +271,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                                 removeButton.setAction(new ComponentsHelper.CustomRemoveAction("timeEntryRemove", getFrame()) {
                                     @Override
                                     protected void doRemove() {
-                                        projectsService.removeTimeEntries(reportEntry.getDayOfWeekTimeEntries(day));
+                                        removeTimeEntries(reportEntry.getDayOfWeekTimeEntries(day));
                                         reportEntry.changeDayOfWeekTimeEntries(day, null);
                                         weeklyTsTable.repaint();
                                     }
@@ -326,25 +327,30 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
     public void submitAll() {
         Collection<WeeklyReportEntry> entries = weeklyEntriesDs.getItems();
-        for (WeeklyReportEntry reportEntry : entries) {
-            if (reportEntry.getTask() != null) {
-                for (final DayOfWeek day : DayOfWeek.values()) {
-                    String timeStr = reportEntry.getDayOfWeekTime(day);
-                    Date time = timeParser.parse(timeStr);
-                    if (time != null) {
-                        TimeEntry timeEntry = new TimeEntry();
-                        timeEntry.setStatus(TimeEntryStatus.NEW);
-                        timeEntry.setUser(userSession.getUser());
-                        timeEntry.setTask(reportEntry.getTask());
-                        timeEntry.setTime(time);
-                        timeEntry.setTags(reportEntry.getTask().getDefaultTags());
-                        timeEntry.setDate(DateUtils.addDays(firstDayOfWeek, DayOfWeek.getDayOffset(day)));
-                        getDsContext().getDataSupplier().commit(timeEntry);
+        if (!entries.isEmpty()) {
+            CommitContext commitContext = new CommitContext();
+            for (WeeklyReportEntry reportEntry : entries) {
+                if (reportEntry.getTask() != null) {
+                    for (final DayOfWeek day : DayOfWeek.values()) {
+                        String timeStr = reportEntry.getDayOfWeekTime(day);
+                        Date time = timeParser.parse(timeStr);
+                        if (time != null) {
+                            TimeEntry timeEntry = new TimeEntry();
+                            timeEntry.setStatus(TimeEntryStatus.NEW);
+                            timeEntry.setUser(userSession.getUser());
+                            timeEntry.setTask(reportEntry.getTask());
+                            timeEntry.setTime(time);
+                            timeEntry.setTags(reportEntry.getTask().getDefaultTags());
+                            timeEntry.setDate(DateUtils.addDays(firstDayOfWeek, DayOfWeek.getDayOffset(day)));
+
+                            commitContext.getCommitInstances().add(timeEntry);
+                        }
                     }
                 }
             }
+            getDsContext().getDataSupplier().commit(commitContext);
+            updateWeek();
         }
-        updateWeek();
     }
 
     public void setToday() {
@@ -389,6 +395,12 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         }
     }
 
+    protected void removeTimeEntries(List<TimeEntry> timeEntries) {
+        CommitContext commitContext = new CommitContext();
+        commitContext.getRemoveInstances().addAll(timeEntries);
+        getDsContext().getDataSupplier().commit(commitContext);
+    }
+
     protected class WeeklyReportEntryRemoveAction extends ComponentsHelper.CaptionlessRemoveAction {
 
         public WeeklyReportEntryRemoveAction(ListComponent target) {
@@ -400,7 +412,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             Set<WeeklyReportEntry> entries = target.getSelected();
             if (!entries.isEmpty()) {
                 for (WeeklyReportEntry entry : entries) {
-                    projectsService.removeTimeEntries(entry.getExistTimeEntries());
+                    removeTimeEntries(entry.getExistTimeEntries());
                 }
             }
             super.actionPerform(component);

@@ -6,10 +6,8 @@ package com.haulmont.timesheets.service;
 import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.SystemDataManager;
 import com.haulmont.timesheets.entity.*;
@@ -59,12 +57,6 @@ public class ProjectsServiceBean implements ProjectsService {
             return children;
         }
         return Collections.emptyList();
-    }
-
-    @Override
-    public void setProjectClient(Project project, @Nullable Client client) {
-        project.setClient(client);
-        dataManager.commit(project);
     }
 
     @Nullable
@@ -147,30 +139,6 @@ public class ProjectsServiceBean implements ProjectsService {
         LoadContext loadContext = new LoadContext(Holiday.class);
         loadContext.setQueryString("select e from ts$Holiday e");
         return dataManager.loadList(loadContext);
-    }
-
-    @Override
-    public void removeTimeEntry(TimeEntry timeEntry) {
-        CommitContext commitContext = new CommitContext();
-        commitContext.getRemoveInstances().add(timeEntry);
-        dataManager.commit(commitContext);
-    }
-
-    @Override
-    public void removeTimeEntries(List<TimeEntry> timeEntries) {
-        CommitContext commitContext = new CommitContext();
-        commitContext.getRemoveInstances().addAll(timeEntries);
-        dataManager.commit(commitContext);
-    }
-
-    @Override
-    public void updateTimeEntriesStatus(List<TimeEntry> timeEntries, TimeEntryStatus status) {
-        CommitContext commitContext = new CommitContext();
-        for (TimeEntry entry : timeEntries) {
-            entry.setStatus(status);
-            commitContext.getCommitInstances().add(entry);
-        }
-        dataManager.commit(commitContext);
     }
 
     @Override
@@ -268,7 +236,7 @@ public class ProjectsServiceBean implements ProjectsService {
                     .getResultList();
 
             for (Project project : projects) {
-                Set<User> assignedUsers = new HashSet<User>();
+                Set<User> assignedUsers = new HashSet<>();
                 for (ProjectParticipant projectParticipant : project.getParticipants()) {
                     assignedUsers.add(projectParticipant.getUser());
                 }

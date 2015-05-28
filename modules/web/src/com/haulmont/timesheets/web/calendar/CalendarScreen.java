@@ -330,7 +330,7 @@ public class CalendarScreen extends AbstractWindow {
         @Override
         protected void doRemove() {
             calendar.removeEvent(event);
-            projectsService.removeTimeEntry(event.getTimeEntry());
+            getDsContext().getDataSupplier().remove(event.getTimeEntry());
         }
     }
 
