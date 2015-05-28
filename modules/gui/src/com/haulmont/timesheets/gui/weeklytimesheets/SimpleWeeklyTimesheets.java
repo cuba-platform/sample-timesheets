@@ -453,7 +453,12 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
     protected void removeTimeEntries(List<TimeEntry> timeEntries) {
         CommitContext commitContext = new CommitContext();
-        commitContext.getRemoveInstances().addAll(timeEntries);
+        for (TimeEntry timeEntry : timeEntries) {
+            if (!PersistenceHelper.isNew(timeEntry)) {
+                commitContext.getRemoveInstances().add(timeEntry);
+            }
+        }
+
         getDsContext().getDataSupplier().commit(commitContext);
     }
 
