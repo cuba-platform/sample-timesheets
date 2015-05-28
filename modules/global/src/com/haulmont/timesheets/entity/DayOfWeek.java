@@ -6,6 +6,7 @@ package com.haulmont.timesheets.entity;
 
 import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
+import javax.annotation.Nonnull;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -42,6 +43,7 @@ public enum DayOfWeek implements EnumClass<String> {
         return null;
     }
 
+    @Nonnull
     public static DayOfWeek fromCalendarDay(int calendarDay) {
         switch (calendarDay) {
             case Calendar.MONDAY:
@@ -59,7 +61,7 @@ public enum DayOfWeek implements EnumClass<String> {
             case Calendar.SUNDAY:
                 return DayOfWeek.SUNDAY;
         }
-        return null;
+        throw new IllegalArgumentException("Wrong java.util.Calendar number of day: " + calendarDay);
     }
 
     public static DayOfWeek fromAbbreviation(String abb) {
@@ -71,31 +73,11 @@ public enum DayOfWeek implements EnumClass<String> {
         return null;
     }
 
-    public static int getDayOffset(DayOfWeek day) {
-        switch (day) {
-            case TUESDAY:
-                return 1;
-            case WEDNESDAY:
-                return 2;
-            case THURSDAY:
-                return 3;
-            case FRIDAY:
-                return 4;
-            case SATURDAY:
-                return 5;
-            case SUNDAY:
-                return 6;
-            default:
-                return 0;
-        }
-    }
-
-    public static int convertToDayOfWeekNumber(DayOfWeek day, Locale locale) {
-        // TODO: gg use calendar with locale?
+    public int convertToDayOfWeekNumber(Locale locale) {
         int firstDayOfWeek = Calendar.getInstance(locale).getFirstDayOfWeek();
         int offset = firstDayOfWeek - 1;
 
-        switch (day) {
+        switch (this) {
             case SUNDAY:
                 return getComputedNumber(1, offset);
             case MONDAY:
@@ -115,7 +97,28 @@ public enum DayOfWeek implements EnumClass<String> {
         }
     }
 
-    protected static int getComputedNumber(int origin, int offset) {
+    public int getJavaCalendarDay() {
+        switch (this) {
+            case SUNDAY:
+                return Calendar.SUNDAY;
+            case MONDAY:
+                return Calendar.MONDAY;
+            case TUESDAY:
+                return Calendar.TUESDAY;
+            case WEDNESDAY:
+                return Calendar.WEDNESDAY;
+            case THURSDAY:
+                return Calendar.THURSDAY;
+            case FRIDAY:
+                return Calendar.FRIDAY;
+            case SATURDAY:
+                return Calendar.SATURDAY;
+            default:
+                return 0;
+        }
+    }
+
+    protected int getComputedNumber(int origin, int offset) {
         int value = origin - offset;
         return value > 0 ? value : 7 - value;
     }

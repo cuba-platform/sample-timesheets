@@ -17,10 +17,7 @@ import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
-import com.haulmont.timesheets.global.StringFormatHelper;
-import com.haulmont.timesheets.global.DateTimeUtils;
-import com.haulmont.timesheets.global.TimeParser;
-import com.haulmont.timesheets.global.WeeklyReportConverter;
+import com.haulmont.timesheets.global.*;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.gui.commandline.CommandLineFrameController;
 import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
@@ -28,6 +25,7 @@ import com.haulmont.timesheets.service.ProjectsService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
 
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -36,6 +34,10 @@ import java.util.*;
  * @author gorelov
  */
 public class SimpleWeeklyTimesheets extends AbstractWindow {
+
+    protected static final String COLUMN_SUFFIX = "Column";
+    protected static final String TOTAL_COLUMN_ID = "totalColumn";
+
     @Inject
     private CommandLineFrameController commandLine;
     @Inject
@@ -64,8 +66,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     protected TimeSource timeSource;
     @Inject
     protected UuidSource uuidSource;
-
-    protected final String totalColumnId = "totalColumn";
+    @Inject
+    protected ValidationTools validationTools;
 
     protected Map<String, Label> totalLabelsMap = new HashMap<>();
 
@@ -81,6 +83,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         initWeeklyEntriesTable();
         initDateField();
         initCommandLine();
+        updateDayColumnsCaptions();
     }
 
     protected void initDateField() {
@@ -155,9 +158,32 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             public void collectionChanged(CollectionDatasource ds, Operation operation, List<WeeklyReportEntry> items) {
                 if (Operation.REMOVE.equals(operation) || Operation.CLEAR.equals(operation)) {
                     for (WeeklyReportEntry entry : items) {
-                        totalLabelsMap.remove(ComponentsHelper.getCacheKeyForEntity(entry, totalColumnId));
+                        totalLabelsMap.remove(ComponentsHelper.getCacheKeyForEntity(entry, TOTAL_COLUMN_ID));
                     }
                 }
+            }
+        });
+
+        weeklyTsTable.setStyleProvider(new Table.StyleProvider() {
+            @Nullable
+            @Override
+            public String getStyleName(Entity entity, String property) {
+                String id = null;
+                if (property != null && property.endsWith(COLUMN_SUFFIX)) {
+                    id = property.replace(COLUMN_SUFFIX, "");
+                }
+                DayOfWeek day = DayOfWeek.fromId(id != null ? id : property);
+                if (entity == null) {
+                    if (day != null) {
+                        return validationTools.isWorkTimeMatchToPlanForDay(
+                                DateTimeUtils.getSpecificDayOfWeek(firstDayOfWeek, day.getJavaCalendarDay()),
+                                userSession.getUser()) ? null : "overtime";
+                    } else if (TOTAL_COLUMN_ID.equals(property)) {
+                        return validationTools.isWorkTimeMatchToPlanForWeek(
+                                firstDayOfWeek, userSession.getUser()) ? null : "overtime";
+                    }
+                }
+                return null;
             }
         });
     }
@@ -237,7 +263,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     protected void initDaysColumns() {
         for (Date current = firstDayOfWeek; current.getTime() <= lastDayOfWeek.getTime(); current = DateUtils.addDays(current, 1)) {
             final DayOfWeek day = DayOfWeek.fromCalendarDay(DateUtils.toCalendar(current).get(Calendar.DAY_OF_WEEK));
-            final String columnId = day.getId() + "Column";
+            final String columnId = day.getId() + COLUMN_SUFFIX;
             final Date finalCurrent = current;
             weeklyTsTable.addGeneratedColumn(columnId, new Table.ColumnGenerator() {
                         @Override
@@ -313,7 +339,6 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                     }
             );
             weeklyTsTable.setColumnWidth(columnId, 80);
-            weeklyTsTable.setColumnCaption(columnId, ComponentsHelper.getColumnCaption(day.getId(), current));
 
             Table.Column column = weeklyTsTable.getColumn(columnId);
             column.setAggregation(ComponentsHelper.createAggregationInfo(
@@ -324,20 +349,20 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     }
 
     protected void initTotalColumn() {
-        weeklyTsTable.addGeneratedColumn(totalColumnId, new Table.ColumnGenerator() {
+        weeklyTsTable.addGeneratedColumn(TOTAL_COLUMN_ID, new Table.ColumnGenerator() {
             @Override
             public Component generateCell(Entity entity) {
                 WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
                 Label label = componentsFactory.createComponent(Label.NAME);
                 label.setValue(reportEntry.getTotal());
-                totalLabelsMap.put(ComponentsHelper.getCacheKeyForEntity(reportEntry, totalColumnId), label);
+                totalLabelsMap.put(ComponentsHelper.getCacheKeyForEntity(reportEntry, TOTAL_COLUMN_ID), label);
                 return label;
             }
         });
-        weeklyTsTable.setColumnWidth(totalColumnId, 80);
-        weeklyTsTable.setColumnCaption(totalColumnId, messages.getMessage(getClass(), "total"));
+        weeklyTsTable.setColumnWidth(TOTAL_COLUMN_ID, 80);
+        weeklyTsTable.setColumnCaption(TOTAL_COLUMN_ID, messages.getMessage(getClass(), "total"));
 
-        Table.Column column = weeklyTsTable.getColumn(totalColumnId);
+        Table.Column column = weeklyTsTable.getColumn(TOTAL_COLUMN_ID);
         column.setAggregation(ComponentsHelper.createAggregationInfo(
                 projectsService.getEntityMetaPropertyPath(WeeklyReportEntry.class, "total"),
                 new TotalColumnAggregation()
@@ -355,7 +380,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                     TimeEntry committed = getDsContext().getDataSupplier().commit(editor.getItem());
                     reportEntry.changeDayOfWeekSingleTimeEntry(day, committed);
                     linkButton.setCaption(StringFormatHelper.getDayHoursString(reportEntry.getTotalForDay(day)));
-                    Label totalLabel = totalLabelsMap.get(ComponentsHelper.getCacheKeyForEntity(reportEntry, totalColumnId));
+                    Label totalLabel = totalLabelsMap.get(ComponentsHelper.getCacheKeyForEntity(reportEntry, TOTAL_COLUMN_ID));
                     totalLabel.setValue(reportEntry.getTotal());
                 }
             }
@@ -392,10 +417,10 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                                     tags.addAll(defaultTags);
                                 }
                                 timeEntry.setTags(tags);
-                            }  else {
+                            } else {
                                 timeEntry.setTags(defaultTags);
                             }
-                            timeEntry.setDate(DateUtils.addDays(firstDayOfWeek, DayOfWeek.getDayOffset(day)));
+                            timeEntry.setDate(DateTimeUtils.getSpecificDayOfWeek(firstDayOfWeek, day.getJavaCalendarDay()));
 
                             commitContext.getCommitInstances().add(timeEntry);
                         }
@@ -430,6 +455,14 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                 DateTimeUtils.getDateFormat().format(lastDayOfWeek)));
     }
 
+    protected void updateDayColumnsCaptions() {
+        for (Date current = firstDayOfWeek; current.getTime() <= lastDayOfWeek.getTime(); current = DateUtils.addDays(current, 1)) {
+            DayOfWeek day = DayOfWeek.fromCalendarDay(DateTimeUtils.getCalendarDayOfWeek(current));
+            String columnId = day.getId() + COLUMN_SUFFIX;
+            weeklyTsTable.setColumnCaption(columnId, ComponentsHelper.getColumnCaption(day.getId(), current));
+        }
+    }
+
     protected void setWeekRange(Date start) {
         firstDayOfWeek = start;
         lastDayOfWeek = DateTimeUtils.getLastDayOfWeek(firstDayOfWeek);
@@ -440,6 +473,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         updateWeekCaption();
         fillExistingTimeEntries();
         weeklyTsTable.repaint();
+        updateDayColumnsCaptions();
     }
 
     protected void fillExistingTimeEntries() {

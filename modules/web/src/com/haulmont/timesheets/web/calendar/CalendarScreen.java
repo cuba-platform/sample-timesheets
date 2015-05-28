@@ -205,10 +205,10 @@ public class CalendarScreen extends AbstractWindow {
             }
             FactAndPlan summaryForTheWeek = new FactAndPlan();
             summaryForTheWeek.fact.setTime(
-                    validationTools.userWorkHoursForPeriod(firstDayOfWeek, lastDayOfWeek, userSession.getUser())
+                    validationTools.actualWorkHoursForPeriod(firstDayOfWeek, lastDayOfWeek, userSession.getUser())
             );
             summaryForTheWeek.plan.setTime(
-                    validationTools.workHoursForPeriod(firstDayOfWeek, lastDayOfWeek)
+                    validationTools.workHoursForPeriod(firstDayOfWeek, lastDayOfWeek, userSession.getUser())
             );
             summariesByWeeks[++weekIndex] = summaryForTheWeek;
         }

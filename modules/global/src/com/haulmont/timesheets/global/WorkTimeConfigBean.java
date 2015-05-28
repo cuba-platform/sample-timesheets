@@ -4,8 +4,10 @@
 
 package com.haulmont.timesheets.global;
 
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.core.WorkTimeConfig;
 import com.haulmont.timesheets.entity.DayOfWeek;
+import com.haulmont.timesheets.entity.ExtUser;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
@@ -30,6 +32,18 @@ public class WorkTimeConfigBean {
 
     public BigDecimal getWorkHourForWeek() {
         return workTimeConfig.getWorkHourForWeek();
+    }
+
+    public BigDecimal getUserWorkHourForDay(User user) {
+        return getUserWorkHourForWeek(user).divide(BigDecimal.valueOf(getWorkDaysCount()), BigDecimal.ROUND_HALF_UP);
+    }
+
+    public BigDecimal getUserWorkHourForWeek(User user) {
+        if (user instanceof ExtUser) {
+            ExtUser extUser = (ExtUser) user;
+            return extUser.getWorkHoursForWeek();
+        }
+        return BigDecimal.ZERO;
     }
 
     public void setWorkHourForWeek(BigDecimal hours) {

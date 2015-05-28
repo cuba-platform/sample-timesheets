@@ -78,7 +78,7 @@ public class TimeSheetsCalendar extends Calendar {
         List<DayOfWeek> weekends = workTimeConfigBean.getWeekends();
         List<Integer> dayNumbers = new ArrayList<>(weekends.size());
         for (DayOfWeek day : weekends) {
-            int number = DayOfWeek.convertToDayOfWeekNumber(day, userSession.getLocale());
+            int number = day.convertToDayOfWeekNumber(userSession.getLocale());
             if (number > 0) {
                 dayNumbers.add(number);
             }

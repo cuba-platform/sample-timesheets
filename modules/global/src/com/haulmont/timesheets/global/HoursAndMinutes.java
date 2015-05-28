@@ -10,6 +10,10 @@ import java.math.BigDecimal;
  * @author gorelov
  * @version $Id$
  */
+
+/**
+ * Helpful {@link java.math.BigDecimal BigDecimal} wrapper that allow to work with individual time fields (hours and minutes)
+ */
 public class HoursAndMinutes {
 
     protected BigDecimal time = BigDecimal.ZERO;

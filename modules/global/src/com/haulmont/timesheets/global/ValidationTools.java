@@ -35,9 +35,9 @@ public class ValidationTools {
     @Inject
     protected DateTools dateTools;
 
-    public BigDecimal workHoursForPeriod(Date start, Date end) {
+    public BigDecimal workHoursForPeriod(Date start, Date end, User user) {
         // TODO: gg, check dates?
-        BigDecimal dayHourPlan = workTimeConfigBean.getWorkHourForDay();
+        BigDecimal dayHourPlan = workTimeConfigBean.getUserWorkHourForDay(user);
         BigDecimal totalWorkHours = BigDecimal.ZERO;
 
         for (; start.getTime() <= end.getTime(); start = DateUtils.addDays(start, 1)) {
@@ -48,15 +48,15 @@ public class ValidationTools {
         return totalWorkHours;
     }
 
-    public BigDecimal workHoursForWeek(Date date) {
-        return workHoursForPeriod(DateTimeUtils.getFirstDayOfWeek(date), DateTimeUtils.getLastDayOfWeek(date));
+    public BigDecimal plannedWorkHoursForWeek(Date date, User user) {
+        return workHoursForPeriod(DateTimeUtils.getFirstDayOfWeek(date), DateTimeUtils.getLastDayOfWeek(date), user);
     }
 
-    public BigDecimal workHoursForMonth(Date date) {
-        return workHoursForPeriod(DateTimeUtils.getFirstDayOfMonth(date), DateTimeUtils.getLastDayOfMonth(date));
+    public BigDecimal plannedWorkHoursForMonth(Date date, User user) {
+        return workHoursForPeriod(DateTimeUtils.getFirstDayOfMonth(date), DateTimeUtils.getLastDayOfMonth(date), user);
     }
 
-    public BigDecimal userWorkHoursForPeriod(Date start, Date end, User user) {
+    public BigDecimal actualWorkHoursForPeriod(Date start, Date end, User user) {
         List<TimeEntry> timeEntries = projectsService.getTimeEntriesForPeriod(start, end, user, null, View.LOCAL);
         if (timeEntries.isEmpty()) {
             return BigDecimal.ZERO;
@@ -70,16 +70,16 @@ public class ValidationTools {
         return totalWorkHours;
     }
 
-    public BigDecimal userWorkHoursForWeek(Date date, User user) {
-        return userWorkHoursForPeriod(
+    public BigDecimal actualWorkHoursForWeek(Date date, User user) {
+        return actualWorkHoursForPeriod(
                 DateTimeUtils.getFirstDayOfWeek(date),
                 DateTimeUtils.getLastDayOfWeek(date),
                 user
         );
     }
 
-    public BigDecimal userWorkHoursForMonth(Date date, User user) {
-        return userWorkHoursForPeriod(
+    public BigDecimal actualWorkHoursForMonth(Date date, User user) {
+        return actualWorkHoursForPeriod(
                 DateTimeUtils.getFirstDayOfMonth(date),
                 DateTimeUtils.getLastDayOfMonth(date),
                 user
@@ -87,9 +87,13 @@ public class ValidationTools {
     }
 
     public boolean isWorkTimeMatchToPlanForPeriod(Date start, Date end, User user) {
-        BigDecimal plan = workHoursForPeriod(start, end).setScale(SCALE, BigDecimal.ROUND_HALF_UP);
-        BigDecimal fact = userWorkHoursForPeriod(start, end, user).setScale(SCALE, BigDecimal.ROUND_HALF_UP);
+        BigDecimal plan = workHoursForPeriod(start, end, user).setScale(SCALE, BigDecimal.ROUND_HALF_UP);
+        BigDecimal fact = actualWorkHoursForPeriod(start, end, user).setScale(SCALE, BigDecimal.ROUND_HALF_UP);
         return plan.equals(fact);
+    }
+
+    public boolean isWorkTimeMatchToPlanForDay(Date date, User user) {
+        return isWorkTimeMatchToPlanForPeriod(date, date, user);
     }
 
     public boolean isWorkTimeMatchToPlanForWeek(Date date, User user) {
