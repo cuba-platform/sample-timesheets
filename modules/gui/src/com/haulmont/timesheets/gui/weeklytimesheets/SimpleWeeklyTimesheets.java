@@ -175,10 +175,9 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                 DayOfWeek day = DayOfWeek.fromId(id != null ? id : property);
                 if (entity == null) {
                     if (day != null) {
-                        Calendar calendar = DateUtils.toCalendar(firstDayOfWeek);
-                        calendar.set(Calendar.DAY_OF_WEEK, day.getJavaCalendarDay());
                         return validationTools.isWorkTimeMatchToPlanForDay(
-                                calendar.getTime(), userSession.getUser()) ? null : "overtime";
+                                DateTimeUtils.getSpecificDayOfWeek(firstDayOfWeek, day.getJavaCalendarDay()),
+                                userSession.getUser()) ? null : "overtime";
                     } else if (TOTAL_COLUMN_ID.equals(property)) {
                         return validationTools.isWorkTimeMatchToPlanForWeek(
                                 firstDayOfWeek, userSession.getUser()) ? null : "overtime";

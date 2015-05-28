@@ -160,10 +160,9 @@ public class ApproveScreen extends AbstractWindow {
                 DayOfWeek day = DayOfWeek.fromId(id != null ? id : property);
                 if (entity == null && usersTable.getSingleSelected() != null) {
                     if (day != null) {
-                        Calendar calendar = DateUtils.toCalendar(firstDayOfWeek);
-                        calendar.set(Calendar.DAY_OF_WEEK, day.getJavaCalendarDay());
                         return validationTools.isWorkTimeMatchToPlanForDay(
-                                calendar.getTime(), usersTable.<User>getSingleSelected()) ? null : "overtime";
+                                DateTimeUtils.getSpecificDayOfWeek(firstDayOfWeek, day.getJavaCalendarDay()),
+                                usersTable.<User>getSingleSelected()) ? null : "overtime";
                     } else if (TOTAL_COLUMN_ID.equals(property)) {
                         return validationTools.isWorkTimeMatchToPlanForWeek(
                                 firstDayOfWeek, usersTable.<User>getSingleSelected()) ? null : "overtime";
