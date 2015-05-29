@@ -56,7 +56,7 @@ public class CalendarScreen extends AbstractWindow {
     @Inject
     protected DateField monthSelector;
     @Inject
-    private CommandLineFrameController commandLine;
+    protected CommandLineFrameController commandLine;
 
     @Inject
     protected UserSession userSession;
@@ -67,7 +67,7 @@ public class CalendarScreen extends AbstractWindow {
     @Inject
     protected ValidationTools validationTools;
     @Inject
-    private UuidSource uuidSource;
+    protected UuidSource uuidSource;
 
     protected TimeSheetsCalendar calendar;
     protected Date firstDayOfMonth;
@@ -109,7 +109,7 @@ public class CalendarScreen extends AbstractWindow {
             @Override
             public void handle(List<TimeEntry> resultTimeEntries) {
                 if (CollectionUtils.isNotEmpty(resultTimeEntries)) {
-                    List<TimeEntry> results = new ArrayList<TimeEntry>();
+                    List<TimeEntry> results = new ArrayList<>();
                     TimeEntry timeEntry = resultTimeEntries.get(0);
 
                     //todo eude what if there are more than 1 entry

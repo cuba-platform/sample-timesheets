@@ -157,7 +157,7 @@ public class ProjectBrowse extends AbstractLookup {
                                 }
                             }
                         }
-                    }, WindowManager.OpenType.THIS_TAB);
+                    }, WindowManager.OpenType.DIALOG);
                 }
             });
         }
