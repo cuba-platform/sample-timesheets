@@ -78,6 +78,11 @@ public class ProjectBrowse extends AbstractLookup {
         });
         participantsTable.addAction(new ItemTrackingAction("copy") {
             @Override
+            public String getCaption() {
+                return getMessage("caption.copy");
+            }
+
+            @Override
             public void actionPerform(Component component) {
                 copyParticipants();
             }
