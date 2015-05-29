@@ -316,21 +316,27 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
                                 @Override
                                 public void actionPerform(Component component) {
-                                    openLookup(
+                                    Window window = openLookup(
                                             "ts$TimeEntry.lookup",
                                             new Lookup.Handler() {
                                                 @Override
                                                 public void handleLookup(Collection items) {
                                                     if (CollectionUtils.isNotEmpty(items)) {
                                                         TimeEntry timeEntry = (TimeEntry) items.iterator().next();
-                                                        openTimeEntryEditor(timeEntry, linkButton, reportEntry, day);
+                                                        openTimeEntryEditor(timeEntry);
                                                     }
                                                 }
                                             },
                                             WindowManager.OpenType.DIALOG,
                                             ParamsMap.of("date", finalCurrent,
-                                                    "taskId", reportEntry.getTask().getId(),
-                                                    "userId", userSession.getUser().getId()));
+                                                    "task", reportEntry.getTask(),
+                                                    "user", userSession.getUser()));
+                                    window.addListener(new CloseListener() {
+                                        @Override
+                                        public void windowClosed(String actionId) {
+                                            updateWeek();
+                                        }
+                                    });
                                 }
                             });
                             hBox.add(linkButton);
@@ -343,7 +349,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                             linkButton.setAction(new AbstractAction("edit") {
                                 @Override
                                 public void actionPerform(Component component) {
-                                    openTimeEntryEditor(timeEntry, linkButton, reportEntry, day);
+                                    openTimeEntryEditor(timeEntry);
                                 }
                             });
 
@@ -389,19 +395,14 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         ));
     }
 
-    protected void openTimeEntryEditor(
-            TimeEntry timeEntry, final LinkButton linkButton, final WeeklyReportEntry reportEntry, final DayOfWeek day) {
+    protected void openTimeEntryEditor(TimeEntry timeEntry) {
         final TimeEntryEdit editor = openEditor(
                 "ts$TimeEntry.edit", timeEntry, WindowManager.OpenType.DIALOG);
         editor.addListener(new CloseListener() {
             @Override
             public void windowClosed(String actionId) {
                 if (COMMIT_ACTION_ID.equals(actionId)) {
-                    TimeEntry committed = getDsContext().getDataSupplier().commit(editor.getItem());
-                    reportEntry.changeDayOfWeekSingleTimeEntry(day, committed);
-                    linkButton.setCaption(StringFormatHelper.getDayHoursString(reportEntry.getTotalForDay(day)));
-                    Label totalLabel = totalLabelsMap.get(ComponentsHelper.getCacheKeyForEntity(reportEntry, TOTAL_COLUMN_ID));
-                    totalLabel.setValue(reportEntry.getTotal());
+                    updateWeek();
                 }
             }
         });
