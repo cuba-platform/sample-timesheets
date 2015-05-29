@@ -95,7 +95,11 @@ public class CalendarScreen extends AbstractWindow {
 
             @Override
             public void actionPerform(Component component) {
-                commandLine.setVisible(!commandLine.isVisible());
+                if (commandLine.getHeight() <= 0) {
+                    commandLine.setHeight("70px");
+                } else {
+                    commandLine.setHeight("0px");
+                }
             }
         };
         action.setShortcut("CTRL-ALT-Q");

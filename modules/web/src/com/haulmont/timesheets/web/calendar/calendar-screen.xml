@@ -4,7 +4,7 @@
         class="com.haulmont.timesheets.web.calendar.CalendarScreen"
         messagesPack="com.haulmont.timesheets.web.calendar">
     <layout expand="calendarHbox" spacing="true">
-        <iframe id="commandLine" screen="command-line-frame" visible="false"/>
+        <iframe id="commandLine" screen="command-line-frame" height="0px"/>
         <hbox width="100%">
             <hbox align="MIDDLE_LEFT" spacing="true">
                 <linkButton align="MIDDLE_LEFT"
