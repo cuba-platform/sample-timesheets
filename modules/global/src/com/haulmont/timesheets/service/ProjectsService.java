@@ -40,6 +40,8 @@ public interface ProjectsService {
 
     List<Holiday> getHolidays();
 
+    List<Holiday> getHolidaysForPeriod(Date start, Date end);
+
     List<Task> getActiveTasksForUser(User user, @Nullable String viewName);
 
     Map<String, Task> getActiveTasksForUserAndProject(User user, Project project, @Nullable String viewName);

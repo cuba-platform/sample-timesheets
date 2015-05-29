@@ -148,6 +148,16 @@ public class ProjectsServiceBean implements ProjectsService {
     }
 
     @Override
+    public List<Holiday> getHolidaysForPeriod(Date start, Date end) {
+        LoadContext loadContext = new LoadContext(Holiday.class);
+        loadContext.setQueryString("select e from ts$Holiday e " +
+                "where (e.startDate between :start and :end) or (e.startDate between :start and :end)")
+                .setParameter("start", start)
+                .setParameter("end", end);
+        return dataManager.loadList(loadContext);
+    }
+
+    @Override
     public List<Task> getActiveTasksForUser(User user, @Nullable String viewName) {
         LoadContext loadContext = new LoadContext(Task.class);
         if (viewName != null) {

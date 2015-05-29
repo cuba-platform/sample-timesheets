@@ -8,15 +8,16 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.timesheets.entity.Holiday;
+import com.haulmont.timesheets.service.ProjectsService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
+import java.util.*;
 
 /**
  * @author gorelov
@@ -108,6 +109,48 @@ public final class DateTimeUtils {
         return time.getTime();
     }
 
+    public static Set<String> getDatesRangeAsSeparateStrings(Date startDate, Date endDate, String format) {
+        List<Holiday> holidays = projectsService().getHolidaysForPeriod(startDate, endDate);
+        if (CollectionUtils.isEmpty(holidays)) {
+            return Collections.emptySet();
+        }
+        Set<String> stringHolidays = new HashSet<>();
+
+        for (Holiday holiday : holidays) {
+            stringHolidays.addAll(holidayAsSeparateStrings(holiday, startDate, endDate, format));
+        }
+
+        return stringHolidays;
+    }
+
+    protected static Set<String> holidayAsSeparateStrings(Holiday holiday, Date startDate, Date endDate, String format) {
+        Date start;
+        Date end;
+        if (holiday.getStartDate().getTime() >= startDate.getTime()) {
+            start = holiday.getStartDate();
+        } else {
+            start = startDate;
+        }
+        if (holiday.getEndDate().getTime() <= endDate.getTime()) {
+            end = holiday.getEndDate();
+        } else {
+            end = endDate;
+        }
+
+        if (start.equals(startDate) && end.equals(endDate)) {
+            return Collections.emptySet();
+        } else {
+            Set<String> stringDates = new HashSet<>();
+            DateFormat formatter = new SimpleDateFormat(format);
+            while (start.getTime() <= end.getTime()) {
+                stringDates.add(formatter.format(start));
+                start = DateUtils.addDays(start, 1);
+            }
+
+            return stringDates;
+        }
+    }
+
     public static DateFormat getDateFormat() {
         return new SimpleDateFormat(messages().getMainMessage("dateFormat"));
     }
@@ -119,4 +162,6 @@ public final class DateTimeUtils {
     private static UserSession userSession() {
         return AppBeans.get(UserSessionSource.class).getUserSession();
     }
+
+    private static ProjectsService projectsService() { return AppBeans.get(ProjectsService.NAME); }
 }

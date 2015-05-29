@@ -12,13 +12,11 @@ import com.haulmont.timesheets.service.ProjectsService;
 import com.vaadin.ui.components.calendar.event.BasicEvent;
 import com.vaadin.ui.components.calendar.event.BasicEventProvider;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.time.DateUtils;
 
 import javax.annotation.Nullable;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author gorelov
@@ -26,34 +24,25 @@ import java.util.*;
  */
 public class TimeSheetsCalendarEventProvider extends BasicEventProvider {
 
-    protected Set<Holiday> holidays;
-    protected DateFormat format;
+    protected ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);
+    protected User user;
 
     public TimeSheetsCalendarEventProvider(User user) {
-        ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);
-        List<TimeEntry> timeEntries = projectsService.getTimeEntriesForUser(user, "timeEntry-full");
+        this.user = user;
+    }
 
+    public void updateWithRange(Date startDate, Date endDate) {
+        eventList.clear();
+
+        List<TimeEntry> timeEntries = projectsService.getTimeEntriesForPeriod(startDate, endDate, user, null, "timeEntry-full");
         for (TimeEntry entry : timeEntries) {
             eventList.add(new TimeEntryCalendarEventAdapter(entry));
         }
 
-        holidays = new HashSet<>(projectsService.getHolidays());
+        List<Holiday> holidays = projectsService.getHolidaysForPeriod(startDate, endDate);
         for (Holiday holiday : holidays) {
             eventList.add(new HolidayCalendarEventAdapter(holiday));
         }
-    }
-
-    public Set<String> getHolidays(Date startDate, Date endDate) {
-        if (CollectionUtils.isEmpty(holidays)) {
-            return Collections.emptySet();
-        }
-        Set<String> stringHolidays = new HashSet<>();
-
-        for (Holiday holiday : holidays) {
-            stringHolidays.addAll(holidayAsSeparateStrings(holiday, startDate, endDate));
-        }
-
-        return stringHolidays;
     }
 
     public void changeEventTimeEntity(TimeEntry timeEntry) {
@@ -70,48 +59,7 @@ public class TimeSheetsCalendarEventProvider extends BasicEventProvider {
         HolidayCalendarEventAdapter adapter = findEventWithHoliday(holiday);
         if (adapter != null) {
             adapter.setHoliday(holiday);
-            holidays.remove(holiday);
-            holidays.add(holiday);
             fireEventSetChange();
-        }
-    }
-
-    public DateFormat getFormat() {
-        if (format == null) {
-            format = new SimpleDateFormat("yyyy-MM-dd");
-        }
-        return format;
-    }
-
-    public void setFormat(DateFormat format) {
-        this.format = format;
-    }
-
-    protected Set<String> holidayAsSeparateStrings(Holiday holiday, Date startDate, Date endDate) {
-        Date start;
-        Date end;
-        if (holiday.getStartDate().getTime() >= startDate.getTime()) {
-            start = holiday.getStartDate();
-        } else {
-            start = startDate;
-        }
-        if (holiday.getEndDate().getTime() <= endDate.getTime()) {
-            end = holiday.getEndDate();
-        } else {
-            end = endDate;
-        }
-
-        if (start.equals(startDate) && end.equals(endDate)) {
-            return Collections.emptySet();
-        } else {
-            Set<String> stringDates = new HashSet<>();
-
-            while (start.getTime() <= end.getTime()) {
-                stringDates.add(getFormat().format(start));
-                start = DateUtils.addDays(start, 1);
-            }
-
-            return stringDates;
         }
     }
 

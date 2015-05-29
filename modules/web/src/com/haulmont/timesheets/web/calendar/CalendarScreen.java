@@ -282,8 +282,14 @@ public class CalendarScreen extends AbstractWindow {
     }
 
     protected void updateCalendarRange() {
+        Date lastDayOfMonth = DateTimeUtils.getLastDayOfMonth(firstDayOfMonth);
+
+        dataSource.updateWithRange(
+                DateTimeUtils.getFirstDayOfWeek(firstDayOfMonth),
+                DateTimeUtils.getLastDayOfWeek(lastDayOfMonth));
+
         calendar.setStartDate(firstDayOfMonth);
-        calendar.setEndDate(DateTimeUtils.getLastDayOfMonth(firstDayOfMonth));
+        calendar.setEndDate(lastDayOfMonth);
 
         updateSummaryColumn();
         updateMonthCaption();

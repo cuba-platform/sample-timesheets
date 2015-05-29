@@ -7,6 +7,7 @@ package com.haulmont.timesheets.web.toolkit.ui;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.DayOfWeek;
+import com.haulmont.timesheets.global.DateTimeUtils;
 import com.haulmont.timesheets.global.WorkTimeConfigBean;
 import com.haulmont.timesheets.web.calendar.TimeSheetsCalendarEventProvider;
 import com.haulmont.timesheets.web.toolkit.ui.client.calendar.TimeSheetsCalendarState;
@@ -69,7 +70,7 @@ public class TimeSheetsCalendar extends Calendar {
         Date firstDateToShow = expandStartDate(startDate, durationInDays > 7);
         Date lastDateToShow = expandEndDate(endDate, durationInDays > 7);
 
-        return getEventProvider().getHolidays(firstDateToShow, lastDateToShow);
+        return DateTimeUtils.getDatesRangeAsSeparateStrings(firstDateToShow, lastDateToShow, "yyyy-MM-dd");
     }
 
     protected List<Integer> getWeekends() {
