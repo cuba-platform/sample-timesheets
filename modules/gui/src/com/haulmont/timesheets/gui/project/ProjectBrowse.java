@@ -5,13 +5,17 @@ package com.haulmont.timesheets.gui.project;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
+import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.entity.Project;
+import com.haulmont.timesheets.entity.ProjectParticipant;
 import com.haulmont.timesheets.entity.ProjectRole;
 import com.haulmont.timesheets.entity.Task;
 import com.haulmont.timesheets.gui.ComponentsHelper;
@@ -23,9 +27,7 @@ import org.apache.commons.lang.StringUtils;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author gorelov
@@ -72,6 +74,17 @@ public class ProjectBrowse extends AbstractLookup {
             @Override
             public Map<String, Object> getInitialValues() {
                 return ParamsMap.of("project", projectsTable.getSingleSelected());
+            }
+        });
+        participantsTable.addAction(new ItemTrackingAction("copy") {
+            @Override
+            public void actionPerform(Component component) {
+                copyParticipants();
+            }
+
+            @Override
+            protected boolean isApplicable() {
+                return projectsTable != null && !projectsTable.getSelected().isEmpty();
             }
         });
         participantsTableCreate.setOpenType(WindowManager.OpenType.DIALOG);
@@ -160,6 +173,45 @@ public class ProjectBrowse extends AbstractLookup {
                 return null;
             }
         });
+    }
+
+    public void copyParticipants() {
+        final Project project = projectsTable.getSingleSelected();
+        if (project != null) {
+            openLookup("ts$Project.lookup", new Handler() {
+                @Override
+                public void handleLookup(Collection items) {
+                    if (CollectionUtils.isNotEmpty(items)) {
+                        CommitContext commitContext = new CommitContext();
+                        for (Project selected : (Collection<Project>) items) {
+                            commitContext.getCommitInstances().addAll(updateParticipants(
+                                    projectsService.getProjectParticipants(selected, "projectParticipant-full"), project));
+                        }
+                        getDsContext().getDataSupplier().commit(commitContext);
+                        participantsTable.refresh();
+                    }
+                }
+            }, WindowManager.OpenType.DIALOG, ParamsMap.of("exclude", project));
+        }
+    }
+
+    protected Collection<? extends Entity> updateParticipants(List<ProjectParticipant> participants, Project project) {
+        if (participants.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<ProjectParticipant> copies = new ArrayList<>(participants.size());
+        List<User> assignedUsers = projectsService.getProjectUsers(project, View.MINIMAL);
+        for (ProjectParticipant existParticipant : participants) {
+            if (!assignedUsers.contains(existParticipant.getUser())) {
+                ProjectParticipant participant = new ProjectParticipant();
+                participant.setUser(existParticipant.getUser());
+                participant.setRole(existParticipant.getRole());
+                participant.setProject(project);
+
+                copies.add(participant);
+            }
+        }
+        return copies;
     }
 
     @Override
