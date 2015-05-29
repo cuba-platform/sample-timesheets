@@ -32,8 +32,7 @@ create table TS_CLIENT (
     CODE varchar(50) not null,
     --
     primary key (ID)
-)^
--- end TS_CLIENT
+)^-- end TS_CLIENT
 -- begin TS_PROJECT_ROLE
 create table TS_PROJECT_ROLE (
     ID uuid,
@@ -50,8 +49,7 @@ create table TS_PROJECT_ROLE (
     DESCRIPTION varchar(255),
     --
     primary key (ID)
-)^
--- end TS_PROJECT_ROLE
+)^-- end TS_PROJECT_ROLE
 -- begin TS_TASK_TYPE
 create table TS_TASK_TYPE (
     ID uuid,
@@ -68,8 +66,7 @@ create table TS_TASK_TYPE (
     DESCRIPTION varchar(255),
     --
     primary key (ID)
-)^
--- end TS_TASK_TYPE
+)^-- end TS_TASK_TYPE
 -- begin TS_TAG
 create table TS_TAG (
     ID uuid,
@@ -87,8 +84,7 @@ create table TS_TAG (
     TAG_TYPE_ID uuid not null,
     --
     primary key (ID)
-)^
--- end TS_TAG
+)^-- end TS_TAG
 -- begin TS_TAG_TYPE
 create table TS_TAG_TYPE (
     ID uuid,
@@ -106,8 +102,7 @@ create table TS_TAG_TYPE (
     PROJECT_ID uuid,
     --
     primary key (ID)
-)^
--- end TS_TAG_TYPE
+)^-- end TS_TAG_TYPE
 -- begin TS_PROJECT
 create table TS_PROJECT (
     ID uuid,
@@ -127,8 +122,7 @@ create table TS_PROJECT (
     STATUS varchar(50) not null,
     --
     primary key (ID)
-)^
--- end TS_PROJECT
+)^-- end TS_PROJECT
 -- begin TS_TASK
 create table TS_TASK (
     ID uuid,
@@ -144,12 +138,11 @@ create table TS_TASK (
     CODE varchar(50) not null,
     DESCRIPTION varchar(255),
     PROJECT_ID uuid not null,
-    TYPE_ID uuid not null,
+    TYPE_ID uuid,
     STATUS varchar(50) not null,
     --
     primary key (ID)
-)^
--- end TS_TASK
+)^-- end TS_TASK
 -- begin TS_TIME_ENTRY
 create table TS_TIME_ENTRY (
     ID uuid,
@@ -189,8 +182,7 @@ create table TS_PROJECT_PARTICIPANT (
     ROLE_ID uuid not null,
     --
     primary key (ID)
-)^
--- end TS_PROJECT_PARTICIPANT
+)^-- end TS_PROJECT_PARTICIPANT
 -- begin TS_TASK_PROJECT_PARTICIPANT_LINK
 create table TS_TASK_PROJECT_PARTICIPANT_LINK (
     TASK_ID uuid,

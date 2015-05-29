@@ -35,7 +35,7 @@ public class Task extends StandardEntity {
     @JoinColumn(name = "PROJECT_ID")
     protected Project project;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TYPE_ID")
     protected TaskType type;
 

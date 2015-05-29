@@ -138,7 +138,7 @@ create table TS_TASK (
     CODE varchar(50) not null,
     DESCRIPTION varchar(255),
     PROJECT_ID varchar(36) not null,
-    TYPE_ID varchar(36) not null,
+    TYPE_ID varchar(36),
     STATUS varchar(50) not null,
     --
     primary key (ID)
