@@ -17,7 +17,8 @@ create table TS_HOLIDAY (
     primary key (ID)
 )^
 -- end TS_HOLIDAY
--- begin TS_CLIENTcreate table TS_CLIENT (
+-- begin TS_CLIENT
+create table TS_CLIENT (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -32,7 +33,8 @@ create table TS_HOLIDAY (
     --
     primary key (ID)
 )^-- end TS_CLIENT
--- begin TS_PROJECT_ROLEcreate table TS_PROJECT_ROLE (
+-- begin TS_PROJECT_ROLE
+create table TS_PROJECT_ROLE (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -48,7 +50,8 @@ create table TS_HOLIDAY (
     --
     primary key (ID)
 )^-- end TS_PROJECT_ROLE
--- begin TS_TASK_TYPEcreate table TS_TASK_TYPE (
+-- begin TS_TASK_TYPE
+create table TS_TASK_TYPE (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -64,7 +67,8 @@ create table TS_HOLIDAY (
     --
     primary key (ID)
 )^-- end TS_TASK_TYPE
--- begin TS_TAGcreate table TS_TAG (
+-- begin TS_TAG
+create table TS_TAG (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -81,7 +85,8 @@ create table TS_HOLIDAY (
     --
     primary key (ID)
 )^-- end TS_TAG
--- begin TS_TAG_TYPEcreate table TS_TAG_TYPE (
+-- begin TS_TAG_TYPE
+create table TS_TAG_TYPE (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -98,7 +103,8 @@ create table TS_HOLIDAY (
     --
     primary key (ID)
 )^-- end TS_TAG_TYPE
--- begin TS_PROJECTcreate table TS_PROJECT (
+-- begin TS_PROJECT
+create table TS_PROJECT (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -117,7 +123,8 @@ create table TS_HOLIDAY (
     --
     primary key (ID)
 )^-- end TS_PROJECT
--- begin TS_TASKcreate table TS_TASK (
+-- begin TS_TASK
+create table TS_TASK (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -131,12 +138,13 @@ create table TS_HOLIDAY (
     CODE varchar(50) not null,
     DESCRIPTION varchar(255),
     PROJECT_ID varchar(36) not null,
-    TYPE_ID varchar(36) not null,
+    TYPE_ID varchar(36),
     STATUS varchar(50) not null,
     --
     primary key (ID)
 )^-- end TS_TASK
--- begin TS_TIME_ENTRYcreate table TS_TIME_ENTRY (
+-- begin TS_TIME_ENTRY
+create table TS_TIME_ENTRY (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -156,7 +164,8 @@ create table TS_HOLIDAY (
     --
     primary key (ID)
 )^-- end TS_TIME_ENTRY
--- begin TS_PROJECT_PARTICIPANTcreate table TS_PROJECT_PARTICIPANT (
+-- begin TS_PROJECT_PARTICIPANT
+create table TS_PROJECT_PARTICIPANT (
     ID varchar(36) not null,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -200,7 +209,8 @@ create table TS_TASK_TAG_LINK (
     primary key (TASK_ID, TAG_ID)
 )^
 -- end TS_TASK_TAG_LINK
--- begin SEC_USERalter table SEC_USER add column WORK_HOURS_FOR_WEEK decimal(19, 2) ^
+-- begin SEC_USER
+alter table SEC_USER add column WORK_HOURS_FOR_WEEK decimal(19, 2) ^
 update SEC_USER set WORK_HOURS_FOR_WEEK = 0 where WORK_HOURS_FOR_WEEK is null ^
 alter table SEC_USER alter column WORK_HOURS_FOR_WEEK set not null ^
 -- end SEC_USER
