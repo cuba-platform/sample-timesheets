@@ -20,7 +20,6 @@
                 datasource="timeEntriesDs">
             <properties include=".*"/>
         </filter>
-
         <iframe id="commandLine"
                 screen="command-line-frame"/>
         <table id="timeEntriesTable"
@@ -38,6 +37,8 @@
                 <column id="time"/>
                 <column id="status"/>
                 <column id="description"
+                        maxTextLength="20"/>
+                <column id="rejectionReason"
                         maxTextLength="20"/>
             </columns>
             <rows datasource="timeEntriesDs"/>

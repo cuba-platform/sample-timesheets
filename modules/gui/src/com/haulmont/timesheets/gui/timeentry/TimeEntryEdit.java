@@ -45,6 +45,8 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     @Named("fieldGroup.status")
     protected LookupField statusField;
 
+    protected Component rejectionReason;
+
     @Override
     public void init(Map<String, Object> params) {
         getDialogParams().setWidthAuto();
@@ -52,6 +54,9 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         taskField.addAction(ComponentsHelper.createLookupAction(taskField));
         taskField.addClearAction();
         fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
+        fieldGroup.addCustomField("rejectionReason", ComponentsHelper.getCustomTextArea());
+
+        rejectionReason = fieldGroup.getFieldComponent("rejectionReason");
 
         timeEntryDs.addListener(new DsListenerAdapter<TimeEntry>() {
             @Override
@@ -66,6 +71,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
                         allTagsDs.refresh(ParamsMap.of("project", task.getProject()));
                     }
                     updateStatusField();
+                    updateRejectionReasonField();
                     setDefaultStatus(getItem());
                 }
                 updateStatus();
@@ -98,6 +104,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         }
 
         updateStatusField();
+        updateRejectionReasonField();
 
         if (timeEntry.getTask() != null) {
             allTagsDs.refresh(ParamsMap.of("project", timeEntry.getTask().getProject()));
@@ -148,6 +155,10 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
 
     protected void updateStatusField() {
         statusField.setEnabled(!userIsWorker());
+    }
+
+    protected void updateRejectionReasonField() {
+        rejectionReason.setEnabled(!userIsWorker());
     }
 
     protected void updateStatus() {

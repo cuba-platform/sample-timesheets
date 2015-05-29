@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
+        caption="msg://com.haulmont.timesheets.entity/TimeEntry.rejectionReason"
+        class="com.haulmont.timesheets.gui.rejection.RejectionReason"
+        messagesPack="com.haulmont.timesheets.gui.rejection">
+    <actions>
+        <action id="confirm"
+                shortcut="CTRL-ENTER"
+                invoke="confirm"/>
+        <action id="cancel"
+                caption="msg://cancel"
+                invoke="cancel"/>
+    </actions>
+    <layout expand="rejectionReasonText" spacing="true">
+        <textArea id="rejectionReasonText"
+                  width="100%"/>
+        <buttonsPanel id="buttonsPanel">
+            <button id="okButton"
+                    caption="OK"
+                    icon="icons/ok.png"
+                    action="confirm"/>
+            <button id="cancelButton"
+                    caption="msg://cancel"
+                    icon="icons/cancel.png"
+                    action="cancel"/>
+        </buttonsPanel>
+    </layout>
+</window>

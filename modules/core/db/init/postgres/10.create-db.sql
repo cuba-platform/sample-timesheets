@@ -168,6 +168,7 @@ create table TS_TIME_ENTRY (
     TIME_ time not null,
     STATUS varchar(50) not null,
     DESCRIPTION varchar(255),
+    REJECTION_REASON varchar(255),
     --
     primary key (ID)
 )^

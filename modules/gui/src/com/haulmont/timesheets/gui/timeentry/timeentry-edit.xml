@@ -40,6 +40,8 @@
                     <field id="status"/>
                     <field id="description"
                            custom="true"/>
+                    <field id="rejectionReason"
+                           custom="true"/>
                 </column>
             </fieldGroup>
             <tokenList id="tagsTokenList"

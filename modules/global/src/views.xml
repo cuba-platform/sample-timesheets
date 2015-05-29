@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<views xmlns="http://schemas.haulmont.com/cuba/5.4/view.xsd">
+<views xmlns="http://schemas.haulmont.com/cuba/5.5/view.xsd">
     <view class="com.haulmont.timesheets.entity.Tag"
           name="tag-with-type">
         <property name="name"/>
@@ -47,6 +47,7 @@
         <property name="time"/>
         <property name="status"/>
         <property name="description"/>
+        <property name="rejectionReason"/>
     </view>
     <view class="com.haulmont.timesheets.entity.Task"
           name="task-full">

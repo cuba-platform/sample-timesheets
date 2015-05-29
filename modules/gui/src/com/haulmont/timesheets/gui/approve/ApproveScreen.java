@@ -24,6 +24,7 @@ import com.haulmont.timesheets.global.StringFormatHelper;
 import com.haulmont.timesheets.global.ValidationTools;
 import com.haulmont.timesheets.global.WeeklyReportConverter;
 import com.haulmont.timesheets.gui.ComponentsHelper;
+import com.haulmont.timesheets.gui.rejection.RejectionReason;
 import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
 import com.haulmont.timesheets.gui.weeklytimesheets.TimeEntryAggregation;
 import com.haulmont.timesheets.gui.weeklytimesheets.TotalColumnAggregation;
@@ -453,7 +454,7 @@ public class ApproveScreen extends AbstractWindow {
         return timeEntries;
     }
 
-    private Collection<? extends TimeEntry> getTimeEntriesForPeriod(
+    protected Collection<? extends TimeEntry> getTimeEntriesForPeriod(
             Date start, Date end, User approver, User user, TimeEntryStatus status, boolean isApprovable) {
         if (isApprovable) {
             return projectsService.getApprovableTimeEntriesForPeriod(start, end, approver, user, status, "timeEntry-full");
@@ -466,6 +467,7 @@ public class ApproveScreen extends AbstractWindow {
 
         protected final User user;
         protected final TimeEntryStatus status;
+        protected String rejectReason;
 
         protected AbstractChangeStatusAction(String id, User user, TimeEntryStatus status) {
             super(id);
@@ -475,9 +477,28 @@ public class ApproveScreen extends AbstractWindow {
 
         @Override
         public void actionPerform(Component component) {
+            rejectReason = null;
+            if (TimeEntryStatus.REJECTED.equals(status)) {
+                final RejectionReason rejectionReasonWindow = openWindow("rejection-reason", WindowManager.OpenType.DIALOG);
+                rejectionReasonWindow.addListener(new CloseListener() {
+                    @Override
+                    public void windowClosed(String actionId) {
+                        if (RejectionReason.CONFIRM_ACTION_AD.equals(actionId)) {
+                            rejectReason = rejectionReasonWindow.getRejectionReason();
+                            commitTimeEntries();
+                        }
+                    }
+                });
+            } else {
+                commitTimeEntries();
+            }
+        }
+
+        protected void commitTimeEntries() {
             CommitContext commitContext = new CommitContext();
             for (TimeEntry entry : getTimeEntries()) {
                 entry.setStatus(status);
+                entry.setRejectionReason(rejectReason);
                 commitContext.getCommitInstances().add(entry);
             }
             getDsContext().getDataSupplier().commit(commitContext);

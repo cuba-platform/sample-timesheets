@@ -60,6 +60,9 @@ public class TimeEntry extends StandardEntity {
     @Column(name = "DESCRIPTION")
     protected String description;
 
+    @Column(name = "REJECTION_REASON")
+    protected String rejectionReason;
+
     public TimeEntryStatus getStatus() {
         return status == null ? null : TimeEntryStatus.fromId(status);
     }
@@ -129,6 +132,14 @@ public class TimeEntry extends StandardEntity {
 
     public Task getTask() {
         return task;
+    }
+
+    public void setRejectionReason(String rejectionReason) {
+        this.rejectionReason = rejectionReason;
+    }
+
+    public String getRejectionReason() {
+        return rejectionReason;
     }
 
     public String getCaption() {
