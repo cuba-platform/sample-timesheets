@@ -10,7 +10,7 @@
                               class="com.haulmont.timesheets.entity.TimeEntry"
                               view="timeEntry-full">
             <query>
-                <![CDATA[select e from ts$TimeEntry e where e.user.id = :param$userId and e.date = :param$date and e.task.id = :param$taskId]]>
+                <![CDATA[select e from ts$TimeEntry e where e.user.id = :param$user and e.date = :param$date and e.task.id = :param$task]]>
             </query>
         </collectionDatasource>
     </dsContext>
@@ -23,6 +23,11 @@
         <table id="timeEntriesTable"
                editable="false"
                width="100%">
+            <actions>
+                <action id="create"/>
+                <action id="edit"/>
+                <action id="remove"/>
+            </actions>
             <columns>
                 <column id="task"/>
                 <column id="time"/>
@@ -32,6 +37,15 @@
             </columns>
             <rows datasource="timeEntriesDs"/>
             <rowsCount/>
+            <buttonsPanel id="buttonsPanel"
+                          alwaysVisible="true">
+                <button id="createBtn"
+                        action="timeEntriesTable.create"/>
+                <button id="editBtn"
+                        action="timeEntriesTable.edit"/>
+                <button id="removeBtn"
+                        action="timeEntriesTable.remove"/>
+            </buttonsPanel>
         </table>
     </layout>
 </window>
