@@ -9,6 +9,7 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.entity.Holiday;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.service.ProjectsService;
+import com.vaadin.ui.components.calendar.event.BasicEvent;
 import com.vaadin.ui.components.calendar.event.BasicEventProvider;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
 import org.apache.commons.collections.CollectionUtils;
@@ -138,5 +139,15 @@ public class TimeSheetsCalendarEventProvider extends BasicEventProvider {
             }
         }
         return null;
+    }
+
+    public void addEvents(Collection<CalendarEvent> events) {
+        eventList.addAll(events);
+        for (CalendarEvent event : events) {
+            if (event instanceof BasicEvent) {
+                ((BasicEvent) event).addEventChangeListener(this);
+            }
+        }
+        fireEventSetChange();
     }
 }

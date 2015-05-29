@@ -4,7 +4,8 @@
         class="com.haulmont.timesheets.web.calendar.CalendarScreen"
         messagesPack="com.haulmont.timesheets.web.calendar">
     <layout expand="calendarHbox" spacing="true">
-        <buttonsPanel width="100%">
+        <iframe id="commandLine" screen="command-line-frame" visible="false"/>
+        <hbox width="100%">
             <hbox align="MIDDLE_LEFT" spacing="true">
                 <linkButton align="MIDDLE_LEFT"
                             icon="font-icon:CHEVRON_LEFT"
@@ -24,12 +25,12 @@
                 <button id="addTimeEntry" visible="false"
                         caption="msg://addTimeEntry"
                         invoke="addTimeEntry"/>
+                <button id="showCommandLine" icon="icons/gear.png" caption="" action="showCommandLine"/>
             </hbox>
-        </buttonsPanel>
+        </hbox>
         <hbox id="calendarHbox" expand="calBox" width="100%">
             <vbox id="calBox" height="100%"/>
             <vbox id="summaryBox" height="100%" width="150px"/>
         </hbox>
-
     </layout>
 </window>

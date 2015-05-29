@@ -3,38 +3,45 @@
  */
 package com.haulmont.timesheets.web.calendar;
 
+import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.core.global.UuidSource;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.DateField;
+import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.haulmont.timesheets.entity.Holiday;
 import com.haulmont.timesheets.entity.TimeEntry;
+import com.haulmont.timesheets.entity.TimeEntryStatus;
 import com.haulmont.timesheets.global.DateTimeUtils;
 import com.haulmont.timesheets.global.HoursAndMinutes;
 import com.haulmont.timesheets.global.ValidationTools;
 import com.haulmont.timesheets.gui.ComponentsHelper;
+import com.haulmont.timesheets.gui.commandline.CommandLineFrameController;
 import com.haulmont.timesheets.gui.holiday.HolidayEdit;
 import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
 import com.haulmont.timesheets.web.toolkit.ui.TimeSheetsCalendar;
 import com.vaadin.event.Action;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.*;
 import com.vaadin.ui.Calendar;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents;
 import com.vaadin.ui.components.calendar.CalendarDateRange;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
 import com.vaadin.ui.components.calendar.event.CalendarEventProvider;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author gorelov
@@ -49,6 +56,9 @@ public class CalendarScreen extends AbstractWindow {
     @Inject
     protected DateField monthSelector;
     @Inject
+    private CommandLineFrameController commandLine;
+
+    @Inject
     protected UserSession userSession;
     @Inject
     protected Messages messages;
@@ -56,6 +66,8 @@ public class CalendarScreen extends AbstractWindow {
     protected TimeSource timeSource;
     @Inject
     protected ValidationTools validationTools;
+    @Inject
+    private UuidSource uuidSource;
 
     protected TimeSheetsCalendar calendar;
     protected Date firstDayOfMonth;
@@ -64,14 +76,6 @@ public class CalendarScreen extends AbstractWindow {
     @Override
     public void init(Map<String, Object> params) {
         firstDayOfMonth = DateTimeUtils.getFirstDayOfMonth(timeSource.currentTimestamp());
-
-        dataSource = new TimeSheetsCalendarEventProvider(userSession.getUser());
-        dataSource.addEventSetChangeListener(new CalendarEventProvider.EventSetChangeListener() {
-            @Override
-            public void eventSetChange(CalendarEventProvider.EventSetChangeEvent changeEvent) {
-                updateSummaryColumn();
-            }
-        });
 
         initCalendar();
 
@@ -82,10 +86,72 @@ public class CalendarScreen extends AbstractWindow {
                 updateCalendarRange();
             }
         });
+
+        AbstractAction action = new AbstractAction("showCommandLine") {
+            @Override
+            public String getCaption() {
+                return "";
+            }
+
+            @Override
+            public void actionPerform(Component component) {
+                commandLine.setVisible(!commandLine.isVisible());
+            }
+        };
+        action.setShortcut("CTRL-ALT-Q");
+        addAction(action);
+
+        commandLine.setTimeEntriesHandler(new CommandLineFrameController.ResultTimeEntriesHandler() {
+            @Override
+            public void handle(List<TimeEntry> resultTimeEntries) {
+                if (CollectionUtils.isNotEmpty(resultTimeEntries)) {
+                    List<TimeEntry> results = new ArrayList<TimeEntry>();
+                    TimeEntry timeEntry = resultTimeEntries.get(0);
+                    java.util.Calendar javaCalendar = java.util.Calendar.getInstance();
+                    javaCalendar.setTime(firstDayOfMonth);
+                    int currentMonth = javaCalendar.get(java.util.Calendar.MONTH);
+                    int nextDayMonth = javaCalendar.get(java.util.Calendar.MONTH);
+
+                    while (currentMonth == nextDayMonth) {
+                        int dayOfWeek = javaCalendar.get(java.util.Calendar.DAY_OF_WEEK);
+                        if (dayOfWeek != java.util.Calendar.SATURDAY
+                                && dayOfWeek != java.util.Calendar.SUNDAY) {//todo eude use workdays settings, and also holidays
+                            TimeEntry copy = (TimeEntry) InstanceUtils.copy(timeEntry);
+                            copy.setId(uuidSource.createUuid());
+                            copy.setDate(javaCalendar.getTime());
+                            copy.setStatus(TimeEntryStatus.NEW);
+                            copy.setUser(userSession.getUser());
+                            results.add(copy);
+                        }
+
+                        javaCalendar.add(java.util.Calendar.DAY_OF_MONTH, 1);
+                        nextDayMonth = javaCalendar.get(java.util.Calendar.MONTH);
+                    }
+
+                    CommitContext context = new CommitContext();
+                    context.getCommitInstances().addAll(results);
+                    Set<TimeEntry> committed = (Set) getDsContext().getDataSupplier().commit(context);
+                    List<CalendarEvent> events = new ArrayList<>();
+                    for (TimeEntry entry : committed) {
+                        events.add(new TimeEntryCalendarEventAdapter(entry));
+                    }
+                    dataSource.addEvents(events);
+                }
+            }
+        });
     }
 
     private void initCalendar() {
+        dataSource = new TimeSheetsCalendarEventProvider(userSession.getUser());
+        dataSource.addEventSetChangeListener(new CalendarEventProvider.EventSetChangeListener() {
+            @Override
+            public void eventSetChange(CalendarEventProvider.EventSetChangeEvent changeEvent) {
+                updateSummaryColumn();
+            }
+        });
+
         calendar = new TimeSheetsCalendar(dataSource);
+
         calendar.setWidth("100%");
         calendar.setHeight("88%");
         calendar.setTimeFormat(Calendar.TimeFormat.Format24H);
