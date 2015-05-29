@@ -105,29 +105,34 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                     TimeEntry timeEntry = resultTimeEntries.get(0);
 
                     //todo eude what if there are more than 1 entry
-                    String spentTimeStr = simpleDateFormat.format(timeEntry.getTime());
-
-                    WeeklyReportEntry weeklyReportEntry = new WeeklyReportEntry();
-                    weeklyReportEntry.setTask(timeEntry.getTask());
-                    weeklyReportEntry.setProject(timeEntry.getTask().getProject());
-
-                    weeklyReportEntry.setMonday(copyToList(timeEntry));
-                    weeklyReportEntry.setMondayTime(spentTimeStr);
-
-                    weeklyReportEntry.setTuesday(copyToList(timeEntry));
-                    weeklyReportEntry.setTuesdayTime(spentTimeStr);
-
-                    weeklyReportEntry.setWednesday(copyToList(timeEntry));
-                    weeklyReportEntry.setWednesdayTime(spentTimeStr);
-
-                    weeklyReportEntry.setThursday(copyToList(timeEntry));
-                    weeklyReportEntry.setThursdayTime(spentTimeStr);
-
-                    weeklyReportEntry.setFriday(copyToList(timeEntry));
-                    weeklyReportEntry.setFridayTime(spentTimeStr);
+                    WeeklyReportEntry weeklyReportEntry = setTimeEntryToEachWeekDay(simpleDateFormat, timeEntry);
 
                     weeklyTsTable.getDatasource().addItem(weeklyReportEntry);
                 }
+            }
+
+            private WeeklyReportEntry setTimeEntryToEachWeekDay(SimpleDateFormat simpleDateFormat, TimeEntry timeEntry) {
+                String spentTimeStr = simpleDateFormat.format(timeEntry.getTime());
+
+                WeeklyReportEntry weeklyReportEntry = new WeeklyReportEntry();
+                weeklyReportEntry.setTask(timeEntry.getTask());
+                weeklyReportEntry.setProject(timeEntry.getTask().getProject());
+
+                weeklyReportEntry.setMonday(copyToList(timeEntry));
+                weeklyReportEntry.setMondayTime(spentTimeStr);
+
+                weeklyReportEntry.setTuesday(copyToList(timeEntry));
+                weeklyReportEntry.setTuesdayTime(spentTimeStr);
+
+                weeklyReportEntry.setWednesday(copyToList(timeEntry));
+                weeklyReportEntry.setWednesdayTime(spentTimeStr);
+
+                weeklyReportEntry.setThursday(copyToList(timeEntry));
+                weeklyReportEntry.setThursdayTime(spentTimeStr);
+
+                weeklyReportEntry.setFriday(copyToList(timeEntry));
+                weeklyReportEntry.setFridayTime(spentTimeStr);
+                return weeklyReportEntry;
             }
 
             private List<TimeEntry> copyToList(TimeEntry timeEntry) {
@@ -172,6 +177,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                 if (property != null && property.endsWith(COLUMN_SUFFIX)) {
                     id = property.replace(COLUMN_SUFFIX, "");
                 }
+
                 DayOfWeek day = DayOfWeek.fromId(id != null ? id : property);
                 if (entity == null) {
                     if (day != null) {
@@ -272,69 +278,83 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                             List<TimeEntry> timeEntries = reportEntry.getDayOfWeekTimeEntries(day);
                             if (CollectionUtils.isEmpty(timeEntries)
                                     || timeEntries.size() == 1 && PersistenceHelper.isNew(timeEntries.get(0))) {
-                                TextField timeField = componentsFactory.createComponent(TextField.NAME);
-                                timeField.setWidth("100%");
-                                timeField.setHeight("22px");
-                                timeField.setDatasource(weeklyTsTable.getItemDatasource(reportEntry), day.getId() + "Time");
-                                return timeField;
+                                return createTextFieldForTimeInput(reportEntry);
                             } else {
                                 HBoxLayout hBox = componentsFactory.createComponent(HBoxLayout.NAME);
                                 hBox.setSpacing(true);
 
                                 if (timeEntries.size() == 1) {
-                                    final TimeEntry timeEntry = timeEntries.get(0);
-                                    final LinkButton linkButton = componentsFactory.createComponent(LinkButton.NAME);
-                                    linkButton.setCaption(StringFormatHelper.getDayHoursString(reportEntry.getTotalForDay(day)));
-                                    linkButton.setAction(new AbstractAction("edit") {
-                                        @Override
-                                        public void actionPerform(Component component) {
-                                            openTimeEntryEditor(timeEntry, linkButton, reportEntry, day);
-                                        }
-                                    });
-
-                                    hBox.add(linkButton);
+                                    createLinkToSingleTimeEntry(reportEntry, timeEntries, hBox);
                                 } else {
-                                    final LinkButton linkButton = componentsFactory.createComponent(LinkButton.NAME);
-                                    linkButton.setCaption(StringFormatHelper.getDayHoursString(reportEntry.getTotalForDay(day)));
-                                    linkButton.setAction(new AbstractAction("edit") {
-
-                                        @Override
-                                        public void actionPerform(Component component) {
-                                            openLookup(
-                                                    "ts$TimeEntry.lookup",
-                                                    new Lookup.Handler() {
-                                                        @Override
-                                                        public void handleLookup(Collection items) {
-                                                            if (CollectionUtils.isNotEmpty(items)) {
-                                                                TimeEntry timeEntry = (TimeEntry) items.iterator().next();
-                                                                openTimeEntryEditor(timeEntry, linkButton, reportEntry, day);
-                                                            }
-                                                        }
-                                                    },
-                                                    WindowManager.OpenType.DIALOG,
-                                                    ParamsMap.of("date", finalCurrent,
-                                                            "taskId", reportEntry.getTask().getId(),
-                                                            "userId", userSession.getUser().getId()));
-                                        }
-                                    });
-                                    hBox.add(linkButton);
+                                    createLinkToMultipleTimeEntries(reportEntry, hBox);
                                 }
 
-                                LinkButton removeButton = componentsFactory.createComponent(LinkButton.NAME);
-                                removeButton.setIcon("icons/remove.png");
-                                removeButton.setAlignment(Alignment.MIDDLE_RIGHT);
-                                removeButton.setAction(new ComponentsHelper.CustomRemoveAction("timeEntryRemove", getFrame()) {
-                                    @Override
-                                    protected void doRemove() {
-                                        removeTimeEntries(reportEntry.getDayOfWeekTimeEntries(day));
-                                        reportEntry.changeDayOfWeekTimeEntries(day, null);
-                                        weeklyTsTable.repaint();
-                                    }
-                                });
-                                hBox.add(removeButton);
+                                createRemoveButton(reportEntry, hBox);
 
                                 return hBox;
                             }
+                        }
+
+                        private void createRemoveButton(final WeeklyReportEntry reportEntry, HBoxLayout hBox) {LinkButton removeButton = componentsFactory.createComponent(LinkButton.NAME);
+                            removeButton.setIcon("icons/remove.png");
+                            removeButton.setAlignment(Alignment.MIDDLE_RIGHT);
+                            removeButton.setAction(new ComponentsHelper.CustomRemoveAction("timeEntryRemove", getFrame()) {
+                                @Override
+                                protected void doRemove() {
+                                    removeTimeEntries(reportEntry.getDayOfWeekTimeEntries(day));
+                                    reportEntry.changeDayOfWeekTimeEntries(day, null);
+                                    weeklyTsTable.repaint();
+                                }
+                            });
+                            hBox.add(removeButton);
+                        }
+
+                        private void createLinkToMultipleTimeEntries(final WeeklyReportEntry reportEntry, HBoxLayout hBox) {
+                            final LinkButton linkButton = componentsFactory.createComponent(LinkButton.NAME);
+                            linkButton.setCaption(StringFormatHelper.getDayHoursString(reportEntry.getTotalForDay(day)));
+                            linkButton.setAction(new AbstractAction("edit") {
+
+                                @Override
+                                public void actionPerform(Component component) {
+                                    openLookup(
+                                            "ts$TimeEntry.lookup",
+                                            new Lookup.Handler() {
+                                                @Override
+                                                public void handleLookup(Collection items) {
+                                                    if (CollectionUtils.isNotEmpty(items)) {
+                                                        TimeEntry timeEntry = (TimeEntry) items.iterator().next();
+                                                        openTimeEntryEditor(timeEntry, linkButton, reportEntry, day);
+                                                    }
+                                                }
+                                            },
+                                            WindowManager.OpenType.DIALOG,
+                                            ParamsMap.of("date", finalCurrent,
+                                                    "taskId", reportEntry.getTask().getId(),
+                                                    "userId", userSession.getUser().getId()));
+                                }
+                            });
+                            hBox.add(linkButton);
+                        }
+
+                        private void createLinkToSingleTimeEntry(final WeeklyReportEntry reportEntry, List<TimeEntry> timeEntries, HBoxLayout hBox) {
+                            final TimeEntry timeEntry = timeEntries.get(0);
+                            final LinkButton linkButton = componentsFactory.createComponent(LinkButton.NAME);
+                            linkButton.setCaption(StringFormatHelper.getDayHoursString(reportEntry.getTotalForDay(day)));
+                            linkButton.setAction(new AbstractAction("edit") {
+                                @Override
+                                public void actionPerform(Component component) {
+                                    openTimeEntryEditor(timeEntry, linkButton, reportEntry, day);
+                                }
+                            });
+
+                            hBox.add(linkButton);
+                        }
+
+                        private Component createTextFieldForTimeInput(WeeklyReportEntry reportEntry) {TextField timeField = componentsFactory.createComponent(TextField.NAME);
+                            timeField.setWidth("100%");
+                            timeField.setHeight("22px");
+                            timeField.setDatasource(weeklyTsTable.getItemDatasource(reportEntry), day.getId() + "Time");
+                            return timeField;
                         }
                     }
             );
