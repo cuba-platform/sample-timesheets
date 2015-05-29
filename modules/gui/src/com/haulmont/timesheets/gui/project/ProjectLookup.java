@@ -32,6 +32,9 @@ public class ProjectLookup extends AbstractLookup {
 
     @Override
     public void init(Map<String, Object> params) {
+        getDialogParams().setWidth(800);
+        getDialogParams().setHeight(500);
+
         Project project = (Project) params.get("parentProject");
         if (project != null) {
             projectsDs.excludeItem(project);
@@ -39,6 +42,11 @@ public class ProjectLookup extends AbstractLookup {
             for (Project child : childrenProjects) {
                 projectsDs.excludeItem(child);
             }
+        }
+
+        project = (Project) params.get("exclude");
+        if (project != null) {
+            projectsDs.excludeItem(project);
         }
 
         projectsTable.setStyleProvider(new Table.StyleProvider() {

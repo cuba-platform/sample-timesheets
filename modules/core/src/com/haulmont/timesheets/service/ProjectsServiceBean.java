@@ -282,4 +282,28 @@ public class ProjectsServiceBean implements ProjectsService {
         loadContext.setQuery(query);
         return dataManager.loadList(loadContext);
     }
+
+    @Override
+    public List<ProjectParticipant> getProjectParticipants(Project project, @Nullable String viewName) {
+        LoadContext loadContext = new LoadContext(ProjectParticipant.class);
+        if (viewName != null) {
+            loadContext.setView(viewName);
+        }
+        loadContext.setQueryString("select e from ts$ProjectParticipant e where e.project.id = :projectId")
+                .setParameter("projectId", project.getId());
+        return dataManager.loadList(loadContext);
+    }
+
+    @Override
+    public List<User> getProjectUsers(Project project, @Nullable String viewName) {
+        LoadContext loadContext = new LoadContext(User.class);
+        if (viewName != null) {
+            loadContext.setView(viewName);
+        }
+//        loadContext.setQueryString("select e.user from ts$ProjectParticipant e where e.project.id = :projectId")
+        loadContext.setQueryString("select u from sec$User u, ts$ProjectParticipant pp " +
+                "where pp.project.id = :projectId and pp.user.id = u.id")
+                .setParameter("projectId", project.getId());
+        return dataManager.loadList(loadContext);
+    }
 }

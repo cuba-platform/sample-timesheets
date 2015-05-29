@@ -118,6 +118,7 @@
                                 <action id="create"/>
                                 <action id="edit"/>
                                 <action id="remove"/>
+                                <action id="copy" caption="msg://caption.copy" invoke="copyParticipants"/>
                             </actions>
                             <columns>
                                 <column id="user"
@@ -130,6 +131,7 @@
                                 <button action="participantsTable.create"/>
                                 <button action="participantsTable.edit"/>
                                 <button action="participantsTable.remove"/>
+                                <button action="participantsTable.copy"/>
                             </buttonsPanel>
                         </table>
                     </tab>
