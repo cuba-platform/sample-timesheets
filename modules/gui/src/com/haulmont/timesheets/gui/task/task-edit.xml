@@ -26,17 +26,14 @@
                               class="com.haulmont.timesheets.entity.Tag"
                               view="tag-with-type">
             <query>
-                <![CDATA[select e from ts$Tag e]]>
-                <filter>
-                    <c>e.tagType.id in (:custom$requiredTagTypes)</c>
-                </filter>
+                <![CDATA[select e from ts$Tag e, in(e.tagType) tt where tt.project.id is null or (tt.project.id = :component$fieldGroup.project)]]>
             </query>
         </collectionDatasource>
         <collectionDatasource id="allTagsTypesDs"
                               class="com.haulmont.timesheets.entity.TagType"
                               view="tagType-with-project">
             <query>
-                <![CDATA[select e from ts$TagType e order by e.project]]>
+                <![CDATA[select e from ts$TagType e where e.project.id is null or (e.project.id = :component$fieldGroup.project)]]>
             </query>
         </collectionDatasource>
     </dsContext>

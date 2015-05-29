@@ -22,7 +22,6 @@ import java.util.*;
  * @author gorelov
  */
 public class TaskEdit extends AbstractEditor<Task> {
-
     @Inject
     protected FieldGroup fieldGroup;
     @Inject
@@ -60,30 +59,9 @@ public class TaskEdit extends AbstractEditor<Task> {
                 if ("project".equals(property)) {
                     updateParticipantsTableAddAction();
                     participantsDs.clear();
-                    updateTagTypeQuery(value);
+                    allTagsTypesDs.refresh();
+                    allTagsDs.refresh();
                 }
-            }
-        });
-
-        requiredTagTypesDs.addListener(new CollectionDsListenerAdapter<TagType>() {
-            @Override
-            public void collectionChanged(CollectionDatasource ds, Operation operation, List<TagType> items) {
-                List<UUID> ids = null;
-                if (!ds.getItems().isEmpty()) {
-                    ids = new ArrayList<>();
-                    @SuppressWarnings("unchecked")
-                    Collection<TagType> types = ds.getItems();
-                    for (TagType type : types) {
-                        ids.add(type.getId());
-                    }
-
-                    for (Tag tag : defaultTagsDs.getItems()) {
-                        if (tag.getTagType() == null || !types.contains(tag.getTagType())) {
-                            defaultTagsDs.excludeItem(tag);
-                        }
-                    }
-                }
-                allTagsDs.refresh(ParamsMap.of("requiredTagTypes", ids));
             }
         });
 
@@ -104,23 +82,10 @@ public class TaskEdit extends AbstractEditor<Task> {
         Task task = getItem();
         projectField.setEnabled(task.getProject() == null);
         updateParticipantsTableAddAction();
-        updateTagTypeQuery(task.getProject());
     }
 
     protected void updateParticipantsTableAddAction() {
         participantsTableAdd.setWindowParams(ParamsMap.of("project", getItem().getProject(), "multiselect", true));
         participantsTableAdd.setEnabled(getItem().getProject() != null);
-    }
-
-    private void updateTagTypeQuery(Object value) {
-        Condition condition = new LogicalCondition(LogicalOp.OR);
-        List<Condition> conditions = new ArrayList<>(2);
-        conditions.add(new Clause("e.project is null", null));
-        if (value != null) {
-            conditions.add(new Clause("e.project.id = :component$fieldGroup.project", null));
-        }
-        condition.setConditions(conditions);
-        allTagsTypesDs.setQueryFilter(new QueryFilter(condition, "ts$TagType"));
-        allTagsTypesDs.refresh();
     }
 }
