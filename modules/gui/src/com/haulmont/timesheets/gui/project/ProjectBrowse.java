@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
+import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.ProjectParticipant;
@@ -73,6 +74,17 @@ public class ProjectBrowse extends AbstractLookup {
             @Override
             public Map<String, Object> getInitialValues() {
                 return ParamsMap.of("project", projectsTable.getSingleSelected());
+            }
+        });
+        participantsTable.addAction(new ItemTrackingAction("copy") {
+            @Override
+            public void actionPerform(Component component) {
+                copyParticipants();
+            }
+
+            @Override
+            protected boolean isApplicable() {
+                return projectsTable != null && !projectsTable.getSelected().isEmpty();
             }
         });
         participantsTableCreate.setOpenType(WindowManager.OpenType.DIALOG);

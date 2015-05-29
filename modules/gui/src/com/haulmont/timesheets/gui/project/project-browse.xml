@@ -118,7 +118,7 @@
                                 <action id="create"/>
                                 <action id="edit"/>
                                 <action id="remove"/>
-                                <action id="copy" caption="msg://caption.copy" invoke="copyParticipants"/>
+                                <action id="copy" caption="msg://caption.copy"/>
                             </actions>
                             <columns>
                                 <column id="user"
