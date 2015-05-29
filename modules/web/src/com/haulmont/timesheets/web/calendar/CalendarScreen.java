@@ -111,6 +111,8 @@ public class CalendarScreen extends AbstractWindow {
                 if (CollectionUtils.isNotEmpty(resultTimeEntries)) {
                     List<TimeEntry> results = new ArrayList<TimeEntry>();
                     TimeEntry timeEntry = resultTimeEntries.get(0);
+
+                    //todo eude what if there are more than 1 entry
                     java.util.Calendar javaCalendar = java.util.Calendar.getInstance();
                     javaCalendar.setTime(firstDayOfMonth);
                     int currentMonth = javaCalendar.get(java.util.Calendar.MONTH);
