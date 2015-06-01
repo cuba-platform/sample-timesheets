@@ -4,10 +4,7 @@
 package com.haulmont.timesheets.web.calendar;
 
 import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.TimeSource;
-import com.haulmont.cuba.core.global.UuidSource;
+import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.Component;
@@ -57,7 +54,8 @@ public class CalendarScreen extends AbstractWindow {
     protected DateField monthSelector;
     @Inject
     protected CommandLineFrameController commandLine;
-
+    @Inject
+    protected ViewRepository viewRepository;
     @Inject
     protected UserSession userSession;
     @Inject
@@ -159,18 +157,21 @@ public class CalendarScreen extends AbstractWindow {
         calendar = new TimeSheetsCalendar(dataSource);
 
         calendar.setWidth("100%");
-        calendar.setHeight("88%");
+        calendar.setHeight("87%");
         calendar.setTimeFormat(Calendar.TimeFormat.Format24H);
         calendar.setMoreMsgFormat(messages.getMessage(getClass(), "calendar.moreMsgFormat"));
         calendar.setDropHandler(null);
         calendar.setHandler(new CalendarComponentEvents.EventMoveHandler() {
             @Override
             public void eventMove(CalendarComponentEvents.MoveEvent event) {
-                TimeEntryCalendarEventAdapter adapter = (TimeEntryCalendarEventAdapter) event.getCalendarEvent();
-                adapter.getTimeEntry().setDate(event.getNewStart());
-                TimeEntry committed = getDsContext().getDataSupplier().commit(adapter.getTimeEntry());
-                adapter.setTimeEntry(committed);
-                updateSummaryColumn();
+                if (event.getCalendarEvent() instanceof TimeEntryCalendarEventAdapter) {
+                    TimeEntryCalendarEventAdapter adapter = (TimeEntryCalendarEventAdapter) event.getCalendarEvent();
+                    adapter.getTimeEntry().setDate(event.getNewStart());
+                    TimeEntry committed = getDsContext().getDataSupplier().commit(adapter.getTimeEntry(),
+                            viewRepository.getView(TimeEntry.class, "timeEntry-full"));
+                    dataSource.changeEventTimeEntity(committed);
+                    updateSummaryColumn();
+                }
             }
         });
         calendar.setHandler((CalendarComponentEvents.WeekClickHandler) null);
