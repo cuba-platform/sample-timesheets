@@ -38,9 +38,6 @@ public class CommandLineServiceBean implements CommandLineService {
     @Inject
     protected TimeSource timeSource;
 
-    @Inject
-    protected UserSessionSource userSessionSource;
-
     @Nullable
     @Override
     public List<TimeEntry> createTimeEntriesForTheCommandLine(String commandLine) {
@@ -48,7 +45,7 @@ public class CommandLineServiceBean implements CommandLineService {
         String taskCode = commandLineUtils.getTaskCode();
         List<String> tagCodes = commandLineUtils.getTagCodes();
         if (taskCode != null) {
-            Task task = systemDataManager.getEntityByCode(Task.class, taskCode, View.MINIMAL);
+            Task task = systemDataManager.getEntityByCode(Task.class, taskCode, "task-full");
             List<Tag> tags = systemDataManager.getEntitiesByCodes(Tag.class, tagCodes, View.MINIMAL);
             TimeEntry timeEntry = new TimeEntry();
             timeEntry.setTask(task);

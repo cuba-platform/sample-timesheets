@@ -18,10 +18,12 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
+import com.haulmont.cuba.core.entity.annotation.Listeners;
 
 /**
  * @author gorelov
  */
+@Listeners("ts_TimeEntryListener")
 @NamePattern("#getCaption|time")
 @Table(name = "TS_TIME_ENTRY")
 @Entity(name = "ts$TimeEntry")
