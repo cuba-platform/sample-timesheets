@@ -27,7 +27,7 @@ public class DateTools {
     @Inject
     protected ProjectsService projectsService;
 
-    public boolean isHoliday(Date date) {
+    public boolean isHoliday(Date date) {//todo eude, gg please make it faster!
         List<Holiday> holidays = projectsService.getHolidays();
         long mills = date.getTime();
         for (Holiday holiday : holidays) {

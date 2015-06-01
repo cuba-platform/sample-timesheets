@@ -89,10 +89,11 @@ public class TimeEntry extends StandardEntity {
         if (date == null || time == null) {
             return time;
         }
+        //todo eude, gg please make it faster!
         Calendar dateCal = DateUtils.toCalendar(date);
-        Date timeDate = DateUtils.setDays(time, dateCal.get(Calendar.DAY_OF_MONTH));
+        Date timeDate = DateUtils.setYears(time, dateCal.get(Calendar.YEAR));
         timeDate = DateUtils.setMonths(timeDate, dateCal.get(Calendar.MONTH));
-        timeDate = DateUtils.setYears(timeDate, dateCal.get(Calendar.YEAR));
+        timeDate = DateUtils.setDays(timeDate, dateCal.get(Calendar.DAY_OF_MONTH));
         return timeDate;
     }
 

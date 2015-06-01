@@ -18,6 +18,7 @@ import com.haulmont.timesheets.entity.Holiday;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.entity.TimeEntryStatus;
 import com.haulmont.timesheets.global.DateTimeUtils;
+import com.haulmont.timesheets.global.DateTools;
 import com.haulmont.timesheets.global.HoursAndMinutes;
 import com.haulmont.timesheets.global.ValidationTools;
 import com.haulmont.timesheets.gui.ComponentsHelper;
@@ -66,7 +67,8 @@ public class CalendarScreen extends AbstractWindow {
     protected ValidationTools validationTools;
     @Inject
     protected UuidSource uuidSource;
-
+    @Inject
+    protected DateTools dateTools;
     protected TimeSheetsCalendar calendar;
     protected Date firstDayOfMonth;
     protected TimeSheetsCalendarEventProvider dataSource;
@@ -117,9 +119,7 @@ public class CalendarScreen extends AbstractWindow {
                     int nextDayMonth = javaCalendar.get(java.util.Calendar.MONTH);
 
                     while (currentMonth == nextDayMonth) {
-                        int dayOfWeek = javaCalendar.get(java.util.Calendar.DAY_OF_WEEK);
-                        if (dayOfWeek != java.util.Calendar.SATURDAY
-                                && dayOfWeek != java.util.Calendar.SUNDAY) {//todo eude use workdays settings, and also holidays
+                        if (dateTools.isWorkday(javaCalendar.getTime())) {
                             TimeEntry copy = (TimeEntry) InstanceUtils.copy(timeEntry);
                             copy.setId(uuidSource.createUuid());
                             copy.setDate(javaCalendar.getTime());
@@ -217,7 +217,6 @@ public class CalendarScreen extends AbstractWindow {
         editTimeEntry(new TimeEntry());
     }
 
-    //todo eude reimplement with CUBA API
     protected void updateSummaryColumn() {
         summaryBox.removeAll();
         CubaVerticalActionsLayout summaryLayout = WebComponentsHelper.unwrap(summaryBox);
