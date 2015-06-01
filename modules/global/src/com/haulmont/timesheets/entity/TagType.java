@@ -9,6 +9,7 @@ import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.*;
 import java.text.MessageFormat;
+import java.util.Set;
 
 /**
  * @author gorelov
@@ -29,17 +30,20 @@ public class TagType extends StandardEntity {
     @Column(name = "DESCRIPTION")
     protected String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PROJECT_ID")
-    protected Project project;
+    @JoinTable(name = "TS_TAG_TYPE_PROJECT_LINK",
+        joinColumns = @JoinColumn(name = "TAG_TYPE_ID"),
+        inverseJoinColumns = @JoinColumn(name = "PROJECT_ID"))
+    @ManyToMany
+    protected Set<Project> projects;
 
-    public void setProject(Project project) {
-        this.project = project;
+    public void setProjects(Set<Project> projects) {
+        this.projects = projects;
     }
 
-    public Project getProject() {
-        return project;
+    public Set<Project> getProjects() {
+        return projects;
     }
+
 
     public String getCode() {
         return code;
@@ -67,21 +71,6 @@ public class TagType extends StandardEntity {
     }
 
     public String getCaption() {
-        String pattern;
-        Object[] params;
-        if (project != null) {
-            pattern = "{0} [{1}]";
-            params = new Object[]{
-                    StringUtils.trimToEmpty(name),
-                    StringUtils.trimToEmpty(project.getName())
-            };
-        } else {
-            pattern = "{0}";
-            params = new Object[]{
-                    StringUtils.trimToEmpty(name)
-            };
-        }
-        MessageFormat fmt = new MessageFormat(pattern);
-        return StringUtils.trimToEmpty(fmt.format(params));
+        return getName();
     }
 }

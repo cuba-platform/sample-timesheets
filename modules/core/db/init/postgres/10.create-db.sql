@@ -17,8 +17,7 @@ create table TS_HOLIDAY (
     primary key (ID)
 )^
 -- end TS_HOLIDAY
--- begin TS_CLIENT
-create table TS_CLIENT (
+-- begin TS_CLIENTcreate table TS_CLIENT (
     ID uuid,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -33,8 +32,7 @@ create table TS_CLIENT (
     --
     primary key (ID)
 )^-- end TS_CLIENT
--- begin TS_PROJECT_ROLE
-create table TS_PROJECT_ROLE (
+-- begin TS_PROJECT_ROLEcreate table TS_PROJECT_ROLE (
     ID uuid,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -50,8 +48,7 @@ create table TS_PROJECT_ROLE (
     --
     primary key (ID)
 )^-- end TS_PROJECT_ROLE
--- begin TS_TASK_TYPE
-create table TS_TASK_TYPE (
+-- begin TS_TASK_TYPEcreate table TS_TASK_TYPE (
     ID uuid,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -67,8 +64,7 @@ create table TS_TASK_TYPE (
     --
     primary key (ID)
 )^-- end TS_TASK_TYPE
--- begin TS_TAG
-create table TS_TAG (
+-- begin TS_TAGcreate table TS_TAG (
     ID uuid,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -85,8 +81,7 @@ create table TS_TAG (
     --
     primary key (ID)
 )^-- end TS_TAG
--- begin TS_TAG_TYPE
-create table TS_TAG_TYPE (
+-- begin TS_TAG_TYPEcreate table TS_TAG_TYPE (
     ID uuid,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -99,12 +94,10 @@ create table TS_TAG_TYPE (
     NAME varchar(100) not null,
     CODE varchar(50) not null,
     DESCRIPTION varchar(255),
-    PROJECT_ID uuid,
     --
     primary key (ID)
 )^-- end TS_TAG_TYPE
--- begin TS_PROJECT
-create table TS_PROJECT (
+-- begin TS_PROJECTcreate table TS_PROJECT (
     ID uuid,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -123,8 +116,7 @@ create table TS_PROJECT (
     --
     primary key (ID)
 )^-- end TS_PROJECT
--- begin TS_TASK
-create table TS_TASK (
+-- begin TS_TASKcreate table TS_TASK (
     ID uuid,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -166,8 +158,7 @@ create table TS_TIME_ENTRY (
     primary key (ID)
 )^
 -- end TS_TIME_ENTRY
--- begin TS_PROJECT_PARTICIPANT
-create table TS_PROJECT_PARTICIPANT (
+-- begin TS_PROJECT_PARTICIPANTcreate table TS_PROJECT_PARTICIPANT (
     ID uuid,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -216,3 +207,10 @@ alter table SEC_USER add column WORK_HOURS_FOR_WEEK decimal(19, 2) ^
 update SEC_USER set WORK_HOURS_FOR_WEEK = 0 where WORK_HOURS_FOR_WEEK is null ^
 alter table SEC_USER alter column WORK_HOURS_FOR_WEEK set not null ^
 -- end SEC_USER
+-- begin TS_TAG_TYPE_PROJECT_LINK
+create table TS_TAG_TYPE_PROJECT_LINK (
+    TAG_TYPE_ID uuid,
+    PROJECT_ID uuid,
+    primary key (TAG_TYPE_ID, PROJECT_ID)
+)^
+-- end TS_TAG_TYPE_PROJECT_LINK

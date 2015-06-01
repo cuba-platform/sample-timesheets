@@ -8,7 +8,9 @@
     <dsContext>
         <datasource id="tagTypeDs"
                     class="com.haulmont.timesheets.entity.TagType"
-                    view="tagType-with-project"/>
+                    view="tagType-with-project">
+            <collectionDatasource id="projectDs" property="projects"/>
+        </datasource>
     </dsContext>
     <layout expand="windowActions"
             spacing="true">
@@ -19,9 +21,26 @@
                 <field id="code"/>
                 <field id="description"
                        custom="true"/>
-                <field id="project"/>
             </column>
         </fieldGroup>
+        <groupBox width="100%" height="AUTO" caption="msg://com.haulmont.timesheets.entity/TagType.projects">
+            <table id="projectsTable" width="100%" height="AUTO">
+                <actions>
+                    <action id="add"/>
+                    <action id="remove"/>
+                </actions>
+                <buttonsPanel>
+                    <button id="add" action="projectsTable.add"/>
+                    <button id="remove" action="projectsTable.remove"/>
+                </buttonsPanel>
+                <columns>
+                    <column id="name"/>
+                    <column id="code"/>
+                </columns>
+                <rows datasource="projectDs"/>
+            </table>
+        </groupBox>
+
         <iframe id="windowActions"
                 screen="editWindowActions"
                 stylename="window-actions"/>

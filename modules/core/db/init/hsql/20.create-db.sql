@@ -2,10 +2,6 @@
 alter table TS_TAG add constraint FK_TS_TAG_TAG_TYPE_ID foreign key (TAG_TYPE_ID) references TS_TAG_TYPE(ID)^
 create index IDX_TS_TAG_TAG_TYPE on TS_TAG (TAG_TYPE_ID)^
 -- end TS_TAG
--- begin TS_TAG_TYPE
-alter table TS_TAG_TYPE add constraint FK_TS_TAG_TYPE_PROJECT_ID foreign key (PROJECT_ID) references TS_PROJECT(ID)^
-create index IDX_TS_TAG_TYPE_PROJECT on TS_TAG_TYPE (PROJECT_ID)^
--- end TS_TAG_TYPE
 -- begin TS_PROJECT
 alter table TS_PROJECT add constraint FK_TS_PROJECT_PARENT_ID foreign key (PARENT_ID) references TS_PROJECT(ID)^
 alter table TS_PROJECT add constraint FK_TS_PROJECT_CLIENT_ID foreign key (CLIENT_ID) references TS_CLIENT(ID)^
@@ -48,3 +44,7 @@ alter table TS_TASK_TAG_TYPE_LINK add constraint FK_TTTTL_TAG_TYPE foreign key (
 alter table TS_TASK_TAG_LINK add constraint FK_TTTL_TASK foreign key (TASK_ID) references TS_TASK (ID)^
 alter table TS_TASK_TAG_LINK add constraint FK_TTTL_TAG foreign key (TAG_ID) references TS_TAG (ID)^
 -- end TS_TASK_TAG_LINK
+-- begin TS_TAG_TYPE_PROJECT_LINK
+alter table TS_TAG_TYPE_PROJECT_LINK add constraint FK_TTTPL_TAG_TYPE foreign key (TAG_TYPE_ID) references TS_TAG_TYPE (ID)^
+alter table TS_TAG_TYPE_PROJECT_LINK add constraint FK_TTTPL_PROJECT foreign key (PROJECT_ID) references TS_PROJECT (ID)^
+-- end TS_TAG_TYPE_PROJECT_LINK

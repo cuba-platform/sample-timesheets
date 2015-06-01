@@ -99,7 +99,6 @@ create table TS_TAG_TYPE (
     NAME varchar(100) not null,
     CODE varchar(50) not null,
     DESCRIPTION varchar(255),
-    PROJECT_ID varchar(36),
     --
     primary key (ID)
 )^-- end TS_TAG_TYPE
@@ -215,3 +214,10 @@ alter table SEC_USER add column WORK_HOURS_FOR_WEEK decimal(19, 2) ^
 update SEC_USER set WORK_HOURS_FOR_WEEK = 0 where WORK_HOURS_FOR_WEEK is null ^
 alter table SEC_USER alter column WORK_HOURS_FOR_WEEK set not null ^
 -- end SEC_USER
+-- begin TS_TAG_TYPE_PROJECT_LINK
+create table TS_TAG_TYPE_PROJECT_LINK (
+    TAG_TYPE_ID uuid,
+    PROJECT_ID uuid,
+    primary key (TAG_TYPE_ID, PROJECT_ID)
+)^
+-- end TS_TAG_TYPE_PROJECT_LINK

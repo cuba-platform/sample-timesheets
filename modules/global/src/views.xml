@@ -13,8 +13,10 @@
         <property name="name"/>
         <property name="code"/>
         <property name="description"/>
-        <property name="project"
-                  view="_minimal"/>
+        <property name="projects"
+                  view="_minimal">
+            <property name="code"/>
+        </property>
     </view>
     <view class="com.haulmont.timesheets.entity.TimeEntry"
           name="timeEntry-full">

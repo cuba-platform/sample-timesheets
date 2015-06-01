@@ -286,8 +286,8 @@ public class ProjectsServiceBean implements ProjectsService {
             loadContext.setView(viewName);
         }
         LoadContext.Query query =
-                new LoadContext.Query("select e from ts$Tag e, in(e.tagType) tt where tt.project.id is null" +
-                        " or (tt.project.id = :project)")
+                new LoadContext.Query("select e from ts$Tag e left join e.tagType.projects pr where pr.id is null" +
+                        " or (pr.id = :project)")
                         .setParameter("project", project);
         loadContext.setQuery(query);
         return dataManager.loadList(loadContext);

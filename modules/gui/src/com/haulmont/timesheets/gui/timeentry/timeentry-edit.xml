@@ -16,7 +16,7 @@
                               class="com.haulmont.timesheets.entity.Tag"
                               view="tag-with-type">
             <query>
-                <![CDATA[select e from ts$Tag e, in(e.tagType) tt where tt.project.id is null or (tt.project.id = :custom$project)]]>
+                <![CDATA[select e from ts$Tag e left join e.tagType.projects pr where pr.id is null or (pr.id = :custom$project)]]>
             </query>
         </collectionDatasource>
         <collectionDatasource id="activeTasksDs"

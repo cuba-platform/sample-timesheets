@@ -30,7 +30,6 @@
             <columns>
                 <column id="name"/>
                 <column id="code"/>
-                <column id="project"/>
                 <column id="description"
                         maxTextLength="20"/>
             </columns>
