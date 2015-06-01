@@ -295,7 +295,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                             }
                         }
 
-                        private void createRemoveButton(final WeeklyReportEntry reportEntry, HBoxLayout hBox) {LinkButton removeButton = componentsFactory.createComponent(LinkButton.NAME);
+                        private void createRemoveButton(final WeeklyReportEntry reportEntry, HBoxLayout hBox) {
+                            LinkButton removeButton = componentsFactory.createComponent(LinkButton.NAME);
                             removeButton.setIcon("icons/remove.png");
                             removeButton.setAlignment(Alignment.MIDDLE_RIGHT);
                             removeButton.setAction(new ComponentsHelper.CustomRemoveAction("timeEntryRemove", getFrame()) {
@@ -356,7 +357,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                             hBox.add(linkButton);
                         }
 
-                        private Component createTextFieldForTimeInput(WeeklyReportEntry reportEntry) {TextField timeField = componentsFactory.createComponent(TextField.NAME);
+                        private Component createTextFieldForTimeInput(WeeklyReportEntry reportEntry) {
+                            TextField timeField = componentsFactory.createComponent(TextField.NAME);
                             timeField.setWidth("100%");
                             timeField.setHeight("22px");
                             timeField.setDatasource(weeklyTsTable.getItemDatasource(reportEntry), day.getId() + "Time");
@@ -533,5 +535,45 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             }
             super.actionPerform(component);
         }
+    }
+
+    @Override
+    protected boolean preClose(final String actionId) {
+        if (hasUnsavedData()) {
+            showOptionDialog(
+                    messages.getMainMessage("closeUnsaved.caption"),
+                    messages.getMainMessage("closeUnsaved"),
+                    MessageType.CONFIRMATION,
+                    new Action[]{
+                            new DialogAction(DialogAction.Type.OK) {
+                                @Override
+                                public void actionPerform(Component component) {
+                                    close(actionId, true);
+                                }
+                            },
+                            new DialogAction(DialogAction.Type.CANCEL)
+                    }
+            );
+            return false;
+        }
+        return true;
+    }
+
+    protected boolean hasUnsavedData() {
+        for (WeeklyReportEntry reportEntry : weeklyEntriesDs.getItems()) {
+            if (reportEntry.hasFilledTime() || hasNewEntries(reportEntry)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    protected boolean hasNewEntries(WeeklyReportEntry reportEntry) {
+        for (TimeEntry timeEntry : reportEntry.getExistTimeEntries()) {
+            if (PersistenceHelper.isNew(timeEntry)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
