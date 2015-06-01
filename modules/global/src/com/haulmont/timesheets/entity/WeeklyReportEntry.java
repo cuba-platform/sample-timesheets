@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
 import com.haulmont.timesheets.global.StringFormatHelper;
 import com.haulmont.timesheets.global.HoursAndMinutes;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 
 import javax.annotation.Nullable;
@@ -341,5 +342,15 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
         }
 
         return timeEntries != null ? timeEntries : Collections.<TimeEntry>emptyList();
+    }
+
+    public boolean hasFilledTime() {
+        for (DayOfWeek day : DayOfWeek.values()) {
+            String time = getDayOfWeekTime(day);
+            if (StringUtils.isNotBlank(time)) {
+                return true;
+            }
+        }
+        return false;
     }
 }
