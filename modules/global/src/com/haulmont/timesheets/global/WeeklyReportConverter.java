@@ -19,7 +19,7 @@ import java.util.*;
 @ManagedBean(WeeklyReportConverter.NAME)
 public class WeeklyReportConverter {
 
-    public static final String NAME = "timesheets_WeeklyReportConverter";
+    public static final String NAME = "ts_WeeklyReportConverter";
 
     public List<WeeklyReportEntry> convertFromTimeEntries(List<TimeEntry> timeEntries) {
 

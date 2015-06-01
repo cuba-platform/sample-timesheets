@@ -21,7 +21,7 @@ import java.util.*;
 @ManagedBean(WorkTimeConfigBean.NAME)
 public class WorkTimeConfigBean {
 
-    public static final String NAME = "timesheets_WorkTimeConfigBean";
+    public static final String NAME = "ts_WorkTimeConfigBean";
 
     @Inject
     protected WorkTimeConfig workTimeConfig;

@@ -25,7 +25,7 @@ import java.util.List;
 @ManagedBean(ValidationTools.NAME)
 public class ValidationTools {
 
-    public static final String NAME = "timesheets_ValidationTools";
+    public static final String NAME = "ts_ValidationTools";
     public static final int SCALE = 2;
 
     @Inject
