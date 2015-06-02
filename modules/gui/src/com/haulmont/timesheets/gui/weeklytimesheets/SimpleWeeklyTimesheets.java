@@ -78,7 +78,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     @Override
     public void init(Map<String, Object> params) {
         setWeekRange(DateTimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp()));
-
+        weeklyTsTable.setSettingsEnabled(false);
         updateWeekCaption();
         fillExistingTimeEntries();
         initWeeklyEntriesTable();
