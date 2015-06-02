@@ -35,7 +35,6 @@ import java.util.*;
  * @author gorelov
  */
 public class SimpleWeeklyTimesheets extends AbstractWindow {
-
     protected static final String COLUMN_SUFFIX = "Column";
     protected static final String TOTAL_COLUMN_ID = "totalColumn";
 
@@ -126,7 +125,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             private void doHandle(TimeEntry timeEntry) {
                 SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateTimeUtils.TIME_FORMAT);
                 WeeklyReportEntry weeklyReportEntry = setTimeEntryToEachWeekDay(simpleDateFormat, timeEntry);
-                weeklyTsTable.getDatasource().addItem(weeklyReportEntry);
+                weeklyEntriesDs.addItem(weeklyReportEntry);
             }
 
             private WeeklyReportEntry setTimeEntryToEachWeekDay(SimpleDateFormat simpleDateFormat, TimeEntry timeEntry) {
@@ -136,24 +135,24 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                 weeklyReportEntry.setTask(timeEntry.getTask());
                 weeklyReportEntry.setProject(timeEntry.getTask().getProject());
 
-                weeklyReportEntry.setMonday(copyToList(timeEntry));
+                weeklyReportEntry.setMonday(copyAndPutToList(timeEntry));
                 weeklyReportEntry.setMondayTime(spentTimeStr);
 
-                weeklyReportEntry.setTuesday(copyToList(timeEntry));
+                weeklyReportEntry.setTuesday(copyAndPutToList(timeEntry));
                 weeklyReportEntry.setTuesdayTime(spentTimeStr);
 
-                weeklyReportEntry.setWednesday(copyToList(timeEntry));
+                weeklyReportEntry.setWednesday(copyAndPutToList(timeEntry));
                 weeklyReportEntry.setWednesdayTime(spentTimeStr);
 
-                weeklyReportEntry.setThursday(copyToList(timeEntry));
+                weeklyReportEntry.setThursday(copyAndPutToList(timeEntry));
                 weeklyReportEntry.setThursdayTime(spentTimeStr);
 
-                weeklyReportEntry.setFriday(copyToList(timeEntry));
+                weeklyReportEntry.setFriday(copyAndPutToList(timeEntry));
                 weeklyReportEntry.setFridayTime(spentTimeStr);
                 return weeklyReportEntry;
             }
 
-            private List<TimeEntry> copyToList(TimeEntry timeEntry) {
+            private List<TimeEntry> copyAndPutToList(TimeEntry timeEntry) {
                 List<TimeEntry> timeEntries = new ArrayList<>();
                 timeEntries.add(doCopy(timeEntry));
                 return timeEntries;
@@ -260,28 +259,29 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                             if ("project".equals(property)) {
                                 Project project = (Project) value;
                                 lookupField.setValue(null);
-                                Map<String, Task> tasks =
-                                        projectsService.getActiveTasksForUserAndProject(
-                                                userSession.getUser(),
-                                                project,
-                                                "task-full");
-                                lookupField.setOptionsMap((Map) tasks);
+                                Map<String, Object> tasks = getTasksForCurrentUserAndProject(project);
+                                lookupField.setOptionsMap(tasks);
                             }
                         }
                     });
-                    final Project project = ds.getItem().getProject();
+
+                    Project project = ds.getItem().getProject();
                     if (project != null) {
-                        Map<String, Task> tasks =
-                                projectsService.getActiveTasksForUserAndProject(
-                                        userSession.getUser(),
-                                        project,
-                                        "task-full");
-                        lookupField.setOptionsMap((Map) tasks);
+                        Map<String, Object> tasks = getTasksForCurrentUserAndProject(project);
+                        lookupField.setOptionsMap(tasks);
                     }
                     return lookupField;
                 }
             }
         });
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> getTasksForCurrentUserAndProject(Project project) {
+        return (Map) projectsService.getActiveTasksForUserAndProject(
+                userSession.getUser(),
+                project,
+                "task-full");
     }
 
     protected void initDaysColumns() {
@@ -298,19 +298,22 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                                     || timeEntries.size() == 1 && PersistenceHelper.isNew(timeEntries.get(0))) {
                                 return createTextFieldForTimeInput(reportEntry);
                             } else {
-                                HBoxLayout hBox = componentsFactory.createComponent(HBoxLayout.NAME);
-                                hBox.setSpacing(true);
-
-                                if (timeEntries.size() == 1) {
-                                    createLinkToSingleTimeEntry(reportEntry, timeEntries, hBox);
-                                } else {
-                                    createLinkToMultipleTimeEntries(reportEntry, hBox);
-                                }
-
-                                createRemoveButton(reportEntry, hBox);
-
-                                return hBox;
+                                return createLinkAndActionsForExistingEntry(reportEntry, timeEntries);
                             }
+                        }
+
+                        private Component createLinkAndActionsForExistingEntry(WeeklyReportEntry reportEntry, List<TimeEntry> timeEntries) {
+                            HBoxLayout hBox = componentsFactory.createComponent(HBoxLayout.NAME);
+                            hBox.setSpacing(true);
+
+                            if (timeEntries.size() == 1) {
+                                createLinkToSingleTimeEntry(reportEntry, timeEntries, hBox);
+                            } else {
+                                createLinkToMultipleTimeEntries(reportEntry, hBox);
+                            }
+                            createRemoveButton(reportEntry, hBox);
+
+                            return hBox;
                         }
 
                         private void createRemoveButton(final WeeklyReportEntry reportEntry, HBoxLayout hBox) {
@@ -440,34 +443,30 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             for (WeeklyReportEntry weeklyReportEntry : entries) {
                 if (weeklyReportEntry.getTask() != null) {
                     for (final DayOfWeek day : DayOfWeek.values()) {
-                        String timeStr = weeklyReportEntry.getDayOfWeekTime(day);
-                        Date time = timeParser.parse(timeStr);
+                        Date time = timeParser.parse(weeklyReportEntry.getDayOfWeekTime(day));
                         if (time != null) {
-                            List<TimeEntry> alreadyCreatedEntries = weeklyReportEntry.getDayOfWeekTimeEntries(day);
+                            List<TimeEntry> existingEntries = weeklyReportEntry.getDayOfWeekTimeEntries(day);
                             Set<Tag> defaultTags = weeklyReportEntry.getTask().getDefaultTags();
 
-                            TimeEntry timeEntry = alreadyCreatedEntries != null
-                                    ? alreadyCreatedEntries.get(0)
-                                    : new TimeEntry();
-                            timeEntry.setStatus(TimeEntryStatus.NEW);
+                            TimeEntry timeEntry = existingEntries != null ? existingEntries.get(0) : new TimeEntry();
                             timeEntry.setUser(userSession.getUser());
                             timeEntry.setTask(weeklyReportEntry.getTask());
                             timeEntry.setTime(time);
                             if (CollectionUtils.isNotEmpty(timeEntry.getTags())) {
                                 HashSet<Tag> tags = new HashSet<>(timeEntry.getTags());
-                                if (defaultTags != null) {
-                                    tags.addAll(defaultTags);
-                                }
+                                tags.addAll(defaultTags);
                                 timeEntry.setTags(tags);
                             } else {
                                 timeEntry.setTags(defaultTags);
                             }
                             timeEntry.setDate(DateTimeUtils.getSpecificDayOfWeek(firstDayOfWeek, day.getJavaCalendarDay()));
+
                             ResultAndCause validationResult = validationTools.validateTags(timeEntry);
                             if (validationResult.isNegative) {
                                 validationAlerts.add(formatMessage("notification.timeEntryValidation",
                                         validationResult.cause, timeEntry.getTask().getName(), timeEntry.getDate(), timeEntry.getTime()));
                             }
+
                             commitContext.getCommitInstances().add(timeEntry);
                         }
                     }
@@ -478,7 +477,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             updateWeek();
 
             if (validationAlerts.size() > 0) {
-                showMessageDialog(getMessage("caption.attention"), StringUtils.join(validationAlerts, "\n"), MessageType.WARNING_HTML);
+                showMessageDialog(getMessage("caption.attention"), StringUtils.join(validationAlerts, "<br/>"), MessageType.WARNING_HTML);
             }
         }
     }
