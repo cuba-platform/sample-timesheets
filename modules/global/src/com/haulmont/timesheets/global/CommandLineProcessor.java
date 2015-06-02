@@ -18,7 +18,7 @@ public class CommandLineProcessor {
     public static final Pattern PROJECT_CODE_PATTERN = Pattern.compile("@([^ ]+?)( |$)+");
     public static final Pattern TASK_CODE_PATTERN = Pattern.compile("#([^ ]+?)( |$)+");
     public static final Pattern TAG_CODE_PATTERN = Pattern.compile("\\$([^ ]+?)( |$)+");
-    public static final Pattern SPENT_TIME_PATTERN = Pattern.compile(" ([0-9]{1,2}[h,ч,:]([0-9]{1,2}[m,м]?)?)");
+    public static final Pattern SPENT_TIME_PATTERN = Pattern.compile(" ([0-9]{1,2}[H,h,Ч,ч,:]([0-9]{1,2}[M,m,М,м]?)?)");
 
     protected String commandLine;
 
