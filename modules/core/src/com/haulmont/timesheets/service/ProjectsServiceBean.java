@@ -151,7 +151,10 @@ public class ProjectsServiceBean implements ProjectsService {
     public List<Holiday> getHolidaysForPeriod(Date start, Date end) {
         LoadContext loadContext = new LoadContext(Holiday.class);
         loadContext.setQueryString("select e from ts$Holiday e " +
-                "where (e.startDate between :start and :end) or (e.startDate between :start and :end)")
+                "where (e.startDate between :start and :end)" +
+                " or (e.endDate between :start and :end)" +
+                " or (:start between e.startDate and e.endDate)" +
+                " or (:end between e.startDate and e.endDate)")
                 .setParameter("start", start)
                 .setParameter("end", end);
         return dataManager.loadList(loadContext);
