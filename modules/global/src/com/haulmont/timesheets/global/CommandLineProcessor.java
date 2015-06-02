@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
  * @author degtyarjov
  * @version $Id$
  */
-public class CommandLineUtils {
+public class CommandLineProcessor {
     public static final Pattern PROJECT_CODE_PATTERN = Pattern.compile("@([^ ]+?)( |$)+");
     public static final Pattern TASK_CODE_PATTERN = Pattern.compile("#([^ ]+?)( |$)+");
     public static final Pattern TAG_CODE_PATTERN = Pattern.compile("\\$([^ ]+?)( |$)+");
@@ -22,7 +22,7 @@ public class CommandLineUtils {
 
     protected String commandLine;
 
-    public CommandLineUtils(String commandLine) {
+    public CommandLineProcessor(String commandLine) {
         this.commandLine = commandLine;
     }
 
