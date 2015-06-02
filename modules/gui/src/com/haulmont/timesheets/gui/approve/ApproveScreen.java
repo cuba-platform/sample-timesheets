@@ -134,7 +134,6 @@ public class ApproveScreen extends AbstractWindow {
     }
 
     protected void initUserReportsTable() {
-
         initProjectColumn();
         initTaskColumn();
         initDaysColumns();
@@ -220,47 +219,55 @@ public class ApproveScreen extends AbstractWindow {
                     List<TimeEntry> timeEntries = reportEntry.getDayOfWeekTimeEntries(day);
                     if (CollectionUtils.isNotEmpty(timeEntries)) {
                         if (timeEntries.size() == 1) {
-                            final TimeEntry timeEntry = timeEntries.get(0);
-                            final LinkButton linkButton = componentsFactory.createComponent(LinkButton.NAME);
-                            linkButton.setCaption(StringFormatHelper.getDayHoursString(reportEntry.getTotalForDay(day)));
-                            linkButton.setAction(new AbstractAction("edit") {
-                                @Override
-                                public void actionPerform(Component component) {
-                                    openTimeEntryEditor(timeEntry);
-                                }
-                            });
-                            return linkButton;
+                            return createLinkToSingleTimeEntry(reportEntry, timeEntries);
                         } else {
-                            final LinkButton linkButton = componentsFactory.createComponent(LinkButton.NAME);
-                            linkButton.setCaption(StringFormatHelper.getDayHoursString(reportEntry.getTotalForDay(day)));
-                            linkButton.setAction(new AbstractAction("edit") {
-
-                                @Override
-                                public void actionPerform(Component component) {
-                                    User user = usersTable.getSingleSelected();
-                                    if (user != null) {
-                                        openLookup(
-                                                "ts$TimeEntry.lookup",
-                                                new Lookup.Handler() {
-                                                    @Override
-                                                    public void handleLookup(Collection items) {
-                                                        if (CollectionUtils.isNotEmpty(items)) {
-                                                            TimeEntry timeEntry = (TimeEntry) items.iterator().next();
-                                                            openTimeEntryEditor(timeEntry);
-                                                        }
-                                                    }
-                                                },
-                                                WindowManager.OpenType.DIALOG,
-                                                ParamsMap.of("date", finalCurrent,
-                                                        "task", reportEntry.getTask().getId(),
-                                                        "user", user.getId()));
-                                    }
-                                }
-                            });
-                            return linkButton;
+                            return createLinkToMultipleTimeEntries(reportEntry);
                         }
                     }
                     return null;
+                }
+
+                private Component createLinkToMultipleTimeEntries(final WeeklyReportEntry reportEntry) {
+                    final LinkButton linkButton = componentsFactory.createComponent(LinkButton.NAME);
+                    linkButton.setCaption(StringFormatHelper.getDayHoursString(reportEntry.getTotalForDay(day)));
+                    linkButton.setAction(new AbstractAction("edit") {
+
+                        @Override
+                        public void actionPerform(Component component) {
+                            User user = usersTable.getSingleSelected();
+                            if (user != null) {
+                                openLookup(
+                                        "ts$TimeEntry.lookup",
+                                        new Lookup.Handler() {
+                                            @Override
+                                            public void handleLookup(Collection items) {
+                                                if (CollectionUtils.isNotEmpty(items)) {
+                                                    TimeEntry timeEntry = (TimeEntry) items.iterator().next();
+                                                    openTimeEntryEditor(timeEntry);
+                                                }
+                                            }
+                                        },
+                                        WindowManager.OpenType.DIALOG,
+                                        ParamsMap.of("date", finalCurrent,
+                                                "task", reportEntry.getTask().getId(),
+                                                "user", user.getId()));
+                            }
+                        }
+                    });
+                    return linkButton;
+                }
+
+                private Component createLinkToSingleTimeEntry(WeeklyReportEntry reportEntry, List<TimeEntry> timeEntries) {
+                    final TimeEntry timeEntry = timeEntries.get(0);
+                    final LinkButton linkButton = componentsFactory.createComponent(LinkButton.NAME);
+                    linkButton.setCaption(StringFormatHelper.getDayHoursString(reportEntry.getTotalForDay(day)));
+                    linkButton.setAction(new AbstractAction("edit") {
+                        @Override
+                        public void actionPerform(Component component) {
+                            openTimeEntryEditor(timeEntry);
+                        }
+                    });
+                    return linkButton;
                 }
             });
             weeklyReportsTable.setColumnWidth(columnId, 80);
