@@ -1,6 +1,6 @@
 @mixin ts-calendar($primary-stylename: ts-calendar) {
 
-  $ts-all-day-text-color: white;
+  $ts-all-day-text-color: valo-font-color($v-selection-color, 0.9);
 
   .v-calendar .v-calendar-event-time-entry-new:before {
       color: #F0C419;

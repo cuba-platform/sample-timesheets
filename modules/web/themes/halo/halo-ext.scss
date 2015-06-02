@@ -13,7 +13,7 @@
   }
 
   .v-button-remove:hover {
-    color: red;
+    color: #F46565;
   }
 
   .v-table-cell-content-project-open,
@@ -67,23 +67,21 @@
     background: #EF525B;
   }
 
-  .v-table-cell-content-holiday .v-button-link {
-    color: white;
-  }
+  $light-font-color: valo-font-color($v-selection-color, 0.9);
 
-  .v-table [class*="-row"].v-selected .v-table-cell-content-holiday,
-  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-new-bg,
-  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-approved-bg,
-  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-closed-bg,
-  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-rejected-bg {
-    border-left-color: #d4d4d4;
+  .v-table-cell-content-holiday .v-button-link {
+    color: $light-font-color;
   }
 
   .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-new-bg .v-button-link,
   .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-approved-bg .v-button-link,
   .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-closed-bg .v-button-link,
   .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-rejected-bg .v-button-link {
-    color: #197de1;
+    color: $v-link-font-color;
+  }
+
+  .v-table [class*="-row"].v-selected .v-button-link:focus {
+    border-color: $light-font-color;
   }
 
   .v-caption-h2 {
@@ -96,6 +94,6 @@
 
   .v-label-overtime,
   .v-table-cell-content-overtime-ag {
-    color: red;
+    color: #FF0100;
   }
 }
