@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -67,10 +68,12 @@ public class CommandLineSuggester implements Suggester {
             }
         } else if (text.charAt(cursorPosition - 1) == '#') {
             String projectCode = commandLineUtils.getProjectCode();
-            Collection<Task> tasks;
+            Collection<Task> tasks = Collections.emptyList();
             if (projectCode != null) {
                 Project project = projectsService.getEntityByCode(Project.class, projectCode, null);
-                tasks = projectsService.getActiveTasksForUserAndProject(currentUser, project, "task-full").values();
+                if (project != null) {
+                    tasks = projectsService.getActiveTasksForUserAndProject(currentUser, project, "task-full").values();
+                }
 
             } else {
                 tasks = projectsService.getActiveTasksForUser(currentUser, "task-full");

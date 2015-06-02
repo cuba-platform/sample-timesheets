@@ -45,23 +45,25 @@ public class CommandLineServiceBean implements CommandLineService {
         List<String> tagCodes = commandLineUtils.getTagCodes();
         if (taskCode != null) {
             Task task = systemDataManager.getEntityByCode(Task.class, taskCode, "task-full");
-            List<Tag> tags = systemDataManager.getEntitiesByCodes(Tag.class, tagCodes, View.MINIMAL);
-            TimeEntry timeEntry = new TimeEntry();
-            timeEntry.setTask(task);
-            timeEntry.setTags(new HashSet<>(tags));
-            timeEntry.getTags().addAll(task.getDefaultTags());
-            String spentTime = commandLineUtils.getSpentTime();
-            if (spentTime != null) {
-                Date parsedTime = timeParser.parse(spentTime);
-                timeEntry.setTime(parsedTime);
-            } else {
-                timeEntry.setTime(DateTimeUtils.getDateWithoutTime(timeSource.currentTimestamp()));
+            if (task != null) {
+                List<Tag> tags = systemDataManager.getEntitiesByCodes(Tag.class, tagCodes, View.MINIMAL);
+                TimeEntry timeEntry = new TimeEntry();
+                timeEntry.setTask(task);
+                timeEntry.setTags(new HashSet<>(tags));
+                timeEntry.getTags().addAll(task.getDefaultTags());
+                String spentTime = commandLineUtils.getSpentTime();
+                if (spentTime != null) {
+                    Date parsedTime = timeParser.parse(spentTime);
+                    timeEntry.setTime(parsedTime);
+                } else {
+                    timeEntry.setTime(DateTimeUtils.getDateWithoutTime(timeSource.currentTimestamp()));
+                }
+
+                timeEntry.setDate(timeSource.currentTimestamp());
+                timeEntry.setStatus(TimeEntryStatus.NEW);
+
+                return Arrays.asList(timeEntry);
             }
-
-            timeEntry.setDate(timeSource.currentTimestamp());
-            timeEntry.setStatus(TimeEntryStatus.NEW);
-
-            return Arrays.asList(timeEntry);
         }
 
         return null;
