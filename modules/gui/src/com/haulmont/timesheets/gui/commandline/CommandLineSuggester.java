@@ -15,7 +15,7 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.Tag;
 import com.haulmont.timesheets.entity.Task;
-import com.haulmont.timesheets.global.CommandLineUtils;
+import com.haulmont.timesheets.global.CommandLineProcessor;
 import com.haulmont.timesheets.service.ProjectsService;
 import org.apache.commons.lang.StringUtils;
 
@@ -42,7 +42,7 @@ public class CommandLineSuggester implements Suggester {
         User currentUser = userSessionSource.getUserSession().getUser();
 
         List<Suggestion> suggestions = new ArrayList<>();
-        CommandLineUtils commandLineUtils = new CommandLineUtils(text);
+        CommandLineProcessor commandLineProcessor = new CommandLineProcessor(text);
 
         if (StringUtils.isBlank(text)) {
             List<Project> projects = projectsService.getActiveProjectsForUser(currentUser, View.LOCAL);
@@ -67,7 +67,7 @@ public class CommandLineSuggester implements Suggester {
                 suggestions.add(suggestion);
             }
         } else if (text.charAt(cursorPosition - 1) == '#') {
-            String projectCode = commandLineUtils.getProjectCode();
+            String projectCode = commandLineProcessor.getProjectCode();
             Collection<Task> tasks = Collections.emptyList();
             if (projectCode != null) {
                 Project project = projectsService.getEntityByCode(Project.class, projectCode, null);
@@ -85,8 +85,8 @@ public class CommandLineSuggester implements Suggester {
             }
         } else if (text.charAt(cursorPosition - 1) == '$') {
             Project project = null;
-            String projectCode = commandLineUtils.getProjectCode();
-            String taskCode = commandLineUtils.getTaskCode();
+            String projectCode = commandLineProcessor.getProjectCode();
+            String taskCode = commandLineProcessor.getTaskCode();
             if (projectCode != null) {
                 project = projectsService.getEntityByCode(Project.class, projectCode, View.MINIMAL);
             } else if (taskCode != null) {

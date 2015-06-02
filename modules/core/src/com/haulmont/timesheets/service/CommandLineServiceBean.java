@@ -11,7 +11,7 @@ import com.haulmont.timesheets.entity.Tag;
 import com.haulmont.timesheets.entity.Task;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.entity.TimeEntryStatus;
-import com.haulmont.timesheets.global.CommandLineUtils;
+import com.haulmont.timesheets.global.CommandLineProcessor;
 import com.haulmont.timesheets.global.DateTimeUtils;
 import com.haulmont.timesheets.global.TimeParser;
 import org.springframework.stereotype.Service;
@@ -40,9 +40,9 @@ public class CommandLineServiceBean implements CommandLineService {
     @Nullable
     @Override
     public List<TimeEntry> createTimeEntriesForTheCommandLine(String commandLine) {
-        CommandLineUtils commandLineUtils = new CommandLineUtils(commandLine);
-        String taskCode = commandLineUtils.getTaskCode();
-        List<String> tagCodes = commandLineUtils.getTagCodes();
+        CommandLineProcessor commandLineProcessor = new CommandLineProcessor(commandLine);
+        String taskCode = commandLineProcessor.getTaskCode();
+        List<String> tagCodes = commandLineProcessor.getTagCodes();
         if (taskCode != null) {
             Task task = systemDataManager.getEntityByCode(Task.class, taskCode, "task-full");
             if (task != null) {
@@ -51,7 +51,7 @@ public class CommandLineServiceBean implements CommandLineService {
                 timeEntry.setTask(task);
                 timeEntry.setTags(new HashSet<>(tags));
                 timeEntry.getTags().addAll(task.getDefaultTags());
-                String spentTime = commandLineUtils.getSpentTime();
+                String spentTime = commandLineProcessor.getSpentTime();
                 if (spentTime != null) {
                     Date parsedTime = timeParser.parse(spentTime);
                     timeEntry.setTime(parsedTime);
