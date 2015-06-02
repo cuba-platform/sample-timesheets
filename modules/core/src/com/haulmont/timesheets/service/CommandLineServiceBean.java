@@ -58,9 +58,7 @@ public class CommandLineServiceBean implements CommandLineService {
                 } else {
                     timeEntry.setTime(DateTimeUtils.getDateWithoutTime(timeSource.currentTimestamp()));
                 }
-
                 timeEntry.setDate(timeSource.currentTimestamp());
-                timeEntry.setStatus(TimeEntryStatus.NEW);
 
                 return Arrays.asList(timeEntry);
             }

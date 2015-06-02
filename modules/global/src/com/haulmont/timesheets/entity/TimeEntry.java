@@ -55,7 +55,7 @@ public class TimeEntry extends StandardEntity {
     protected Date time;
 
     @Column(name = "STATUS", nullable = false)
-    protected String status;
+    protected String status = TimeEntryStatus.NEW.getId();
 
     @Column(name = "DESCRIPTION")
     protected String description;

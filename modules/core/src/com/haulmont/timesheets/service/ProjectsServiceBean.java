@@ -20,6 +20,9 @@ import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
 
+import static com.haulmont.timesheets.entity.ProjectRoleCode.APPROVER;
+import static com.haulmont.timesheets.entity.ProjectRoleCode.MANAGER;
+
 /**
  * @author gorelov
  */
@@ -113,7 +116,7 @@ public class ProjectsServiceBean implements ProjectsService {
             loadContext.setView(viewName);
         }
         String queryStr = "select e from ts$TimeEntry e join e.task t join t.project pr join pr.participants p " +
-                "where p.user.id = :approverId and (p.role.code = 'manager' or p.role.code = 'approver') " +
+                "where p.user.id = :approverId and (p.role.code = '" + MANAGER.getId() + "' or p.role.code = '" + APPROVER.getId() + "') " +
                 "and e.user.id = :userId and (e.date between :start and :end)";
         if (status != null) {
             queryStr += " and e.status = :status";
@@ -233,7 +236,9 @@ public class ProjectsServiceBean implements ProjectsService {
         }
         LoadContext.Query query =
                 new LoadContext.Query("select pr from ts$Project pr, in(pr.participants) p " +
-                        "where p.user.id = :userId and (p.role.code = 'manager' or p.role.code = 'approver') and pr.status = 'open'")
+                        "where p.user.id = :userId " +
+                        "and (p.role.code = '" + MANAGER.getId() + "' or p.role.code = '" + APPROVER.getId() + "') " +
+                        "and pr.status = 'open'")
                         .setParameter("userId", user.getId());
         loadContext.setQuery(query);
         return dataManager.loadList(loadContext);
@@ -328,8 +333,8 @@ public class ProjectsServiceBean implements ProjectsService {
         loadContext.setQueryString("select u from sec$User u, ts$ProjectParticipant pp " +
                 "join pp.project pr join pr.participants me " +
                 "where pp.user.id = u.id and me.user.id = :managerId " +
-                "and (me.role.code = 'manager' or me.role.code = 'approver')")
-        .setParameter("managerId", manager.getId());
+                "and (me.role.code = '" + MANAGER.getId() + "' or me.role.code = '" + APPROVER.getId() + "')")
+                .setParameter("managerId", manager.getId());
         return dataManager.loadList(loadContext);
     }
 }

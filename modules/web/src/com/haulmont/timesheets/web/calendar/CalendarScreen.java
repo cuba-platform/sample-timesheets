@@ -75,6 +75,7 @@ public class CalendarScreen extends AbstractWindow {
         firstDayOfMonth = DateTimeUtils.getFirstDayOfMonth(timeSource.currentTimestamp());
 
         initCalendar();
+        initShowCommandLineAction();
 
         monthSelector.addListener(new ValueListener() {
             @Override
@@ -83,24 +84,6 @@ public class CalendarScreen extends AbstractWindow {
                 updateCalendarRange();
             }
         });
-
-        AbstractAction action = new AbstractAction("showCommandLine") {
-            @Override
-            public String getCaption() {
-                return "";
-            }
-
-            @Override
-            public void actionPerform(Component component) {
-                if (commandLine.getHeight() <= 0) {
-                    commandLine.setHeight("70px");
-                } else {
-                    commandLine.setHeight("0px");
-                }
-            }
-        };
-        action.setShortcut("CTRL-ALT-Q");
-        addAction(action);
 
         commandLine.setTimeEntriesHandler(new CommandLineFrameController.ResultTimeEntriesHandler() {
             @Override
@@ -150,6 +133,7 @@ public class CalendarScreen extends AbstractWindow {
 
                 CommitContext context = new CommitContext();
                 context.getCommitInstances().addAll(results);
+                @SuppressWarnings("unchecked")
                 Set<TimeEntry> committed = (Set) getDsContext().getDataSupplier().commit(context);
                 List<CalendarEvent> events = new ArrayList<>();
                 for (TimeEntry entry : committed) {
@@ -160,7 +144,27 @@ public class CalendarScreen extends AbstractWindow {
         });
     }
 
-    private void initCalendar() {
+    protected void initShowCommandLineAction() {
+        AbstractAction action = new AbstractAction("showCommandLine") {
+            @Override
+            public String getCaption() {
+                return "";
+            }
+
+            @Override
+            public void actionPerform(Component component) {
+                if (commandLine.getHeight() <= 0) {
+                    commandLine.setHeight("70px");
+                } else {
+                    commandLine.setHeight("0px");
+                }
+            }
+        };
+        action.setShortcut("CTRL-ALT-Q");
+        addAction(action);
+    }
+
+    protected void initCalendar() {
         dataSource = new TimeSheetsCalendarEventProvider(userSession.getUser());
         dataSource.addEventSetChangeListener(new CalendarEventProvider.EventSetChangeListener() {
             @Override
