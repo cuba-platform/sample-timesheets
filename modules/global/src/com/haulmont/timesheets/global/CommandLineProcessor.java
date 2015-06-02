@@ -51,7 +51,7 @@ public class CommandLineProcessor {
     protected List<String> getMatchedSubstring(Pattern pattern) {
         List<String> result = new ArrayList<>();
         Matcher matcher = pattern.matcher(commandLine);
-        if (matcher.find()) {
+        while (matcher.find()) {
             String matched = matcher.group(1);
             result.add(matched);
         }

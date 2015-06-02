@@ -18,7 +18,9 @@ import com.haulmont.timesheets.service.ProjectsService;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author gorelov
@@ -133,7 +135,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
             return false;
         }
 
-        ProjectRole workerRole = projectsService.getEntityByCode(ProjectRole.class, "worker", null);
+        ProjectRole workerRole = projectsService.getEntityByCode(ProjectRole.class, ProjectRoleCode.WORKER.getId(), null);
         if (workerRole == null) {
             return true;
         }
