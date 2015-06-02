@@ -227,6 +227,8 @@ public class ComponentsHelper {
                 return "time-entry-approved";
             case REJECTED:
                 return "time-entry-rejected";
+            case CLOSED:
+                return "time-entry-closed";
             default:
                 return null;
         }

@@ -29,6 +29,15 @@
     background-color: #F15A5A;
   }
 
+  .v-calendar .v-calendar-event-time-entry-closed:before {
+    color: #F0F0F0;
+  }
+
+  .v-calendar .v-calendar-event-time-entry-closed-all-day {
+    color: $ts-all-day-text-color;
+    background-color: #F0F0F0;
+  }
+
   .v-calendar .v-calendar-event-holiday:before {
     color: #EF525B;
   }

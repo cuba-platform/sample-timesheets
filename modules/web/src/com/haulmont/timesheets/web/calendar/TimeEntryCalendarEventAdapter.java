@@ -7,7 +7,9 @@ package com.haulmont.timesheets.web.calendar;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.vaadin.ui.components.calendar.event.BasicEvent;
+import org.apache.commons.lang.time.DateUtils;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -48,7 +50,11 @@ public class TimeEntryCalendarEventAdapter extends BasicEvent {
 
     @Override
     public Date getEnd() {
-        return timeEntry.getTime();
+        Calendar dateCal = DateUtils.toCalendar(getStart());
+        Date timeDate = DateUtils.setYears(timeEntry.getTime(), dateCal.get(Calendar.YEAR));
+        timeDate = DateUtils.setMonths(timeDate, dateCal.get(Calendar.MONTH));
+        timeDate = DateUtils.setDays(timeDate, dateCal.get(Calendar.DAY_OF_MONTH));
+        return timeDate;
     }
 
     @Override

@@ -5,20 +5,18 @@ package com.haulmont.timesheets.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
+import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.security.entity.User;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
 
 import javax.persistence.*;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Set;
-import com.haulmont.cuba.core.entity.annotation.Listeners;
 
 /**
  * @author gorelov
@@ -86,15 +84,7 @@ public class TimeEntry extends StandardEntity {
     }
 
     public Date getTime() {
-        if (date == null || time == null) {
-            return time;
-        }
-        //todo eude, gg please make it faster!
-        Calendar dateCal = DateUtils.toCalendar(date);
-        Date timeDate = DateUtils.setYears(time, dateCal.get(Calendar.YEAR));
-        timeDate = DateUtils.setMonths(timeDate, dateCal.get(Calendar.MONTH));
-        timeDate = DateUtils.setDays(timeDate, dateCal.get(Calendar.DAY_OF_MONTH));
-        return timeDate;
+        return time;
     }
 
     public void setDescription(String description) {

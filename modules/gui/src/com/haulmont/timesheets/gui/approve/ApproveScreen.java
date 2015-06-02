@@ -24,6 +24,7 @@ import com.haulmont.timesheets.global.StringFormatHelper;
 import com.haulmont.timesheets.global.ValidationTools;
 import com.haulmont.timesheets.global.WeeklyReportConverter;
 import com.haulmont.timesheets.gui.ComponentsHelper;
+import com.haulmont.timesheets.gui.SecurityAssistant;
 import com.haulmont.timesheets.gui.rejection.RejectionReason;
 import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
 import com.haulmont.timesheets.gui.weeklytimesheets.TimeEntryAggregation;
@@ -81,12 +82,15 @@ public class ApproveScreen extends AbstractWindow {
     protected Companion companion;
     @Inject
     protected ValidationTools validationTools;
+    @Inject
+    protected SecurityAssistant securityAssistant;
 
     protected Map<String, Label> totalLabelsMap = new HashMap<>();
 
     protected Date firstDayOfWeek;
     protected Date lastDayOfWeek;
-    protected List<Project> approvableProjects;
+    protected List<Project> managedProjects;
+    protected List<User> managedUsers;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -95,7 +99,8 @@ public class ApproveScreen extends AbstractWindow {
         }
 
         setWeekRange(DateTimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp()));
-        approvableProjects = projectsService.getActiveManagedProjectsForUser(userSession.getUser(), View.LOCAL);
+        managedProjects = projectsService.getActiveManagedProjectsForUser(userSession.getUser(), View.LOCAL);
+        managedUsers = projectsService.getManagedUsersForUser(userSession.getUser(), View.LOCAL);
 
         initUsersTable();
         initUserReportsTable();
@@ -111,15 +116,11 @@ public class ApproveScreen extends AbstractWindow {
         usersTable.addGeneratedColumn(actionsColumnId, new Table.ColumnGenerator() {
             @Override
             public Component generateCell(Entity entity) {
-                User user = (User) entity;
-
-                return getApproveControls(
-                        new UserChangeStatusAction("approve", user, TimeEntryStatus.APPROVED),
-                        new UserChangeStatusAction("reject", user, TimeEntryStatus.REJECTED)
-                );
+                UserChangeStatusActionsProvider provider = new UserChangeStatusActionsProvider((User) entity);
+                return getApproveControls(provider.getApproveAction(), provider.getRejectAction(), provider.getCloseAction());
             }
         });
-        usersTable.setColumnWidth(actionsColumnId, 90);
+        usersTable.setColumnWidth(actionsColumnId, 100);
         usersTable.setColumnCaption(actionsColumnId, messages.getMessage(getClass(), actionsColumnId));
 
         usersDs.addListener(new CollectionDsListenerAdapter<ExtUser>() {
@@ -127,6 +128,7 @@ public class ApproveScreen extends AbstractWindow {
             public void itemChanged(Datasource<ExtUser> ds, ExtUser prevItem, ExtUser item) {
                 super.itemChanged(ds, prevItem, item);
                 updateReportTableItems();
+                updateStatusOption(item);
             }
         });
     }
@@ -250,8 +252,8 @@ public class ApproveScreen extends AbstractWindow {
                                                 },
                                                 WindowManager.OpenType.DIALOG,
                                                 ParamsMap.of("date", finalCurrent,
-                                                        "taskId", reportEntry.getTask().getId(),
-                                                        "userId", user.getId()));
+                                                        "task", reportEntry.getTask().getId(),
+                                                        "user", user.getId()));
                                     }
                                 }
                             });
@@ -299,14 +301,11 @@ public class ApproveScreen extends AbstractWindow {
             public Component generateCell(Entity entity) {
                 WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
                 User user = usersTable.getSingleSelected();
-
-                return isApprovableEntry(reportEntry) ? getApproveControls(
-                        new WeeklyReportChangeStatusAction("approve", user, reportEntry, TimeEntryStatus.APPROVED),
-                        new WeeklyReportChangeStatusAction("reject", user, reportEntry, TimeEntryStatus.REJECTED)
-                ) : null;
+                WeeklyReportChangeStatusActionProvider provider = new WeeklyReportChangeStatusActionProvider(user, reportEntry);
+                return getApproveControls(provider.getApproveAction(), provider.getRejectAction(), provider.getCloseAction());
             }
         });
-        weeklyReportsTable.setColumnWidth(actionsColumnId, 90);
+        weeklyReportsTable.setColumnWidth(actionsColumnId, 100);
         weeklyReportsTable.setColumnCaption(actionsColumnId, messages.getMessage(getClass(), actionsColumnId));
     }
 
@@ -324,24 +323,30 @@ public class ApproveScreen extends AbstractWindow {
         });
     }
 
-    protected Component getApproveControls(Action approveAction, Action rejectAction) {
+    protected Component getApproveControls(@Nullable Action approveAction,
+                                           @Nullable Action rejectAction,
+                                           @Nullable Action closeAction) {
         HBoxLayout hBoxLayout = componentsFactory.createComponent(HBoxLayout.NAME);
         hBoxLayout.setSpacing(true);
         hBoxLayout.setWidth("100%");
 
-        hBoxLayout.add(ComponentsHelper.createCaptionlessLinkButton("icons/ok.png",
-                messages.getMessage(getClass(), "approve"),
-                approveAction));
-
-        hBoxLayout.add(ComponentsHelper.createCaptionlessLinkButton("icons/remove.png",
-                messages.getMessage(getClass(), "reject"),
-                rejectAction));
+        if (approveAction != null) {
+            hBoxLayout.add(ComponentsHelper.createCaptionlessLinkButton("icons/ok.png",
+                    messages.getMessage(getClass(), AbstractChangeStatusAction.APPROVE_ACTION_ID),
+                    approveAction));
+        }
+        if (rejectAction != null) {
+            hBoxLayout.add(ComponentsHelper.createCaptionlessLinkButton("icons/remove.png",
+                    messages.getMessage(getClass(), AbstractChangeStatusAction.REJECT_ACTION_ID),
+                    rejectAction));
+        }
+        if (closeAction != null) {
+            hBoxLayout.add(ComponentsHelper.createCaptionlessLinkButton("font-icon:LOCK",
+                    messages.getMessage(getClass(), AbstractChangeStatusAction.CLOSE_ACTION_ID),
+                    closeAction));
+        }
 
         return hBoxLayout;
-    }
-
-    protected boolean isApprovableEntry(WeeklyReportEntry reportEntry) {
-        return approvableProjects.contains(reportEntry.getProject());
     }
 
     protected void initDateField() {
@@ -356,8 +361,6 @@ public class ApproveScreen extends AbstractWindow {
 
     protected void initStatusOption() {
         statusOption.setOptionsList(Arrays.asList(TimeEntryStatus.values()));
-        statusOption.setValue(Collections.singletonList(TimeEntryStatus.NEW));
-
         statusOption.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, @Nullable Object prevValue, @Nullable Object value) {
@@ -428,42 +431,42 @@ public class ApproveScreen extends AbstractWindow {
         }
     }
 
+    protected void updateStatusOption(User user) {
+        List<TimeEntryStatus> values = new ArrayList<>((Collection) statusOption.getValue());
+        if (securityAssistant.isSuperUser() || managedUsers.contains(user)) {
+            if (!values.contains(TimeEntryStatus.NEW)) {
+                values.add(TimeEntryStatus.NEW);
+            }
+        }
+        if (isUserCanClose()) {
+            if (!values.contains(TimeEntryStatus.APPROVED)) {
+                values.add(TimeEntryStatus.APPROVED);
+            }
+        }
+        statusOption.setValue(values);
+    }
+
     protected boolean showApprovable() {
         return StringUtils.equals(messages.getMessage(getClass(), "approvable"), (String) typeOption.getValue());
     }
 
     protected void fillExistingTimeEntries(User user) {
-        List<TimeEntry> timeEntries = getUserTimeEntries(user, showApprovable());
+        List<TimeEntry> timeEntries = new TimeEntriesProvider(user).setApprovable(showApprovable()).getUserTimeEntries();
         List<WeeklyReportEntry> reportEntries = reportConverterBean.convertFromTimeEntries(timeEntries);
         for (WeeklyReportEntry entry : reportEntries) {
             weeklyEntriesDs.addItem(entry);
         }
     }
 
-    protected List<TimeEntry> getUserTimeEntries(User user, boolean isApprovable) {
-        if (statusOption.getValue() == null) {
-            return Collections.emptyList();
-        }
-
-        List<TimeEntry> timeEntries = new ArrayList<>();
-        Collection<TimeEntryStatus> statuses = statusOption.getValue();
-        for (TimeEntryStatus status : statuses) {
-            timeEntries.addAll(getTimeEntriesForPeriod(firstDayOfWeek,
-                    lastDayOfWeek, userSession.getUser(), user, status, isApprovable));
-        }
-        return timeEntries;
-    }
-
-    protected Collection<? extends TimeEntry> getTimeEntriesForPeriod(
-            Date start, Date end, User approver, User user, TimeEntryStatus status, boolean isApprovable) {
-        if (isApprovable) {
-            return projectsService.getApprovableTimeEntriesForPeriod(start, end, approver, user, status, "timeEntry-full");
-        } else {
-            return projectsService.getTimeEntriesForPeriod(start, end, user, status, "timeEntry-full");
-        }
+    protected boolean isUserCanClose() {
+        return securityAssistant.isSuperUser() || securityAssistant.isUserCloser();
     }
 
     protected abstract class AbstractChangeStatusAction extends AbstractAction {
+
+        public static final String APPROVE_ACTION_ID = "approve";
+        public static final String REJECT_ACTION_ID = "reject";
+        public static final String CLOSE_ACTION_ID = "close";
 
         protected final User user;
         protected final TimeEntryStatus status;
@@ -478,6 +481,10 @@ public class ApproveScreen extends AbstractWindow {
         @Override
         public void actionPerform(Component component) {
             rejectReason = null;
+            final List<TimeEntry> timeEntries = getTimeEntries();
+            if (timeEntries.isEmpty()) {
+                return;
+            }
             if (TimeEntryStatus.REJECTED.equals(status)) {
                 final RejectionReason rejectionReasonWindow = openWindow("rejection-reason", WindowManager.OpenType.DIALOG);
                 rejectionReasonWindow.addListener(new CloseListener() {
@@ -485,18 +492,18 @@ public class ApproveScreen extends AbstractWindow {
                     public void windowClosed(String actionId) {
                         if (RejectionReason.CONFIRM_ACTION_AD.equals(actionId)) {
                             rejectReason = rejectionReasonWindow.getRejectionReason();
-                            commitTimeEntries();
+                            commitTimeEntries(timeEntries);
                         }
                     }
                 });
             } else {
-                commitTimeEntries();
+                commitTimeEntries(timeEntries);
             }
         }
 
-        protected void commitTimeEntries() {
+        protected void commitTimeEntries(List<TimeEntry> timeEntries) {
             CommitContext commitContext = new CommitContext();
-            for (TimeEntry entry : getTimeEntries()) {
+            for (TimeEntry entry : timeEntries) {
                 entry.setStatus(status);
                 entry.setRejectionReason(rejectReason);
                 commitContext.getCommitInstances().add(entry);
@@ -522,7 +529,19 @@ public class ApproveScreen extends AbstractWindow {
 
         @Override
         protected List<TimeEntry> getTimeEntries() {
-            return getUserTimeEntries(user, true);
+            TimeEntriesProvider provider = new TimeEntriesProvider(user);
+            if (CLOSE_ACTION_ID.equals(id)) {
+                provider.setSpecificStatus(TimeEntryStatus.APPROVED);
+            } else {
+                if (!securityAssistant.isSuperUser()) {
+                    provider.setApprovable(true);
+                }
+                provider.addExcludeStatus(TimeEntryStatus.CLOSED);
+                if (REJECT_ACTION_ID.equals(id)) {
+                    provider.addExcludeStatus(TimeEntryStatus.REJECTED);
+                }
+            }
+            return provider.getUserTimeEntries();
         }
     }
 
@@ -537,7 +556,194 @@ public class ApproveScreen extends AbstractWindow {
 
         @Override
         protected List<TimeEntry> getTimeEntries() {
-            return weeklyReportEntry.getExistTimeEntries();
+            List<TimeEntry> exist = weeklyReportEntry.getExistTimeEntries();
+            if (exist.isEmpty()) {
+                return Collections.emptyList();
+            }
+            TimeEntriesProvider provider = new TimeEntriesProvider(exist);
+            if (CLOSE_ACTION_ID.equals(id)) {
+                provider.setSpecificStatus(TimeEntryStatus.APPROVED);
+            } else {
+                provider.addExcludeStatus(TimeEntryStatus.CLOSED);
+                if (REJECT_ACTION_ID.equals(id)) {
+                    provider.addExcludeStatus(TimeEntryStatus.REJECTED);
+                }
+            }
+            return provider.getUserTimeEntries();
+        }
+    }
+
+    protected abstract class AbstractChangeStatusActionsProvider {
+        protected User user;
+
+        protected AbstractChangeStatusActionsProvider(User user) {
+            this.user = user;
+        }
+
+        @Nullable
+        public abstract AbstractChangeStatusAction getApproveAction();
+
+        @Nullable
+        public abstract AbstractChangeStatusAction getRejectAction();
+
+        @Nullable
+        public abstract AbstractChangeStatusAction getCloseAction();
+    }
+
+    protected class UserChangeStatusActionsProvider extends AbstractChangeStatusActionsProvider {
+
+        public UserChangeStatusActionsProvider(User user) {
+            super(user);
+        }
+
+        @Nullable
+        @Override
+        public AbstractChangeStatusAction getApproveAction() {
+            return securityAssistant.isSuperUser() || isApprovableUser()
+                    ? new UserChangeStatusAction(AbstractChangeStatusAction.APPROVE_ACTION_ID,
+                    user, TimeEntryStatus.APPROVED)
+                    : null;
+        }
+
+        @Nullable
+        @Override
+        public AbstractChangeStatusAction getRejectAction() {
+            return securityAssistant.isSuperUser() || isApprovableUser()
+                    ? new UserChangeStatusAction(AbstractChangeStatusAction.REJECT_ACTION_ID,
+                    user, TimeEntryStatus.REJECTED)
+                    : null;
+        }
+
+        @Nullable
+        @Override
+        public AbstractChangeStatusAction getCloseAction() {
+            return isUserCanClose()
+                    ? new UserChangeStatusAction(AbstractChangeStatusAction.CLOSE_ACTION_ID,
+                    user, TimeEntryStatus.CLOSED)
+                    : null;
+        }
+
+        protected boolean isApprovableUser() {
+            return managedUsers.contains(user);
+        }
+    }
+
+    protected class WeeklyReportChangeStatusActionProvider extends AbstractChangeStatusActionsProvider {
+
+        protected WeeklyReportEntry reportEntry;
+
+        public WeeklyReportChangeStatusActionProvider(User user, WeeklyReportEntry reportEntry) {
+            super(user);
+            this.reportEntry = reportEntry;
+        }
+
+        @Nullable
+        @Override
+        public AbstractChangeStatusAction getApproveAction() {
+            return securityAssistant.isSuperUser() || isApprovableEntry(reportEntry)
+                    ? new WeeklyReportChangeStatusAction(AbstractChangeStatusAction.APPROVE_ACTION_ID,
+                    user, reportEntry, TimeEntryStatus.APPROVED)
+                    : null;
+        }
+
+        @Nullable
+        @Override
+        public AbstractChangeStatusAction getRejectAction() {
+            return securityAssistant.isSuperUser() || isApprovableEntry(reportEntry)
+                    ? new WeeklyReportChangeStatusAction(AbstractChangeStatusAction.REJECT_ACTION_ID,
+                    user, reportEntry, TimeEntryStatus.REJECTED)
+                    : null;
+        }
+
+        @Nullable
+        @Override
+        public AbstractChangeStatusAction getCloseAction() {
+            return isUserCanClose()
+                    ? new WeeklyReportChangeStatusAction(AbstractChangeStatusAction.CLOSE_ACTION_ID,
+                    user, reportEntry, TimeEntryStatus.CLOSED)
+                    : null;
+        }
+
+        protected boolean isApprovableEntry(WeeklyReportEntry reportEntry) {
+            return managedProjects.contains(reportEntry.getProject());
+        }
+    }
+
+    protected class TimeEntriesProvider {
+
+        protected User user;
+        protected boolean isApprovable = false;
+        protected TimeEntryStatus specificStatus = null;
+        protected List<TimeEntryStatus> excludeStatuses = null;
+        protected List<TimeEntry> fixedTimeEntries = null;
+
+        public TimeEntriesProvider(User user) {
+            this.user = user;
+        }
+
+        public TimeEntriesProvider(List<TimeEntry> timeEntries) {
+            this.fixedTimeEntries = timeEntries;
+        }
+
+        public TimeEntriesProvider setApprovable(boolean isApprovable) {
+            this.isApprovable = isApprovable;
+            return this;
+        }
+
+        public TimeEntriesProvider setSpecificStatus(TimeEntryStatus specificStatus) {
+            this.specificStatus = specificStatus;
+            return this;
+        }
+
+        public TimeEntriesProvider addExcludeStatus(TimeEntryStatus excludeStatus) {
+            if (this.excludeStatuses == null) {
+                this.excludeStatuses = new ArrayList<>();
+            }
+            this.excludeStatuses.add(excludeStatus);
+            return this;
+        }
+
+        public List<TimeEntry> getUserTimeEntries() {
+            if (statusOption.getValue() == null) {
+                return Collections.emptyList();
+            }
+
+            List<TimeEntryStatus> statuses = new ArrayList<>((Collection) statusOption.getValue());
+            if (specificStatus != null) {
+                if (statuses.contains(specificStatus)) {
+                    statuses = Collections.singletonList(specificStatus);
+                } else {
+                    return Collections.emptyList();
+                }
+            }
+
+            if (excludeStatuses != null) {
+                for (TimeEntryStatus excludeStatus : excludeStatuses) {
+                    statuses.remove(excludeStatus);
+                }
+            }
+            List<TimeEntry> timeEntries = new ArrayList<>();
+            if (fixedTimeEntries == null) {
+                for (TimeEntryStatus status : statuses) {
+                    timeEntries.addAll(getTimeEntriesForPeriod(firstDayOfWeek, lastDayOfWeek, status));
+                }
+            } else {
+                for (TimeEntry timeEntry : fixedTimeEntries) {
+                    if (statuses.contains(timeEntry.getStatus())) {
+                        timeEntries.add(timeEntry);
+                    }
+                }
+            }
+            return timeEntries;
+        }
+
+        protected Collection<? extends TimeEntry> getTimeEntriesForPeriod(
+                Date start, Date end, TimeEntryStatus status) {
+            if (isApprovable) {
+                return projectsService.getApprovableTimeEntriesForPeriod(start, end, userSession.getUser(), user, status, "timeEntry-full");
+            } else {
+                return projectsService.getTimeEntriesForPeriod(start, end, user, status, "timeEntry-full");
+            }
         }
     }
 }

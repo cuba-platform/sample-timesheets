@@ -43,7 +43,6 @@ public class ValidationTools {
     protected Messages messages;
 
     public BigDecimal workHoursForPeriod(Date start, Date end, User user) {
-        // TODO: gg, check dates?
         BigDecimal dayHourPlan = workTimeConfigBean.getUserWorkHourForDay(user);
         BigDecimal totalWorkHours = BigDecimal.ZERO;
 

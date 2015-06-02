@@ -27,24 +27,13 @@ public class DateTools {
     @Inject
     protected ProjectsService projectsService;
 
-    public boolean isHoliday(Date date) {//todo eude, gg please make it faster!
-        List<Holiday> holidays = projectsService.getHolidays();
-        long mills = date.getTime();
-        for (Holiday holiday : holidays) {
-            if (mills >= holiday.getStartDate().getTime() && mills <= holiday.getEndDate().getTime()) {
-                return true;
-            }
-        }
-        return false;
+    public boolean isHoliday(Date date) {
+        return !projectsService.getHolidaysForPeriod(date, date).isEmpty();
     }
 
     public boolean isWeekend(Date date) {
-        for (DayOfWeek day : workTimeConfigBean.getWeekends()) {
-            if (day.equals(DayOfWeek.fromCalendarDay(DateTimeUtils.getCalendarDayOfWeek(date)))) {
-                return true;
-            }
-        }
-        return false;
+        DayOfWeek day = DayOfWeek.fromCalendarDay(DateTimeUtils.getCalendarDayOfWeek(date));
+        return workTimeConfigBean.getWeekends().contains(day);
     }
 
     public boolean isWorkday(Date date) {
