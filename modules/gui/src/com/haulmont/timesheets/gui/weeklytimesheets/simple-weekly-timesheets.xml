@@ -6,9 +6,9 @@
         messagesPack="com.haulmont.timesheets.gui.weeklytimesheets">
     <dsContext>
         <collectionDatasource id="weeklyEntriesDs"
+                              allowCommit="false"
                               class="com.haulmont.timesheets.entity.WeeklyReportEntry"
-                              refreshMode="NEVER"
-                              allowCommit="false"/>
+                              refreshMode="NEVER"/>
         <collectionDatasource id="projectsDs"
                               class="com.haulmont.timesheets.entity.Project"
                               view="project-full">
@@ -24,23 +24,25 @@
             </query>
         </collectionDatasource>
     </dsContext>
-    <layout expand="weeklyTsTable" spacing="true">
+    <layout expand="weeklyTsTable"
+            spacing="true">
         <iframe id="commandLine"
                 screen="command-line-frame"/>
         <table id="weeklyTsTable"
-               editable="true"
-               reorderingAllowed="false"
-               multiselect="true"
                aggregatable="true"
+               editable="true"
+               multiselect="true"
+               reorderingAllowed="false"
                width="100%">
             <actions>
                 <action id="add"
                         icon="icons/plus-btn.png"
                         invoke="addReport"/>
                 <action id="remove"/>
-                <action id="submitAll" shortcut="CTRL-ENTER"
+                <action id="submitAll"
                         caption="msg://submitAll"
-                        invoke="submitAll"/>
+                        invoke="submitAll"
+                        shortcut="CTRL-ENTER"/>
             </actions>
             <columns>
                 <column id="project"/>
@@ -48,28 +50,30 @@
             </columns>
             <rows datasource="weeklyEntriesDs"/>
             <buttonsPanel width="100%">
-                <hbox spacing="true"
-                      align="MIDDLE_LEFT">
+                <hbox align="MIDDLE_LEFT"
+                      spacing="true">
                     <button action="weeklyTsTable.add"/>
                     <button action="weeklyTsTable.remove"/>
                 </hbox>
-                <label id="weekCaption" stylename="h2" align="MIDDLE_CENTER"/>
+                <label id="weekCaption"
+                       align="MIDDLE_CENTER"
+                       stylename="h2"/>
                 <hbox id="weekNavigationBox"
-                      spacing="true"
-                      align="BOTTOM_RIGHT">
+                      align="BOTTOM_RIGHT"
+                      spacing="true">
                     <button action="weeklyTsTable.submitAll"/>
                     <dateField id="dateField"
+                               align="MIDDLE_RIGHT"
                                resolution="DAY"
-                               stylename="simple"
-                               align="MIDDLE_RIGHT"/>
-                    <linkButton icon="font-icon:CHEVRON_LEFT"
-                                align="MIDDLE_RIGHT"
+                               stylename="simple"/>
+                    <linkButton align="MIDDLE_RIGHT"
+                                icon="font-icon:CHEVRON_LEFT"
                                 invoke="showPreviousWeek"/>
-                    <linkButton caption="msg://today"
-                                invoke="setToday"
-                                align="MIDDLE_RIGHT"/>
-                    <linkButton icon="font-icon:CHEVRON_RIGHT"
-                                align="MIDDLE_RIGHT"
+                    <linkButton align="MIDDLE_RIGHT"
+                                caption="msg://today"
+                                invoke="setToday"/>
+                    <linkButton align="MIDDLE_RIGHT"
+                                icon="font-icon:CHEVRON_RIGHT"
                                 invoke="showNextWeek"/>
                 </hbox>
             </buttonsPanel>

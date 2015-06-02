@@ -21,7 +21,6 @@
             <properties include=".*"/>
         </filter>
         <table id="timeEntriesTable"
-               editable="false"
                width="100%">
             <actions>
                 <action id="create"/>

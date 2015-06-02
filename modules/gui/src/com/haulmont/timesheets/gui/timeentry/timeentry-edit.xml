@@ -21,8 +21,7 @@
         </collectionDatasource>
         <collectionDatasource id="activeTasksDs"
                               class="com.haulmont.timesheets.entity.Task"
-                              datasourceClass="com.haulmont.timesheets.gui.data.TasksCollectionDatasource">
-        </collectionDatasource>
+                              datasourceClass="com.haulmont.timesheets.gui.data.TasksCollectionDatasource"/>
     </dsContext>
     <layout expand="scrollBox"
             spacing="true">
