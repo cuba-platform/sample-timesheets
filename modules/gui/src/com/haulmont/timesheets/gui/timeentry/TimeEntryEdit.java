@@ -10,6 +10,8 @@ import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
+import com.haulmont.timesheets.global.ResultAndCause;
+import com.haulmont.timesheets.global.ValidationTools;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.gui.SecurityAssistant;
 import com.haulmont.timesheets.service.ProjectsService;
@@ -39,6 +41,8 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     protected CollectionDatasource<Tag, UUID> allTagsDs;
     @Inject
     protected SecurityAssistant securityAssistant;
+    @Inject
+    protected ValidationTools validationTools;
 
     @Named("fieldGroup.task")
     protected LookupPickerField taskField;
@@ -118,15 +122,9 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     @Override
     protected void postValidate(ValidationErrors errors) {
         super.postValidate(errors);
-        TimeEntry timeEntry = getItem();
-        Task task = timeEntry.getTask();
-        if (task.getDefaultTags() != null) {
-            Set<Tag> defaultTags = task.getDefaultTags();
-            if (!defaultTags.isEmpty()) {
-                if (!defaultTags.equals(timeEntry.getTags())) {
-                    errors.add(messages.getMessage(getClass(), "requiredTagsError"));
-                }
-            }
+        ResultAndCause resultAndCause = validationTools.validateTags(getItem());
+        if (resultAndCause.isNegative) {
+            showNotification(resultAndCause.cause, NotificationType.WARNING_HTML);
         }
     }
 

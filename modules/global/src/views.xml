@@ -20,26 +20,7 @@
     </view>
     <view class="com.haulmont.timesheets.entity.TimeEntry"
           name="timeEntry-full">
-        <property name="task">
-            <property name="name"/>
-            <property name="project">
-                <property name="name"/>
-                <property name="client">
-                    <property name="name"/>
-                </property>
-                <property name="participants">
-                    <property name="user">
-                        <property name="login"/>
-                        <property name="name"/>
-                    </property>
-                    <property name="role">
-                        <property name="name"/>
-                    </property>
-                </property>
-            </property>
-            <property name="defaultTags"
-                      view="_minimal"/>
-        </property>
+        <property name="task" view="task-full"/>
         <property name="taskName"/>
         <property name="user"
                   view="_minimal"/>

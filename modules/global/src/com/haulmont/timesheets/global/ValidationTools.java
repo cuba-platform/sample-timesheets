@@ -4,8 +4,12 @@
 
 package com.haulmont.timesheets.global;
 
+import com.haulmont.bali.util.Preconditions;
+import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.timesheets.entity.Tag;
+import com.haulmont.timesheets.entity.TagType;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.service.ProjectsService;
 import org.apache.commons.lang.time.DateUtils;
@@ -16,6 +20,7 @@ import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -34,6 +39,8 @@ public class ValidationTools {
     protected ProjectsService projectsService;
     @Inject
     protected DateTools dateTools;
+    @Inject
+    protected Messages messages;
 
     public BigDecimal workHoursForPeriod(Date start, Date end, User user) {
         // TODO: gg, check dates?
@@ -110,5 +117,33 @@ public class ValidationTools {
                 DateTimeUtils.getLastDayOfMonth(date),
                 user
         );
+    }
+
+    public ResultAndCause validateTags(TimeEntry timeEntry) {
+        Preconditions.checkNotNullArgument(timeEntry);
+        Preconditions.checkNotNullArgument(timeEntry.getTask());
+        Preconditions.checkNotNullArgument(timeEntry.getTask().getRequiredTagTypes());
+
+        HashSet<TagType> remainingRequiredTagTypes = new HashSet<>(timeEntry.getTask().getRequiredTagTypes());
+        for (Tag tag : timeEntry.getTags()) {
+            remainingRequiredTagTypes.remove(tag.getTagType());
+        }
+
+        if (remainingRequiredTagTypes.size() > 0) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (TagType remainingRequiredTagType : remainingRequiredTagTypes) {
+                stringBuilder.append(remainingRequiredTagType.getName()).append(",");
+            }
+            if (stringBuilder.length() > 0) {
+                stringBuilder.deleteCharAt(stringBuilder.length() - 1);//remove last comma
+            }
+
+
+
+            return ResultAndCause.negative(
+                    messages.formatMessage(getClass(), "notification.requiredTagTypesNotPresent", stringBuilder));
+        }
+
+        return ResultAndCause.positive();
     }
 }

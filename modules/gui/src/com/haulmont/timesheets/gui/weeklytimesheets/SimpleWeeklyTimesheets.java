@@ -23,6 +23,7 @@ import com.haulmont.timesheets.gui.commandline.CommandLineFrameController;
 import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
 import com.haulmont.timesheets.service.ProjectsService;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 
 import javax.annotation.Nullable;
@@ -101,14 +102,31 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             @Override
             public void handle(List<TimeEntry> resultTimeEntries) {
                 if (CollectionUtils.isNotEmpty(resultTimeEntries)) {
-                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateTimeUtils.TIME_FORMAT);
-                    TimeEntry timeEntry = resultTimeEntries.get(0);
-
                     //todo eude what if there are more than 1 entry
-                    WeeklyReportEntry weeklyReportEntry = setTimeEntryToEachWeekDay(simpleDateFormat, timeEntry);
-
-                    weeklyTsTable.getDatasource().addItem(weeklyReportEntry);
+                    final TimeEntry timeEntry = resultTimeEntries.get(0);
+                    ResultAndCause validationResult = validationTools.validateTags(timeEntry);
+                    if (validationResult.isNegative) {
+                        showOptionDialog(getMessage("caption.attention"),
+                                validationResult.cause + getMessage("confirmation.manuallyTagSetting"),
+                                MessageType.CONFIRMATION_HTML,
+                                Arrays.<com.haulmont.cuba.gui.components.Action>asList(
+                                        new DialogAction(DialogAction.Type.YES) {
+                                            @Override
+                                            public void actionPerform(Component component) {
+                                                doHandle(timeEntry);
+                                            }
+                                        },
+                                        new DialogAction(DialogAction.Type.NO)));
+                    } else {
+                        doHandle(timeEntry);
+                    }
                 }
+            }
+
+            private void doHandle(TimeEntry timeEntry) {
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateTimeUtils.TIME_FORMAT);
+                WeeklyReportEntry weeklyReportEntry = setTimeEntryToEachWeekDay(simpleDateFormat, timeEntry);
+                weeklyTsTable.getDatasource().addItem(weeklyReportEntry);
             }
 
             private WeeklyReportEntry setTimeEntryToEachWeekDay(SimpleDateFormat simpleDateFormat, TimeEntry timeEntry) {
@@ -418,6 +436,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         Collection<WeeklyReportEntry> entries = weeklyEntriesDs.getItems();
         if (!entries.isEmpty()) {
             CommitContext commitContext = new CommitContext();
+            List<String> validationAlerts = new ArrayList<>();
             for (WeeklyReportEntry weeklyReportEntry : entries) {
                 if (weeklyReportEntry.getTask() != null) {
                     for (final DayOfWeek day : DayOfWeek.values()) {
@@ -444,7 +463,11 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                                 timeEntry.setTags(defaultTags);
                             }
                             timeEntry.setDate(DateTimeUtils.getSpecificDayOfWeek(firstDayOfWeek, day.getJavaCalendarDay()));
-
+                            ResultAndCause validationResult = validationTools.validateTags(timeEntry);
+                            if (validationResult.isNegative) {
+                                validationAlerts.add(formatMessage("notification.timeEntryValidation",
+                                        validationResult.cause, timeEntry.getTask().getName(), timeEntry.getDate(), timeEntry.getTime()));
+                            }
                             commitContext.getCommitInstances().add(timeEntry);
                         }
                     }
@@ -453,6 +476,10 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
             getDsContext().getDataSupplier().commit(commitContext);
             updateWeek();
+
+            if (validationAlerts.size() > 0) {
+                showMessageDialog(getMessage("caption.attention"), StringUtils.join(validationAlerts, "\n"), MessageType.WARNING_HTML);
+            }
         }
     }
 

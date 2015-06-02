@@ -7,6 +7,8 @@ package com.haulmont.timesheets.global;
 import junit.framework.Assert;
 import org.junit.Test;
 
+import java.util.List;
+
 /**
  * @author degtyarjov
  * @version $Id$
@@ -32,5 +34,19 @@ public class CommandLineUtilsTest {
         Assert.assertEquals("DEVELOPMENT", taskCode);
         Assert.assertEquals("2:30", spentTime);
 
+    }
+
+    @Test
+    public void testParseTags() throws Exception {
+        String commandLine = "@PLATFORM #DEVELOPMENT 2h30m $Extend_#1";
+        CommandLineUtils commandLineUtils = new CommandLineUtils(commandLine);
+        String spentTime = commandLineUtils.getSpentTime();
+        String projectCode = commandLineUtils.getProjectCode();
+        String taskCode = commandLineUtils.getTaskCode();
+        List<String> tagCodes = commandLineUtils.getTagCodes();
+        Assert.assertEquals("PLATFORM", projectCode);
+        Assert.assertEquals("DEVELOPMENT", taskCode);
+        Assert.assertEquals("2h30m", spentTime);
+        Assert.assertEquals("Extend_#1", tagCodes.get(0));
     }
 }

@@ -5,7 +5,6 @@
 package com.haulmont.timesheets.service;
 
 import com.haulmont.cuba.core.global.TimeSource;
-import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.timesheets.SystemDataManager;
 import com.haulmont.timesheets.entity.Tag;
@@ -50,6 +49,7 @@ public class CommandLineServiceBean implements CommandLineService {
             TimeEntry timeEntry = new TimeEntry();
             timeEntry.setTask(task);
             timeEntry.setTags(new HashSet<>(tags));
+            timeEntry.getTags().addAll(task.getDefaultTags());
             String spentTime = commandLineUtils.getSpentTime();
             if (spentTime != null) {
                 Date parsedTime = timeParser.parse(spentTime);

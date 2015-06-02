@@ -7,9 +7,6 @@ import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.DateField;
-import com.haulmont.cuba.gui.components.Label;
 import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
@@ -17,10 +14,7 @@ import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
 import com.haulmont.timesheets.entity.Holiday;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.entity.TimeEntryStatus;
-import com.haulmont.timesheets.global.DateTimeUtils;
-import com.haulmont.timesheets.global.DateTools;
-import com.haulmont.timesheets.global.HoursAndMinutes;
-import com.haulmont.timesheets.global.ValidationTools;
+import com.haulmont.timesheets.global.*;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.gui.commandline.CommandLineFrameController;
 import com.haulmont.timesheets.gui.holiday.HolidayEdit;
@@ -28,8 +22,8 @@ import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
 import com.haulmont.timesheets.web.toolkit.ui.TimeSheetsCalendar;
 import com.vaadin.event.Action;
 import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.*;
 import com.vaadin.ui.Calendar;
+import com.vaadin.ui.Layout;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents;
 import com.vaadin.ui.components.calendar.CalendarDateRange;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
@@ -109,38 +103,56 @@ public class CalendarScreen extends AbstractWindow {
             @Override
             public void handle(List<TimeEntry> resultTimeEntries) {
                 if (CollectionUtils.isNotEmpty(resultTimeEntries)) {
-                    List<TimeEntry> results = new ArrayList<>();
-                    TimeEntry timeEntry = resultTimeEntries.get(0);
-
                     //todo eude what if there are more than 1 entry
-                    java.util.Calendar javaCalendar = java.util.Calendar.getInstance();
-                    javaCalendar.setTime(firstDayOfMonth);
-                    int currentMonth = javaCalendar.get(java.util.Calendar.MONTH);
-                    int nextDayMonth = javaCalendar.get(java.util.Calendar.MONTH);
-
-                    while (currentMonth == nextDayMonth) {
-                        if (dateTools.isWorkday(javaCalendar.getTime())) {
-                            TimeEntry copy = (TimeEntry) InstanceUtils.copy(timeEntry);
-                            copy.setId(uuidSource.createUuid());
-                            copy.setDate(javaCalendar.getTime());
-                            copy.setStatus(TimeEntryStatus.NEW);
-                            copy.setUser(userSession.getUser());
-                            results.add(copy);
-                        }
-
-                        javaCalendar.add(java.util.Calendar.DAY_OF_MONTH, 1);
-                        nextDayMonth = javaCalendar.get(java.util.Calendar.MONTH);
+                    final TimeEntry timeEntry = resultTimeEntries.get(0);
+                    ResultAndCause validationResult = validationTools.validateTags(timeEntry);
+                    if (validationResult.isNegative) {
+                        showOptionDialog(getMessage("caption.attention"),
+                                validationResult.cause + getMessage("confirmation.manuallyTagSetting"),
+                                MessageType.CONFIRMATION_HTML,
+                                Arrays.<com.haulmont.cuba.gui.components.Action>asList(
+                                        new DialogAction(DialogAction.Type.YES) {
+                                            @Override
+                                            public void actionPerform(Component component) {
+                                                doHandle(timeEntry);
+                                            }
+                                        },
+                                        new DialogAction(DialogAction.Type.NO)));
+                    } else {
+                        doHandle(timeEntry);
                     }
-
-                    CommitContext context = new CommitContext();
-                    context.getCommitInstances().addAll(results);
-                    Set<TimeEntry> committed = (Set) getDsContext().getDataSupplier().commit(context);
-                    List<CalendarEvent> events = new ArrayList<>();
-                    for (TimeEntry entry : committed) {
-                        events.add(new TimeEntryCalendarEventAdapter(entry));
-                    }
-                    dataSource.addEvents(events);
                 }
+            }
+
+            private void doHandle(TimeEntry timeEntry) {
+                final List<TimeEntry> results = new ArrayList<>();
+                java.util.Calendar javaCalendar = java.util.Calendar.getInstance();
+                javaCalendar.setTime(firstDayOfMonth);
+                int currentMonth = javaCalendar.get(java.util.Calendar.MONTH);
+                int nextDayMonth = javaCalendar.get(java.util.Calendar.MONTH);
+
+                while (currentMonth == nextDayMonth) {
+                    if (dateTools.isWorkday(javaCalendar.getTime())) {
+                        TimeEntry copy = (TimeEntry) InstanceUtils.copy(timeEntry);
+                        copy.setId(uuidSource.createUuid());
+                        copy.setDate(javaCalendar.getTime());
+                        copy.setStatus(TimeEntryStatus.NEW);
+                        copy.setUser(userSession.getUser());
+                        results.add(copy);
+                    }
+
+                    javaCalendar.add(java.util.Calendar.DAY_OF_MONTH, 1);
+                    nextDayMonth = javaCalendar.get(java.util.Calendar.MONTH);
+                }
+
+                CommitContext context = new CommitContext();
+                context.getCommitInstances().addAll(results);
+                Set<TimeEntry> committed = (Set) getDsContext().getDataSupplier().commit(context);
+                List<CalendarEvent> events = new ArrayList<>();
+                for (TimeEntry entry : committed) {
+                    events.add(new TimeEntryCalendarEventAdapter(entry));
+                }
+                dataSource.addEvents(events);
             }
         });
     }
