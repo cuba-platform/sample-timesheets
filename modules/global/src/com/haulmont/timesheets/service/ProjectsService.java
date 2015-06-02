@@ -57,4 +57,6 @@ public interface ProjectsService {
     List<ProjectParticipant> getProjectParticipants(Project project, @Nullable String viewName);
 
     List<User> getProjectUsers(Project project, @Nullable String viewName);
+
+    List<User> getManagedUsersForUser(User manager, String viewName);
 }

@@ -59,6 +59,10 @@
     @include valo-gradient(#FF837E);
   }
 
+  .v-table-cell-content-time-entry-closed-bg {
+    @include valo-gradient(#F0F0F0);
+  }
+
   .v-table-cell-content-holiday {
     background: #EF525B;
   }
@@ -70,12 +74,14 @@
   .v-table [class*="-row"].v-selected .v-table-cell-content-holiday,
   .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-new-bg,
   .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-approved-bg,
+  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-closed-bg,
   .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-rejected-bg {
     border-left-color: #d4d4d4;
   }
 
   .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-new-bg .v-button-link,
   .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-approved-bg .v-button-link,
+  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-closed-bg .v-button-link,
   .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-rejected-bg .v-button-link {
     color: #197de1;
   }

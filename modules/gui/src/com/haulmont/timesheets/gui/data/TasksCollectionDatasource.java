@@ -19,12 +19,9 @@ import java.util.UUID;
  */
 public class TasksCollectionDatasource extends CollectionDatasourceImpl<Task, UUID> {
 
-    protected UserSession userSession = AppBeans.get(UserSession.class);
-    protected ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);
-
     @Override
     protected void loadData(Map<String, Object> params) {
-
+        ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);
         for (Task task : projectsService.getActiveTasksForUser(userSession.getUser(), "task-full")) {
             data.put(task.getId(), task);
             attachListener(task);

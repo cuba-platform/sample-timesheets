@@ -310,10 +310,23 @@ public class ProjectsServiceBean implements ProjectsService {
         if (viewName != null) {
             loadContext.setView(viewName);
         }
-//        loadContext.setQueryString("select e.user from ts$ProjectParticipant e where e.project.id = :projectId")
         loadContext.setQueryString("select u from sec$User u, ts$ProjectParticipant pp " +
                 "where pp.project.id = :projectId and pp.user.id = u.id")
                 .setParameter("projectId", project.getId());
+        return dataManager.loadList(loadContext);
+    }
+
+    @Override
+    public List<User> getManagedUsersForUser(User manager, String viewName) {
+        LoadContext loadContext = new LoadContext(User.class);
+        if (viewName != null) {
+            loadContext.setView(viewName);
+        }
+        loadContext.setQueryString("select u from sec$User u, ts$ProjectParticipant pp " +
+                "join pp.project pr join pr.participants me " +
+                "where pp.user.id = u.id and me.user.id = :managerId " +
+                "and (me.role.code = 'manager' or me.role.code = 'approver')")
+        .setParameter("managerId", manager.getId());
         return dataManager.loadList(loadContext);
     }
 }
