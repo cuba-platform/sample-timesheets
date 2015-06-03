@@ -32,5 +32,8 @@
             <vbox id="calBox" height="100%"/>
             <vbox id="summaryBox" height="100%" width="150px"/>
         </hbox>
+        <hbox width="100%" margin="true, true, false, true">
+            <label id="monthSummary" align="MIDDLE_RIGHT"/>
+        </hbox>
     </layout>
 </window>

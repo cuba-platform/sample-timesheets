@@ -21,6 +21,9 @@ public class TasksCollectionDatasource extends CollectionDatasourceImpl<Task, UU
 
     @Override
     protected void loadData(Map<String, Object> params) {
+        detachListener(data.values());
+        data.clear();
+
         ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);
         for (Task task : projectsService.getActiveTasksForUser(userSession.getUser(), "task-full")) {
             data.put(task.getId(), task);

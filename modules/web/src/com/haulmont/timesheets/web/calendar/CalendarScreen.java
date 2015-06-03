@@ -22,8 +22,8 @@ import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
 import com.haulmont.timesheets.web.toolkit.ui.TimeSheetsCalendar;
 import com.vaadin.event.Action;
 import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Calendar;
-import com.vaadin.ui.Layout;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents;
 import com.vaadin.ui.components.calendar.CalendarDateRange;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
@@ -63,6 +63,9 @@ public class CalendarScreen extends AbstractWindow {
     protected UuidSource uuidSource;
     @Inject
     protected DateTools dateTools;
+    @Inject
+    protected Label monthSummary;
+
     protected TimeSheetsCalendar calendar;
     protected Date firstDayOfMonth;
     protected TimeSheetsCalendarEventProvider dataSource;
@@ -207,8 +210,9 @@ public class CalendarScreen extends AbstractWindow {
         });
         calendar.addActionHandler(new CalendarActionHandler());
 
-        Layout calendarLayout = WebComponentsHelper.unwrap(calBox);
+        AbstractOrderedLayout calendarLayout = WebComponentsHelper.unwrap(calBox);
         calendarLayout.addComponent(calendar);
+        calendarLayout.setExpandRatio(calendar, 1);
 
         updateCalendarRange();
         updateSummaryColumn();
@@ -248,7 +252,7 @@ public class CalendarScreen extends AbstractWindow {
         summaryLayout.addComponent(summaryCaptionVbox);
 
         FactAndPlan[] summariesByWeeks = calculateSummariesByWeeks();
-
+        FactAndPlan summaryForMonth = new FactAndPlan();
         for (int i = 1; i < summariesByWeeks.length; i++) {
             com.vaadin.ui.Label hourLabel = new com.vaadin.ui.Label();
             hourLabel.setContentMode(ContentMode.HTML);
@@ -269,6 +273,20 @@ public class CalendarScreen extends AbstractWindow {
             summaryLayout.addComponent(hourLabel);
             summaryLayout.setExpandRatio(hourLabel, 1);
             summaryLayout.setComponentAlignment(hourLabel, com.vaadin.ui.Alignment.MIDDLE_CENTER);
+
+            summaryForMonth.fact.addTime(summaryForTheWeek.fact.getTime());
+            summaryForMonth.plan.addTime(summaryForTheWeek.plan.getTime());
+        }
+
+        if (summaryForMonth.isMatch()) {
+            monthSummary.setValue(formatMessage("label.monthSummaryFormat",
+                    summaryForMonth.fact.getHours(), summaryForMonth.fact.getMinutes()));
+            monthSummary.setStyleName("month-summary");
+        } else {
+            monthSummary.setValue(formatMessage("label.monthSummaryFormatNotMatch",
+                    summaryForMonth.fact.getHours(), summaryForMonth.fact.getMinutes(),
+                    summaryForMonth.plan.getHours(), summaryForMonth.plan.getMinutes()));
+            monthSummary.setStyleName("month-summary-overtime");
         }
     }
 

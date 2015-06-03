@@ -134,6 +134,8 @@ public class ApproveScreen extends AbstractWindow {
     }
 
     protected void initUserReportsTable() {
+        weeklyReportsTable.setSettingsEnabled(false);
+
         initProjectColumn();
         initTaskColumn();
         initDaysColumns();
