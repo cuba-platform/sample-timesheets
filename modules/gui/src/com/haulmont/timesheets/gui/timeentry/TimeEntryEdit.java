@@ -135,7 +135,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     }
 
     private String getListCaption(TagType type) {
-        return type.getName() + " " + otherTagsTokenList.getCaption();
+        return String.format("%s %s*", type.getName(), otherTagsTokenList.getCaption());
     }
 
     protected void updateOtherTagsDs(Project project, Set<TagType> types) {
