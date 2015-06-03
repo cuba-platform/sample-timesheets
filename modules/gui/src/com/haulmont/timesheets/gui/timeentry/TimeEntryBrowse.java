@@ -6,6 +6,7 @@ package com.haulmont.timesheets.gui.timeentry;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractLookup;
+import com.haulmont.cuba.gui.components.GroupTable;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
@@ -25,7 +26,7 @@ import java.util.Map;
  */
 public class TimeEntryBrowse extends AbstractLookup {
     @Inject
-    protected Table timeEntriesTable;
+    protected GroupTable timeEntriesTable;
     @Named("timeEntriesTable.edit")
     protected EditAction timeEntriesTableEdit;
     @Named("timeEntriesTable.create")

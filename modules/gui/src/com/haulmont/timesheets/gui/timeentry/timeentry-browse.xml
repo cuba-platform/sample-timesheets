@@ -6,13 +6,13 @@
         lookupComponent="timeEntriesTable"
         messagesPack="com.haulmont.timesheets.gui.timeentry">
     <dsContext>
-        <collectionDatasource id="timeEntriesDs"
+        <groupDatasource id="timeEntriesDs"
                               class="com.haulmont.timesheets.entity.TimeEntry"
                               view="timeEntry-full">
             <query>
                 <![CDATA[select e from ts$TimeEntry e where e.user.id = :session$userId]]>
             </query>
-        </collectionDatasource>
+        </groupDatasource>
     </dsContext>
     <layout expand="timeEntriesTable"
             spacing="true">
@@ -22,7 +22,7 @@
         </filter>
         <iframe id="commandLine"
                 screen="command-line-frame"/>
-        <table id="timeEntriesTable"
+        <groupTable id="timeEntriesTable"
                width="100%">
             <actions>
                 <action id="create"/>
@@ -52,6 +52,6 @@
                 <button id="removeBtn"
                         action="timeEntriesTable.remove"/>
             </buttonsPanel>
-        </table>
+        </groupTable>
     </layout>
 </window>
