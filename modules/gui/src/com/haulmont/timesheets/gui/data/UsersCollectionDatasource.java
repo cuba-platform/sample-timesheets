@@ -26,6 +26,9 @@ public class UsersCollectionDatasource extends CollectionDatasourceImpl<User, UU
         if (securityAssistant.isSuperUser() || securityAssistant.isUserCloser()) {
             super.loadData(params);
         } else {
+            detachListener(data.values());
+            data.clear();
+
             ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);
             for (User task : projectsService.getManagedUsersForUser(userSession.getUser(), View.LOCAL)) {
                 data.put(task.getId(), task);
