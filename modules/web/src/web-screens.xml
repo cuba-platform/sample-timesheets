@@ -3,4 +3,6 @@
     <include file="/screens.xml"/>
     <screen id="calendar-screen"
             template="com/haulmont/timesheets/web/calendar/calendar-screen.xml"/>
+    <screen id="charts-screen"
+            template="com/haulmont/timesheets/web/analytics/charts.xml"/>
 </screen-config>

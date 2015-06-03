@@ -62,4 +62,6 @@
             template="com/haulmont/timesheets/gui/commandline/command-line-frame.xml"/>
     <screen id="rejection-reason"
             template="com/haulmont/timesheets/gui/rejection/rejection-reason.xml"/>
+    <screen id="charts"
+            template="/com/haulmont/timesheets/web/analytics/charts.xml"/>
 </screen-config>

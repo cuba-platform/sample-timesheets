@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
+        caption="msg://screenCaption"
+        class="com.haulmont.timesheets.web.analytics.ChartsController"
+        messagesPack="com.haulmont.timesheets.web.analytics"
+        xmlns:chart="http://schemas.haulmont.com/charts/5.5/charts.xsd">
+    <dsContext>
+        <collectionDatasource id="pieDs"
+                              class="com.haulmont.timesheets.web.analytics.TaskTimeSummary"
+                              refreshMode="NEVER"
+                              allowCommit="false"
+                              view="_local"/>
+        <collectionDatasource id="projectsDs" class="com.haulmont.timesheets.entity.Project" view="_minimal"/>
+    </dsContext>
+    <layout expand="tabsheet">
+        <tabSheet id="tabsheet">
+            <tab id="tasks" caption="msg://caption.tasksByPeriodAndProject" expand="tasksChart" spacing="true">
+                <hbox spacing="true" margin="true">
+                    <label align="MIDDLE_LEFT" value="msg://caption.start" stylename="h4"/>
+                    <dateField id="taskStart" resolution="DAY"/>
+                    <label align="MIDDLE_LEFT" value="msg://caption.end" stylename="h4"/>
+                    <dateField id="taskEnd" resolution="DAY"/>
+                    <label align="MIDDLE_LEFT" value="msg://caption.project" stylename="h4"/>
+                    <lookupField id="taskProject" optionsDatasource="projectsDs"/>
+                    <button id="taskRefresh" caption="msg://caption.refresh" invoke="refreshTasks"/>
+                </hbox>
+                <chart:pieChart id="tasksChart"
+                                angle="50"
+                                balloonText="[[taskName]] - [[hoursSpentForTheTask]]%"
+                                datasource="pieDs"
+                                depth3D="15"
+                                height="100%"
+                                titleField="taskName"
+                                valueField="hoursSpentForTheTask"
+                                width="100%">
+                    <chart:exportConfig menuTop="0px">
+                        <chart:menuItems>
+                            <chart:menu format="PNG"
+                                        icon="VAADIN/resources/amcharts/images/export.png"/>
+                        </chart:menuItems>
+                    </chart:exportConfig>
+                </chart:pieChart>
+            </tab>
+            <tab id="projects" caption="msg://caption.timePerProject" expand="projectsChart" spacing="true">
+                <hbox spacing="true" margin="true">
+                    <label align="MIDDLE_LEFT" value="msg://caption.start" stylename="h4"/>
+                    <dateField id="projectsStart" resolution="DAY"/>
+                    <label align="MIDDLE_LEFT" value="msg://caption.end" stylename="h4"/>
+                    <dateField id="projectsEnd" resolution="DAY"/>
+                    <label align="MIDDLE_LEFT" value="msg://caption.project" stylename="h4"/>
+                    <button id="projectsRefresh" caption="msg://caption.refresh" invoke="refreshProjects"/>
+                </hbox>
+                <chart:serialChart id="projectsChart"
+                                   categoryField="week"
+                                   height="100%"
+                                   width="100%"
+                                   >
+                    <chart:chartCursor/>
+                    <chart:legend markerType="TRIANGLE_RIGHT"
+                                  position="TOP"
+                                  valueAlign="LEFT"/>
+                    <chart:categoryAxis startOnAxis="true"
+                                        title="msg://caption.week"/>
+                    <chart:valueAxes>
+                        <chart:axis position="LEFT"
+                                    unit="hrs"
+                                    stackType="FILL"
+                                    title="msg://caption.timeSpent"/>
+                    </chart:valueAxes>
+                    <chart:exportConfig menuTop="0px">
+                        <chart:menuItems>
+                            <chart:menu format="PNG"
+                                        icon="VAADIN/resources/amcharts/images/export.png"/>
+                        </chart:menuItems>
+                    </chart:exportConfig>
+                </chart:serialChart>
+            </tab>
+        </tabSheet>
+    </layout>
+</window>
