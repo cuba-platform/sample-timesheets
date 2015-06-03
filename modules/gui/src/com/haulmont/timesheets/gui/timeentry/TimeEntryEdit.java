@@ -216,11 +216,23 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     }
 
     @Override
-    protected void postValidate(ValidationErrors errors) {
-        super.postValidate(errors);
-        ResultAndCause resultAndCause = validationTools.validateTags(getItem());
-        if (resultAndCause.isNegative) {
-            showNotification(resultAndCause.cause, NotificationType.WARNING_HTML);
+    public void commitAndClose() {
+        ResultAndCause validationResult = validationTools.validateTags(getItem());
+        if (validationResult.isNegative) {
+            showOptionDialog(getMessage("caption.attention"),
+                    validationResult.cause + getMessage("confirmation.manuallyTagSetting"),
+                    MessageType.CONFIRMATION_HTML,
+                    Arrays.<com.haulmont.cuba.gui.components.Action>asList(
+                            new DialogAction(DialogAction.Type.YES) {
+                                @Override
+                                public void actionPerform(Component component) {
+                                    TimeEntryEdit.super.commitAndClose();
+                                }
+                            },
+                            new DialogAction(DialogAction.Type.NO)));
+
+        } else {
+            super.commitAndClose();
         }
     }
 
