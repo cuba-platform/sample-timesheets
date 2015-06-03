@@ -7,20 +7,23 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.data.DsBuilder;
+import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.global.ResultAndCause;
 import com.haulmont.timesheets.global.ValidationTools;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.gui.SecurityAssistant;
+import com.haulmont.timesheets.gui.data.TagsCollectionDatasource;
 import com.haulmont.timesheets.service.ProjectsService;
+import org.apache.commons.collections.CollectionUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.Arrays;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author gorelov
@@ -30,7 +33,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     @Inject
     protected FieldGroup fieldGroup;
     @Inject
-    protected TokenList tagsTokenList;
+    protected TokenList otherTagsTokenList;
     @Inject
     protected UserSession userSession;
     @Inject
@@ -40,11 +43,17 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     @Inject
     protected CollectionDatasource<Tag, UUID> tagsDs;
     @Inject
-    protected CollectionDatasource<Tag, UUID> allTagsDs;
+    protected CollectionDatasource<Tag, UUID> otherTagsDs;
+    @Inject
+    protected TagsCollectionDatasource optionOtherTagsDs;
     @Inject
     protected SecurityAssistant securityAssistant;
     @Inject
     protected ValidationTools validationTools;
+    @Inject
+    protected BoxLayout tagsTokenListsBox;
+    @Inject
+    protected ComponentsFactory componentsFactory;
 
     @Named("fieldGroup.task")
     protected LookupPickerField taskField;
@@ -74,15 +83,97 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
                         for (Tag tag : task.getDefaultTags()) {
                             tagsDs.includeItem(tag);
                         }
-                        allTagsDs.refresh(ParamsMap.of("project", task.getProject()));
+                        updateOtherTagsDs(task.getProject(), task.getRequiredTagTypes());
                     }
                     updateStatusField();
                     updateRejectionReasonField();
+                    updateTagsLists();
                     setDefaultStatus(getItem());
                 }
                 updateStatus();
             }
         });
+    }
+
+    private void updateTagsLists() {
+        tagsTokenListsBox.removeAll();
+        Task task = getItem().getTask();
+        if (task != null && CollectionUtils.isNotEmpty(task.getRequiredTagTypes())) {
+            for (TagType type : task.getRequiredTagTypes()) {
+                CollectionDatasource<Tag, UUID> ds = createTagsDs(null);
+                CollectionDatasource optionDs = createTagsDs(type);
+                TokenList tokenList = createTokenList(ds, optionDs, getListCaption(type));
+                for (Tag tag : getAssignedTags(type, null)) {
+                    ds.addItem(tag);
+                }
+                ds.addListener(new TagDsListener());
+                tagsTokenListsBox.add(tokenList);
+            }
+        }
+        otherTagsDs.clear();
+        for (Tag tag : getAssignedTags(null, task != null ? task.getRequiredTagTypes() : null)) {
+            otherTagsDs.addItem(tag);
+        }
+    }
+
+    private Set<Tag> getAssignedTags(TagType required, Set<TagType> exclude) {
+        TimeEntry timeEntry = getItem();
+        if (timeEntry == null || CollectionUtils.isEmpty(timeEntry.getTags())) {
+            return Collections.emptySet();
+        }
+        if (required == null && CollectionUtils.isEmpty(exclude)) {
+            return getItem().getTags();
+        }
+        Set<Tag> assigned = new HashSet<>();
+        for (Tag tag : timeEntry.getTags()) {
+            if (required != null && required.equals(tag.getTagType())
+                    || required == null && !exclude.contains(tag.getTagType())) {
+                assigned.add(tag);
+            }
+        }
+        return assigned;
+    }
+
+    private String getListCaption(TagType type) {
+        return type.getName() + " " + otherTagsTokenList.getCaption();
+    }
+
+    protected void updateOtherTagsDs(Project project, Set<TagType> types) {
+        optionOtherTagsDs.setExcludeTagTypes(types);
+        optionOtherTagsDs.refresh(ParamsMap.of("project", project));
+    }
+
+    protected CollectionDatasource<Tag, UUID> createTagsDs(TagType required) {
+        DsBuilder builder;
+        if (required == null) {
+            builder = new DsBuilder(getDsContext())
+                    .setViewName("tag-with-type")
+                    .setAllowCommit(false)
+                    .setRefreshMode(CollectionDatasource.RefreshMode.NEVER);
+        } else {
+            builder = new DsBuilder()
+                    .setDsClass(TagsCollectionDatasource.class);
+        }
+        builder.setJavaClass(Tag.class);
+        if (required == null) {
+            return builder.buildCollectionDatasource();
+        } else {
+            TagsCollectionDatasource ds = builder.buildCollectionDatasource();
+            ds.setRequiredTagType(required);
+            ds.refresh();
+            return ds;
+        }
+    }
+
+    protected TokenList createTokenList(CollectionDatasource ds, CollectionDatasource optionDs, String caption) {
+        TokenList tokenList = componentsFactory.createComponent(TokenList.NAME);
+        tokenList.setCaption(caption);
+        tokenList.setWidth("409px");
+        tokenList.setInline(true);
+        tokenList.setAddButtonIcon("icons/plus-btn.png");
+        tokenList.setDatasource(ds);
+        tokenList.setOptionsDatasource(optionDs);
+        return tokenList;
     }
 
     @Override
@@ -113,8 +204,11 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         updateRejectionReasonField();
 
         if (timeEntry.getTask() != null) {
-            allTagsDs.refresh(ParamsMap.of("project", timeEntry.getTask().getProject()));
+            Task task = timeEntry.getTask();
+            updateOtherTagsDs(task.getProject(), task.getRequiredTagTypes());
         }
+        updateTagsLists();
+        otherTagsDs.addListener(new TagDsListener());
 
         if (!securityAssistant.isSuperUser()) {
             statusField.setOptionsList(Arrays.asList(TimeEntryStatus.NEW, TimeEntryStatus.APPROVED, TimeEntryStatus.REJECTED));
@@ -150,7 +244,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
 
     protected void setReadOnly() {
         fieldGroup.setEnabled(false);
-        tagsTokenList.setEnabled(false);
+        otherTagsTokenList.setEnabled(false);
     }
 
     protected void updateStatusField() {
@@ -170,5 +264,23 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
 
     protected void setDefaultStatus(TimeEntry item) {
         item.setStatus(TimeEntryStatus.NEW);
+    }
+
+    protected class TagDsListener extends CollectionDsListenerAdapter<Tag> {
+        @Override
+        public void collectionChanged(CollectionDatasource ds, Operation operation, List<Tag> items) {
+            switch (operation) {
+                case ADD:
+                    for (Tag tag : items) {
+                        tagsDs.addItem(tag);
+                    }
+                    break;
+                case REMOVE:
+                    for (Tag tag : items) {
+                        tagsDs.removeItem(tag);
+                    }
+                    break;
+            }
+        }
     }
 }

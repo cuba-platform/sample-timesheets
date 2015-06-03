@@ -54,6 +54,8 @@ public interface ProjectsService {
 
     List<Tag> getTagsForTheProject(@Nullable Project project, @Nullable String viewName);
 
+    List<Tag> getTagsWithTheTagType(TagType type, @Nullable String viewName);
+
     List<ProjectParticipant> getProjectParticipants(Project project, @Nullable String viewName);
 
     List<User> getProjectUsers(Project project, @Nullable String viewName);

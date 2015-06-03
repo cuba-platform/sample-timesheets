@@ -12,20 +12,20 @@
             <collectionDatasource id="tagsDs"
                                   property="tags"/>
         </datasource>
-        <collectionDatasource id="allTagsDs"
-                              class="com.haulmont.timesheets.entity.Tag"
-                              view="tag-with-type">
-            <query>
-                <![CDATA[select e from ts$Tag e left join e.tagType.projects pr where pr.id is null or (pr.id = :custom$project)]]>
-            </query>
-        </collectionDatasource>
+        <collectionDatasource id="optionOtherTagsDs"
+                              datasourceClass="com.haulmont.timesheets.gui.data.TagsCollectionDatasource"
+                              class="com.haulmont.timesheets.entity.Tag"/>
         <collectionDatasource id="activeTasksDs"
                               class="com.haulmont.timesheets.entity.Task"
                               datasourceClass="com.haulmont.timesheets.gui.data.TasksCollectionDatasource"/>
+        <collectionDatasource id="otherTagsDs"
+                              refreshMode="NEVER"
+                              allowCommit="false"
+                              class="com.haulmont.timesheets.entity.Tag"/>
     </dsContext>
     <layout expand="scrollBox"
             spacing="true">
-        <scrollBox id="scrollBox">
+        <scrollBox id="scrollBox" spacing="true">
             <fieldGroup id="fieldGroup"
                         datasource="timeEntryDs">
                 <column width="300px">
@@ -43,13 +43,16 @@
                            custom="true"/>
                 </column>
             </fieldGroup>
-            <tokenList id="tagsTokenList"
+            <vbox id="tagsTokenListsBox" spacing="true">
+
+            </vbox>
+            <tokenList id="otherTagsTokenList"
                        caption="msg://com.haulmont.timesheets.entity/TimeEntry.tags"
-                       datasource="tagsDs"
+                       datasource="otherTagsDs"
                        inline="true"
-                       width="397px">
+                       width="409px">
                 <button icon="icons/plus-btn.png"/>
-                <lookup optionsDatasource="allTagsDs"/>
+                <lookup optionsDatasource="optionOtherTagsDs"/>
             </tokenList>
         </scrollBox>
         <iframe id="windowActions"

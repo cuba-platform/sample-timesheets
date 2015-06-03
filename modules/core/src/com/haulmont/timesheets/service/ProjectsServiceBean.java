@@ -302,6 +302,19 @@ public class ProjectsServiceBean implements ProjectsService {
     }
 
     @Override
+    public List<Tag> getTagsWithTheTagType(TagType type, @Nullable String viewName) {
+        LoadContext loadContext = new LoadContext(Tag.class);
+        if (viewName != null) {
+            loadContext.setView(viewName);
+        }
+        LoadContext.Query query =
+                new LoadContext.Query("select e from ts$Tag e where e.tagType.id = :type")
+                        .setParameter("type", type);
+        loadContext.setQuery(query);
+        return dataManager.loadList(loadContext);
+    }
+
+    @Override
     public List<ProjectParticipant> getProjectParticipants(Project project, @Nullable String viewName) {
         LoadContext loadContext = new LoadContext(ProjectParticipant.class);
         if (viewName != null) {
