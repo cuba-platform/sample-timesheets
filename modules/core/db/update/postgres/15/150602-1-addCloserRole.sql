@@ -1,6 +1,6 @@
 insert into SEC_ROLE
 (NAME, LOC_NAME, DESCRIPTION, ROLE_TYPE, IS_DEFAULT_ROLE, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
-values ('TimeSheetsCloser', '??????????? ????????', null, 0, null, 1, '2015-06-01 06:47:36', null, null, null, '90e4249a-b3b9-d9e2-50ef-6f3aba50665e', '2015-06-01 06:47:36', 'admin');
+values ('TimeSheetsCloser', 'Закрывающий таймшиты', null, 0, null, 1, '2015-06-01 06:47:36', null, null, null, '90e4249a-b3b9-d9e2-50ef-6f3aba50665e', '2015-06-01 06:47:36', 'admin');
 
 insert into SEC_PERMISSION
 (PERMISSION_TYPE, TARGET, VALUE, ROLE_ID, VERSION, UPDATE_TS, UPDATED_BY, DELETE_TS, DELETED_BY, ID, CREATE_TS, CREATED_BY)
