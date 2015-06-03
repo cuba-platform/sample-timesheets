@@ -257,7 +257,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
 
     protected void updateStatus() {
         TimeEntry item = getItem();
-        if (!TimeEntryStatus.REJECTED.equals(item.getStatus()) && userIsWorker()) {
+        if (TimeEntryStatus.REJECTED.equals(item.getStatus()) && userIsWorker()) {
             setDefaultStatus(item);
         }
     }
