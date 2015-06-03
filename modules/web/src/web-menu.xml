@@ -16,6 +16,7 @@
               shortcut="CTRL-ALT-P"/>
         <item id="approve-screen"
               shortcut="CTRL-ALT-A"/>
+        <item id="charts-screen"/>
     </menu>
     <menu id="timesheet-settings"
           insertAfter="projects">

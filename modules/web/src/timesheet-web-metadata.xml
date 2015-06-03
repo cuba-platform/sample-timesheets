@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Copyright (c) ${YEAR} ${PACKAGE_NAME}
+  -->
+
+<metadata xmlns="http://schemas.haulmont.com/cuba/5.5/metadata.xsd">
+
+    <metadata-model root-package="com.haulmont.timesheets">
+        <class>com.haulmont.timesheets.web.analytics.TaskTimeSummary</class>
+    </metadata-model>
+
+</metadata>
