@@ -101,9 +101,9 @@ public class ChartsController extends AbstractWindow {
             projectGraph.setFillAlphas(0.2);
             projectGraph.setLineAlpha(0.4);
             projectGraph.setTitle(project);
-            projectGraph.setType(GraphType.LINE);
+            projectGraph.setType(GraphType.COLUMN);
             projectGraph.setValueField(project);
-            projectGraph.setBalloonText(project + " time spent [[" + project + "]] m/h");
+            projectGraph.setBalloonText(project + ": time spent [[" + project + "]] hrs");
 
             graphs[i] = projectGraph;
             i++;

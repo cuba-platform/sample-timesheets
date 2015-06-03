@@ -26,7 +26,7 @@
                 </hbox>
                 <chart:pieChart id="tasksChart"
                                 angle="50"
-                                balloonText="[[taskName]] - [[hoursSpentForTheTask]]%"
+                                balloonText="[[taskName]] - [[hoursSpentForTheTask]] hrs"
                                 datasource="pieDs"
                                 depth3D="15"
                                 height="100%"
@@ -39,6 +39,7 @@
                                         icon="VAADIN/resources/amcharts/images/export.png"/>
                         </chart:menuItems>
                     </chart:exportConfig>
+                    <chart:legend markerType="CIRCLE" position="RIGHT" marginRight="80" autoMargins="false" valueText="[[value]] hrs"/>
                 </chart:pieChart>
             </tab>
             <tab id="projects" caption="msg://caption.timePerProject" expand="projectsChart" spacing="true">
@@ -51,9 +52,9 @@
                     <button id="projectsRefresh" caption="msg://caption.refresh" invoke="refreshProjects"/>
                 </hbox>
                 <chart:serialChart id="projectsChart"
+                                   marginTop="10" marginLeft="0" marginBottom="0"
+                                   width="100%" height="100%"
                                    categoryField="week"
-                                   height="100%"
-                                   width="100%"
                                    >
                     <chart:chartCursor/>
                     <chart:legend markerType="TRIANGLE_RIGHT"
@@ -63,9 +64,10 @@
                                         title="msg://caption.week"/>
                     <chart:valueAxes>
                         <chart:axis position="LEFT"
-                                    unit="hrs"
-                                    stackType="FILL"
-                                    title="msg://caption.timeSpent"/>
+                                    unit=" hrs"
+                                    stackType="NONE"
+                                    title="msg://caption.timeSpent"
+                                    minimum="0"/>
                     </chart:valueAxes>
                     <chart:exportConfig menuTop="0px">
                         <chart:menuItems>
@@ -73,6 +75,7 @@
                                         icon="VAADIN/resources/amcharts/images/export.png"/>
                         </chart:menuItems>
                     </chart:exportConfig>
+                    <chart:chartScrollbar/>
                 </chart:serialChart>
             </tab>
         </tabSheet>
