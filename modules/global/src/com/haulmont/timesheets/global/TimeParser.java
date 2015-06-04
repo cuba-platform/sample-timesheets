@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.global.TimeSource;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.ManagedBean;
+import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -29,7 +30,12 @@ public class TimeParser {
     @Inject
     protected TimeSource timeSource;
 
+    @Nullable
     public Date parse(String time) {
+        if (StringUtils.isBlank(time)) {
+            return null;
+        }
+
         HoursAndMinutes hoursAndMinutes = parseToHoursAndMinutes(time);
         if (hoursAndMinutes.hours >= 24) {
             hoursAndMinutes.hours = 23;

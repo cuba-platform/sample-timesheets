@@ -88,17 +88,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         fieldGroup.addCustomField("time", new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, String propertyId) {
-                final TextField textField = componentsFactory.createComponent(TextField.NAME);
-                textField.addListener(new ValueListener() {
-                    @Override
-                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                        Date parsed = timeParser.parse(String.valueOf(value));
-                        getItem().setTime(parsed);
-                        textField.setValue(new HoursAndMinutes(parsed));
-                    }
-                });
-
-                return textField;
+                return componentsFactory.<TextField>createComponent(TextField.NAME);
             }
         });
 
@@ -262,6 +252,15 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         }
 
         updateActivityType();
+
+        time.addListener(new ValueListener() {
+            @Override
+            public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                Date parsed = timeParser.parse(String.valueOf(value));
+                getItem().setTime(parsed);
+                time.setValue(new HoursAndMinutes(parsed));
+            }
+        });
     }
 
     @Override
