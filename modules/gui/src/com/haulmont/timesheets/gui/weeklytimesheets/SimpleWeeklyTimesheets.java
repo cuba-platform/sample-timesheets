@@ -126,6 +126,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             private void doHandle(TimeEntry timeEntry) {
                 WeeklyReportEntry weeklyReportEntry = setTimeEntryToEachWeekDay(timeFormat, timeEntry);
                 weeklyEntriesDs.addItem(weeklyReportEntry);
+                weeklyTsTable.setSelected(weeklyReportEntry);
             }
 
             private WeeklyReportEntry setTimeEntryToEachWeekDay(SimpleDateFormat simpleDateFormat, TimeEntry timeEntry) {
@@ -423,7 +424,9 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     }
 
     public void addReport() {
-        weeklyEntriesDs.addItem(new WeeklyReportEntry());
+        WeeklyReportEntry item = new WeeklyReportEntry();
+        weeklyEntriesDs.addItem(item);
+        weeklyTsTable.setSelected(item);
     }
 
     public void submitAll() {
