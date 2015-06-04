@@ -14,5 +14,6 @@
         <class>com.haulmont.timesheets.entity.TimeEntry</class>
         <class>com.haulmont.timesheets.entity.ProjectParticipant</class>
         <class>com.haulmont.timesheets.entity.ExtUser</class>
+        <class>com.haulmont.timesheets.entity.ActivityType</class>
     </persistence-unit>
 </persistence>

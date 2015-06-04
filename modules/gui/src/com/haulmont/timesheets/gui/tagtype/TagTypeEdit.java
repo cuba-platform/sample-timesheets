@@ -28,17 +28,11 @@ public class TagTypeEdit extends AbstractEditor<TagType> {
     @Inject
     private Datasource<TagType> tagTypeDs;
 
-    @Inject
-    private Table projectsTable;
-
     @Override
     public void init(Map<String, Object> params) {
         getDialogParams().setWidth(600);
 
         fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
         tagTypeDs.addListener(new ComponentsHelper.EntityCodeGenerationListener<TagType>());
-
-        projectsTable.addAction(new AddAction(projectsTable));
-        projectsTable.addAction(new RemoveAction(projectsTable, false));
     }
 }

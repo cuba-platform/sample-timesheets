@@ -13,25 +13,32 @@
                                   property="tags"/>
         </datasource>
         <collectionDatasource id="optionOtherTagsDs"
-                              datasourceClass="com.haulmont.timesheets.gui.data.TagsCollectionDatasource"
-                              class="com.haulmont.timesheets.entity.Tag"/>
+                              class="com.haulmont.timesheets.entity.Tag"
+                              datasourceClass="com.haulmont.timesheets.gui.data.TagsCollectionDatasource"/>
         <collectionDatasource id="activeTasksDs"
                               class="com.haulmont.timesheets.entity.Task"
                               datasourceClass="com.haulmont.timesheets.gui.data.TasksCollectionDatasource"/>
         <collectionDatasource id="otherTagsDs"
-                              refreshMode="NEVER"
                               allowCommit="false"
-                              class="com.haulmont.timesheets.entity.Tag"/>
+                              class="com.haulmont.timesheets.entity.Tag"
+                              refreshMode="NEVER"/>
+        <collectionDatasource id="activityTypesDs" class="com.haulmont.timesheets.entity.ActivityType">
+            <query>
+                <![CDATA[select e from ts$ActivityType e left join e.projects pr where pr.id is null or (pr.id = :component$fieldGroup.task.project)]]>
+            </query>
+        </collectionDatasource>
     </dsContext>
     <layout expand="scrollBox"
             spacing="true">
-        <scrollBox id="scrollBox" spacing="true">
+        <scrollBox id="scrollBox"
+                   spacing="true">
             <fieldGroup id="fieldGroup"
                         datasource="timeEntryDs">
                 <column width="300px">
-                    <field id="task"
-                           optionsDatasource="activeTasksDs"/>
-                    <field id="user" enable="false"/>
+                    <field id="task" optionsDatasource="activeTasksDs"/>
+                    <field id="activityType" optionsDatasource="activityTypesDs"/>
+                    <field id="user"
+                           enable="false"/>
                     <field id="date"/>
                     <field id="time"/>
                     <field id="status"/>
@@ -41,8 +48,8 @@
                            custom="true"/>
                 </column>
             </fieldGroup>
-            <vbox id="tagsTokenListsBox" spacing="true">
-
+            <vbox id="tagsTokenListsBox"
+                  spacing="true">
             </vbox>
             <tokenList id="otherTagsTokenList"
                        caption="msg://com.haulmont.timesheets.entity/TimeEntry.tags"

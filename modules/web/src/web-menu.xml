@@ -7,7 +7,8 @@
         <item id="calendar-screen"
               shortcut="CTRL-ALT-C"/>
         <item id="ts$TimeEntry.browse"/>
-        <item id="ts$Task.browse" shortcut="CTRL-ALT-T"/>
+        <item id="ts$Task.browse"
+              shortcut="CTRL-ALT-T"/>
     </menu>
     <menu id="projects"
           insertAfter="timesheets">
@@ -22,6 +23,7 @@
           insertAfter="projects">
         <item id="work-time-settings"
               openType="DIALOG"/>
+        <item id="ts$ActivityType.lookup"/>
         <item id="ts$TaskType.browse"/>
         <item id="ts$Holiday.browse"/>
         <separator/>

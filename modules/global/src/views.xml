@@ -20,7 +20,8 @@
     </view>
     <view class="com.haulmont.timesheets.entity.TimeEntry"
           name="timeEntry-full">
-        <property name="task" view="task-full"/>
+        <property name="task"
+                  view="task-full"/>
         <property name="taskName"/>
         <property name="user"
                   view="_minimal"/>
@@ -31,13 +32,18 @@
         <property name="status"/>
         <property name="description"/>
         <property name="rejectionReason"/>
+        <property name="activityType"
+                  view="_minimal">
+            <property name="code"/>
+        </property>
     </view>
     <view class="com.haulmont.timesheets.entity.Task"
           name="task-full">
         <property name="name"/>
         <property name="code"/>
         <property name="description"/>
-        <property name="project" view="_minimal">
+        <property name="project"
+                  view="_minimal">
             <property name="code"/>
             <property name="participants"
                       view="_minimal">
@@ -124,5 +130,15 @@
         </property>
         <property name="description"/>
         <property name="status"/>
+    </view>
+    <view class="com.haulmont.timesheets.entity.ActivityType"
+          name="activityType-with-projects">
+        <property name="name"/>
+        <property name="code"/>
+        <property name="description"/>
+        <property name="projects">
+            <property name="name"/>
+            <property name="code"/>
+        </property>
     </view>
 </views>

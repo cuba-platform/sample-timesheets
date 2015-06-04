@@ -17,6 +17,8 @@ import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Set;
+import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
+import com.haulmont.cuba.core.global.DeletePolicy;
 
 /**
  * @author gorelov
@@ -62,6 +64,20 @@ public class TimeEntry extends StandardEntity {
 
     @Column(name = "REJECTION_REASON")
     protected String rejectionReason;
+
+    @OnDeleteInverse(DeletePolicy.DENY)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ACTIVITY_TYPE_ID")
+    protected ActivityType activityType;
+
+    public void setActivityType(ActivityType activityType) {
+        this.activityType = activityType;
+    }
+
+    public ActivityType getActivityType() {
+        return activityType;
+    }
+
 
     public TimeEntryStatus getStatus() {
         return status == null ? null : TimeEntryStatus.fromId(status);

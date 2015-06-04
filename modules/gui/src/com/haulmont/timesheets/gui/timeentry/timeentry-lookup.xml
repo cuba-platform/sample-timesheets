@@ -33,6 +33,7 @@
                 <column id="status"/>
                 <column id="description"
                         maxTextLength="20"/>
+                <column id="activityType"/>
             </columns>
             <rows datasource="timeEntriesDs"/>
             <rowsCount/>

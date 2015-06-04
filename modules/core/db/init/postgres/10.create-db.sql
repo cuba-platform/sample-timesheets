@@ -135,8 +135,7 @@ create table TS_HOLIDAY (
     --
     primary key (ID)
 )^-- end TS_TASK
--- begin TS_TIME_ENTRY
-create table TS_TIME_ENTRY (
+-- begin TS_TIME_ENTRYcreate table TS_TIME_ENTRY (
     ID uuid,
     CREATE_TS timestamp,
     CREATED_BY varchar(50),
@@ -154,10 +153,10 @@ create table TS_TIME_ENTRY (
     STATUS varchar(50) not null,
     DESCRIPTION varchar(255),
     REJECTION_REASON varchar(255),
+    ACTIVITY_TYPE_ID uuid,
     --
     primary key (ID)
-)^
--- end TS_TIME_ENTRY
+)^-- end TS_TIME_ENTRY
 -- begin TS_PROJECT_PARTICIPANTcreate table TS_PROJECT_PARTICIPANT (
     ID uuid,
     CREATE_TS timestamp,
@@ -214,3 +213,28 @@ create table TS_TAG_TYPE_PROJECT_LINK (
     primary key (TAG_TYPE_ID, PROJECT_ID)
 )^
 -- end TS_TAG_TYPE_PROJECT_LINK
+-- begin TS_ACTIVITY_TYPE
+create table TS_ACTIVITY_TYPE (
+    ID uuid,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NAME varchar(100) not null,
+    CODE varchar(50) not null,
+    DESCRIPTION varchar(255),
+    --
+    primary key (ID)
+)^
+-- end TS_ACTIVITY_TYPE
+-- begin TS_ACTIVITY_TYPE_PROJECT_LINK
+create table TS_ACTIVITY_TYPE_PROJECT_LINK (
+    ACTIVITY_TYPE_ID uuid,
+    PROJECT_ID uuid,
+    primary key (ACTIVITY_TYPE_ID, PROJECT_ID)
+)^
+-- end TS_ACTIVITY_TYPE_PROJECT_LINK

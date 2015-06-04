@@ -31,7 +31,8 @@ import java.util.*;
  * @author gorelov
  */
 public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
-
+    @Inject
+    private CollectionDatasource<ActivityType, UUID> activityTypesDs;
     @Inject
     protected FieldGroup fieldGroup;
     @Inject
@@ -65,6 +66,8 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     protected LookupField statusField;
     @Named("fieldGroup.user")
     protected Field userField;
+    @Named("fieldGroup.activityType")
+    protected Field activityType;
 
     protected Component rejectionReason;
 
@@ -95,10 +98,16 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
                     updateRejectionReasonField();
                     updateTagsLists();
                     setDefaultStatus(getItem());
+                    updateActivityType();
                 }
                 updateStatus();
             }
         });
+    }
+
+    private void updateActivityType() {
+        activityTypesDs.refresh();
+        activityType.setVisible(activityTypesDs.getItemIds().size() > 0);
     }
 
     private void updateTagsLists() {
@@ -226,6 +235,8 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         if (userSession.getUser().equals(timeEntry.getUser())) {
             userField.setVisible(false);
         }
+
+        updateActivityType();
     }
 
     @Override
@@ -236,7 +247,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
                 showOptionDialog(getMessage("caption.attention"),
                         validationResult.cause + getMessage("confirmation.manuallyTagSetting"),
                         MessageType.CONFIRMATION_HTML,
-                        Arrays.<com.haulmont.cuba.gui.components.Action>asList(
+                        Arrays.<Action>asList(
                                 new DialogAction(DialogAction.Type.YES) {
                                     @Override
                                     public void actionPerform(Component component) {

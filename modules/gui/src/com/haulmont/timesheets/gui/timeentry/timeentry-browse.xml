@@ -7,8 +7,8 @@
         messagesPack="com.haulmont.timesheets.gui.timeentry">
     <dsContext>
         <groupDatasource id="timeEntriesDs"
-                              class="com.haulmont.timesheets.entity.TimeEntry"
-                              view="timeEntry-full">
+                         class="com.haulmont.timesheets.entity.TimeEntry"
+                         view="timeEntry-full">
             <query>
                 <![CDATA[select e from ts$TimeEntry e where e.user.id = :session$userId]]>
             </query>
@@ -23,7 +23,7 @@
         <iframe id="commandLine"
                 screen="command-line-frame"/>
         <groupTable id="timeEntriesTable"
-               width="100%">
+                    width="100%">
             <actions>
                 <action id="create"/>
                 <action id="edit"/>
@@ -40,6 +40,7 @@
                         maxTextLength="20"/>
                 <column id="rejectionReason"
                         maxTextLength="20"/>
+                <column id="activityType"/>
             </columns>
             <rows datasource="timeEntriesDs"/>
             <rowsCount/>

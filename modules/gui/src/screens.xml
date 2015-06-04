@@ -64,4 +64,8 @@
             template="com/haulmont/timesheets/gui/rejection/rejection-reason.xml"/>
     <screen id="charts"
             template="/com/haulmont/timesheets/web/analytics/charts.xml"/>
+    <screen id="ts$ActivityType.lookup"
+            template="com/haulmont/timesheets/gui/activitytype/activitytype-browse.xml"/>
+    <screen id="ts$ActivityType.edit"
+            template="com/haulmont/timesheets/gui/activitytype/activitytype-edit.xml"/>
 </screen-config>
