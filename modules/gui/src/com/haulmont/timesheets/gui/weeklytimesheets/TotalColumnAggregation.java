@@ -21,7 +21,7 @@ public class TotalColumnAggregation implements AggregationStrategy<String, Strin
     public String aggregate(Collection<String> propertyValues) {
         HoursAndMinutes total = new HoursAndMinutes();
         for (String time : propertyValues) {
-            total.addTime(DateTimeUtils.timeStringToBigDecimal(time));
+            total.add(new HoursAndMinutes(time));
         }
         return StringFormatHelper.getWeekAggregationString(total);
     }

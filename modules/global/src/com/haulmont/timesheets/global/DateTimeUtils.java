@@ -13,8 +13,6 @@ import com.haulmont.timesheets.service.ProjectsService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
 
-import javax.annotation.Nullable;
-import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -88,27 +86,6 @@ public final class DateTimeUtils {
         return DateUtils.toCalendar(date).get(Calendar.DAY_OF_WEEK);
     }
 
-    public static BigDecimal timeStringToBigDecimal(String time) {
-        if (time.contains(":")) {
-            String[] parts = time.split(":");
-            return BigDecimal.valueOf(Integer.parseInt(parts[0]) + Integer.parseInt(parts[1]) / 60.0);
-        } else {
-            TimeParser timeParser = AppBeans.get(TimeParser.NAME);
-            return BigDecimal.valueOf(timeParser.findHours(time) + timeParser.findMinutes(time) / 60.0);
-        }
-    }
-
-    public static BigDecimal dateToBigDecimal(@Nullable Date date) {
-        if (date == null) {
-            return BigDecimal.ZERO;
-        }
-        HoursAndMinutes time = new HoursAndMinutes();
-        Calendar calendar = DateUtils.toCalendar(date);
-        time.addHours(calendar.get(Calendar.HOUR_OF_DAY));
-        time.addMinutes(calendar.get(Calendar.MINUTE));
-        return time.getTime();
-    }
-
     public static Set<String> getDatesRangeAsSeparateStrings(Date startDate, Date endDate, String format) {
         List<Holiday> holidays = projectsService().getHolidaysForPeriod(startDate, endDate);
         if (CollectionUtils.isEmpty(holidays)) {
@@ -123,7 +100,11 @@ public final class DateTimeUtils {
         return stringHolidays;
     }
 
-    protected static Set<String> holidayAsSeparateStrings(Holiday holiday, Date startDate, Date endDate, String format) {
+    public static DateFormat getDateFormat() {
+        return new SimpleDateFormat(messages().getMainMessage("dateFormat"));
+    }
+
+    private static Set<String> holidayAsSeparateStrings(Holiday holiday, Date startDate, Date endDate, String format) {
         Date start;
         Date end;
         if (holiday.getStartDate().getTime() >= startDate.getTime()) {
@@ -149,10 +130,6 @@ public final class DateTimeUtils {
 
             return stringDates;
         }
-    }
-
-    public static DateFormat getDateFormat() {
-        return new SimpleDateFormat(messages().getMainMessage("dateFormat"));
     }
 
     private static Messages messages() {

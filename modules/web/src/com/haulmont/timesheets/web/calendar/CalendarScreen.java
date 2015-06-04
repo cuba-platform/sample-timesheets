@@ -32,7 +32,6 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
 
 import javax.inject.Inject;
-import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -274,8 +273,8 @@ public class CalendarScreen extends AbstractWindow {
             summaryLayout.setExpandRatio(hourLabel, 1);
             summaryLayout.setComponentAlignment(hourLabel, com.vaadin.ui.Alignment.MIDDLE_CENTER);
 
-            summaryForMonth.fact.addTime(summaryForTheWeek.fact.getTime());
-            summaryForMonth.plan.addTime(summaryForTheWeek.plan.getTime());
+            summaryForMonth.fact.add(summaryForTheWeek.fact);
+            summaryForMonth.plan.add(summaryForTheWeek.plan);
         }
 
         if (summaryForMonth.isMatch()) {
@@ -449,9 +448,7 @@ public class CalendarScreen extends AbstractWindow {
         protected HoursAndMinutes plan = new HoursAndMinutes();
 
         protected boolean isMatch() {
-            BigDecimal factTime = fact.getTime().setScale(ValidationTools.SCALE, BigDecimal.ROUND_HALF_UP);
-            BigDecimal planTime = plan.getTime().setScale(ValidationTools.SCALE, BigDecimal.ROUND_HALF_UP);
-            return planTime.equals(factTime);
+            return fact.equals(plan);
         }
     }
 }

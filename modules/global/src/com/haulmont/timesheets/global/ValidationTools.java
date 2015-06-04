@@ -17,9 +17,6 @@ import org.apache.commons.lang.time.DateUtils;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import java.math.BigDecimal;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -30,9 +27,7 @@ import java.util.List;
  */
 @ManagedBean(ValidationTools.NAME)
 public class ValidationTools {
-
     public static final String NAME = "ts_ValidationTools";
-    public static final int SCALE = 2;
 
     @Inject
     protected WorkTimeConfigBean workTimeConfigBean;
@@ -43,41 +38,40 @@ public class ValidationTools {
     @Inject
     protected Messages messages;
 
-    public BigDecimal workHoursForPeriod(Date start, Date end, User user) {
-        BigDecimal dayHourPlan = workTimeConfigBean.getUserWorkHourForDay(user);
-        BigDecimal totalWorkHours = BigDecimal.ZERO;
+    public HoursAndMinutes workHoursForPeriod(Date start, Date end, User user) {
+        HoursAndMinutes dayHourPlan = new HoursAndMinutes(workTimeConfigBean.getUserWorkHourForDay(user));
+        HoursAndMinutes totalWorkHours = new HoursAndMinutes();
 
         for (; start.getTime() <= end.getTime(); start = DateUtils.addDays(start, 1)) {
             if (dateTools.isWorkday(start)) {
-                totalWorkHours = totalWorkHours.add(dayHourPlan);
+                totalWorkHours.add(dayHourPlan);
             }
         }
         return totalWorkHours;
     }
 
-    public BigDecimal plannedWorkHoursForWeek(Date date, User user) {
+    public HoursAndMinutes plannedWorkHoursForWeek(Date date, User user) {
         return workHoursForPeriod(DateTimeUtils.getFirstDayOfWeek(date), DateTimeUtils.getLastDayOfWeek(date), user);
     }
 
-    public BigDecimal plannedWorkHoursForMonth(Date date, User user) {
+    public HoursAndMinutes plannedWorkHoursForMonth(Date date, User user) {
         return workHoursForPeriod(DateTimeUtils.getFirstDayOfMonth(date), DateTimeUtils.getLastDayOfMonth(date), user);
     }
 
-    public BigDecimal actualWorkHoursForPeriod(Date start, Date end, User user) {
+    public HoursAndMinutes actualWorkHoursForPeriod(Date start, Date end, User user) {
         List<TimeEntry> timeEntries = projectsService.getTimeEntriesForPeriod(start, end, user, null, View.LOCAL);
         if (timeEntries.isEmpty()) {
-            return BigDecimal.ZERO;
+            return new HoursAndMinutes();
         }
-        BigDecimal totalWorkHours = BigDecimal.ZERO;
-        DateFormat formatter = new SimpleDateFormat(DateTimeUtils.TIME_FORMAT);
+
+        HoursAndMinutes totalWorkHours = new HoursAndMinutes();
         for (TimeEntry timeEntry : timeEntries) {
-            String time = formatter.format(timeEntry.getTime());
-            totalWorkHours = totalWorkHours.add(DateTimeUtils.timeStringToBigDecimal(time));
+            totalWorkHours.add(timeEntry.getTime());
         }
         return totalWorkHours;
     }
 
-    public BigDecimal actualWorkHoursForWeek(Date date, User user) {
+    public HoursAndMinutes actualWorkHoursForWeek(Date date, User user) {
         return actualWorkHoursForPeriod(
                 DateTimeUtils.getFirstDayOfWeek(date),
                 DateTimeUtils.getLastDayOfWeek(date),
@@ -85,7 +79,7 @@ public class ValidationTools {
         );
     }
 
-    public BigDecimal actualWorkHoursForMonth(Date date, User user) {
+    public HoursAndMinutes actualWorkHoursForMonth(Date date, User user) {
         return actualWorkHoursForPeriod(
                 DateTimeUtils.getFirstDayOfMonth(date),
                 DateTimeUtils.getLastDayOfMonth(date),
@@ -94,8 +88,8 @@ public class ValidationTools {
     }
 
     public boolean isWorkTimeMatchToPlanForPeriod(Date start, Date end, User user) {
-        BigDecimal plan = workHoursForPeriod(start, end, user).setScale(SCALE, BigDecimal.ROUND_HALF_UP);
-        BigDecimal fact = actualWorkHoursForPeriod(start, end, user).setScale(SCALE, BigDecimal.ROUND_HALF_UP);
+        HoursAndMinutes plan = workHoursForPeriod(start, end, user);
+        HoursAndMinutes fact = actualWorkHoursForPeriod(start, end, user);
         return plan.equals(fact);
     }
 

@@ -5,6 +5,7 @@
 package com.haulmont.timesheets.global;
 
 import com.haulmont.cuba.core.global.Messages;
+import com.haulmont.cuba.core.global.TimeSource;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 
@@ -28,6 +29,9 @@ public class TimeParser {
     @Inject
     protected Messages messages;
 
+    @Inject
+    protected TimeSource timeSource;
+
     public Date parse(String time) {
         if (StringUtils.isBlank(time)) {
             return null;
@@ -40,7 +44,7 @@ public class TimeParser {
             //do nothing, let following code to parse it
         }
 
-        Date result = DateTimeUtils.getDateWithoutTime(new Date());
+        Date result = DateTimeUtils.getDateWithoutTime(timeSource.currentTimestamp());
         if (StringUtils.isNumeric(time)) {
             return DateUtils.addHours(result, Integer.parseInt(time));
         }

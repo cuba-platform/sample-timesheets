@@ -214,9 +214,7 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
             for (TimeEntry timeEntry : timeEntries) {
                 Date time = timeEntry.getTime();
                 if (time != null) {
-                    Calendar calendar = DateUtils.toCalendar(time);
-                    total.addHours(calendar.get(Calendar.HOUR_OF_DAY));
-                    total.addMinutes(calendar.get(Calendar.MINUTE));
+                    total.add(time);
                 }
             }
         }

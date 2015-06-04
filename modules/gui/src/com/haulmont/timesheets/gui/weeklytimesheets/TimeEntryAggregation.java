@@ -24,7 +24,7 @@ public class TimeEntryAggregation implements AggregationStrategy<List<TimeEntry>
         HoursAndMinutes total = new HoursAndMinutes();
         for (List<TimeEntry> list : propertyValues) {
             for (TimeEntry timeEntry : list) {
-                total.addTime(DateTimeUtils.dateToBigDecimal(timeEntry.getTime()));
+                total.add(new HoursAndMinutes(timeEntry.getTime()));
             }
         }
         return StringFormatHelper.getTotalDayAggregationString(total);

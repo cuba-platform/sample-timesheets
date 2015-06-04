@@ -11,6 +11,7 @@ import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.Task;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.global.DateTimeUtils;
+import com.haulmont.timesheets.global.HoursAndMinutes;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Nullable;
@@ -54,7 +55,7 @@ public class StatisticServiceBean implements StatisticService {
                 sum = BigDecimal.ZERO;
             }
 
-            sum = sum.add(DateTimeUtils.dateToBigDecimal(timeEntry.getTime()));
+            sum = sum.add(new HoursAndMinutes(timeEntry.getTime()).toBigDecimal());
             result.put(timeEntry.getTask(), sum);
         }
 
@@ -65,7 +66,7 @@ public class StatisticServiceBean implements StatisticService {
     public Map<Integer, Map<String, Object>> getStatisticsByProjects(Date start, Date end) {
         LoadContext loadContext = new LoadContext(TimeEntry.class)
                 .setQuery(
-                        new LoadContext.Query("select t from ts$TimeEntry t where t.date >= :start and t.date <= :end" )
+                        new LoadContext.Query("select t from ts$TimeEntry t where t.date >= :start and t.date <= :end")
                                 .setParameter("start", start)
                                 .setParameter("end", end)
                 )
@@ -91,7 +92,7 @@ public class StatisticServiceBean implements StatisticService {
                 sum = BigDecimal.ZERO;
             }
 
-            sum = sum.add(DateTimeUtils.dateToBigDecimal(timeEntry.getTime()));
+            sum = sum.add(new HoursAndMinutes(timeEntry.getTime()).toBigDecimal());
             statistic.put(key, sum);
         }
 
