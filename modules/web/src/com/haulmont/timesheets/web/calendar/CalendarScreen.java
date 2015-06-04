@@ -4,6 +4,7 @@
 package com.haulmont.timesheets.web.calendar;
 
 import com.haulmont.chile.core.model.utils.InstanceUtils;
+import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -193,7 +194,14 @@ public class CalendarScreen extends AbstractWindow {
             }
         });
         calendar.setHandler((CalendarComponentEvents.WeekClickHandler) null);
-        calendar.setHandler((CalendarComponentEvents.DateClickHandler) null);
+        calendar.setHandler(new CalendarComponentEvents.DateClickHandler() {
+            @Override
+            public void dateClick(CalendarComponentEvents.DateClickEvent event) {
+                TimeEntry timeEntry = new TimeEntry();
+                timeEntry.setDate(event.getDate());
+                editTimeEntry(timeEntry);
+            }
+        });
         calendar.setHandler((CalendarComponentEvents.EventResizeHandler) null);
         calendar.setHandler(new CalendarComponentEvents.EventClickHandler() {
             @Override
@@ -374,6 +382,7 @@ public class CalendarScreen extends AbstractWindow {
     protected class CalendarActionHandler implements Action.Handler {
         protected Action addEventAction = new Action(messages.getMessage(getClass(), "addTimeEntry"));
         protected Action deleteEventAction = new Action(messages.getMessage(getClass(), "deleteTimeEntry"));
+        protected Action copyEventAction = new Action(messages.getMessage(getClass(), "copyTimeEntry"));
 
         @Override
         public Action[] getActions(Object target, Object sender) {
@@ -394,7 +403,7 @@ public class CalendarScreen extends AbstractWindow {
             if (events.size() == 0)
                 return new Action[]{addEventAction};
             else
-                return new Action[]{addEventAction, deleteEventAction};
+                return new Action[]{addEventAction, copyEventAction, deleteEventAction};
         }
 
         @Override
@@ -409,6 +418,16 @@ public class CalendarScreen extends AbstractWindow {
                 } else {
                     showNotification(messages.getMessage(getClass(), "cantAddTimeEntry"),
                             NotificationType.WARNING);
+                }
+            } else if (action == copyEventAction) {
+                // Check that the click was not done on an event
+                if (target instanceof TimeEntryCalendarEventAdapter) {
+                    TimeEntry copiedEntry = (TimeEntry) InstanceUtils.copy(((TimeEntryCalendarEventAdapter) target).getTimeEntry());
+                    copiedEntry.setId(uuidSource.createUuid());
+                    CommitContext context = new CommitContext();
+                    context.getCommitInstances().add(copiedEntry);
+                    Set<Entity> entities = getDsContext().getDataSupplier().commit(context);
+                    dataSource.changeEventTimeEntity((TimeEntry) entities.iterator().next());
                 }
             } else if (action == deleteEventAction) {
                 // Check if the action was clicked on top of an event
