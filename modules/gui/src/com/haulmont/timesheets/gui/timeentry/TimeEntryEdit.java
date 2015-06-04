@@ -196,7 +196,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     protected TokenList createTokenList(CollectionDatasource ds, CollectionDatasource optionDs, String caption) {
         TokenList tokenList = componentsFactory.createComponent(TokenList.NAME);
         tokenList.setCaption(caption);
-        tokenList.setWidth("409px");
+        tokenList.setWidth("500px");
         tokenList.setInline(true);
         tokenList.setAddButtonIcon("icons/plus-btn.png");
         tokenList.setDatasource(ds);
