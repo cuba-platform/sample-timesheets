@@ -35,6 +35,7 @@ def webToolkitModule = project(':app-web-toolkit')
 def postgres = 'postgresql:postgresql:9.1-901.jdbc4'
 def servletApi = 'org.apache.tomcat:tomcat-servlet-api:7.0.53'
 
+def jmockit = [group: 'org.jmockit', name: 'jmockit', version: '1.14']
 
 apply(plugin: 'idea')
 apply(plugin: 'cuba')
@@ -46,6 +47,7 @@ configure([globalModule, coreModule, guiModule, webModule, webToolkitModule]) {
     apply(plugin: 'cuba')
 
     dependencies {
+        testCompile(jmockit)
         testCompile('junit:junit:4.5')
     }
 

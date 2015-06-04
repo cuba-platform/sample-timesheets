@@ -26,21 +26,14 @@ public class HoursAndMinutes {
     public static final BigDecimal MINUTES_IN_HOUR = valueOf(60);
     protected int hours;
     protected int minutes;
+    protected TimeParser timeParser = AppBeans.get(TimeParser.NAME);
 
     public HoursAndMinutes() {
     }
 
     public HoursAndMinutes(@Nullable String timeStr) {
         if (timeStr == null) return;
-        if (timeStr.contains(":")) {
-            String[] parts = timeStr.split(":");
-            hours = Integer.parseInt(parts[0]);
-            minutes = Integer.parseInt(parts[1]);
-        } else {
-            TimeParser timeParser = AppBeans.get(TimeParser.NAME);
-            hours = timeParser.findHours(timeStr);
-            minutes = timeParser.findMinutes(timeStr);
-        }
+        add(timeParser.parseToHoursAndMinutes(timeStr));
         setupInvariants();
     }
 
@@ -95,7 +88,7 @@ public class HoursAndMinutes {
         setupInvariants();
     }
 
-    protected void setupInvariants(){
+    protected void setupInvariants() {
         if (minutes >= 60) {
             int hours = minutes / 60;
             minutes = minutes % 60;
@@ -122,6 +115,11 @@ public class HoursAndMinutes {
         calendar.set(Calendar.HOUR_OF_DAY, hours);
         calendar.set(Calendar.MINUTE, minutes);
         return calendar.getTime();
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%02d:%02d", hours, minutes);
     }
 
     @Override

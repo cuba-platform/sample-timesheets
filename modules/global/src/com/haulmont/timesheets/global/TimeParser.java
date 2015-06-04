@@ -7,12 +7,9 @@ package com.haulmont.timesheets.global;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.TimeSource;
 import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -33,26 +30,47 @@ public class TimeParser {
     protected TimeSource timeSource;
 
     public Date parse(String time) {
-        if (StringUtils.isBlank(time)) {
-            return null;
+        HoursAndMinutes hoursAndMinutes = parseToHoursAndMinutes(time);
+        if (hoursAndMinutes.hours >= 24) {
+            hoursAndMinutes.hours = 23;
+            hoursAndMinutes.minutes = 59;
         }
+        return hoursAndMinutes.toDate();
+    }
 
+    public HoursAndMinutes parseToHoursAndMinutes(String time) {
+        HoursAndMinutes result = new HoursAndMinutes();
         try {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateTimeUtils.TIME_FORMAT);
-            return simpleDateFormat.parse(time);
-        } catch (ParseException e) {
-            //do nothing, let following code to parse it
+            if (StringUtils.isBlank(time)) {
+                return new HoursAndMinutes();
+            }
+
+            if (time.contains(":")) {
+                String[] parts = time.split(":");
+                result.addHours(Integer.parseInt(parts[0]));
+                result.addMinutes(Integer.parseInt(parts[1]));
+                return result;
+            }
+
+            if (time.matches("[0-9]{1,2} +[0-9]{1,2}")) {
+                String[] parts = time.split(" ");
+                result.addHours(Integer.parseInt(parts[0]));
+                result.addMinutes(Integer.parseInt(parts[1]));
+                return result;
+            }
+
+            if (StringUtils.isNumeric(time)) {
+                result.addHours(Integer.parseInt(time));
+                return result;
+            }
+
+            result.addHours(findHours(time));
+            result.addMinutes(findMinutes(time));
+
+            return result;
+        } catch (NumberFormatException e) {
+            return result;
         }
-
-        Date result = DateTimeUtils.getDateWithoutTime(timeSource.currentTimestamp());
-        if (StringUtils.isNumeric(time)) {
-            return DateUtils.addHours(result, Integer.parseInt(time));
-        }
-
-        result = DateUtils.addHours(result, findHours(time));
-        result = DateUtils.addMinutes(result, findMinutes(time));
-
-        return result;
     }
 
     public int findHours(String time) {

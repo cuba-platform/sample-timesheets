@@ -40,7 +40,7 @@
                     <field id="user"
                            enable="false"/>
                     <field id="date"/>
-                    <field id="time"/>
+                    <field id="time" custom="true"/>
                     <field id="status"/>
                     <field id="description"
                            custom="true"/>

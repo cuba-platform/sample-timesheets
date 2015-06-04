@@ -10,12 +10,15 @@ import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
+import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
+import com.haulmont.timesheets.global.HoursAndMinutes;
 import com.haulmont.timesheets.global.ResultAndCause;
+import com.haulmont.timesheets.global.TimeParser;
 import com.haulmont.timesheets.global.ValidationTools;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.gui.SecurityAssistant;
@@ -59,6 +62,8 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     protected ComponentsFactory componentsFactory;
     @Inject
     protected TimeSource timeSource;
+    @Inject
+    protected TimeParser timeParser;
 
     @Named("fieldGroup.task")
     protected LookupPickerField taskField;
@@ -70,6 +75,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     protected Field activityType;
 
     protected Component rejectionReason;
+    protected TextField time;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -79,8 +85,25 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         taskField.addClearAction();
         fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
         fieldGroup.addCustomField("rejectionReason", ComponentsHelper.getCustomTextArea());
+        fieldGroup.addCustomField("time", new FieldGroup.CustomFieldGenerator() {
+            @Override
+            public Component generateField(Datasource datasource, String propertyId) {
+                final TextField textField = componentsFactory.createComponent(TextField.NAME);
+                textField.addListener(new ValueListener() {
+                    @Override
+                    public void valueChanged(Object source, String property, Object prevValue, Object value) {
+                        Date parsed = timeParser.parse(String.valueOf(value));
+                        getItem().setTime(parsed);
+                        textField.setValue(new HoursAndMinutes(parsed));
+                    }
+                });
+
+                return textField;
+            }
+        });
 
         rejectionReason = fieldGroup.getFieldComponent("rejectionReason");
+        time = (TextField) fieldGroup.getFieldComponent("time");
 
         timeEntryDs.addListener(new DsListenerAdapter<TimeEntry>() {
             @Override
@@ -209,6 +232,8 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     protected void postInit() {
         super.postInit();
         TimeEntry timeEntry = getItem();
+
+        time.setValue(new HoursAndMinutes(timeEntry.getTime()));
 
         if (TimeEntryStatus.CLOSED.equals(timeEntry.getStatus()) && !securityAssistant.isSuperUser()) {
             setReadOnly();

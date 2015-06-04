@@ -4,12 +4,21 @@
 
 package com.haulmont.timesheets.global;
 
-import junit.framework.Assert;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.TimeSource;
+import com.haulmont.cuba.core.global.UserSessionSource;
+import com.haulmont.cuba.security.global.UserSession;
+import mockit.Mock;
+import mockit.MockUp;
+import mockit.Mocked;
+import mockit.NonStrictExpectations;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import static junit.framework.Assert.assertEquals;
 
@@ -18,6 +27,40 @@ import static junit.framework.Assert.assertEquals;
  * @version $Id$
  */
 public class HoursAndMinutesTest {
+    @Mocked
+    protected AppBeans appBeans;
+
+    @Mocked
+    protected TimeSource timeSource;
+
+    @Mocked
+    protected UserSession userSession;
+
+    @Mocked
+    protected UserSessionSource userSessionSource;
+
+    protected TimeParser timeParser = new TimeParser();
+
+    @Before
+    public void setUp() throws Exception {
+        timeParser.timeSource = new MockUp<TimeSource>() {
+            @SuppressWarnings("UnusedDeclaration")
+            @Mock
+            Date currentTimestamp() {
+                return new Date();
+            }
+        }.getMockInstance();
+
+        new NonStrictExpectations() {
+            {
+                AppBeans.get(TimeParser.NAME); result = timeParser;
+                AppBeans.get(UserSessionSource.class); result = userSessionSource;
+                userSessionSource.getUserSession(); result = userSession;
+                userSession.getLocale(); result = Locale.ENGLISH;
+            }
+        };
+    }
+
     @Test
     public void testConstructors() throws Exception {
         HoursAndMinutes hoursAndMinutes = new HoursAndMinutes("8:11");
