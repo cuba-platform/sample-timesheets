@@ -4,6 +4,7 @@
 
 package com.haulmont.timesheets.web.calendar;
 
+import com.haulmont.timesheets.entity.Task;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.vaadin.ui.components.calendar.event.BasicEvent;
@@ -35,7 +36,8 @@ public class TimeEntryCalendarEventAdapter extends BasicEvent {
 
     @Override
     public String getCaption() {
-        return String.format("%s %s", timeEntry.getInstanceName(), timeEntry.getTask().getInstanceName());
+        Task task = timeEntry.getTask();
+        return String.format("%s [%s] %s", timeEntry.getInstanceName(), task.getProject().getCode(), task.getName());
     }
 
     @Override

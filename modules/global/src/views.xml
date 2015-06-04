@@ -37,8 +37,8 @@
         <property name="name"/>
         <property name="code"/>
         <property name="description"/>
-        <property name="project"
-                  view="_minimal">
+        <property name="project" view="_minimal">
+            <property name="code"/>
             <property name="participants"
                       view="_minimal">
                 <property name="user">

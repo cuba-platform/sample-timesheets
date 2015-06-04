@@ -31,9 +31,7 @@
                 <column width="300px">
                     <field id="task"
                            optionsDatasource="activeTasksDs"/>
-                    <field id="taskName"/>
-                    <field id="user"
-                           enable="false"/>
+                    <field id="user" enable="false"/>
                     <field id="date"/>
                     <field id="time"/>
                     <field id="status"/>

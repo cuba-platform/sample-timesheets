@@ -41,7 +41,7 @@ public class CommandLineFrameController extends AbstractFrame {
         super.init(params);
 
         commandLine = componentsFactory.createComponent(CommandLine.NAME);
-        commandLine.setWidth("500px");
+        commandLine.setWidth("800px");
         commandLine.setHeight("30px");
         commandLineHBox.add(commandLine, 0);
 

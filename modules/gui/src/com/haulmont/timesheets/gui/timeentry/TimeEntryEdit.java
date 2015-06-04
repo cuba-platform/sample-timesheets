@@ -4,6 +4,8 @@
 package com.haulmont.timesheets.gui.timeentry;
 
 import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
@@ -54,11 +56,15 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     protected BoxLayout tagsTokenListsBox;
     @Inject
     protected ComponentsFactory componentsFactory;
+    @Inject
+    protected TimeSource timeSource;
 
     @Named("fieldGroup.task")
     protected LookupPickerField taskField;
     @Named("fieldGroup.status")
     protected LookupField statusField;
+    @Named("fieldGroup.user")
+    protected Field userField;
 
     protected Component rejectionReason;
 
@@ -185,6 +191,9 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         if (item.getUser() == null) {
             item.setUser(userSession.getUser());
         }
+        if (item.getDate() == null) {
+            item.setDate(timeSource.currentTimestamp());
+        }
     }
 
     @Override
@@ -213,26 +222,32 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         if (!securityAssistant.isSuperUser()) {
             statusField.setOptionsList(Arrays.asList(TimeEntryStatus.NEW, TimeEntryStatus.APPROVED, TimeEntryStatus.REJECTED));
         }
+
+        if (userSession.getUser().equals(timeEntry.getUser())) {
+            userField.setVisible(false);
+        }
     }
 
     @Override
     public void commitAndClose() {
-        ResultAndCause validationResult = validationTools.validateTags(getItem());
-        if (validationResult.isNegative) {
-            showOptionDialog(getMessage("caption.attention"),
-                    validationResult.cause + getMessage("confirmation.manuallyTagSetting"),
-                    MessageType.CONFIRMATION_HTML,
-                    Arrays.<com.haulmont.cuba.gui.components.Action>asList(
-                            new DialogAction(DialogAction.Type.YES) {
-                                @Override
-                                public void actionPerform(Component component) {
-                                    TimeEntryEdit.super.commitAndClose();
-                                }
-                            },
-                            new DialogAction(DialogAction.Type.NO)));
+        if (validateAll()) {
+            ResultAndCause validationResult = validationTools.validateTags(getItem());
+            if (validationResult.isNegative) {
+                showOptionDialog(getMessage("caption.attention"),
+                        validationResult.cause + getMessage("confirmation.manuallyTagSetting"),
+                        MessageType.CONFIRMATION_HTML,
+                        Arrays.<com.haulmont.cuba.gui.components.Action>asList(
+                                new DialogAction(DialogAction.Type.YES) {
+                                    @Override
+                                    public void actionPerform(Component component) {
+                                        TimeEntryEdit.super.commitAndClose();
+                                    }
+                                },
+                                new DialogAction(DialogAction.Type.NO)));
 
-        } else {
-            super.commitAndClose();
+            } else {
+                super.commitAndClose();
+            }
         }
     }
 
@@ -261,10 +276,17 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
 
     protected void updateStatusField() {
         statusField.setEnabled(!userIsWorker());
+        if (PersistenceHelper.isNew(getItem())) {
+            statusField.setVisible(false);
+        }
     }
 
     protected void updateRejectionReasonField() {
         rejectionReason.setEnabled(!userIsWorker());
+        if (PersistenceHelper.isNew(getItem())
+                || (userIsWorker() && getItem().getRejectionReason() == null)) {
+            rejectionReason.setVisible(false);
+        }
     }
 
     protected void updateStatus() {

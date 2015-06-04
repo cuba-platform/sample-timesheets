@@ -73,6 +73,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
     protected Date firstDayOfWeek;
     protected Date lastDayOfWeek;
+    private final SimpleDateFormat timeFormat = new SimpleDateFormat(DateTimeUtils.TIME_FORMAT);
 
     @Override
     public void init(Map<String, Object> params) {
@@ -123,8 +124,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             }
 
             private void doHandle(TimeEntry timeEntry) {
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DateTimeUtils.TIME_FORMAT);
-                WeeklyReportEntry weeklyReportEntry = setTimeEntryToEachWeekDay(simpleDateFormat, timeEntry);
+                WeeklyReportEntry weeklyReportEntry = setTimeEntryToEachWeekDay(timeFormat, timeEntry);
                 weeklyEntriesDs.addItem(weeklyReportEntry);
             }
 
@@ -338,17 +338,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
                                 @Override
                                 public void actionPerform(Component component) {
-                                    Window window = openLookup(
+                                    Window window = openWindow(
                                             "ts$TimeEntry.lookup",
-                                            new Lookup.Handler() {
-                                                @Override
-                                                public void handleLookup(Collection items) {
-                                                    if (CollectionUtils.isNotEmpty(items)) {
-                                                        TimeEntry timeEntry = (TimeEntry) items.iterator().next();
-                                                        openTimeEntryEditor(timeEntry);
-                                                    }
-                                                }
-                                            },
                                             WindowManager.OpenType.DIALOG,
                                             ParamsMap.of("date", finalCurrent,
                                                     "task", reportEntry.getTask(),

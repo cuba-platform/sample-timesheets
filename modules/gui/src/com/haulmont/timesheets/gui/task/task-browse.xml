@@ -18,6 +18,7 @@
                width="100%">
             <actions>
                 <action id="edit"/>
+                <action id="createTimeEntry"/>
             </actions>
             <columns>
                 <column id="name"/>
@@ -34,6 +35,8 @@
                           alwaysVisible="true">
                 <button id="editBtn"
                         action="tasksTable.edit"/>
+                <button id="createTimeEntry"
+                        action="tasksTable.createTimeEntry"/>
             </buttonsPanel>
         </table>
     </layout>

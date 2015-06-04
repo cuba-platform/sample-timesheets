@@ -12,6 +12,7 @@ import com.haulmont.timesheets.entity.Tag;
 import com.haulmont.timesheets.entity.TagType;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.service.ProjectsService;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
 
 import javax.annotation.ManagedBean;
@@ -124,8 +125,10 @@ public class ValidationTools {
         Preconditions.checkNotNullArgument(timeEntry.getTask().getRequiredTagTypes());
 
         HashSet<TagType> remainingRequiredTagTypes = new HashSet<>(timeEntry.getTask().getRequiredTagTypes());
-        for (Tag tag : timeEntry.getTags()) {
-            remainingRequiredTagTypes.remove(tag.getTagType());
+        if (CollectionUtils.isNotEmpty(timeEntry.getTags())) {
+            for (Tag tag : timeEntry.getTags()) {
+                remainingRequiredTagTypes.remove(tag.getTagType());
+            }
         }
 
         if (remainingRequiredTagTypes.size() > 0) {
