@@ -6,15 +6,15 @@
         lookupComponent="tasksTable"
         messagesPack="com.haulmont.timesheets.gui.task">
     <dsContext>
-        <collectionDatasource id="tasksDs"
+        <groupDatasource id="tasksDs"
                               class="com.haulmont.timesheets.entity.Task"
                               datasourceClass="com.haulmont.timesheets.gui.data.TasksCollectionDatasource"
                               view="task-full">
-        </collectionDatasource>
+        </groupDatasource>
     </dsContext>
     <layout expand="tasksTable"
             spacing="true">
-        <table id="tasksTable"
+        <groupTable id="tasksTable"
                width="100%">
             <actions>
                 <action id="edit"/>
@@ -38,6 +38,6 @@
                 <button id="createTimeEntry"
                         action="tasksTable.createTimeEntry"/>
             </buttonsPanel>
-        </table>
+        </groupTable>
     </layout>
 </window>
