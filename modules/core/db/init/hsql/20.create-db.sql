@@ -13,7 +13,9 @@ create index IDX_TS_TASK_TYPE on TS_TASK (TYPE_ID)^
 -- end TS_TASK
 -- begin TS_TIME_ENTRYalter table TS_TIME_ENTRY add constraint FK_TS_TIME_ENTRY_TASK_ID foreign key (TASK_ID) references TS_TASK(ID)^
 alter table TS_TIME_ENTRY add constraint FK_TS_TIME_ENTRY_USER_ID foreign key (USER_ID) references SEC_USER(ID)^
+alter table TS_TIME_ENTRY add constraint FK_TS_TIME_ENTRY_ACTIVITY_TYPE_ID foreign key (ACTIVITY_TYPE_ID) references TS_ACTIVITY_TYPE(ID)^
 create index IDX_TS_TIME_ENTRY_USER on TS_TIME_ENTRY (USER_ID)^
+create index IDX_TS_TIME_ENTRY_ACTIVITY_TYPE on TS_TIME_ENTRY (ACTIVITY_TYPE_ID)^
 create index IDX_TS_TIME_ENTRY_TASK on TS_TIME_ENTRY (TASK_ID)^
 -- end TS_TIME_ENTRY
 -- begin TS_PROJECT_PARTICIPANTalter table TS_PROJECT_PARTICIPANT add constraint FK_TS_PROJECT_PARTICIPANT_USER_ID foreign key (USER_ID) references SEC_USER(ID)^
@@ -42,3 +44,7 @@ alter table TS_TASK_TAG_LINK add constraint FK_TTTL_TAG foreign key (TAG_ID) ref
 -- begin TS_TAG_TYPE_PROJECT_LINKalter table TS_TAG_TYPE_PROJECT_LINK add constraint FK_TTTPL_TAG_TYPE foreign key (TAG_TYPE_ID) references TS_TAG_TYPE (ID)^
 alter table TS_TAG_TYPE_PROJECT_LINK add constraint FK_TTTPL_PROJECT foreign key (PROJECT_ID) references TS_PROJECT (ID)^
 -- end TS_TAG_TYPE_PROJECT_LINK
+-- begin TS_ACTIVITY_TYPE_PROJECT_LINK
+alter table TS_ACTIVITY_TYPE_PROJECT_LINK add constraint FK_TATPL_ACTIVITY_TYPE foreign key (ACTIVITY_TYPE_ID) references TS_ACTIVITY_TYPE (ID)^
+alter table TS_ACTIVITY_TYPE_PROJECT_LINK add constraint FK_TATPL_PROJECT foreign key (PROJECT_ID) references TS_PROJECT (ID)^
+-- end TS_ACTIVITY_TYPE_PROJECT_LINK

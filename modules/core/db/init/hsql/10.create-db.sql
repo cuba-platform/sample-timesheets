@@ -153,6 +153,7 @@ create table TS_HOLIDAY (
     STATUS varchar(50) not null,
     DESCRIPTION varchar(255),
     REJECTION_REASON varchar(255),
+    ACTIVITY_TYPE_ID varchar(36),
     --
     primary key (ID)
 )^-- end TS_TIME_ENTRY
@@ -209,3 +210,28 @@ alter table SEC_USER alter column WORK_HOURS_FOR_WEEK set not null ^-- end SEC_U
     primary key (TAG_TYPE_ID, PROJECT_ID)
 )^
 -- end TS_TAG_TYPE_PROJECT_LINK
+-- begin TS_ACTIVITY_TYPE
+create table TS_ACTIVITY_TYPE (
+    ID varchar(36) not null,
+    CREATE_TS timestamp,
+    CREATED_BY varchar(50),
+    VERSION integer,
+    UPDATE_TS timestamp,
+    UPDATED_BY varchar(50),
+    DELETE_TS timestamp,
+    DELETED_BY varchar(50),
+    --
+    NAME varchar(100) not null,
+    CODE varchar(50) not null,
+    DESCRIPTION varchar(255),
+    --
+    primary key (ID)
+)^
+-- end TS_ACTIVITY_TYPE
+-- begin TS_ACTIVITY_TYPE_PROJECT_LINK
+create table TS_ACTIVITY_TYPE_PROJECT_LINK (
+    ACTIVITY_TYPE_ID varchar(36) not null,
+    PROJECT_ID varchar(36) not null,
+    primary key (ACTIVITY_TYPE_ID, PROJECT_ID)
+)^
+-- end TS_ACTIVITY_TYPE_PROJECT_LINK
