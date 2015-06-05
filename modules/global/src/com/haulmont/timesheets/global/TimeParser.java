@@ -30,20 +30,6 @@ public class TimeParser {
     @Inject
     protected TimeSource timeSource;
 
-    @Nullable
-    public Date parse(String time) {
-        if (StringUtils.isBlank(time)) {
-            return null;
-        }
-
-        HoursAndMinutes hoursAndMinutes = parseToHoursAndMinutes(time);
-        if (hoursAndMinutes.hours >= 24) {
-            hoursAndMinutes.hours = 23;
-            hoursAndMinutes.minutes = 59;
-        }
-        return hoursAndMinutes.toDate();
-    }
-
     public HoursAndMinutes parseToHoursAndMinutes(String time) {
         HoursAndMinutes result = new HoursAndMinutes();
         try {

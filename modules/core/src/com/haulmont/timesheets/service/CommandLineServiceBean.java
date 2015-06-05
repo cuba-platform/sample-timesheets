@@ -13,6 +13,7 @@ import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.entity.TimeEntryStatus;
 import com.haulmont.timesheets.global.CommandLineProcessor;
 import com.haulmont.timesheets.global.DateTimeUtils;
+import com.haulmont.timesheets.global.HoursAndMinutes;
 import com.haulmont.timesheets.global.TimeParser;
 import org.springframework.stereotype.Service;
 
@@ -53,10 +54,10 @@ public class CommandLineServiceBean implements CommandLineService {
                 timeEntry.getTags().addAll(task.getDefaultTags());
                 String spentTime = commandLineProcessor.getSpentTime();
                 if (spentTime != null) {
-                    Date parsedTime = timeParser.parse(spentTime);
-                    timeEntry.setTime(parsedTime);
+                    HoursAndMinutes hoursAndMinutes = timeParser.parseToHoursAndMinutes(spentTime);
+                    timeEntry.setTimeInMinutes(hoursAndMinutes.toMinutes());
                 } else {
-                    timeEntry.setTime(DateTimeUtils.getDateWithoutTime(timeSource.currentTimestamp()));
+                    timeEntry.setTimeInMinutes(0);
                 }
                 timeEntry.setDate(timeSource.currentTimestamp());
 

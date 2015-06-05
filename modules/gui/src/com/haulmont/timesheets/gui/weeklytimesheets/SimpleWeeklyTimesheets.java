@@ -28,7 +28,6 @@ import org.apache.commons.lang.time.DateUtils;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -73,7 +72,6 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
     protected Date firstDayOfWeek;
     protected Date lastDayOfWeek;
-    private final SimpleDateFormat timeFormat = new SimpleDateFormat(DateTimeUtils.TIME_FORMAT);
 
     @Override
     public void init(Map<String, Object> params) {
@@ -124,13 +122,13 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             }
 
             private void doHandle(TimeEntry timeEntry) {
-                WeeklyReportEntry weeklyReportEntry = setTimeEntryToEachWeekDay(timeFormat, timeEntry);
+                WeeklyReportEntry weeklyReportEntry = setTimeEntryToEachWeekDay(timeEntry);
                 weeklyEntriesDs.addItem(weeklyReportEntry);
                 weeklyTsTable.setSelected(weeklyReportEntry);
             }
 
-            private WeeklyReportEntry setTimeEntryToEachWeekDay(SimpleDateFormat simpleDateFormat, TimeEntry timeEntry) {
-                String spentTimeStr = simpleDateFormat.format(timeEntry.getTime());
+            private WeeklyReportEntry setTimeEntryToEachWeekDay(TimeEntry timeEntry) {
+                String spentTimeStr = HoursAndMinutes.fromTimeEntry(timeEntry).toString();
 
                 WeeklyReportEntry weeklyReportEntry = new WeeklyReportEntry();
                 weeklyReportEntry.setTask(timeEntry.getTask());
@@ -437,15 +435,16 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             for (WeeklyReportEntry weeklyReportEntry : entries) {
                 if (weeklyReportEntry.getTask() != null) {
                     for (final DayOfWeek day : DayOfWeek.values()) {
-                        Date time = timeParser.parse(weeklyReportEntry.getDayOfWeekTime(day));
-                        if (time != null) {
+                        String dayOfWeekTime = weeklyReportEntry.getDayOfWeekTime(day);
+                        if (StringUtils.isNotBlank(dayOfWeekTime)) {
+                            HoursAndMinutes hoursAndMinutes =  timeParser.parseToHoursAndMinutes(dayOfWeekTime);
                             List<TimeEntry> existingEntries = weeklyReportEntry.getDayOfWeekTimeEntries(day);
                             Set<Tag> defaultTags = weeklyReportEntry.getTask().getDefaultTags();
 
                             TimeEntry timeEntry = existingEntries != null ? existingEntries.get(0) : new TimeEntry();
                             timeEntry.setUser(userSession.getUser());
                             timeEntry.setTask(weeklyReportEntry.getTask());
-                            timeEntry.setTime(time);
+                            timeEntry.setTimeInMinutes(hoursAndMinutes.toMinutes());
                             if (CollectionUtils.isNotEmpty(timeEntry.getTags())) {
                                 HashSet<Tag> tags = new HashSet<>(timeEntry.getTags());
                                 tags.addAll(defaultTags);
@@ -458,7 +457,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                             ResultAndCause validationResult = validationTools.validateTags(timeEntry);
                             if (validationResult.isNegative) {
                                 validationAlerts.add(formatMessage("notification.timeEntryValidation",
-                                        validationResult.cause, timeEntry.getTask().getName(), timeEntry.getDate(), timeEntry.getTime()));
+                                        validationResult.cause, timeEntry.getTask().getName(),
+                                        timeEntry.getDate(), HoursAndMinutes.fromTimeEntry(timeEntry)));
                             }
 
                             commitContext.getCommitInstances().add(timeEntry);

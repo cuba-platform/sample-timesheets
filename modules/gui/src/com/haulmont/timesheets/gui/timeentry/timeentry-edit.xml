@@ -1,26 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
-        caption="msg://editCaption"
-        class="com.haulmont.timesheets.gui.timeentry.TimeEntryEdit"
-        datasource="timeEntryDs"
-        focusComponent="fieldGroup"
-        messagesPack="com.haulmont.timesheets.gui.timeentry">
+<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd" caption="msg://editCaption"
+        class="com.haulmont.timesheets.gui.timeentry.TimeEntryEdit" datasource="timeEntryDs"
+        focusComponent="fieldGroup" messagesPack="com.haulmont.timesheets.gui.timeentry">
     <dsContext>
-        <datasource id="timeEntryDs"
-                    class="com.haulmont.timesheets.entity.TimeEntry"
-                    view="timeEntry-full">
-            <collectionDatasource id="tagsDs"
-                                  property="tags"/>
+        <datasource id="timeEntryDs" class="com.haulmont.timesheets.entity.TimeEntry" view="timeEntry-full">
+            <collectionDatasource id="tagsDs" property="tags"/>
         </datasource>
-        <collectionDatasource id="optionOtherTagsDs"
-                              class="com.haulmont.timesheets.entity.Tag"
+        <collectionDatasource id="optionOtherTagsDs" class="com.haulmont.timesheets.entity.Tag"
                               datasourceClass="com.haulmont.timesheets.gui.data.TagsCollectionDatasource"/>
-        <collectionDatasource id="activeTasksDs"
-                              class="com.haulmont.timesheets.entity.Task"
+        <collectionDatasource id="activeTasksDs" class="com.haulmont.timesheets.entity.Task"
                               datasourceClass="com.haulmont.timesheets.gui.data.TasksCollectionDatasource"/>
-        <collectionDatasource id="otherTagsDs"
-                              allowCommit="false"
-                              class="com.haulmont.timesheets.entity.Tag"
+        <collectionDatasource id="otherTagsDs" allowCommit="false" class="com.haulmont.timesheets.entity.Tag"
                               refreshMode="NEVER"/>
         <collectionDatasource id="activityTypesDs" class="com.haulmont.timesheets.entity.ActivityType">
             <query>
@@ -28,35 +18,27 @@
             </query>
         </collectionDatasource>
     </dsContext>
-    <layout expand="scrollBox"
-            spacing="true">
-        <scrollBox id="scrollBox"
-                   spacing="true">
+    <layout expand="scrollBox" spacing="true">
+        <scrollBox id="scrollBox" spacing="true">
             <fieldGroup id="fieldGroup" datasource="timeEntryDs" width="500px">
                 <column width="100%">
                     <field id="task" optionsDatasource="activeTasksDs"/>
                     <field id="activityType" optionsDatasource="activityTypesDs"/>
                     <field id="user" enable="false"/>
                     <field id="date"/>
-                    <field id="time" custom="true"/>
+                    <field id="timeInMinutes" custom="true"/>
                     <field id="status"/>
                     <field id="description" custom="true"/>
                     <field id="rejectionReason" custom="true"/>
                 </column>
             </fieldGroup>
-            <vbox id="tagsTokenListsBox"
-                  spacing="true">
-            </vbox>
-            <tokenList id="otherTagsTokenList"
-                       caption="msg://com.haulmont.timesheets.entity/TimeEntry.tags"
-                       datasource="otherTagsDs"
-                       inline="true"
-                       width="500px">
+            <vbox id="tagsTokenListsBox" spacing="true"/>
+            <tokenList id="otherTagsTokenList" caption="msg://com.haulmont.timesheets.entity/TimeEntry.tags"
+                       datasource="otherTagsDs" inline="true" width="500px">
                 <button icon="icons/plus-btn.png"/>
                 <lookup optionsDatasource="optionOtherTagsDs"/>
             </tokenList>
         </scrollBox>
-        <iframe id="windowActions"
-                screen="editWindowActions"/>
+        <iframe id="windowActions" screen="editWindowActions"/>
     </layout>
 </window>

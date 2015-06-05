@@ -29,7 +29,9 @@
             </actions>
             <columns>
                 <column id="task"/>
-                <column id="time"/>
+                <column id="timeInMinutes">
+                    <formatter class="com.haulmont.timesheets.gui.HoursAndMinutesFormatter"/>
+                </column>
                 <column id="status"/>
                 <column id="description"
                         maxTextLength="20"/>

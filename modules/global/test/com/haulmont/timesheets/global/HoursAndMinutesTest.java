@@ -63,19 +63,19 @@ public class HoursAndMinutesTest {
 
     @Test
     public void testConstructors() throws Exception {
-        HoursAndMinutes hoursAndMinutes = new HoursAndMinutes("8:11");
+        HoursAndMinutes hoursAndMinutes = HoursAndMinutes.fromString("8:11");
         assertEquals(8, hoursAndMinutes.getHours());
         assertEquals(11, hoursAndMinutes.getMinutes());
 
-        hoursAndMinutes = new HoursAndMinutes("99:99");
+        hoursAndMinutes = HoursAndMinutes.fromString("99:99");
         assertEquals(100, hoursAndMinutes.getHours());
         assertEquals(39, hoursAndMinutes.getMinutes());
 
-        hoursAndMinutes = new HoursAndMinutes(BigDecimal.valueOf(100.5));
+        hoursAndMinutes = HoursAndMinutes.fromBigDecimal(BigDecimal.valueOf(100.5));
         assertEquals(100, hoursAndMinutes.getHours());
         assertEquals(30, hoursAndMinutes.getMinutes());
 
-        hoursAndMinutes = new HoursAndMinutes(time(18, 19));
+        hoursAndMinutes = HoursAndMinutes.fromDate(time(18, 19));
         assertEquals(18, hoursAndMinutes.getHours());
         assertEquals(19, hoursAndMinutes.getMinutes());
     }
@@ -89,12 +89,12 @@ public class HoursAndMinutesTest {
 
     @Test
     public void testModifiers() throws Exception {
-        HoursAndMinutes hoursAndMinutes = new HoursAndMinutes("8:11");
+        HoursAndMinutes hoursAndMinutes = HoursAndMinutes.fromString("8:11");
         hoursAndMinutes.add("9:59");
         assertEquals(18, hoursAndMinutes.getHours());
         assertEquals(10, hoursAndMinutes.getMinutes());
 
-        hoursAndMinutes = new HoursAndMinutes("1:00");
+        hoursAndMinutes = HoursAndMinutes.fromString("1:00");
         hoursAndMinutes.add(time(18, 19));
 
         assertEquals(19, hoursAndMinutes.getHours());

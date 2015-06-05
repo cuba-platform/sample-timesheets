@@ -7,7 +7,6 @@ package com.haulmont.timesheets.gui.weeklytimesheets;
 import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.global.StringFormatHelper;
-import com.haulmont.timesheets.global.DateTimeUtils;
 import com.haulmont.timesheets.global.HoursAndMinutes;
 
 import java.util.Collection;
@@ -24,7 +23,7 @@ public class TimeEntryAggregation implements AggregationStrategy<List<TimeEntry>
         HoursAndMinutes total = new HoursAndMinutes();
         for (List<TimeEntry> list : propertyValues) {
             for (TimeEntry timeEntry : list) {
-                total.add(new HoursAndMinutes(timeEntry.getTime()));
+                total.add(HoursAndMinutes.fromTimeEntry(timeEntry));
             }
         }
         return StringFormatHelper.getTotalDayAggregationString(total);

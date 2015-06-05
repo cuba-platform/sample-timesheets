@@ -23,8 +23,6 @@ import java.util.*;
  */
 
 public final class DateTimeUtils {
-    public static final String TIME_FORMAT = "HH:mm";
-
     private DateTimeUtils() {
     }
 

@@ -85,7 +85,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         taskField.addClearAction();
         fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
         fieldGroup.addCustomField("rejectionReason", ComponentsHelper.getCustomTextArea());
-        fieldGroup.addCustomField("time", new FieldGroup.CustomFieldGenerator() {
+        fieldGroup.addCustomField("timeInMinutes", new FieldGroup.CustomFieldGenerator() {
             @Override
             public Component generateField(Datasource datasource, String propertyId) {
                 return componentsFactory.<TextField>createComponent(TextField.NAME);
@@ -93,7 +93,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         });
 
         rejectionReason = fieldGroup.getFieldComponent("rejectionReason");
-        time = (TextField) fieldGroup.getFieldComponent("time");
+        time = (TextField) fieldGroup.getFieldComponent("timeInMinutes");
 
         timeEntryDs.addListener(new DsListenerAdapter<TimeEntry>() {
             @Override
@@ -223,7 +223,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         super.postInit();
         TimeEntry timeEntry = getItem();
 
-        time.setValue(new HoursAndMinutes(timeEntry.getTime()));
+        time.setValue(HoursAndMinutes.fromTimeEntry(timeEntry));
 
         if (TimeEntryStatus.CLOSED.equals(timeEntry.getStatus()) && !securityAssistant.isSuperUser()) {
             setReadOnly();
@@ -256,9 +256,9 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         time.addListener(new ValueListener() {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                Date parsed = timeParser.parse(String.valueOf(value));
-                getItem().setTime(parsed);
-                time.setValue(new HoursAndMinutes(parsed));
+                HoursAndMinutes hoursAndMinutes = timeParser.parseToHoursAndMinutes(String.valueOf(value));
+                getItem().setTimeInMinutes(hoursAndMinutes.toMinutes());
+                time.setValue(hoursAndMinutes);
             }
         });
     }

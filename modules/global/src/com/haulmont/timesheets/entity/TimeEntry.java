@@ -6,25 +6,20 @@ package com.haulmont.timesheets.entity;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.security.entity.User;
-import org.apache.commons.lang.StringUtils;
-
-import javax.persistence.*;
-import java.text.DateFormat;
-import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Set;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.global.DeletePolicy;
+import com.haulmont.cuba.security.entity.User;
+import com.haulmont.timesheets.global.HoursAndMinutes;
+
+import javax.persistence.*;
+import java.util.Date;
+import java.util.Set;
 
 /**
  * @author gorelov
  */
 @Listeners("ts_TimeEntryListener")
-@NamePattern("#getCaption|time")
+@NamePattern("#getCaption|timeInMinutes")
 @Table(name = "TS_TIME_ENTRY")
 @Entity(name = "ts$TimeEntry")
 public class TimeEntry extends StandardEntity {
@@ -52,9 +47,8 @@ public class TimeEntry extends StandardEntity {
     @Column(name = "DATE_", nullable = false)
     protected Date date;
 
-    @Temporal(TemporalType.TIME)
-    @Column(name = "TIME_", nullable = false)
-    protected Date time;
+    @Column(name = "TIME_IN_MINUTES", nullable = false)
+    protected Integer timeInMinutes;
 
     @Column(name = "STATUS", nullable = false)
     protected String status = TimeEntryStatus.NEW.getId();
@@ -69,6 +63,16 @@ public class TimeEntry extends StandardEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ACTIVITY_TYPE_ID")
     protected ActivityType activityType;
+
+
+    public void setTimeInMinutes(Integer timeInMinutes) {
+        this.timeInMinutes = timeInMinutes;
+    }
+
+    public Integer getTimeInMinutes() {
+        return timeInMinutes;
+    }
+
 
     public void setActivityType(ActivityType activityType) {
         this.activityType = activityType;
@@ -93,14 +97,6 @@ public class TimeEntry extends StandardEntity {
 
     public void setTags(Set<Tag> tags) {
         this.tags = tags;
-    }
-
-    public void setTime(Date time) {
-        this.time = time;
-    }
-
-    public Date getTime() {
-        return time;
     }
 
     public void setDescription(String description) {
@@ -152,11 +148,6 @@ public class TimeEntry extends StandardEntity {
     }
 
     public String getCaption() {
-        Messages messages = AppBeans.get(Messages.NAME);
-        DateFormat df = new SimpleDateFormat(messages.getMainMessage("timeFormat"));
-        MessageFormat fmt = new MessageFormat("{0}");
-        return StringUtils.trimToEmpty(fmt.format(new Object[]{
-                StringUtils.trimToEmpty(df.format(getTime()))
-        }));
+        return HoursAndMinutes.fromTimeEntry(this).toString();
     }
 }

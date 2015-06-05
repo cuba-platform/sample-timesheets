@@ -39,7 +39,7 @@ public class ValidationTools {
     protected Messages messages;
 
     public HoursAndMinutes workHoursForPeriod(Date start, Date end, User user) {
-        HoursAndMinutes dayHourPlan = new HoursAndMinutes(workTimeConfigBean.getUserWorkHourForDay(user));
+        HoursAndMinutes dayHourPlan = HoursAndMinutes.fromBigDecimal(workTimeConfigBean.getUserWorkHourForDay(user));
         HoursAndMinutes totalWorkHours = new HoursAndMinutes();
 
         for (; start.getTime() <= end.getTime(); start = DateUtils.addDays(start, 1)) {
@@ -66,7 +66,7 @@ public class ValidationTools {
 
         HoursAndMinutes totalWorkHours = new HoursAndMinutes();
         for (TimeEntry timeEntry : timeEntries) {
-            totalWorkHours.add(timeEntry.getTime());
+            totalWorkHours.addMinutes(timeEntry.getTimeInMinutes());
         }
         return totalWorkHours;
     }

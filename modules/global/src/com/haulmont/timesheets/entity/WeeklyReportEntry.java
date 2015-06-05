@@ -212,9 +212,9 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
         HoursAndMinutes total = new HoursAndMinutes();
         if (CollectionUtils.isNotEmpty(timeEntries)) {
             for (TimeEntry timeEntry : timeEntries) {
-                Date time = timeEntry.getTime();
-                if (time != null) {
-                    total.add(time);
+                Integer timeInMinutes = timeEntry.getTimeInMinutes();
+                if (timeInMinutes != null) {
+                    total.addMinutes(timeInMinutes);
                 }
             }
         }

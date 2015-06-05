@@ -10,6 +10,7 @@ package com.haulmont.timesheets.global;
  */
 
 import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.timesheets.entity.TimeEntry;
 
 import javax.annotation.Nullable;
 import java.math.BigDecimal;
@@ -28,33 +29,51 @@ public class HoursAndMinutes {
     protected int minutes;
     protected TimeParser timeParser = AppBeans.get(TimeParser.NAME);
 
+    public static HoursAndMinutes fromTimeEntry(@Nullable TimeEntry timeEntry) {
+        if (timeEntry == null) {
+            return new HoursAndMinutes();
+        }
+
+        Integer minutes = timeEntry.getTimeInMinutes();
+        return new HoursAndMinutes(0, minutes != null ? minutes : 0);
+    }
+
+    public static HoursAndMinutes fromString(@Nullable String timeStr) {
+        if (timeStr == null) {
+            return new HoursAndMinutes();
+        }
+
+        TimeParser timeParser = AppBeans.get(TimeParser.NAME);
+        return timeParser.parseToHoursAndMinutes(timeStr);
+    }
+
+    public static HoursAndMinutes fromBigDecimal(@Nullable BigDecimal hours) {
+        if (hours == null) {
+            return new HoursAndMinutes();
+        }
+
+        HoursAndMinutes hoursAndMinutes = new HoursAndMinutes();
+        hoursAndMinutes.addMinutes(hours.multiply(MINUTES_IN_HOUR).intValue());
+        return hoursAndMinutes;
+    }
+
+    public static HoursAndMinutes fromDate(@Nullable Date time) {
+        if (time == null) {
+            return new HoursAndMinutes();
+        }
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(time);
+        return new HoursAndMinutes(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
+    }
+
+
     public HoursAndMinutes() {
-    }
-
-    public HoursAndMinutes(@Nullable String timeStr) {
-        if (timeStr == null) return;
-        add(timeParser.parseToHoursAndMinutes(timeStr));
-        setupInvariants();
-    }
-
-    public HoursAndMinutes(@Nullable BigDecimal hours) {
-        if (hours == null) return;
-        minutes = hours.multiply(valueOf(60)).intValue();
-        setupInvariants();
     }
 
     public HoursAndMinutes(int hours, int minutes) {
         this.hours = hours;
         this.minutes = minutes;
-        setupInvariants();
-    }
-
-    public HoursAndMinutes(@Nullable Date time) {
-        if (time == null) return;
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(time);
-        this.hours = calendar.get(Calendar.HOUR_OF_DAY);
-        this.minutes = calendar.get(Calendar.MINUTE);
         setupInvariants();
     }
 
@@ -71,11 +90,11 @@ public class HoursAndMinutes {
     }
 
     public void add(Date time) {
-        add(new HoursAndMinutes(time));
+        add(HoursAndMinutes.fromDate(time));
     }
 
     public void add(String time) {
-        add(new HoursAndMinutes(time));
+        add(HoursAndMinutes.fromString(time));
     }
 
     public void addHours(int hours) {
@@ -102,6 +121,10 @@ public class HoursAndMinutes {
 
     public int getMinutes() {
         return minutes;
+    }
+
+    public Integer toMinutes() {
+        return hours * 60 + minutes;
     }
 
     public BigDecimal toBigDecimal() {

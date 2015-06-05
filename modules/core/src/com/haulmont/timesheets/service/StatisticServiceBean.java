@@ -45,7 +45,7 @@ public class StatisticServiceBean implements StatisticService {
                                         new View(Task.class)
                                                 .addProperty("name")
                                                 .addProperty("project", viewRepository.getView(Project.class, View.MINIMAL)))
-                                .addProperty("time")
+                                .addProperty("timeInMinutes")
                 );
         List<TimeEntry> timeEntries = dataManager.loadList(loadContext);
         Map<Task, BigDecimal> result = new HashMap<>();
@@ -55,7 +55,7 @@ public class StatisticServiceBean implements StatisticService {
                 sum = BigDecimal.ZERO;
             }
 
-            sum = sum.add(new HoursAndMinutes(timeEntry.getTime()).toBigDecimal());
+            sum = sum.add(HoursAndMinutes.fromTimeEntry(timeEntry).toBigDecimal());
             result.put(timeEntry.getTask(), sum);
         }
 
@@ -75,7 +75,7 @@ public class StatisticServiceBean implements StatisticService {
                                         new View(Task.class)
                                                 .addProperty("name")
                                                 .addProperty("project", viewRepository.getView(Project.class, View.MINIMAL)))
-                                .addProperty("time")
+                                .addProperty("timeInMinutes")
                                 .addProperty("date")
                 );
         List<TimeEntry> timeEntries = dataManager.loadList(loadContext);
@@ -92,7 +92,7 @@ public class StatisticServiceBean implements StatisticService {
                 sum = BigDecimal.ZERO;
             }
 
-            sum = sum.add(new HoursAndMinutes(timeEntry.getTime()).toBigDecimal());
+            sum = sum.add(HoursAndMinutes.fromTimeEntry(timeEntry).toBigDecimal());
             statistic.put(key, sum);
         }
 

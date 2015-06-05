@@ -28,7 +28,6 @@
         <property name="tags"
                   view="_minimal"/>
         <property name="date"/>
-        <property name="time"/>
         <property name="status"/>
         <property name="description"/>
         <property name="rejectionReason"/>
@@ -36,6 +35,7 @@
                   view="_minimal">
             <property name="code"/>
         </property>
+        <property name="timeInMinutes"/>
     </view>
     <view class="com.haulmont.timesheets.entity.Task"
           name="task-full">
