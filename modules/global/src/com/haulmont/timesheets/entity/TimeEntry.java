@@ -48,7 +48,7 @@ public class TimeEntry extends StandardEntity {
     protected Date date;
 
     @Column(name = "TIME_IN_MINUTES", nullable = false)
-    protected Integer timeInMinutes;
+    protected Integer timeInMinutes = 0;
 
     @Column(name = "STATUS", nullable = false)
     protected String status = TimeEntryStatus.NEW.getId();

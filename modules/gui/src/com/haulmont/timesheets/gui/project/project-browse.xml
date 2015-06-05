@@ -88,8 +88,7 @@
                             </actions>
                             <columns>
                                 <column id="name"/>
-                                <column id="description"
-                                        maxTextLength="20"/>
+                                <column id="code"/>
                                 <column id="type"/>
                                 <column id="status"/>
                             </columns>

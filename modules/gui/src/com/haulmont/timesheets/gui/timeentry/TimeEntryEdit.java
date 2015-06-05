@@ -223,7 +223,12 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         super.postInit();
         TimeEntry timeEntry = getItem();
 
-        time.setValue(HoursAndMinutes.fromTimeEntry(timeEntry));
+        HoursAndMinutes hoursAndMinutes = HoursAndMinutes.fromTimeEntry(timeEntry);
+        if (hoursAndMinutes.toMinutes() > 0) {
+            time.setValue(hoursAndMinutes);
+        } else {
+            time.setValue(null);
+        }
 
         if (TimeEntryStatus.CLOSED.equals(timeEntry.getStatus()) && !securityAssistant.isSuperUser()) {
             setReadOnly();
@@ -257,8 +262,13 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
             @Override
             public void valueChanged(Object source, String property, Object prevValue, Object value) {
                 HoursAndMinutes hoursAndMinutes = timeParser.parseToHoursAndMinutes(String.valueOf(value));
-                getItem().setTimeInMinutes(hoursAndMinutes.toMinutes());
-                time.setValue(hoursAndMinutes);
+                if (hoursAndMinutes.toMinutes() > 0) {
+                    getItem().setTimeInMinutes(hoursAndMinutes.toMinutes());
+                    time.setValue(hoursAndMinutes);
+                } else {
+                    getItem().setTimeInMinutes(null);
+                    time.setValue(null);
+                }
             }
         });
     }

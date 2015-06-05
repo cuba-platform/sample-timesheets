@@ -26,7 +26,7 @@
                     <field id="activityType" optionsDatasource="activityTypesDs"/>
                     <field id="user" enable="false"/>
                     <field id="date"/>
-                    <field id="timeInMinutes" custom="true"/>
+                    <field id="timeInMinutes" custom="true" required="true" requiredMessage="msg://required.time"/>
                     <field id="status"/>
                     <field id="description" custom="true"/>
                     <field id="rejectionReason" custom="true"/>
