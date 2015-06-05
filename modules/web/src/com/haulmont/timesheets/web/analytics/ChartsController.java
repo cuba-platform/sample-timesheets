@@ -69,6 +69,7 @@ public class ChartsController extends AbstractWindow {
             Task task = entry.getKey();
             pieDs.addItem(new TaskTimeSummary("[" + task.getProject().getInstanceName() + "] " + task.getName(), entry.getValue()));
         }
+        tasksChart.getConfiguration().getLegend().setEnabled(statistics.size() > 0);
         tasksChart.repaint();
     }
 
