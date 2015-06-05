@@ -17,7 +17,7 @@ import java.math.BigDecimal;
  */
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorValue("Ext")
-@NamePattern("#getCaption|firstName,lastName")
+@NamePattern("#getCaption|firstName,lastName,login,name")
 @Entity(name = "ts$ExtUser")
 @Extends(User.class)
 public class ExtUser extends User {
