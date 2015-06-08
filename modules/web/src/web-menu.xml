@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <menu-config xmlns="http://schemas.haulmont.com/cuba/5.4/menu.xsd">
     <menu id="timesheets" insertBefore="reports">
-        <item id="simple-weekly-timesheets" shortcut="CTRL-ALT-W"/>
         <item id="calendar-screen" shortcut="CTRL-ALT-C"/>
+        <item id="simple-weekly-timesheets" shortcut="CTRL-ALT-W"/>
         <item id="ts$TimeEntry.browse"/>
         <item id="ts$Task.browse" shortcut="CTRL-ALT-T"/>
     </menu>
