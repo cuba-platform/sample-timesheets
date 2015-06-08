@@ -28,10 +28,6 @@
             <hbox id="weekNavigationBox"
                   spacing="true"
                   align="BOTTOM_RIGHT">
-                <dateField id="dateField"
-                           resolution="DAY"
-                           stylename="simple"
-                           align="MIDDLE_RIGHT"/>
                 <linkButton icon="font-icon:CHEVRON_LEFT"
                             align="MIDDLE_RIGHT"
                             invoke="showPreviousWeek"/>
@@ -41,6 +37,10 @@
                 <linkButton icon="font-icon:CHEVRON_RIGHT"
                             align="MIDDLE_RIGHT"
                             invoke="showNextWeek"/>
+                <dateField id="dateField"
+                           resolution="DAY"
+                           stylename="simple"
+                           align="MIDDLE_RIGHT"/>
             </hbox>
         </buttonsPanel>
         <split id="split"
