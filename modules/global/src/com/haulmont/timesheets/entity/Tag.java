@@ -32,7 +32,6 @@ public class Tag extends StandardEntity {
     protected String description;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @OnDeleteInverse(DeletePolicy.DENY)
     @JoinColumn(name = "TAG_TYPE_ID")
     protected TagType tagType;
 

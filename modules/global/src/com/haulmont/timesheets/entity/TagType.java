@@ -3,6 +3,7 @@
  */
 package com.haulmont.timesheets.entity;
 
+import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import org.apache.commons.lang.StringUtils;
@@ -10,6 +11,8 @@ import org.apache.commons.lang.StringUtils;
 import javax.persistence.*;
 import java.text.MessageFormat;
 import java.util.Set;
+import com.haulmont.cuba.core.entity.annotation.OnDelete;
+import com.haulmont.cuba.core.global.DeletePolicy;
 
 /**
  * @author gorelov
@@ -35,6 +38,20 @@ public class TagType extends StandardEntity {
         inverseJoinColumns = @JoinColumn(name = "PROJECT_ID"))
     @ManyToMany
     protected Set<Project> projects;
+
+    @OnDelete(DeletePolicy.CASCADE)
+    @OneToMany(mappedBy = "tagType")
+    @Composition
+    protected Set<Tag> tags;
+
+    public void setTags(Set<Tag> tags) {
+        this.tags = tags;
+    }
+
+    public Set<Tag> getTags() {
+        return tags;
+    }
+
 
     public void setProjects(Set<Project> projects) {
         this.projects = projects;

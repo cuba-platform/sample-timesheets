@@ -14,11 +14,10 @@
     </menu>
     <menu id="timesheet-settings" insertAfter="projects">
         <item id="work-time-settings" openType="DIALOG"/>
-        <item id="ts$ActivityType.lookup"/>
-        <item id="ts$TaskType.browse"/>
         <item id="ts$Holiday.browse"/>
         <separator/>
+        <item id="ts$TaskType.browse"/>
+        <item id="ts$ActivityType.lookup"/>
         <item id="ts$TagType.browse"/>
-        <item id="ts$Tag.browse"/>
     </menu>
 </menu-config>

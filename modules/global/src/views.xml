@@ -1,52 +1,44 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <views xmlns="http://schemas.haulmont.com/cuba/5.5/view.xsd">
-    <view class="com.haulmont.timesheets.entity.Tag"
-          name="tag-with-type">
+    <view class="com.haulmont.timesheets.entity.Tag" name="tag-with-type">
         <property name="name"/>
         <property name="code"/>
         <property name="description"/>
-        <property name="tagType"
-                  view="_minimal"/>
+        <property name="tagType" view="_minimal"/>
     </view>
-    <view class="com.haulmont.timesheets.entity.TagType"
-          name="tagType-with-project">
+    <view class="com.haulmont.timesheets.entity.TagType" name="tagType-with-project">
         <property name="name"/>
         <property name="code"/>
         <property name="description"/>
-        <property name="projects"
-                  view="_minimal">
+        <property name="projects" view="_minimal">
+            <property name="code"/>
+        </property>
+        <property name="tags">
+            <property name="name"/>
             <property name="code"/>
         </property>
     </view>
-    <view class="com.haulmont.timesheets.entity.TimeEntry"
-          name="timeEntry-full">
-        <property name="task"
-                  view="task-full"/>
+    <view class="com.haulmont.timesheets.entity.TimeEntry" name="timeEntry-full">
+        <property name="task" view="task-full"/>
         <property name="taskName"/>
-        <property name="user"
-                  view="_minimal"/>
-        <property name="tags"
-                  view="_minimal"/>
+        <property name="user" view="_minimal"/>
+        <property name="tags" view="_minimal"/>
         <property name="date"/>
         <property name="status"/>
         <property name="description"/>
         <property name="rejectionReason"/>
-        <property name="activityType"
-                  view="_minimal">
+        <property name="activityType" view="_minimal">
             <property name="code"/>
         </property>
         <property name="timeInMinutes"/>
     </view>
-    <view class="com.haulmont.timesheets.entity.Task"
-          name="task-full">
+    <view class="com.haulmont.timesheets.entity.Task" name="task-full">
         <property name="name"/>
         <property name="code"/>
         <property name="description"/>
-        <property name="project"
-                  view="_minimal">
+        <property name="project" view="_minimal">
             <property name="code"/>
-            <property name="participants"
-                      view="_minimal">
+            <property name="participants" view="_minimal">
                 <property name="user">
                     <property name="login"/>
                     <property name="name"/>
@@ -58,8 +50,7 @@
                 </property>
             </property>
         </property>
-        <property name="type"
-                  view="_minimal"/>
+        <property name="type" view="_minimal"/>
         <property name="status"/>
         <property name="defaultTags">
             <property name="name"/>
@@ -67,22 +58,18 @@
                 <property name="name"/>
             </property>
         </property>
-        <property name="requiredTagTypes"
-                  view="_minimal"/>
+        <property name="requiredTagTypes" view="_minimal"/>
         <property name="exclusiveParticipants">
             <property name="user">
                 <property name="login"/>
                 <property name="name"/>
                 <property name="position"/>
             </property>
-            <property name="role"
-                      view="_minimal"/>
+            <property name="role" view="_minimal"/>
         </property>
     </view>
-    <view class="com.haulmont.timesheets.entity.ProjectParticipant"
-          name="projectParticipant-full">
-        <property name="user"
-                  view="_local"/>
+    <view class="com.haulmont.timesheets.entity.ProjectParticipant" name="projectParticipant-full">
+        <property name="user" view="_local"/>
         <property name="project">
             <property name="name"/>
             <property name="participants">
@@ -92,17 +79,13 @@
                 </property>
             </property>
         </property>
-        <property name="role"
-                  view="_minimal"/>
+        <property name="role" view="_minimal"/>
     </view>
-    <view class="com.haulmont.timesheets.entity.Project"
-          name="project-full">
+    <view class="com.haulmont.timesheets.entity.Project" name="project-full">
         <property name="name"/>
         <property name="code"/>
-        <property name="parent"
-                  view="_minimal"/>
-        <property name="client"
-                  view="_minimal"/>
+        <property name="parent" view="_minimal"/>
+        <property name="client" view="_minimal"/>
         <property name="description"/>
         <property name="status"/>
         <property name="participants">
@@ -113,26 +96,20 @@
                 <property name="lastName"/>
                 <property name="position"/>
             </property>
-            <property name="role"
-                      view="_minimal"/>
+            <property name="role" view="_minimal"/>
         </property>
-        <property name="tasks"
-                  view="task-full"/>
+        <property name="tasks" view="task-full"/>
     </view>
-    <view class="com.haulmont.timesheets.entity.Project"
-          name="project-with-parent">
+    <view class="com.haulmont.timesheets.entity.Project" name="project-with-parent">
         <property name="name"/>
         <property name="code"/>
-        <property name="parent"
-                  view="_minimal">
-            <property name="client"
-                      view="_minimal"/>
+        <property name="parent" view="_minimal">
+            <property name="client" view="_minimal"/>
         </property>
         <property name="description"/>
         <property name="status"/>
     </view>
-    <view class="com.haulmont.timesheets.entity.ActivityType"
-          name="activityType-with-projects">
+    <view class="com.haulmont.timesheets.entity.ActivityType" name="activityType-with-projects">
         <property name="name"/>
         <property name="code"/>
         <property name="description"/>
