@@ -145,6 +145,10 @@ public class HoursAndMinutes {
         return String.format("%02d:%02d", hours, minutes);
     }
 
+    public String getFormattedCaption() {
+        return StringFormatHelper.getDayHoursString(this);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

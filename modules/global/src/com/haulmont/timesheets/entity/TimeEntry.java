@@ -148,6 +148,10 @@ public class TimeEntry extends StandardEntity {
     }
 
     public String getCaption() {
-        return HoursAndMinutes.fromTimeEntry(this).toString();
+        return HoursAndMinutes.fromTimeEntry(this).getFormattedCaption();
+    }
+
+    public HoursAndMinutes getSpentTime(){
+        return HoursAndMinutes.fromTimeEntry(this);
     }
 }

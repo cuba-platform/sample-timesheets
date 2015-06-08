@@ -3,6 +3,7 @@
  */
 package com.haulmont.timesheets.gui.project;
 
+import com.google.common.collect.ImmutableMap;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
@@ -14,14 +15,12 @@ import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.timesheets.entity.Project;
-import com.haulmont.timesheets.entity.ProjectParticipant;
-import com.haulmont.timesheets.entity.ProjectRole;
-import com.haulmont.timesheets.entity.Task;
+import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.gui.SecurityAssistant;
 import com.haulmont.timesheets.service.ProjectsService;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.Nullable;
@@ -140,11 +139,13 @@ public class ProjectBrowse extends AbstractLookup {
         LoadContext loadContext = new LoadContext(ProjectRole.class);
         loadContext.setQueryString("select pr from ts$ProjectRole pr order by pr.name");
         List<ProjectRole> projectRoles = getDsContext().getDataSupplier().loadList(loadContext);
+        projectRoles = new ArrayList<>(projectRoles);
+        sortProjectRoles(projectRoles);
         for (final ProjectRole projectRole : projectRoles) {
             assignBtn.addAction(new AbstractAction("assign" + projectRole.getCode()) {
                 @Override
                 public String getCaption() {
-                    return (getMessage("caption.assign" + StringUtils.capitalize(projectRole.getCode().toLowerCase())));
+                    return (getMessage("caption.assign" + StringUtils.capitalize(projectRole.getCode().getId().toLowerCase())));
                 }
 
                 @Override
@@ -176,6 +177,27 @@ public class ProjectBrowse extends AbstractLookup {
                     return ComponentsHelper.getProjectStatusStyle(project);
                 }
                 return null;
+            }
+        });
+    }
+
+    protected void sortProjectRoles(List<ProjectRole> projectRoles) {
+        Collections.sort(projectRoles, new Comparator<ProjectRole>() {
+            private Map<ProjectRoleCode, Integer> order = ImmutableMap.<ProjectRoleCode, Integer>builder()
+                    .put(ProjectRoleCode.WORKER, 1)
+                    .put(ProjectRoleCode.MANAGER, 2)
+                    .put(ProjectRoleCode.APPROVER, 3)
+                    .put(ProjectRoleCode.OBSERVER, 4).build();
+
+            @Override
+            public int compare(ProjectRole o1, ProjectRole o2) {
+                ProjectRoleCode code1 = o1.getCode();
+                ProjectRoleCode code2 = o2.getCode();
+
+                Integer order1 = order.get(code1);
+                Integer order2 = order.get(code2);
+
+                return ObjectUtils.compare(order1, order2);
             }
         });
     }

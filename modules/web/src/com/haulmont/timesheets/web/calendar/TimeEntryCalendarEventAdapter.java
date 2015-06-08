@@ -38,7 +38,7 @@ public class TimeEntryCalendarEventAdapter extends BasicEvent {
     @Override
     public String getCaption() {
         Task task = timeEntry.getTask();
-        return String.format("%s [%s] %s", timeEntry.getInstanceName(), task.getProject().getCode(), task.getName());
+        return String.format("%s [%s] %s", timeEntry.getSpentTime().getFormattedCaption(), task.getProject().getCode(), task.getName());
     }
 
     @Override

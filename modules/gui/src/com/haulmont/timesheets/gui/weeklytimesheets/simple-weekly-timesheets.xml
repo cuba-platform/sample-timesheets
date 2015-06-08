@@ -62,10 +62,6 @@
                       align="BOTTOM_RIGHT"
                       spacing="true">
                     <button action="weeklyTsTable.submitAll"/>
-                    <dateField id="dateField"
-                               align="MIDDLE_RIGHT"
-                               resolution="DAY"
-                               stylename="simple"/>
                     <linkButton align="MIDDLE_RIGHT"
                                 icon="font-icon:CHEVRON_LEFT"
                                 invoke="showPreviousWeek"/>
@@ -75,6 +71,10 @@
                     <linkButton align="MIDDLE_RIGHT"
                                 icon="font-icon:CHEVRON_RIGHT"
                                 invoke="showNextWeek"/>
+                    <dateField id="dateField"
+                               align="MIDDLE_RIGHT"
+                               resolution="DAY"
+                               stylename="simple"/>
                 </hbox>
             </buttonsPanel>
         </table>

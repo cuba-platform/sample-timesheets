@@ -29,12 +29,12 @@ public class ProjectRole extends StandardEntity {
     @Column(name = "DESCRIPTION")
     protected String description;
 
-    public String getCode() {
-        return code;
+    public ProjectRoleCode getCode() {
+        return ProjectRoleCode.fromId(code);
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setCode(ProjectRoleCode code) {
+        this.code = code != null ? code.getId() : null;
     }
 
     public void setName(String name) {
