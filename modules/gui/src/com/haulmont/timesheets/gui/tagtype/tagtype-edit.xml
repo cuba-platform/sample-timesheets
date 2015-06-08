@@ -26,7 +26,7 @@
                     </column>
                 </fieldGroup>
                 <groupBox width="100%" height="AUTO" caption="msg://com.haulmont.timesheets.entity/TagType.projects">
-                    <table id="projectsTable" width="100%" height="AUTO">
+                    <table id="projectsTable" width="100%" height="200px">
                         <actions>
                             <action id="add"/>
                             <action id="remove"/>
