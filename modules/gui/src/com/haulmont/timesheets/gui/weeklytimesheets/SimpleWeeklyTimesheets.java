@@ -332,7 +332,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
                         private void createLinkToMultipleTimeEntries(final WeeklyReportEntry reportEntry, HBoxLayout hBox) {
                             final LinkButton linkButton = componentsFactory.createComponent(LinkButton.NAME);
-                            linkButton.setCaption(StringFormatHelper.getDayHoursString(reportEntry.getTotalForDay(day)));
+                            linkButton.setCaption(reportEntry.getTotalForDay(day).toString());
                             linkButton.setAction(new AbstractAction("edit") {
 
                                 @Override
@@ -357,7 +357,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         private void createLinkToSingleTimeEntry(final WeeklyReportEntry reportEntry, List<TimeEntry> timeEntries, HBoxLayout hBox) {
                             final TimeEntry timeEntry = timeEntries.get(0);
                             final LinkButton linkButton = componentsFactory.createComponent(LinkButton.NAME);
-                            linkButton.setCaption(StringFormatHelper.getDayHoursString(reportEntry.getTotalForDay(day)));
+                            linkButton.setCaption(reportEntry.getTotalForDay(day).toString());
                             linkButton.setAction(new AbstractAction("edit") {
                                 @Override
                                 public void actionPerform(Component component) {
@@ -464,6 +464,9 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                             commitContext.getCommitInstances().add(timeEntry);
                         }
                     }
+                } else {
+                    showNotification(getMessage("notification.emptyTask"),  NotificationType.WARNING);
+                    return;
                 }
             }
 
