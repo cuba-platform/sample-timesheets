@@ -149,7 +149,7 @@ create table TS_HOLIDAY (
     TASK_NAME varchar(100),
     USER_ID varchar(36) not null,
     DATE_ date not null,
-    TIME_ time not null,
+    TIME_IN_MINUTES integer not null,
     STATUS varchar(50) not null,
     DESCRIPTION varchar(255),
     REJECTION_REASON varchar(255),
