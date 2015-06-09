@@ -14,6 +14,7 @@ import com.haulmont.timesheets.global.HoursAndMinutes;
 import javax.persistence.*;
 import java.util.Date;
 import java.util.Set;
+import java.math.BigDecimal;
 
 /**
  * @author gorelov
@@ -63,6 +64,17 @@ public class TimeEntry extends StandardEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ACTIVITY_TYPE_ID")
     protected ActivityType activityType;
+
+    @Column(name = "TIME_IN_HOURS", nullable = false, precision = 10, scale = 2)
+    protected BigDecimal timeInHours;
+
+    public void setTimeInHours(BigDecimal timeInHours) {
+        this.timeInHours = timeInHours;
+    }
+
+    public BigDecimal getTimeInHours() {
+        return timeInHours;
+    }
 
 
     public void setTimeInMinutes(Integer timeInMinutes) {
