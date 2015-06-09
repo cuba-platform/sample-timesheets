@@ -154,6 +154,7 @@ create table TS_HOLIDAY (
     DESCRIPTION varchar(255),
     REJECTION_REASON varchar(255),
     ACTIVITY_TYPE_ID varchar(36),
+    TIME_IN_HOURS decimal(10, 2) not null,
     --
     primary key (ID)
 )^-- end TS_TIME_ENTRY
