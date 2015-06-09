@@ -66,6 +66,11 @@ public class ProjectBrowse extends AbstractLookup {
     private void initParticipantsTable() {
         participantsTable.addAction(new CreateAction(participantsTable) {
             @Override
+            public String getCaption() {
+                return getMessage("caption.createParticipant");
+            }
+
+            @Override
             public WindowManager.OpenType getOpenType() {
                 return WindowManager.OpenType.DIALOG;
             }
