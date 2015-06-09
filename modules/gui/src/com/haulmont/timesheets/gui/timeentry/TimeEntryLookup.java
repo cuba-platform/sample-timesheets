@@ -27,6 +27,7 @@ public class TimeEntryLookup extends AbstractLookup {
     public void init(final Map<String, Object> params) {
         getDialogParams().setWidth(800);
         getDialogParams().setHeight(500);
+        getDialogParams().setResizable(true);
 
         timeEntriesTable.setStyleProvider(new Table.StyleProvider() {
             @Nullable

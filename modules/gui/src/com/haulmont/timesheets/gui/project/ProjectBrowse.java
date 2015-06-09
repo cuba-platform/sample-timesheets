@@ -74,7 +74,17 @@ public class ProjectBrowse extends AbstractLookup {
             public Map<String, Object> getInitialValues() {
                 return ParamsMap.of("project", projectsTable.getSingleSelected());
             }
+
+            @Override
+            public void actionPerform(Component component) {
+                if (projectsTable.getSingleSelected() != null) {
+                    super.actionPerform(component);
+                } else {
+                    showNotification(getMessage("notification.pleaseSelectProject"), NotificationType.HUMANIZED);
+                }
+            }
         });
+
         participantsTable.addAction(new ItemTrackingAction("copy") {
             @Override
             public String getCaption() {
@@ -100,6 +110,15 @@ public class ProjectBrowse extends AbstractLookup {
             @Override
             public Map<String, Object> getInitialValues() {
                 return ParamsMap.of("project", projectsTable.getSingleSelected());
+            }
+
+            @Override
+            public void actionPerform(Component component) {
+                if (projectsTable.getSingleSelected() != null) {
+                    super.actionPerform(component);
+                } else {
+                    showNotification(getMessage("notification.pleaseSelectProject"), NotificationType.HUMANIZED);
+                }
             }
         });
         tasksTable.addAction(new ComponentsHelper.TaskStatusTrackingAction(tasksTable, "switchStatus"));
@@ -150,20 +169,24 @@ public class ProjectBrowse extends AbstractLookup {
 
                 @Override
                 public void actionPerform(Component component) {
-                    openLookup("sec$User.lookup", new Handler() {
-                        @Override
-                        public void handleLookup(Collection items) {
-                            if (CollectionUtils.isNotEmpty(items)) {
-                                Collection<Project> selectedProjects = (Collection) projectsTable.getSelected();
-                                Collection<User> selectedUsers = (Collection) items;
-                                boolean needToRefresh =
-                                        projectsService.assignUsersToProjects(selectedUsers, selectedProjects, projectRole);
-                                if (needToRefresh) {
-                                    participantsTable.refresh();
+                    if (CollectionUtils.isNotEmpty(projectsTable.getSelected())) {
+                        openLookup("sec$User.lookup", new Handler() {
+                            @Override
+                            public void handleLookup(Collection items) {
+                                if (CollectionUtils.isNotEmpty(items)) {
+                                    Collection<Project> selectedProjects = (Collection) projectsTable.getSelected();
+                                    Collection<User> selectedUsers = (Collection) items;
+                                    boolean needToRefresh =
+                                            projectsService.assignUsersToProjects(selectedUsers, selectedProjects, projectRole);
+                                    if (needToRefresh) {
+                                        participantsTable.refresh();
+                                    }
                                 }
                             }
-                        }
-                    }, WindowManager.OpenType.DIALOG);
+                        }, WindowManager.OpenType.DIALOG);
+                    } else {
+                        showNotification(getMessage("notification.pleaseSelectProject"), NotificationType.HUMANIZED);
+                    }
                 }
             });
         }
@@ -219,6 +242,8 @@ public class ProjectBrowse extends AbstractLookup {
                     }
                 }
             }, WindowManager.OpenType.DIALOG, ParamsMap.of("exclude", project));
+        } else {
+            showNotification(getMessage("notification.pleaseSelectProject"), NotificationType.HUMANIZED);
         }
     }
 

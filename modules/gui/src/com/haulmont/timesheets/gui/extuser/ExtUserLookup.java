@@ -20,5 +20,6 @@ public class ExtUserLookup extends UserLookup {
 
         getDialogParams().setWidth(800);
         getDialogParams().setHeight(500);
+        getDialogParams().setResizable(true);
     }
 }

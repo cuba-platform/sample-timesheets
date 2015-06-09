@@ -4,19 +4,22 @@
 package com.haulmont.timesheets.gui.task;
 
 import com.haulmont.bali.util.ParamsMap;
-import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.AbstractEditor;
+import com.haulmont.cuba.gui.components.FieldGroup;
+import com.haulmont.cuba.gui.components.LookupPickerField;
+import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.components.actions.AddAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
-import com.haulmont.cuba.gui.filter.*;
 import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.gui.ComponentsHelper;
+import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.util.*;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * @author gorelov
@@ -65,7 +68,19 @@ public class TaskEdit extends AbstractEditor<Task> {
             }
         });
 
-        taskDs.addListener(new ComponentsHelper.EntityCodeGenerationListener<Task>());
+        taskDs.addListener(new DsListenerAdapter<Task>() {
+            @Override
+            public void valueChanged(Task source, String property, Object prevValue, Object value) {
+                if ("name".equalsIgnoreCase(property)) {
+                    String codeValue = source.getCode();
+                    if (StringUtils.isBlank(codeValue) && source.getProject() != null) {
+                        String newName = String.valueOf(value);
+                        String newCode = source.getProject().getCode() + "_" + newName.toUpperCase().replaceAll(" ", "_");
+                        source.setCode(newCode);
+                    }
+                }
+            }
+        });
     }
 
     @Override

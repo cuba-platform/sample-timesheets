@@ -1,28 +1,12 @@
 <Context>
     <!-- Database connection -->
-    <Resource driverClassName="org.postgresql.Driver"
-              maxActive="20"
-              maxIdle="2"
-              maxWait="5000"
-              name="jdbc/CubaDS"
-              password="root"
-              type="javax.sql.DataSource"
-              url="jdbc:postgresql://localhost/ts"
-              username="root"/>
+    <Resource driverClassName="org.postgresql.Driver" maxActive="20" maxIdle="2" maxWait="5000" name="jdbc/CubaDS"
+              password="root" type="javax.sql.DataSource" url="jdbc:postgresql://localhost/ts" username="root"/>
     <!-- Switch off session serialization -->
-    <Manager className="org.apache.catalina.session.PersistentManager"
-             debug="0"
-             distributable="false"
+    <Manager className="org.apache.catalina.session.PersistentManager" debug="0" distributable="false"
              saveOnRestart="false">
         <Store className="org.apache.catalina.session.FileStore"/>
     </Manager>
-    <!--<Resource driverClassName="org.hsqldb.jdbc.JDBCDriver"
-          maxActive="20"
-          maxIdle="2"
-          maxWait="5000"
-          name="jdbc/CubaDS"
-          password=""
-          type="javax.sql.DataSource"
-          url="jdbc:hsqldb:hsql://localhost/ts"
-          username="sa"/>-->
+    <!--<Resource driverClassName="org.hsqldb.jdbc.JDBCDriver" maxActive="20" maxIdle="2" maxWait="5000" name="jdbc/CubaDS"
+          password="" type="javax.sql.DataSource" url="jdbc:hsqldb:hsql://localhost/ts" username="sa"/>-->
 </Context>

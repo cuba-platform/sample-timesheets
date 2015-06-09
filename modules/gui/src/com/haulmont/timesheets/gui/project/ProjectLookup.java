@@ -34,6 +34,7 @@ public class ProjectLookup extends AbstractLookup {
     public void init(Map<String, Object> params) {
         getDialogParams().setWidth(800);
         getDialogParams().setHeight(500);
+        getDialogParams().setResizable(true);
 
         Project project = (Project) params.get("parentProject");
         if (project != null) {
