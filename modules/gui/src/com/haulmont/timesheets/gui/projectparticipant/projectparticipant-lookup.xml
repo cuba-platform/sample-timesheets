@@ -27,6 +27,7 @@
                 <column id="user"/>
                 <column id="project"/>
                 <column id="role"/>
+                <column id="user.position"/>
             </columns>
             <rows datasource="projectParticipantsDs"/>
             <rowsCount/>

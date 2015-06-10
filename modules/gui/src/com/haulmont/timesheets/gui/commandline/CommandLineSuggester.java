@@ -12,6 +12,7 @@ import com.haulmont.cuba.gui.components.autocomplete.AutoCompleteSupport;
 import com.haulmont.cuba.gui.components.autocomplete.Suggester;
 import com.haulmont.cuba.gui.components.autocomplete.Suggestion;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.timesheets.entity.ActivityType;
 import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.Tag;
 import com.haulmont.timesheets.entity.Task;
@@ -96,10 +97,26 @@ public class CommandLineSuggester implements Suggester {
                 }
             }
 
-            List<Tag> tags = projectsService.getTagsForTheProject(project, "tag-with-type");
-            for (Tag tag : tags) {
-                Suggestion suggestion = suggestion(tag.getInstanceName(), tag.getCode(), cursorPosition);
-                suggestions.add(suggestion);
+            if (project != null) {
+                List<Tag> tags = projectsService.getTagsForTheProject(project, "tag-with-type");
+                for (Tag tag : tags) {
+                    Suggestion suggestion = suggestion(tag.getInstanceName(), tag.getCode(), cursorPosition);
+                    suggestions.add(suggestion);
+                }
+            }
+        } else if (text.charAt(cursorPosition - 1) == '*') {
+            Project project = null;
+            String projectCode = commandLineProcessor.getProjectCode();
+            if (projectCode != null) {
+                project = projectsService.getEntityByCode(Project.class, projectCode, View.MINIMAL);
+            }
+
+            if (project != null) {
+                List<ActivityType> activityTypes = projectsService.getActivityTypesForProject(project, View.LOCAL);
+                for (ActivityType activityType : activityTypes) {
+                    Suggestion suggestion = suggestion(activityType.getInstanceName(), activityType.getCode(), cursorPosition);
+                    suggestions.add(suggestion);
+                }
             }
         }
 

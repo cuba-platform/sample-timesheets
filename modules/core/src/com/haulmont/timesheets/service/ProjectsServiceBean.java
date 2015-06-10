@@ -350,4 +350,16 @@ public class ProjectsServiceBean implements ProjectsService {
                 .setParameter("managerId", manager.getId());
         return dataManager.loadList(loadContext);
     }
+
+    @Override
+    public List<ActivityType> getActivityTypesForProject(Project project, @Nullable String viewName) {
+        LoadContext loadContext = new LoadContext(ActivityType.class);
+        if (viewName != null) {
+            loadContext.setView(viewName);
+        }
+        loadContext.setQueryString("select e from ts$ActivityType e left join e.projects pr " +
+                "where pr.id is null or (pr.id = :projectId)")
+                .setParameter("projectId", project.getId());
+        return dataManager.loadList(loadContext);
+    }
 }
