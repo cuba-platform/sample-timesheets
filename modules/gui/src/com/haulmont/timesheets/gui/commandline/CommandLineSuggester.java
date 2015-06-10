@@ -85,17 +85,7 @@ public class CommandLineSuggester implements Suggester {
                 suggestions.add(suggestion);
             }
         } else if (text.charAt(cursorPosition - 1) == '$') {
-            Project project = null;
-            String projectCode = commandLineProcessor.getProjectCode();
-            String taskCode = commandLineProcessor.getTaskCode();
-            if (projectCode != null) {
-                project = projectsService.getEntityByCode(Project.class, projectCode, View.MINIMAL);
-            } else if (taskCode != null) {
-                Task task = projectsService.getEntityByCode(Task.class, taskCode, "task-full");
-                if (task != null) {
-                    project = task.getProject();
-                }
-            }
+            Project project = resolveProjectId(commandLineProcessor);
 
             if (project != null) {
                 List<Tag> tags = projectsService.getTagsForTheProject(project, "tag-with-type");
@@ -105,11 +95,7 @@ public class CommandLineSuggester implements Suggester {
                 }
             }
         } else if (text.charAt(cursorPosition - 1) == '*') {
-            Project project = null;
-            String projectCode = commandLineProcessor.getProjectCode();
-            if (projectCode != null) {
-                project = projectsService.getEntityByCode(Project.class, projectCode, View.MINIMAL);
-            }
+            Project project = resolveProjectId(commandLineProcessor);
 
             if (project != null) {
                 List<ActivityType> activityTypes = projectsService.getActivityTypesForProject(project, View.LOCAL);
@@ -121,6 +107,21 @@ public class CommandLineSuggester implements Suggester {
         }
 
         return suggestions;
+    }
+
+    protected Project resolveProjectId(CommandLineProcessor commandLineProcessor) {
+        Project project = null;
+        String projectCode = commandLineProcessor.getProjectCode();
+        String taskCode = commandLineProcessor.getTaskCode();
+        if (projectCode != null) {
+            project = projectsService.getEntityByCode(Project.class, projectCode, View.MINIMAL);
+        } else if (taskCode != null) {
+            Task task = projectsService.getEntityByCode(Task.class, taskCode, "task-full");
+            if (task != null) {
+                project = task.getProject();
+            }
+        }
+        return project;
     }
 
     protected Suggestion suggestion(String caption, String value, int cursorPosition) {
