@@ -9,6 +9,7 @@ import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
@@ -123,7 +124,7 @@ public class CalendarScreen extends AbstractWindow {
                         copy.setId(uuidSource.createUuid());
                         copy.setDate(javaCalendar.getTime());
                         copy.setStatus(TimeEntryStatus.NEW);
-                        copy.setUser(userSession.getUser());
+                        copy.setUser(userSession.getCurrentOrSubstitutedUser());
                         results.add(copy);
                     }
 
@@ -165,7 +166,7 @@ public class CalendarScreen extends AbstractWindow {
     }
 
     protected void initCalendar() {
-        dataSource = new TimeSheetsCalendarEventProvider(userSession.getUser());
+        dataSource = new TimeSheetsCalendarEventProvider(userSession.getCurrentOrSubstitutedUser());
         dataSource.addEventSetChangeListener(new CalendarEventProvider.EventSetChangeListener() {
             @Override
             public void eventSetChange(CalendarEventProvider.EventSetChangeEvent changeEvent) {
@@ -317,11 +318,12 @@ public class CalendarScreen extends AbstractWindow {
                 lastDayOfWeek = lastDayOfMonth;
             }
             FactAndPlan summaryForTheWeek = new FactAndPlan();
+            User currentOrSubstitutedUser = userSession.getCurrentOrSubstitutedUser();
             summaryForTheWeek.fact.setTime(
-                    validationTools.actualWorkHoursForPeriod(firstDayOfWeek, lastDayOfWeek, userSession.getUser())
+                    validationTools.actualWorkHoursForPeriod(firstDayOfWeek, lastDayOfWeek, currentOrSubstitutedUser)
             );
             summaryForTheWeek.plan.setTime(
-                    validationTools.workHoursForPeriod(firstDayOfWeek, lastDayOfWeek, userSession.getUser())
+                    validationTools.workHoursForPeriod(firstDayOfWeek, lastDayOfWeek, currentOrSubstitutedUser)
             );
             summariesByWeeks[++weekIndex] = summaryForTheWeek;
         }

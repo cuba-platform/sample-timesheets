@@ -26,7 +26,7 @@ public class TasksCollectionDatasource extends GroupDatasourceImpl<Task, UUID> {
         data.clear();
 
         ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);
-        for (Task task : projectsService.getActiveTasksForUser(userSession.getUser(), "task-full")) {
+        for (Task task : projectsService.getActiveTasksForUser(userSession.getCurrentOrSubstitutedUser(), "task-full")) {
             data.put(task.getId(), task);
             attachListener(task);
         }

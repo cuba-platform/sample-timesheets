@@ -15,6 +15,7 @@ import com.haulmont.cuba.gui.data.ValueListener;
 import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
 import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.global.*;
@@ -196,13 +197,14 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
                 DayOfWeek day = DayOfWeek.fromId(id != null ? id : property);
                 if (entity == null) {
+                    User currentOrSubstitutedUser = userSession.getCurrentOrSubstitutedUser();
                     if (day != null) {
                         return validationTools.isWorkTimeMatchToPlanForDay(
                                 DateTimeUtils.getSpecificDayOfWeek(firstDayOfWeek, day.getJavaCalendarDay()),
-                                userSession.getUser()) ? null : "overtime";
+                                currentOrSubstitutedUser) ? null : "overtime";
                     } else if (TOTAL_COLUMN_ID.equals(property)) {
                         return validationTools.isWorkTimeMatchToPlanForWeek(
-                                firstDayOfWeek, userSession.getUser()) ? null : "overtime";
+                                firstDayOfWeek, currentOrSubstitutedUser) ? null : "overtime";
                     }
                 }
                 return null;
@@ -302,7 +304,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     @SuppressWarnings("unchecked")
     private Map<String, Object> getTasksForCurrentUserAndProject(Project project) {
         return (Map) projectsService.getActiveTasksForUserAndProject(
-                userSession.getUser(),
+                userSession.getCurrentOrSubstitutedUser(),
                 project,
                 "task-full");
     }
@@ -366,7 +368,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                                             WindowManager.OpenType.DIALOG,
                                             ParamsMap.of("date", finalCurrent,
                                                     "task", reportEntry.getTask(),
-                                                    "user", userSession.getUser()));
+                                                    "user", userSession.getCurrentOrSubstitutedUser()));
                                     window.addListener(new CloseListener() {
                                         @Override
                                         public void windowClosed(String actionId) {
@@ -466,7 +468,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                             Set<Tag> defaultTags = weeklyReportEntry.getTask().getDefaultTags();
 
                             TimeEntry timeEntry = existingEntries != null ? existingEntries.get(0) : new TimeEntry();
-                            timeEntry.setUser(userSession.getUser());
+                            timeEntry.setUser(userSession.getCurrentOrSubstitutedUser());
                             timeEntry.setTask(weeklyReportEntry.getTask());
                             timeEntry.setTimeInMinutes(hoursAndMinutes.toMinutes());
                             if (timeEntry.getActivityType() == null) {
@@ -552,7 +554,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
     protected void fillExistingTimeEntries() {
         List<TimeEntry> timeEntries = projectsService.getTimeEntriesForPeriod(firstDayOfWeek,
-                lastDayOfWeek, userSession.getUser(), null, "timeEntry-full");
+                lastDayOfWeek, userSession.getCurrentOrSubstitutedUser(), null, "timeEntry-full");
         List<WeeklyReportEntry> reportEntries = reportConverterBean.convertFromTimeEntries(timeEntries);
         for (WeeklyReportEntry entry : reportEntries) {
             weeklyEntriesDs.addItem(entry);

@@ -28,7 +28,7 @@ public class SecurityAssistant {
     public static final String NAME = "ts_SecurityAssistant";
 
     public boolean isSuperUser() {
-        User user = userSessionSource.getUserSession().getUser();
+        User user = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
         if (CollectionUtils.isEmpty(user.getUserRoles())) {
             return true;
         }
@@ -43,7 +43,7 @@ public class SecurityAssistant {
     }
 
     public boolean isUserCloser() {
-        User user = userSessionSource.getUserSession().getUser();
+        User user = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
         if (CollectionUtils.isEmpty(user.getUserRoles())) {
             return false;
         }

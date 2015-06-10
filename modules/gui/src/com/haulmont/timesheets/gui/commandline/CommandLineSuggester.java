@@ -40,7 +40,7 @@ public class CommandLineSuggester implements Suggester {
 
     @Override
     public List<Suggestion> getSuggestions(AutoCompleteSupport source, String text, int cursorPosition) {
-        User currentUser = userSessionSource.getUserSession().getUser();
+        User currentUser = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
 
         List<Suggestion> suggestions = new ArrayList<>();
         CommandLineProcessor commandLineProcessor = new CommandLineProcessor(text);

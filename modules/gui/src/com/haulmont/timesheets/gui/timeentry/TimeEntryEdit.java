@@ -211,7 +211,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
             setDefaultStatus(item);
         }
         if (item.getUser() == null) {
-            item.setUser(userSession.getUser());
+            item.setUser(userSession.getCurrentOrSubstitutedUser());
         }
         if (item.getDate() == null) {
             item.setDate(timeSource.currentTimestamp());
@@ -252,7 +252,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
             statusField.setOptionsList(Arrays.asList(TimeEntryStatus.NEW, TimeEntryStatus.APPROVED, TimeEntryStatus.REJECTED));
         }
 
-        if (userSession.getUser().equals(timeEntry.getUser())) {
+        if (userSession.getCurrentOrSubstitutedUser().equals(timeEntry.getUser())) {
             userField.setVisible(false);
         }
 
@@ -310,7 +310,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         if (project == null) {
             return true;
         }
-        ProjectRole userRole = projectsService.getUserProjectRole(project, userSession.getUser());
+        ProjectRole userRole = projectsService.getUserProjectRole(project, userSession.getCurrentOrSubstitutedUser());
         return userRole == null || workerRole.equals(userRole);
     }
 
