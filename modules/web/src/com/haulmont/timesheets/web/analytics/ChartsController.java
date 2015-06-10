@@ -99,8 +99,9 @@ public class ChartsController extends AbstractWindow {
         int i = 0;
         for (String project : allProjects) {
             Graph projectGraph = new Graph();
-            projectGraph.setFillAlphas(0.2);
-            projectGraph.setLineAlpha(0.4);
+            projectGraph.setFillAlphas(0.5);
+            projectGraph.setColumnWidth(0.4);
+            projectGraph.setLineAlpha(0.7);
             projectGraph.setTitle(project);
             projectGraph.setType(GraphType.COLUMN);
             projectGraph.setValueField(project);
