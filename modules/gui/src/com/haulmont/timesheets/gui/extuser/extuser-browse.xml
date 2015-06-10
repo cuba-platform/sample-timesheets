@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
+        xmlns:ext="http://schemas.haulmont.com/cuba/5.5/window-ext.xsd"
         caption="msg://browseCaption"
         class="com.haulmont.timesheets.gui.extuser.ExtUserBrowse"
         extends="/com/haulmont/cuba/gui/app/security/user/browse/user-browse.xml"
         messagesPack="com.haulmont.timesheets.gui.extuser">
     <layout>
         <groupTable id="usersTable">
+            <buttonsPanel>
+                <bulkEditor ext:index="4" for="usersTable"
+                            exclude="(email|login|name|timeZone|timeZoneAuto|lastName|middleName|language|firstName|changePasswordAtNextLogon)"/>
+            </buttonsPanel>
             <columns>
                 <column id="workHoursForWeek"
                         caption="msg://com.haulmont.timesheets.entity/ExtUser.workHoursForWeek"/>
