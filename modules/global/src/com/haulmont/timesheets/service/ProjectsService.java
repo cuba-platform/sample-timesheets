@@ -46,6 +46,8 @@ public interface ProjectsService {
 
     Map<String, Task> getActiveTasksForUserAndProject(User user, Project project, @Nullable String viewName);
 
+    List<ActivityType> getActivityTypesForProject(Project project, @Nullable String viewName);
+
     List<Project> getActiveProjectsForUser(User user, @Nullable String viewName);
 
     List<Project> getActiveManagedProjectsForUser(User user, @Nullable String viewName);

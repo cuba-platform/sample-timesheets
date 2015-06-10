@@ -19,7 +19,7 @@
         <collectionDatasource id="taskTypesDs"
                               class="com.haulmont.timesheets.entity.TaskType">
             <query>
-                <![CDATA[select e from ts$TaskType e]]>
+                <![CDATA[select e from ts$TaskType e order by e.name]]>
             </query>
         </collectionDatasource>
         <collectionDatasource id="allTagsDs"
@@ -93,7 +93,8 @@
                     <table id="participantsTable"
                            columnControlVisible="false"
                            height="100%"
-                           width="100%">
+                           width="100%"
+                           multiselect="true">
                         <actions>
                             <action id="add"/>
                             <action id="remove"/>

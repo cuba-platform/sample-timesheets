@@ -30,6 +30,9 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
     protected Task task;
 
     @MetaProperty
+    protected ActivityType activityType;
+
+    @MetaProperty
     protected List<TimeEntry> monday;
 
     @MetaProperty
@@ -197,6 +200,14 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
 
     public List<TimeEntry> getSunday() {
         return sunday;
+    }
+
+    public ActivityType getActivityType() {
+        return activityType;
+    }
+
+    public void setActivityType(ActivityType activityType) {
+        this.activityType = activityType;
     }
 
     @MetaProperty

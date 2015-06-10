@@ -30,7 +30,7 @@ public class UsersCollectionDatasource extends CollectionDatasourceImpl<User, UU
             data.clear();
 
             ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);
-            for (User task : projectsService.getManagedUsersForUser(userSession.getUser(), View.LOCAL)) {
+            for (User task : projectsService.getManagedUsersForUser(userSession.getCurrentOrSubstitutedUser(), View.LOCAL)) {
                 data.put(task.getId(), task);
                 attachListener(task);
             }

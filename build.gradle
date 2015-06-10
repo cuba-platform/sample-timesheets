@@ -11,7 +11,7 @@ allprojects {
 }
 
 buildscript {
-    ext.cubaVersion = '5.5-SNAPSHOT'
+    ext.cubaVersion = '5.5.0'
     repositories {
         maven {
             url 'http://repository.haulmont.com:8587/nexus/content/groups/work'

@@ -40,7 +40,8 @@ public class CommandLineSuggesterConnector extends SuggesterConnector {
             return Command.NULL;
         } else if ((keyCode == 50 && e.isShiftKey())//@
                 || (keyCode == 51 && e.isShiftKey())//#
-                || (keyCode == 52 && e.isShiftKey())) {//$
+                || (keyCode == 52 && e.isShiftKey())//$
+                || (keyCode == 56 && e.isShiftKey())) {//*
             startSuggestingOnNextSelectionChange = true;
             widget.addSelectionChangeListener(this);
             return Command.DEFAULT;

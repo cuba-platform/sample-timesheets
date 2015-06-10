@@ -99,8 +99,9 @@ public class ApproveScreen extends AbstractWindow {
         }
 
         setWeekRange(DateTimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp()));
-        managedProjects = projectsService.getActiveManagedProjectsForUser(userSession.getUser(), View.LOCAL);
-        managedUsers = projectsService.getManagedUsersForUser(userSession.getUser(), View.LOCAL);
+        User currentOrSubstitutedUser = userSession.getCurrentOrSubstitutedUser();
+        managedProjects = projectsService.getActiveManagedProjectsForUser(currentOrSubstitutedUser, View.LOCAL);
+        managedUsers = projectsService.getManagedUsersForUser(currentOrSubstitutedUser, View.LOCAL);
 
         initUsersTable();
         initUserReportsTable();
@@ -749,7 +750,7 @@ public class ApproveScreen extends AbstractWindow {
         protected Collection<? extends TimeEntry> getTimeEntriesForPeriod(
                 Date start, Date end, TimeEntryStatus status) {
             if (isApprovable) {
-                return projectsService.getApprovableTimeEntriesForPeriod(start, end, userSession.getUser(), user, status, "timeEntry-full");
+                return projectsService.getApprovableTimeEntriesForPeriod(start, end, userSession.getCurrentOrSubstitutedUser(), user, status, "timeEntry-full");
             } else {
                 return projectsService.getTimeEntriesForPeriod(start, end, user, status, "timeEntry-full");
             }
