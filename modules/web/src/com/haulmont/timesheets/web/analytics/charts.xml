@@ -48,7 +48,6 @@
                     <dateField id="projectsStart" resolution="DAY"/>
                     <label align="MIDDLE_LEFT" value="msg://caption.end" stylename="h4"/>
                     <dateField id="projectsEnd" resolution="DAY"/>
-                    <label align="MIDDLE_LEFT" value="msg://caption.project" stylename="h4"/>
                     <button id="projectsRefresh" caption="msg://caption.refresh" invoke="refreshProjects"/>
                 </hbox>
                 <chart:serialChart id="projectsChart"
