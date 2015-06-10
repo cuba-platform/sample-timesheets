@@ -66,7 +66,7 @@ public class StatisticServiceBean implements StatisticService {
     public Map<Integer, Map<String, Object>> getStatisticsByProjects(Date start, Date end) {
         LoadContext loadContext = new LoadContext(TimeEntry.class)
                 .setQuery(
-                        new LoadContext.Query("select t from ts$TimeEntry t where t.date >= :start and t.date <= :end")
+                        new LoadContext.Query("select t from ts$TimeEntry t where t.date >= :start and t.date <= :end order by t.date")
                                 .setParameter("start", start)
                                 .setParameter("end", end)
                 )
@@ -80,7 +80,7 @@ public class StatisticServiceBean implements StatisticService {
                 );
         List<TimeEntry> timeEntries = dataManager.loadList(loadContext);
 
-        Map<WeekAndProject, BigDecimal> statistic = new HashMap<>();
+        Map<WeekAndProject, BigDecimal> statistic = new LinkedHashMap<>();
         Calendar calendar = Calendar.getInstance();
         for (TimeEntry timeEntry : timeEntries) {
             calendar.setTime(timeEntry.getDate());
@@ -96,7 +96,7 @@ public class StatisticServiceBean implements StatisticService {
             statistic.put(key, sum);
         }
 
-        Map<Integer, Map<String, Object>> result = new HashMap<>();
+        Map<Integer, Map<String, Object>> result = new LinkedHashMap<>();
         for (Map.Entry<WeekAndProject, BigDecimal> entry : statistic.entrySet()) {
             Integer week = entry.getKey().week;
             Map<String, Object> projectsByWeek = result.get(week);

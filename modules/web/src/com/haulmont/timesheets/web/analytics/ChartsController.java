@@ -77,7 +77,7 @@ public class ChartsController extends AbstractWindow {
         Map<Integer, Map<String, Object>> statisticsByProjects = statisticService.getStatisticsByProjects(
                 (Date) projectsStart.getValue(), (Date) projectsEnd.getValue());
         ListDataProvider dataProvider = new ListDataProvider();
-        Set<String> allProjects = new HashSet<>();
+        Set<String> allProjects = new LinkedHashSet<>();
         for (Map.Entry<Integer, Map<String, Object>> entry : statisticsByProjects.entrySet()) {
             MapDataItem mapDataItem = new MapDataItem();
             for (Map.Entry<String, Object> projectsWithSpentTime : entry.getValue().entrySet()) {
