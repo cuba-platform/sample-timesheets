@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.entity;
 
@@ -8,7 +5,6 @@ import com.haulmont.chile.core.datatypes.impl.EnumClass;
 
 /**
  * @author degtyarjov
- * @version $Id$
  */
 public enum ProjectRoleCode implements EnumClass<String> {
     MANAGER("manager"),

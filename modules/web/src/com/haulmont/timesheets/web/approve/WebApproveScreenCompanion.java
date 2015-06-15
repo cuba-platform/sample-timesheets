@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.web.approve;
 
@@ -10,7 +7,6 @@ import com.haulmont.timesheets.gui.approve.ApproveScreen;
 
 /**
  * @author gorelov
- * @version $Id$
  */
 public class WebApproveScreenCompanion implements ApproveScreen.Companion {
     @Override

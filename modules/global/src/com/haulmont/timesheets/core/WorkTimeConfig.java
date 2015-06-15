@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.core;
 
@@ -18,7 +15,6 @@ import java.util.List;
 
 /**
  * @author gorelov
- * @version $Id$
  */
 @Source(type = SourceType.DATABASE)
 public interface WorkTimeConfig extends Config {

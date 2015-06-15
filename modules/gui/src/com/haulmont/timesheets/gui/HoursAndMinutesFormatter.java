@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.gui;
 
@@ -9,7 +6,6 @@ import com.haulmont.timesheets.global.HoursAndMinutes;
 
 /**
  * @author degtyarjov
- * @version $Id$
  */
 public class HoursAndMinutesFormatter implements Formatter<Integer> {
     @Override

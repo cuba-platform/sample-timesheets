@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.gui.commandline;
 
@@ -20,7 +17,6 @@ import java.util.Map;
 
 /**
  * @author degtyarjov
- * @version $Id$
  */
 public class CommandLineFrameController extends AbstractFrame {
     protected SourceCodeEditor commandLine;

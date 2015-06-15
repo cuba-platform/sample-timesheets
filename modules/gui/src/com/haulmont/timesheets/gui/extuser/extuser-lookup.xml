@@ -1,8 +1,4 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!--
-  ~ Copyright (c) ${YEAR} ${PACKAGE_NAME}
-  -->
-
 <window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
         caption="msg://browseCaption"
         class="com.haulmont.timesheets.gui.extuser.ExtUserLookup"

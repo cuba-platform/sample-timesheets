@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.gui.data;
 
@@ -15,7 +12,6 @@ import java.util.*;
 
 /**
  * @author gorelov
- * @version $Id$
  */
 public class TagsCollectionDatasource extends CollectionDatasourceImpl<Tag, UUID> {
 

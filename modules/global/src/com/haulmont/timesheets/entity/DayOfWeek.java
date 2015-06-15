@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.entity;
 
@@ -12,7 +9,6 @@ import java.util.Locale;
 
 /**
  * @author gorelov
- * @version $Id$
  */
 public enum DayOfWeek implements EnumClass<String> {
 

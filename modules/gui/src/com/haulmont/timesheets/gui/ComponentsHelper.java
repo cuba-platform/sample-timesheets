@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.gui;
 
@@ -30,7 +27,6 @@ import java.util.List;
 
 /**
  * @author gorelov
- * @version $Id$
  */
 public class ComponentsHelper {
 

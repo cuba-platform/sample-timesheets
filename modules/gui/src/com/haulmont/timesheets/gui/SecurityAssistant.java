@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.gui;
 
@@ -18,7 +15,6 @@ import javax.inject.Inject;
 
 /**
  * @author degtyarjov
- * @version $Id$
  */
 @ManagedBean(SecurityAssistant.NAME)
 public class SecurityAssistant {

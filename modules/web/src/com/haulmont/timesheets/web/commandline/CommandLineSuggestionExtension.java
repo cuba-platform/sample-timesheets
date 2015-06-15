@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.web.commandline;
 
@@ -9,7 +6,6 @@ import org.vaadin.aceeditor.SuggestionExtension;
 
 /**
  * @author degtyarjov
- * @version $Id$
  */
 public class CommandLineSuggestionExtension extends SuggestionExtension {
     public CommandLineSuggestionExtension(Suggester suggester) {

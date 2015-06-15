@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.gui.data;
 
@@ -16,7 +13,6 @@ import java.util.UUID;
 
 /**
  * @author gorelov
- * @version $Id$
  */
 public class TasksCollectionDatasource extends GroupDatasourceImpl<Task, UUID> {
 

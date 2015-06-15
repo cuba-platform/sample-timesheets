@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 package com.haulmont.timesheets.gui.project;
 
 import com.google.common.collect.ImmutableMap;

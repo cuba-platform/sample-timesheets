@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.web.toolkit.ui;
 
@@ -22,7 +19,6 @@ import java.util.Set;
 
 /**
  * @author gorelov
- * @version $Id$
  */
 public class TimeSheetsCalendar extends Calendar {
 

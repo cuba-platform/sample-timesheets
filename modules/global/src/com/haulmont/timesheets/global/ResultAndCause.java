@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 package com.haulmont.timesheets.global;
 
 import javax.annotation.concurrent.ThreadSafe;

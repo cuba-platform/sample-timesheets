@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.gui.commandline;
 
@@ -27,7 +24,6 @@ import java.util.List;
 
 /**
  * @author degtyarjov
- * @version $Id$
  */
 public class CommandLineSuggester implements Suggester {
     protected SourceCodeEditor sourceCodeEditor;

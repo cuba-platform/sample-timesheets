@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.core;
 
@@ -10,7 +7,6 @@ import java.math.BigDecimal;
 
 /**
  * @author gorelov
- * @version $Id$
  */
 public class BigDecimalTypeFactory extends TypeFactory {
     @Override

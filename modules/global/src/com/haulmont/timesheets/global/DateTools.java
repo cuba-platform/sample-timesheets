@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.global;
 
@@ -15,7 +12,6 @@ import java.util.List;
 
 /**
  * @author gorelov
- * @version $Id$
  */
 @ManagedBean(DateTools.NAME)
 public class DateTools {

@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.web.commandline;
 
@@ -10,7 +7,6 @@ import com.haulmont.timesheets.gui.commandline.CommandLine;
 
 /**
  * @author degtyarjov
- * @version $Id$
  */
 public class WebCommandLine extends WebSourceCodeEditor implements CommandLine {
     @Override

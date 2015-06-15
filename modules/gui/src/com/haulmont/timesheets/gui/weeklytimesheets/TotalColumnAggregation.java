@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.gui.weeklytimesheets;
 
@@ -13,7 +10,6 @@ import java.util.Collection;
 
 /**
  * @author gorelov
- * @version $Id$
  */
 public class TotalColumnAggregation implements AggregationStrategy<String, String> {
 

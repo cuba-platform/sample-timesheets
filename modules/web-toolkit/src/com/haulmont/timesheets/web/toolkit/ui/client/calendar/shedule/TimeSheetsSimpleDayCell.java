@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.web.toolkit.ui.client.calendar.shedule;
 
@@ -9,7 +6,6 @@ import com.vaadin.client.ui.calendar.schedule.SimpleDayCell;
 
 /**
  * @author gorelov
- * @version $Id$
  */
 public class TimeSheetsSimpleDayCell extends SimpleDayCell {
 

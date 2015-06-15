@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.global;
 
@@ -12,7 +9,6 @@ import java.util.regex.Pattern;
 
 /**
  * @author degtyarjov
- * @version $Id$
  */
 public class CommandLineProcessor {
     public static final Pattern PROJECT_CODE_PATTERN = Pattern.compile("@([^ ]+?)( |$)+");

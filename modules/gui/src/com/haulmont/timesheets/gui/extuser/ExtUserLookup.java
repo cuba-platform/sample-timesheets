@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.gui.extuser;
 
@@ -10,7 +7,6 @@ import java.util.Map;
 
 /**
  * @author gorelov
- * @version $Id$
  */
 public class ExtUserLookup extends UserLookup {
 

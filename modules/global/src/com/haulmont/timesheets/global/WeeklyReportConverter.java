@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.global;
 
@@ -14,7 +11,6 @@ import java.util.*;
 
 /**
  * @author gorelov
- * @version $Id$
  */
 @ManagedBean(WeeklyReportConverter.NAME)
 public class WeeklyReportConverter {

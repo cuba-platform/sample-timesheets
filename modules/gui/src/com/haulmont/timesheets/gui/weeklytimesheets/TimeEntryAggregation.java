@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.gui.weeklytimesheets;
 
@@ -14,7 +11,6 @@ import java.util.List;
 
 /**
  * @author gorelov
- * @version $Id$
  */
 public class TimeEntryAggregation implements AggregationStrategy<List<TimeEntry>, String> {
 

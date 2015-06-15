@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 package com.haulmont.timesheets.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;

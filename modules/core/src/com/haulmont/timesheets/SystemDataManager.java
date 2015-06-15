@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets;
 
@@ -18,7 +15,6 @@ import java.util.List;
 
 /**
  * @author degtyarjov
- * @version $Id$
  */
 @ManagedBean
 public class SystemDataManager {

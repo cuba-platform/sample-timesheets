@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.global;
 
@@ -17,7 +14,6 @@ import java.util.regex.Pattern;
 
 /**
  * @author gorelov
- * @version $Id$
  */
 @ManagedBean(TimeParser.NAME)
 public class TimeParser {

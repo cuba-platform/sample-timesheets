@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.web.toolkit.ui.client.commandline;
 
@@ -12,7 +9,6 @@ import org.vaadin.aceeditor.client.gwt.GwtAceKeyboardEvent;
 
 /**
  * @author degtyarjov
- * @version $Id$
  */
 @SuppressWarnings("serial")
 @Connect(CommandLineSuggestionExtension.class)

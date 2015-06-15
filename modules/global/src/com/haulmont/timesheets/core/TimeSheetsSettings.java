@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.core;
 
@@ -16,7 +13,6 @@ import java.util.UUID;
 
 /**
  * @author gorelov
- * @version $Id$
  */
 @Source(type = SourceType.APP)
 public interface TimeSheetsSettings extends Config {

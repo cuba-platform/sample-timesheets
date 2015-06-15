@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.service;
 
@@ -10,7 +7,6 @@ import java.util.List;
 
 /**
  * @author degtyarjov
- * @version $Id$
  */
 public interface CommandLineService {
     String NAME = "ts_CommandLineService";

@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.web.analytics;
 
@@ -12,7 +9,6 @@ import java.math.BigDecimal;
 
 /**
  * @author degtyarjov
- * @version $Id$
  */
 @MetaClass(name = "ts$TaskTimeSummary")
 public class TaskTimeSummary extends AbstractNotPersistentEntity {

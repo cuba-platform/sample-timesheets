@@ -1,7 +1,3 @@
-<!--
-  ~ Copyright (c) ${YEAR} ${PACKAGE_NAME}
-  -->
-
 <window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
         class="com.haulmont.timesheets.gui.commandline.CommandLineFrameController"
         messagesPack="com.haulmont.timesheets.gui.commandline">

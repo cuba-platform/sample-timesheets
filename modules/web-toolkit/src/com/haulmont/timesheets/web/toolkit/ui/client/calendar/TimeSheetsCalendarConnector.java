@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.web.toolkit.ui.client.calendar;
 
@@ -11,7 +8,6 @@ import com.vaadin.shared.ui.Connect;
 
 /**
  * @author gorelov
- * @version $Id$
  */
 @Connect(value = TimeSheetsCalendar.class, loadStyle = Connect.LoadStyle.LAZY)
 public class TimeSheetsCalendarConnector extends CalendarConnector {

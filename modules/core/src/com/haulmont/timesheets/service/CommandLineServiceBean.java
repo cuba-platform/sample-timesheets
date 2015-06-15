@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.service;
 
@@ -23,7 +20,6 @@ import java.util.List;
 
 /**
  * @author degtyarjov
- * @version $Id$
  */
 @Service(CommandLineService.NAME)
 public class CommandLineServiceBean implements CommandLineService {

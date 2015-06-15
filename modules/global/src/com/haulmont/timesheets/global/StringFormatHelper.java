@@ -5,7 +5,6 @@ import com.haulmont.cuba.core.global.Messages;
 
 /**
  * @author gorelov
- * @version $Id$
  */
 public class StringFormatHelper {
 

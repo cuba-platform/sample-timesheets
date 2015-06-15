@@ -1,12 +1,8 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.global;
 
 /**
  * @author gorelov
- * @version $Id$
  */
 
 import com.haulmont.cuba.core.global.AppBeans;

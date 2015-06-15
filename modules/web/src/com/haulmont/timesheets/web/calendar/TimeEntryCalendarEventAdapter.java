@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.web.calendar;
 
@@ -16,7 +13,6 @@ import java.util.Date;
 
 /**
  * @author gorelov
- * @version $Id$
  */
 public class TimeEntryCalendarEventAdapter extends BasicEvent {
 

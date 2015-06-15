@@ -1,6 +1,3 @@
-/*
- * Copyright (c) ${YEAR} ${PACKAGE_NAME}
- */
 
 package com.haulmont.timesheets.core;
 
@@ -10,7 +7,6 @@ import java.util.List;
 
 /**
  * @author gorelov
- * @version $Id$
  */
 public class StringListTypeStringify extends TypeStringify {
     @Override
