@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <studio>
     <settings>
-        <maxXmlLineLength>120</maxXmlLineLength>
-        <displayXmlAttributesOnSeparateLines>false</displayXmlAttributesOnSeparateLines>
         <doNotDeleteColumnsStartedWith>I_</doNotDeleteColumnsStartedWith>
+        <displayXmlAttributesOnSeparateLines>false</displayXmlAttributesOnSeparateLines>
+        <maxXmlLineLength>120</maxXmlLineLength>
     </settings>
 </studio>
