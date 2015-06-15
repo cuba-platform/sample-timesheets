@@ -1,9 +1,12 @@
 <window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
         class="com.haulmont.timesheets.gui.commandline.CommandLineFrameController"
         messagesPack="com.haulmont.timesheets.gui.commandline">
+    <actions>
+        <action id="applyAction" invoke="apply" shortcut="CTRL-SHIFT-A"/>
+    </actions>
     <layout>
         <hbox id="commandLineHBox" spacing="true">
-            <button id="apply" invoke="apply" caption="msg://caption.apply"/>
+            <button id="apply" caption="msg://caption.apply" action="applyAction"/>
         </hbox>
         <hbox><label htmlEnabled="true" value="msg://caption.commandLine.help"/></hbox>
     </layout>
