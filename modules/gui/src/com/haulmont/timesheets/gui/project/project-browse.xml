@@ -44,7 +44,8 @@
         <split id="split"
                orientation="horizontal"
                width="100%">
-            <vbox height="100%"
+            <vbox id="projectsBox"
+                  height="100%"
                   margin="false,true,false,false"
                   spacing="true"
                   expand="projectsTable">
@@ -75,7 +76,8 @@
                     </buttonsPanel >
                 </treeTable>
             </vbox>
-            <vbox height="100%" margin="false,false,false,true">
+            <vbox id="otherBox"
+                  height="100%" margin="false,false,false,true">
                 <tabSheet height="100%" width="100%">
                     <tab id="tasks" caption="msg://caption.tasks" margin="true;false;false;false" expand="tasksTable">
                         <table id="tasksTable"
