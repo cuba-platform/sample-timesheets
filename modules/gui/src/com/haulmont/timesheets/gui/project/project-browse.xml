@@ -31,7 +31,7 @@
             <properties include=".*"/>
         </filter>
         <split id="split" orientation="horizontal" width="100%">
-            <vbox height="100%" margin="false,true,false,false" spacing="true">
+            <vbox id="leftBox" height="100%" margin="false,true,false,false" spacing="true">
                 <treeTable id="projectsTable" height="100%" multiselect="true" width="100%">
                     <actions>
                         <action id="create"/>
@@ -56,7 +56,7 @@
                     </buttonsPanel>
                 </treeTable>
             </vbox>
-            <vbox height="100%" margin="false,false,false,true">
+            <vbox id="rightBox" height="100%" margin="false,false,false,true">
                 <tabSheet height="100%">
                     <tab id="tasks" caption="msg://caption.tasks" margin="true,false,false,false">
                         <table id="tasksTable" height="100%" width="100%">
