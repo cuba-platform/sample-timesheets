@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.Metadata;
 import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -25,7 +26,7 @@ public class SystemDataManager {
     protected Metadata metadata;
 
     public <T extends Entity> T getEntityByCode(Class<T> clazz, String code, @Nullable String viewName) {
-        LoadContext loadContext = new LoadContext(clazz);
+        LoadContext<T> loadContext = new LoadContext<>(clazz);
         MetaClass metaClass = metadata.getSession().getClassNN(clazz);
         loadContext.setQueryString("select e from " + metaClass.getName() + " e where e.code = :code")
                 .setParameter("code", code);
@@ -36,9 +37,12 @@ public class SystemDataManager {
     }
 
     public <T extends Entity> List<T> getEntitiesByCodes(Class<T> clazz, List<String> codes, @Nullable String viewName) {
-        LoadContext loadContext = new LoadContext(clazz);
+        if (codes.isEmpty()) {
+            return Collections.emptyList();
+        }
+        LoadContext<T> loadContext = new LoadContext<>(clazz);
         MetaClass metaClass = metadata.getSession().getClassNN(clazz);
-        loadContext.setQueryString("select e from " + metaClass.getName() + " e where e.code in (:codes)")
+        loadContext.setQueryString("select e from " + metaClass.getName() + " e where e.code in :codes")
                 .setParameter("codes", codes);
         if (viewName != null) {
             loadContext.setView(viewName);

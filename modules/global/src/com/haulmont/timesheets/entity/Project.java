@@ -50,6 +50,18 @@ public class Project extends StandardEntity {
     @OneToMany(mappedBy = "project")
     protected Set<Task> tasks;
 
+    @Column(name = "TIME_ENTRY_NAME_PATTERN", length = 500)
+    protected String timeEntryNamePattern;
+
+    public void setTimeEntryNamePattern(String timeEntryNamePattern) {
+        this.timeEntryNamePattern = timeEntryNamePattern;
+    }
+
+    public String getTimeEntryNamePattern() {
+        return timeEntryNamePattern;
+    }
+
+
     public ProjectStatus getStatus() {
         return status == null ? null : ProjectStatus.fromId(status);
     }

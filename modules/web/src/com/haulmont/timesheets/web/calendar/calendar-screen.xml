@@ -1,38 +1,61 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
-        caption="msg://caption"
-        class="com.haulmont.timesheets.web.calendar.CalendarScreen"
-        messagesPack="com.haulmont.timesheets.web.calendar">
-    <layout expand="calendarHbox" spacing="true">
-        <iframe id="commandLine" screen="command-line-frame" height="0px"/>
-        <hbox width="100%">
-            <hbox align="MIDDLE_LEFT" spacing="true">
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://caption"
+        class="com.haulmont.timesheets.web.calendar.CalendarScreen" messagesPack="com.haulmont.timesheets.web.calendar">
+    <dsContext>
+        <collectionDatasource id="projectsDs" class="com.haulmont.timesheets.entity.Project" view="_minimal">
+            <query>
+                <![CDATA[
+                select pr
+                from ts$Project pr,
+                    in(pr.participants) p
+                where
+                    p.user.id = :session$userId and
+                    pr.status = 'open'
+                order by pr.name
+                    ]]>
+            </query>
+        </collectionDatasource>
+        <collectionDatasource id="tasksDs" class="com.haulmont.timesheets.entity.Task" view="task-full">
+            <query>
+                select t from ts$Task t where t.project.id = :ds$projectsDs
+            </query>
+        </collectionDatasource>
+    </dsContext>
+
+    <assign name="fieldWidth" value="200px"/>
+    <layout expand="calendarHBox" spacing="true">
+        <hbox id="commandLineHBox" spacing="true" height="0px">
+            <frame id="commandLine" screen="command-line-frame"/>
+            <hbox id="simpleViewHBox" width="0px" spacing="true">
+                <lookupField id="project" optionsDatasource="projectsDs" inputPrompt="msg://com.haulmont.timesheets.entity/Task.project" width="${fieldWidth}"/>
+                <lookupField id="task" optionsDatasource="tasksDs" inputPrompt="msg://com.haulmont.timesheets.entity/TimeEntry.task" width="${fieldWidth}"/>
+                <lookupField id="activityType" inputPrompt="msg://com.haulmont.timesheets.entity/TimeEntry.activityType" visible="false" width="${fieldWidth}"/>
+                <textField id="spentTime" inputPrompt="msg://com.haulmont.timesheets.entity/TimeEntry.timeInMinutes" width="${fieldWidth}"/>
+                <button id="simpleViewApply" caption="msg://caption.apply" invoke="simpleViewApply"/>
             </hbox>
-            <label id="monthLabel"
-                   align="MIDDLE_CENTER"
-                   stylename="h1"/>
-            <hbox align="MIDDLE_RIGHT"
-                  spacing="true">
-                <button id="addTimeEntry" visible="false"
-                        caption="msg://addTimeEntry"
-                        invoke="addTimeEntry"/>
-                <linkButton id="showCommandLine" icon="icons/gear.png" caption="" action="showCommandLine"/>
-                <linkButton align="MIDDLE_LEFT"
-                            icon="font-icon:CHEVRON_LEFT"
-                            invoke="showPreviousMonth"/>
-                <linkButton caption="msg://today"
-                            invoke="setToday"/>
-                <linkButton align="MIDDLE_RIGHT"
-                            icon="font-icon:CHEVRON_RIGHT"
-                            invoke="showNextMonth"/>
+            <hbox margin="true">
+                <checkBox id="showSimpleView" caption="msg://caption.showSimpleView"/>
+            </hbox>
+
+        </hbox>
+
+        <hbox width="100%">
+            <hbox align="MIDDLE_LEFT" spacing="true"/>
+            <label id="monthLabel" align="MIDDLE_CENTER" stylename="h1"/>
+            <hbox align="MIDDLE_RIGHT" spacing="true">
+                <button id="addTimeEntry" caption="msg://addTimeEntry" invoke="addTimeEntry" visible="false"/>
+                <linkButton id="showCommandLine" action="showCommandLine" icon="icons/gear.png"/>
+                <linkButton align="MIDDLE_LEFT" icon="font-icon:CHEVRON_LEFT" invoke="showPreviousMonth"/>
+                <linkButton caption="msg://today" invoke="setToday"/>
+                <linkButton align="MIDDLE_RIGHT" icon="font-icon:CHEVRON_RIGHT" invoke="showNextMonth"/>
                 <dateField id="monthSelector" align="MIDDLE_LEFT" resolution="DAY" stylename="simple"/>
             </hbox>
         </hbox>
-        <hbox id="calendarHbox" expand="calBox" width="100%">
+        <hbox id="calendarHBox" expand="calBox" width="100%">
             <vbox id="calBox" height="100%"/>
             <vbox id="summaryBox" height="100%" width="150px"/>
         </hbox>
-        <hbox width="100%" margin="true, true, false, true">
+        <hbox margin="true,false,false,false" width="100%">
             <label id="monthSummary" align="MIDDLE_RIGHT"/>
         </hbox>
     </layout>

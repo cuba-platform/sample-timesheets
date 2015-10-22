@@ -13,7 +13,7 @@ import java.util.*;
  */
 public class TimeSheetsCalendarWidget extends VCalendar {
 
-    protected List<Integer> weekends = new ArrayList<Integer>();
+    protected Set<Integer> weekends = new HashSet<Integer>();
     protected Set<String> holidays = new HashSet<String>();
     protected String moreMsgFormat = "+ %s";
 
@@ -33,24 +33,14 @@ public class TimeSheetsCalendarWidget extends VCalendar {
     }
 
     protected boolean isWeekend(int dayNumber) {
-        for (int numbers : weekends) {
-            if (dayNumber == numbers) {
-                return true;
-            }
-        }
-        return false;
+        return weekends.contains(dayNumber);
     }
 
     protected boolean isHoliday(String date) {
-        for (String holiday : holidays) {
-            if (holiday.equals(date)) {
-                return true;
-            }
-        }
-        return false;
+        return holidays.contains(date);
     }
 
-    public void setWeekends(List<Integer> weekends) {
+    public void setWeekends(Set<Integer> weekends) {
         this.weekends = weekends;
     }
 

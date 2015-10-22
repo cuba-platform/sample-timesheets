@@ -1,60 +1,43 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
-        caption="msg://browseCaption"
-        class="com.haulmont.timesheets.gui.project.ProjectBrowse"
-        focusComponent="projectsTable"
-        lookupComponent="projectsTable"
-        messagesPack="com.haulmont.timesheets.gui.project">
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://browseCaption"
+        class="com.haulmont.timesheets.gui.project.ProjectBrowse" focusComponent="projectsTable"
+        lookupComponent="projectsTable" messagesPack="com.haulmont.timesheets.gui.project">
     <dsContext>
-        <hierarchicalDatasource id="projectsDs"
-                                class="com.haulmont.timesheets.entity.Project"
-                                hierarchyProperty="parent"
-                                view="project-with-parent">
+        <hierarchicalDatasource id="projectsDs" class="com.haulmont.timesheets.entity.Project"
+                                hierarchyProperty="parent" view="project-with-parent">
             <query>
                 <![CDATA[select e
                          from
                             ts$Project e left join e.participants p
                          where
-                            (p.user.id = :session$userId and (p.role.code = 'manager' or p.role.code = 'approver')) or
-                            :param$superuser = true
+                            p.user.id = :session$userId and (p.role.code = 'manager' or p.role.code = 'approver')
                          ]]>
             </query>
         </hierarchicalDatasource>
-        <collectionDatasource id="tasksDs"
-                              class="com.haulmont.timesheets.entity.Task"
-                              view="task-full">
+        <collectionDatasource id="tasksDs" class="com.haulmont.timesheets.entity.Task" view="task-full">
             <query>
                 <![CDATA[select t from ts$Task t where t.project.id = :ds$projectsDs]]>
             </query>
         </collectionDatasource>
-        <collectionDatasource id="participantsDs"
-                              class="com.haulmont.timesheets.entity.ProjectParticipant"
+        <collectionDatasource id="participantsDs" class="com.haulmont.timesheets.entity.ProjectParticipant"
                               view="projectParticipant-full">
             <query>
                 <![CDATA[select p from ts$ProjectParticipant p where p.project.id = :ds$projectsDs]]>
             </query>
         </collectionDatasource>
     </dsContext>
-    <layout expand="split"
-            spacing="true">
-        <filter id="filter"
-                datasource="projectsDs">
+    <layout expand="split" spacing="true">
+        <filter id="filter" datasource="projectsDs">
             <properties include=".*"/>
         </filter>
-        <split id="split"
-               orientation="horizontal"
-               width="100%">
-            <vbox id="projectsBox"
-                  height="100%"
-                  margin="false,true,false,false"
-                  spacing="true"
-                  expand="projectsTable">
-                <treeTable id="projectsTable"
-                           width="100%" multiselect="true">
+        <split id="split" orientation="horizontal" width="100%">
+            <vbox height="100%" margin="false,true,false,false" spacing="true">
+                <treeTable id="projectsTable" height="100%" multiselect="true" width="100%">
                     <actions>
                         <action id="create"/>
                         <action id="edit"/>
                         <action id="remove"/>
+                        <action id="excel"/>
                     </actions>
                     <columns>
                         <column id="name"/>
@@ -64,66 +47,56 @@
                     </columns>
                     <rows datasource="projectsDs"/>
                     <rowsCount/>
-                    <buttonsPanel id="buttonsPanel"
-                                  alwaysVisible="true">
-                        <button id="createBtn"
-                                action="projectsTable.create"/>
-                        <button id="editBtn"
-                                action="projectsTable.edit"/>
-                        <button id="removeBtn"
-                                action="projectsTable.remove"/>
+                    <buttonsPanel id="buttonsPanel" alwaysVisible="true">
+                        <button id="createBtn" action="projectsTable.create" caption="msg://caption.createProject"/>
+                        <button id="editBtn" action="projectsTable.edit"/>
+                        <button id="removeBtn" action="projectsTable.remove"/>
+                        <button id="excelBtn" action="projectsTable.excel"/>
                         <popupButton id="assignBtn" caption="msg://caption.assign"/>
-                    </buttonsPanel >
+                    </buttonsPanel>
                 </treeTable>
             </vbox>
-            <vbox id="otherBox"
-                  height="100%" margin="false,false,false,true">
-                <tabSheet height="100%" width="100%">
-                    <tab id="tasks" caption="msg://caption.tasks" margin="true;false;false;false" expand="tasksTable">
-                        <table id="tasksTable"
-                               width="100%">
+            <vbox height="100%" margin="false,false,false,true">
+                <tabSheet height="100%">
+                    <tab id="tasks" caption="msg://caption.tasks" margin="true,false,false,false">
+                        <table id="tasksTable" height="100%" width="100%">
                             <actions>
                                 <action id="create"/>
                                 <action id="edit"/>
                                 <action id="remove"/>
                                 <action id="switchStatus"/>
+                                <action id="excel"/>
                             </actions>
                             <columns>
                                 <column id="name"/>
                                 <column id="code"/>
                                 <column id="type"/>
                                 <column id="status"/>
+                                <column id="defaultTagsList"/>
+                                <column id="requiredTagTypesList"/>
                             </columns>
                             <rows datasource="tasksDs"/>
-                            <buttonsPanel id="taskButtonsPanel"
-                                          alwaysVisible="true">
-                                <button id="taskCreateBtn"
-                                        action="tasksTable.create"/>
-                                <button id="taskEditBtn"
-                                        action="tasksTable.edit"/>
-                                <button id="tasRemoveBtn"
-                                        action="tasksTable.remove"/>
-                                <button id="switchStatusBtn"
-                                        action="tasksTable.switchStatus"/>
+                            <buttonsPanel id="taskButtonsPanel" alwaysVisible="true">
+                                <button id="taskCreateBtn" action="tasksTable.create" caption="msg://caption.createTask"/>
+                                <button id="taskEditBtn" action="tasksTable.edit"/>
+                                <button id="tasRemoveBtn" action="tasksTable.remove"/>
+                                <button id="tasExcelBtn" action="tasksTable.excel"/>
+                                <button id="switchStatusBtn" action="tasksTable.switchStatus"/>
                             </buttonsPanel>
                         </table>
                     </tab>
-
-                    <tab id="participants" caption="msg://caption.participants"
-                         margin="true;false;false;false" expand="participantsTable">
-                        <table id="participantsTable"
-                               columnControlVisible="false"
-                               editable="true"
-                               width="100%" multiselect="true">
+                    <tab id="participants" caption="msg://caption.participants" margin="true,false,false,false">
+                        <table id="participantsTable" columnControlVisible="false" editable="true" height="100%"
+                               multiselect="true" width="100%">
                             <actions>
                                 <action id="create"/>
                                 <action id="edit"/>
                                 <action id="remove"/>
                                 <action id="copy"/>
+                                <action id="excel"/>
                             </actions>
                             <columns>
-                                <column id="user"
-                                        link="true"/>
+                                <column id="user" link="true"/>
                                 <column id="role"/>
                                 <column id="user.position"/>
                             </columns>
@@ -132,6 +105,7 @@
                                 <button action="participantsTable.create"/>
                                 <button action="participantsTable.edit"/>
                                 <button action="participantsTable.remove"/>
+                                <button action="participantsTable.excel"/>
                                 <button action="participantsTable.copy"/>
                             </buttonsPanel>
                         </table>

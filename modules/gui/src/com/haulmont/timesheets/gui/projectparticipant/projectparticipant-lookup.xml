@@ -1,28 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
-        caption="msg://browseCaption"
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://browseCaption"
         class="com.haulmont.timesheets.gui.projectparticipant.ProjectparticipantLookup"
-        focusComponent="projectParticipantsTable"
-        lookupComponent="projectParticipantsTable"
+        focusComponent="projectParticipantsTable" lookupComponent="projectParticipantsTable"
         messagesPack="com.haulmont.timesheets.gui.projectparticipant">
     <dsContext>
-        <collectionDatasource id="projectParticipantsDs"
-                              class="com.haulmont.timesheets.entity.ProjectParticipant"
+        <collectionDatasource id="projectParticipantsDs" class="com.haulmont.timesheets.entity.ProjectParticipant"
                               view="projectParticipant-full">
             <query>
                 <![CDATA[select e from ts$ProjectParticipant e where e.project.id = :custom$project]]>
             </query>
         </collectionDatasource>
     </dsContext>
-    <layout expand="projectParticipantsTable"
-            spacing="true">
-        <filter id="filter"
-                datasource="projectParticipantsDs">
+    <layout expand="projectParticipantsTable" spacing="true">
+        <filter id="filter" datasource="projectParticipantsDs">
             <properties include=".*"/>
         </filter>
-        <table id="projectParticipantsTable"
-               editable="false"
-               width="100%">
+        <table id="projectParticipantsTable" width="100%">
             <columns>
                 <column id="user"/>
                 <column id="project"/>

@@ -1,5 +1,5 @@
 
-package com.haulmont.timesheets.gui;
+package com.haulmont.timesheets.gui.util;
 
 import com.haulmont.chile.core.model.MetaPropertyPath;
 import com.haulmont.cuba.core.entity.Entity;
@@ -14,10 +14,9 @@ import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
 import com.haulmont.cuba.gui.components.actions.RemoveAction;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.timesheets.entity.*;
-import com.haulmont.timesheets.global.DateTools;
+import com.haulmont.timesheets.global.WorkdaysTools;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
 
@@ -37,18 +36,15 @@ public class ComponentsHelper {
     protected static ComponentsFactory componentsFactory = AppBeans.get(ComponentsFactory.NAME);
     protected static Messages messages = AppBeans.get(Messages.NAME);
     protected static TimeSource timeSource = AppBeans.get(TimeSource.NAME);
-    protected static DateTools dateTools = AppBeans.get(DateTools.NAME);
+    protected static WorkdaysTools workdaysTools = AppBeans.get(WorkdaysTools.NAME);
 
     public static FieldGroup.CustomFieldGenerator getCustomTextArea() {
-        return new FieldGroup.CustomFieldGenerator() {
-            @Override
-            public Component generateField(Datasource datasource, String propertyId) {
-                ResizableTextArea textArea = componentsFactory.createComponent(ResizableTextArea.NAME);
-                textArea.setDatasource(datasource, propertyId);
-                textArea.setHeight("100px");
-                textArea.setResizable(true);
-                return textArea;
-            }
+        return (datasource, propertyId) -> {
+            ResizableTextArea textArea = componentsFactory.createComponent(ResizableTextArea.class);
+            textArea.setDatasource(datasource, propertyId);
+            textArea.setHeight("100px");
+            textArea.setResizable(true);
+            return textArea;
         };
     }
 
@@ -63,7 +59,7 @@ public class ComponentsHelper {
     }
 
     public static LinkButton createCaptionlessLinkButton(String icon, String description, Action action) {
-        LinkButton linkButton = componentsFactory.createComponent(LinkButton.NAME);
+        LinkButton linkButton = componentsFactory.createComponent(LinkButton.class);
         linkButton.setIcon(icon);
         linkButton.setDescription(description);
         linkButton.setAlignment(Component.Alignment.MIDDLE_CENTER);
@@ -82,7 +78,7 @@ public class ComponentsHelper {
         String caption = messages.getMessage(WeeklyReportEntry.class, "WeeklyReportEntry." + columnId);
         String format = COMMON_DAY_CAPTION_STYLE;
 
-        if (dateTools.isHoliday(date) || dateTools.isWeekend(date)) {
+        if (workdaysTools.isHoliday(date) || workdaysTools.isWeekend(date)) {
             format = String.format(HOLIDAY_CAPTION_STYLE, format);
         }
         if (DateUtils.isSameDay(timeSource.currentTimestamp(), date)) {
@@ -93,11 +89,11 @@ public class ComponentsHelper {
 
     public static abstract class CustomRemoveAction extends AbstractAction {
 
-        protected IFrame frame;
+        protected Frame frame;
         protected String confirmationMessage;
         protected String confirmationTitle;
 
-        protected CustomRemoveAction(String id, IFrame frame) {
+        protected CustomRemoveAction(String id, Frame frame) {
             super(id);
             this.frame = frame;
         }
@@ -108,7 +104,7 @@ public class ComponentsHelper {
             frame.showOptionDialog(
                     getConfirmationTitle(messagesPackage),
                     getConfirmationMessage(messagesPackage),
-                    IFrame.MessageType.CONFIRMATION,
+                    Frame.MessageType.CONFIRMATION,
                     new com.haulmont.cuba.gui.components.Action[]{
                             new DialogAction(DialogAction.Type.OK) {
                                 @Override
@@ -151,7 +147,7 @@ public class ComponentsHelper {
 
         @Override
         public void actionPerform(Component component) {
-            Task task = target.getSingleSelected();
+            Task task = (Task) target.getSingleSelected();
             if (task != null) {
                 if (task.getStatus() != null) {
                     task.setStatus(task.getStatus().inverted());
@@ -165,7 +161,7 @@ public class ComponentsHelper {
             super.refreshState();
 
             String captionKey = "closeTask";
-            Task selected = target.getSingleSelected();
+            Task selected = (Task) target.getSingleSelected();
             if (selected != null) {
                 TaskStatus status = selected.getStatus();
                 if (status != null && TaskStatus.INACTIVE.equals(status)) {
@@ -248,15 +244,15 @@ public class ComponentsHelper {
         return String.format("%s.%s", entity.getId(), column);
     }
 
-    public static class EntityCodeGenerationListener<T extends Entity> extends DsListenerAdapter<T> {
+    public static class EntityCodeGenerationListener<T extends Entity> implements Datasource.ItemPropertyChangeListener<T> {
         @Override
-        public void valueChanged(T source, String property, Object prevValue, Object value) {
-            if ("name".equalsIgnoreCase(property) && source.getMetaClass().getProperty("code") != null) {
-                String codeValue = source.getValue("code");
+        public void itemPropertyChanged(Datasource.ItemPropertyChangeEvent<T> e) {
+            if ("name".equalsIgnoreCase(e.getProperty()) && e.getItem().getMetaClass().getProperty("code") != null) {
+                String codeValue = e.getItem().getValue("code");
                 if (StringUtils.isBlank(codeValue)) {
-                    String newName = String.valueOf(value);
+                    String newName = String.valueOf(e.getValue());
                     String newCode = newName.toUpperCase().replaceAll(" ", "_");
-                    source.setValue("code", newCode);
+                    e.getItem().setValue("code", newCode);
                 }
             }
         }

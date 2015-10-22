@@ -1,28 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
-        caption="msg://editCaption"
-        class="com.haulmont.timesheets.gui.tasktype.TaskTypeEdit"
-        datasource="taskTypeDs"
-        focusComponent="fieldGroup"
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://editCaption"
+        class="com.haulmont.timesheets.gui.tasktype.TaskTypeEdit" datasource="taskTypeDs" focusComponent="fieldGroup"
         messagesPack="com.haulmont.timesheets.gui.tasktype">
     <dsContext>
-        <datasource id="taskTypeDs"
-                    class="com.haulmont.timesheets.entity.TaskType"
-                    view="_local"/>
+        <datasource id="taskTypeDs" class="com.haulmont.timesheets.entity.TaskType" view="_local"/>
     </dsContext>
-    <layout expand="windowActions"
-            spacing="true">
-        <fieldGroup id="fieldGroup"
-                    datasource="taskTypeDs">
+    <layout expand="windowActions" spacing="true">
+        <fieldGroup id="fieldGroup" datasource="taskTypeDs">
             <column width="250px">
                 <field id="name"/>
                 <field id="code"/>
-                <field id="description"
-                       custom="true"/>
+                <field id="description" custom="true"/>
             </column>
         </fieldGroup>
-        <iframe id="windowActions"
-                screen="editWindowActions"
-                stylename="window-actions"/>
+        <frame id="windowActions" screen="editWindowActions" stylename="window-actions"/>
     </layout>
 </window>

@@ -9,7 +9,7 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TreeTable;
 import com.haulmont.cuba.gui.data.HierarchicalDatasource;
 import com.haulmont.timesheets.entity.Project;
-import com.haulmont.timesheets.gui.ComponentsHelper;
+import com.haulmont.timesheets.gui.util.ComponentsHelper;
 import com.haulmont.timesheets.service.ProjectsService;
 
 import javax.annotation.Nullable;

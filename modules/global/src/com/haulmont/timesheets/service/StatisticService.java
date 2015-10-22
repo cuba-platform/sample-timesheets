@@ -8,7 +8,6 @@ import com.haulmont.timesheets.entity.Task;
 
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,7 +16,7 @@ import java.util.Map;
 public interface StatisticService {
     String NAME = "ts_StatisticService";
 
-    public Map<Task, BigDecimal> getStatisticsByTasks(Date start, Date end, Project project);
+    Map<Task, BigDecimal> getStatisticsByTasks(Date start, Date end, Project project);
 
-    public Map<Integer, Map<String, Object>> getStatisticsByProjects(Date start, Date end);
+    Map<Integer, Map<String, Object>> getStatisticsByProjects(Date start, Date end);
 }

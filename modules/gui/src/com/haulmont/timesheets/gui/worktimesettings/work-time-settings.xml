@@ -1,18 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
-        caption="msg://caption"
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://caption"
         class="com.haulmont.timesheets.gui.worktimesettings.WorkTimeSettings"
         messagesPack="com.haulmont.timesheets.gui.worktimesettings">
-    <layout expand="windowActions"
-            spacing="true">
+    <layout expand="windowActions" spacing="true">
         <hbox spacing="true">
-            <label value="msg://forkHoursForWeek" align="MIDDLE_LEFT"/>
-            <textField id="workHoursTextField"
-                       datatype="decimal"/>
+            <label align="MIDDLE_LEFT" value="msg://workHoursForWeek"/>
+            <textField id="workHoursTextField" datatype="decimal"/>
         </hbox>
         <optionsGroup id="workDaysOptions" caption="msg://workDays" multiselect="true" stylename="h2"/>
-        <iframe id="windowActions"
-                screen="editWindowActions"
-                stylename="window-actions"/>
+        <dateField id="openPeriodStart" caption="msg://caption.openPeriodStart" stylename="h2"/>
+        <frame id="windowActions" screen="editWindowActions" stylename="window-actions"/>
     </layout>
 </window>

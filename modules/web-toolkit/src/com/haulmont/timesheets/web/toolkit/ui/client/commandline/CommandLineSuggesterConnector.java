@@ -3,6 +3,7 @@ package com.haulmont.timesheets.web.toolkit.ui.client.commandline;
 
 import com.google.gwt.core.client.JavaScriptObject;
 import com.haulmont.timesheets.web.commandline.CommandLineSuggestionExtension;
+import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.shared.ui.Connect;
 import org.vaadin.aceeditor.client.SuggesterConnector;
 import org.vaadin.aceeditor.client.gwt.GwtAceKeyboardEvent;
@@ -13,6 +14,9 @@ import org.vaadin.aceeditor.client.gwt.GwtAceKeyboardEvent;
 @SuppressWarnings("serial")
 @Connect(CommandLineSuggestionExtension.class)
 public class CommandLineSuggesterConnector extends SuggesterConnector {
+    protected CommandLineRpc commandLineRpc = RpcProxy.create(
+            CommandLineRpc.class, this);
+
     @Override
     protected void startSuggesting() {
         super.startSuggesting();
@@ -30,6 +34,7 @@ public class CommandLineSuggesterConnector extends SuggesterConnector {
         }
 
         if (keyCode == 13) {//Enter
+            commandLineRpc.apply();
             return Command.NULL;//ignore enter
         } else if ((keyCode == 32 && e.isCtrlKey())) {//Ctrl+Space
             startSuggesting();

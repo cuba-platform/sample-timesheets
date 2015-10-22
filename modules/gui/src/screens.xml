@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<screen-config xmlns="http://schemas.haulmont.com/cuba/5.4/screens.xsd">
+<screen-config xmlns="http://schemas.haulmont.com/cuba/screens.xsd">
     <screen id="ts$Client.browse" template="/com/haulmont/timesheets/gui/client/client-browse.xml"/>
     <screen id="ts$Client.edit" template="/com/haulmont/timesheets/gui/client/client-edit.xml"/>
     <screen id="ts$Holiday.browse" template="/com/haulmont/timesheets/gui/holiday/holiday-browse.xml"/>
@@ -11,7 +11,7 @@
     <screen id="ts$Tag.edit" template="/com/haulmont/timesheets/gui/tag/tag-edit.xml"/>
     <screen id="ts$TagType.browse" template="/com/haulmont/timesheets/gui/tagtype/tagtype-browse.xml"/>
     <screen id="ts$TagType.edit" template="/com/haulmont/timesheets/gui/tagtype/tagtype-edit.xml"/>
-    <screen id="ts$TimeEntry.browse" template="/com/haulmont/timesheets/gui/timeentry/timeentry-browse.xml"/>
+    <screen id="ts$TimeEntry.browse" template="/com/haulmont/timesheets/gui/timeentry/timeentry-my.xml"/>
     <screen id="ts$TimeEntry.lookup" template="com/haulmont/timesheets/gui/timeentry/timeentry-lookup.xml"/>
     <screen id="ts$TimeEntry.edit" template="/com/haulmont/timesheets/gui/timeentry/timeentry-edit.xml"/>
     <screen id="ts$Task.browse" template="/com/haulmont/timesheets/gui/task/task-browse.xml"/>
@@ -35,7 +35,8 @@
     <screen id="work-time-settings" template="com/haulmont/timesheets/gui/worktimesettings/work-time-settings.xml"/>
     <screen id="command-line-frame" template="com/haulmont/timesheets/gui/commandline/command-line-frame.xml"/>
     <screen id="rejection-reason" template="com/haulmont/timesheets/gui/rejection/rejection-reason.xml"/>
-    <screen id="charts" template="/com/haulmont/timesheets/web/analytics/charts.xml"/>
     <screen id="ts$ActivityType.lookup" template="com/haulmont/timesheets/gui/activitytype/activitytype-browse.xml"/>
     <screen id="ts$ActivityType.edit" template="com/haulmont/timesheets/gui/activitytype/activitytype-edit.xml"/>
+    <screen id="ts$TimeEntry.all" template="com/haulmont/timesheets/gui/timeentry/timeentry-all.xml"/>
+    <screen id="ts$TimeEntry.all-approve" template="com/haulmont/timesheets/gui/approve/timeentry-all-approve.xml"/>
 </screen-config>

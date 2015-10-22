@@ -6,9 +6,7 @@ import com.haulmont.cuba.core.global.TimeSource;
 import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.ManagedBean;
-import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

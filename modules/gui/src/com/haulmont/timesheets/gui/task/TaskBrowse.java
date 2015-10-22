@@ -11,7 +11,7 @@ import com.haulmont.cuba.gui.components.Component;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.timesheets.entity.Task;
 import com.haulmont.timesheets.entity.TimeEntry;
-import com.haulmont.timesheets.gui.ComponentsHelper;
+import com.haulmont.timesheets.gui.util.ComponentsHelper;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
@@ -23,7 +23,7 @@ import java.util.Map;
 public class TaskBrowse extends AbstractLookup {
 
     @Inject
-    protected Table tasksTable;
+    protected Table<Task> tasksTable;
 
     @Override
     public void init(Map<String, Object> params) {

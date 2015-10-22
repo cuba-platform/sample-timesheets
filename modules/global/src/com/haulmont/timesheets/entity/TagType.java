@@ -6,13 +6,11 @@ package com.haulmont.timesheets.entity;
 import com.haulmont.chile.core.annotations.Composition;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
-import org.apache.commons.lang.StringUtils;
-
-import javax.persistence.*;
-import java.text.MessageFormat;
-import java.util.Set;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.global.DeletePolicy;
+
+import javax.persistence.*;
+import java.util.Set;
 
 /**
  * @author gorelov

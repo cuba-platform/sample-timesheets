@@ -23,7 +23,6 @@ public class HoursAndMinutes {
     public static final BigDecimal MINUTES_IN_HOUR = valueOf(60);
     protected int hours;
     protected int minutes;
-    protected TimeParser timeParser = AppBeans.get(TimeParser.NAME);
 
     public static HoursAndMinutes fromTimeEntry(@Nullable TimeEntry timeEntry) {
         if (timeEntry == null) {

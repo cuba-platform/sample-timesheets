@@ -7,7 +7,7 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.timesheets.entity.Task;
-import com.haulmont.timesheets.gui.ComponentsHelper;
+import com.haulmont.timesheets.gui.util.ComponentsHelper;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;

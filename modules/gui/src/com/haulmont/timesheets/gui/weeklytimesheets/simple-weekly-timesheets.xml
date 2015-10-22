@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
-        caption="msg://browseCaption"
-        class="com.haulmont.timesheets.gui.weeklytimesheets.SimpleWeeklyTimesheets"
-        focusComponent="weeklyTsTable"
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://browseCaption"
+        class="com.haulmont.timesheets.gui.weeklytimesheets.SimpleWeeklyTimesheets" focusComponent="weeklyTsTable"
         messagesPack="com.haulmont.timesheets.gui.weeklytimesheets">
     <dsContext>
-        <collectionDatasource id="weeklyEntriesDs"
-                              allowCommit="false"
-                              class="com.haulmont.timesheets.entity.WeeklyReportEntry"
-                              refreshMode="NEVER"/>
-        <collectionDatasource id="projectsDs"
-                              class="com.haulmont.timesheets.entity.Project"
-                              view="project-full">
+        <groupDatasource id="weeklyEntriesDs" allowCommit="false"
+                         class="com.haulmont.timesheets.entity.WeeklyReportEntry" refreshMode="NEVER"/>
+        <collectionDatasource id="projectsDs" class="com.haulmont.timesheets.entity.Project" view="project-full">
             <query>
                 <![CDATA[
                 select pr
@@ -19,30 +13,22 @@
                     in(pr.participants) p
                 where
                     p.user.id = :session$userId and
-                    pr.status = 'open' order by pr.name
+                    pr.status = 'open'
+                order by pr.name
                     ]]>
             </query>
         </collectionDatasource>
     </dsContext>
-    <layout expand="weeklyTsTable"
-            spacing="true">
-        <iframe id="commandLine"
-                screen="command-line-frame"/>
-        <table id="weeklyTsTable"
-               aggregatable="true"
-               editable="true"
-               multiselect="true"
-               reorderingAllowed="false"
-               width="100%">
+    <actions>
+        <action id="add" icon="icons/plus-btn.png" invoke="addReport" shortcut="CTRL-ALT-PLUS"/>
+        <action id="submitAll" caption="msg://submitAll" invoke="submitAll" shortcut="CTRL-ENTER"/>
+    </actions>
+    <layout expand="weeklyTsTable" spacing="true">
+        <frame id="commandLine" screen="command-line-frame"/>
+
+        <groupTable id="weeklyTsTable" aggregatable="true" editable="true" multiselect="true" width="100%">
             <actions>
-                <action id="add"
-                        icon="icons/plus-btn.png"
-                        invoke="addReport"/>
                 <action id="remove"/>
-                <action id="submitAll"
-                        caption="msg://submitAll"
-                        invoke="submitAll"
-                        shortcut="CTRL-ENTER"/>
             </actions>
             <columns>
                 <column id="project"/>
@@ -50,33 +36,19 @@
             </columns>
             <rows datasource="weeklyEntriesDs"/>
             <buttonsPanel width="100%">
-                <hbox align="MIDDLE_LEFT"
-                      spacing="true">
-                    <button action="weeklyTsTable.add"/>
+                <hbox align="MIDDLE_LEFT" spacing="true">
+                    <button action="add"/>
                     <button action="weeklyTsTable.remove"/>
                 </hbox>
-                <label id="weekCaption"
-                       align="MIDDLE_CENTER"
-                       stylename="h2"/>
-                <hbox id="weekNavigationBox"
-                      align="BOTTOM_RIGHT"
-                      spacing="true">
-                    <button action="weeklyTsTable.submitAll"/>
-                    <linkButton align="MIDDLE_RIGHT"
-                                icon="font-icon:CHEVRON_LEFT"
-                                invoke="showPreviousWeek"/>
-                    <linkButton align="MIDDLE_RIGHT"
-                                caption="msg://today"
-                                invoke="setToday"/>
-                    <linkButton align="MIDDLE_RIGHT"
-                                icon="font-icon:CHEVRON_RIGHT"
-                                invoke="showNextWeek"/>
-                    <dateField id="dateField"
-                               align="MIDDLE_RIGHT"
-                               resolution="DAY"
-                               stylename="simple"/>
+                <label id="weekCaption" align="MIDDLE_CENTER" stylename="h2"/>
+                <hbox id="weekNavigationBox" align="BOTTOM_RIGHT" spacing="true">
+                    <button action="submitAll"/>
+                    <linkButton align="MIDDLE_RIGHT" icon="font-icon:CHEVRON_LEFT" id="showPreviousWeek"/>
+                    <linkButton align="MIDDLE_RIGHT" caption="msg://today" id="setToday"/>
+                    <linkButton align="MIDDLE_RIGHT" icon="font-icon:CHEVRON_RIGHT" id="showNextWeek"/>
+                    <dateField id="dateField" align="MIDDLE_RIGHT" resolution="DAY" stylename="simple"/>
                 </hbox>
             </buttonsPanel>
-        </table>
+        </groupTable>
     </layout>
 </window>

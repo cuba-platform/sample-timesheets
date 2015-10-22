@@ -4,7 +4,6 @@ package com.haulmont.timesheets.gui.commandline;
 import com.haulmont.cuba.gui.GuiDevelopmentException;
 import com.haulmont.cuba.gui.components.AbstractFrame;
 import com.haulmont.cuba.gui.components.BoxLayout;
-import com.haulmont.cuba.gui.components.SourceCodeEditor;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.service.CommandLineService;
@@ -19,24 +18,31 @@ import java.util.Map;
  * @author degtyarjov
  */
 public class CommandLineFrameController extends AbstractFrame {
-    protected SourceCodeEditor commandLine;
+    protected CommandLine commandLine;
 
     @Inject
-    private ComponentsFactory componentsFactory;
+    protected ComponentsFactory componentsFactory;
 
     @Inject
-    private BoxLayout commandLineHBox;
+    protected BoxLayout commandLineHBox;
 
     @Inject
-    private CommandLineService commandLineService;
+    protected CommandLineService commandLineService;
+
+    @Inject
+    protected Companion companion;
 
     protected ResultTimeEntriesHandler timeEntriesHandler;
+
+    public interface Companion {
+        void setApplyHandler(CommandLine commandLine, Runnable handler);
+    }
 
     @Override
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        commandLine = componentsFactory.createComponent(CommandLine.NAME);
+        commandLine = componentsFactory.createComponent(CommandLine.class);
         commandLine.setWidth("800px");
         commandLine.setHeight("30px");
         commandLineHBox.add(commandLine, 0);
@@ -45,13 +51,14 @@ public class CommandLineFrameController extends AbstractFrame {
         commandLine.setShowPrintMargin(false);
         commandLine.setHighlightActiveLine(false);
         commandLine.setSuggester(new CommandLineSuggester(commandLine));
+        companion.setApplyHandler(commandLine, this::apply);
     }
 
     public void apply() {
         if (timeEntriesHandler != null) {
             try {
                 List<TimeEntry> timeEntries =
-                        commandLineService.createTimeEntriesForTheCommandLine(String.valueOf(commandLine.getValue()));
+                        commandLineService.createTimeEntriesForTheCommandLine(commandLine.<String>getValue());
                 if (CollectionUtils.isEmpty(timeEntries)) {
                     showNotification(getMessage("notification.emptyCommandResult"), NotificationType.HUMANIZED);
                 }
@@ -68,7 +75,11 @@ public class CommandLineFrameController extends AbstractFrame {
         this.timeEntriesHandler = timeEntriesHandler;
     }
 
-    public static interface ResultTimeEntriesHandler {
+    public ResultTimeEntriesHandler getTimeEntriesHandler() {
+        return timeEntriesHandler;
+    }
+
+    public interface ResultTimeEntriesHandler {
         void handle(List<TimeEntry> resultTimeEntries);
     }
 }

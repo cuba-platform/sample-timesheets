@@ -2,9 +2,8 @@
 package com.haulmont.timesheets.gui.weeklytimesheets;
 
 import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
-import com.haulmont.timesheets.global.StringFormatHelper;
-import com.haulmont.timesheets.global.DateTimeUtils;
 import com.haulmont.timesheets.global.HoursAndMinutes;
+import com.haulmont.timesheets.global.StringFormatHelper;
 
 import java.util.Collection;
 

@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd" caption="msg://browseCaption"
-        class="com.haulmont.timesheets.gui.timeentry.TimeEntryBrowse" focusComponent="timeEntriesTable"
+<!--
+  ~ Copyright (c) ${YEAR} ${PACKAGE_NAME}
+  -->
+
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://browseCaption"
+        class="com.haulmont.timesheets.gui.timeentry.AllTimeEntries" focusComponent="timeEntriesTable"
         lookupComponent="timeEntriesTable" messagesPack="com.haulmont.timesheets.gui.timeentry">
     <dsContext>
-        <groupDatasource id="timeEntriesDs" class="com.haulmont.timesheets.entity.TimeEntry" view="timeEntry-full">
+        <groupDatasource id="timeEntriesDs" class="com.haulmont.timesheets.entity.TimeEntry" view="timeEntry-browse">
             <query>
-                <![CDATA[select e from ts$TimeEntry e where e.user.id = :session$userId]]>
+                <![CDATA[
+                select e from ts$TimeEntry e
+                where exists (select 1 from ts$ProjectParticipant pa
+                                where pa.project.id = e.task.project.id and pa.user.id = :session$userId
+                                and (pa.role.code = 'manager' or pa.role.code = 'approver'))
+                ]]>
             </query>
         </groupDatasource>
     </dsContext>
@@ -13,20 +22,23 @@
         <filter id="filter" datasource="timeEntriesDs">
             <properties include=".*"/>
         </filter>
-        <iframe id="commandLine" screen="command-line-frame"/>
-        <groupTable id="timeEntriesTable" width="100%">
+        <groupTable id="timeEntriesTable" width="100%" aggregatable="true">
             <actions>
                 <action id="create"/>
                 <action id="edit"/>
                 <action id="remove"/>
+                <action id="excel"/>
             </actions>
             <columns>
+                <column id="task.project"/>
                 <column id="task"/>
-                <column id="taskName"/>
                 <column id="user"/>
                 <column id="date"/>
                 <column id="timeInMinutes">
-                    <formatter class="com.haulmont.timesheets.gui.HoursAndMinutesFormatter"/>
+                    <formatter class="com.haulmont.timesheets.gui.util.HoursAndMinutesFormatter"/>
+                </column>
+                <column id="timeInHours">
+                    <aggregation type="SUM"/>
                 </column>
                 <column id="status"/>
                 <column id="description" maxTextLength="20"/>
@@ -39,6 +51,7 @@
                 <button id="createBtn" action="timeEntriesTable.create"/>
                 <button id="editBtn" action="timeEntriesTable.edit"/>
                 <button id="removeBtn" action="timeEntriesTable.remove"/>
+                <button id="excelBtn" action="timeEntriesTable.excel"/>
             </buttonsPanel>
         </groupTable>
     </layout>

@@ -14,7 +14,6 @@ import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.Task;
 import com.haulmont.timesheets.service.StatisticService;
 import org.apache.commons.lang.time.DateUtils;
@@ -64,7 +63,7 @@ public class ChartsController extends AbstractWindow {
     public void refreshTasks() {
         pieDs.clear();
         Map<Task, BigDecimal> statistics = statisticService.getStatisticsByTasks(
-                (Date) taskStart.getValue(), (Date) taskEnd.getValue(), (Project) taskProject.getValue());
+                taskStart.getValue(), taskEnd.getValue(), taskProject.getValue());
         for (Map.Entry<Task, BigDecimal> entry : statistics.entrySet()) {
             Task task = entry.getKey();
             pieDs.addItem(new TaskTimeSummary("[" + task.getProject().getInstanceName() + "] " + task.getName(), entry.getValue()));
@@ -75,7 +74,7 @@ public class ChartsController extends AbstractWindow {
 
     public void refreshProjects() {
         Map<Integer, Map<String, Object>> statisticsByProjects = statisticService.getStatisticsByProjects(
-                (Date) projectsStart.getValue(), (Date) projectsEnd.getValue());
+                projectsStart.getValue(), projectsEnd.getValue());
         ListDataProvider dataProvider = new ListDataProvider();
         Set<String> allProjects = new LinkedHashSet<>();
         for (Map.Entry<Integer, Map<String, Object>> entry : statisticsByProjects.entrySet()) {

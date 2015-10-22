@@ -11,7 +11,7 @@ import com.haulmont.timesheets.gui.approve.ApproveScreen;
 public class WebApproveScreenCompanion implements ApproveScreen.Companion {
     @Override
     public void initTable(Table table) {
-        com.vaadin.ui.Table webTable = WebComponentsHelper.unwrap(table);
+        com.vaadin.ui.Table webTable = (com.vaadin.ui.Table) WebComponentsHelper.unwrap(table);
         webTable.setSelectable(false);
     }
 }

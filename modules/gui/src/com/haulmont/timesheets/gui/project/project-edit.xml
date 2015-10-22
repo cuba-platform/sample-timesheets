@@ -1,58 +1,42 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
-        caption="msg://editCaption"
-        class="com.haulmont.timesheets.gui.project.ProjectEdit"
-        datasource="projectDs"
-        focusComponent="fieldGroup"
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://editCaption"
+        class="com.haulmont.timesheets.gui.project.ProjectEdit" datasource="projectDs" focusComponent="fieldGroup"
         messagesPack="com.haulmont.timesheets.gui.project">
     <dsContext>
-        <datasource id="projectDs"
-                    class="com.haulmont.timesheets.entity.Project"
-                    view="project-full">
-        </datasource>
-        <collectionDatasource id="projectsDs"
-                              class="com.haulmont.timesheets.entity.Project"
-                              view="project-full">
+        <datasource id="projectDs" class="com.haulmont.timesheets.entity.Project" view="project-full"/>
+        <collectionDatasource id="projectsDs" class="com.haulmont.timesheets.entity.Project" view="project-full">
             <query>
                 <![CDATA[select e from ts$Project e]]>
             </query>
         </collectionDatasource>
-        <collectionDatasource id="clientsDs"
-                              class="com.haulmont.timesheets.entity.Client">
+        <collectionDatasource id="clientsDs" class="com.haulmont.timesheets.entity.Client">
             <query>
                 <![CDATA[select e from ts$Client e]]>
             </query>
         </collectionDatasource>
     </dsContext>
-    <layout expand="windowActions"
-            spacing="true">
-        <grid spacing="true"
-              width="100%">
+    <layout expand="windowActions" spacing="true">
+        <grid spacing="true" width="100%">
             <columns>
                 <column/>
-                <column flex="1"/>
+                <column flex="1.0"/>
             </columns>
             <rows>
                 <row>
-                    <fieldGroup id="fieldGroup"
-                                datasource="projectDs">
+                    <fieldGroup id="fieldGroup" datasource="projectDs">
                         <column width="250px">
                             <field id="name"/>
                             <field id="code"/>
-                            <field id="parent"
-                                   optionsDatasource="projectsDs"/>
-                            <field id="client"
-                                   optionsDatasource="clientsDs"/>
-                            <field id="description"
-                                   custom="true"/>
+                            <field id="parent" optionsDatasource="projectsDs"/>
+                            <field id="client" optionsDatasource="clientsDs"/>
+                            <field id="description" custom="true"/>
                             <field id="status"/>
+                            <field id="timeEntryNamePattern"/>
                         </column>
                     </fieldGroup>
                 </row>
             </rows>
         </grid>
-        <iframe id="windowActions"
-                screen="editWindowActions"
-                stylename="window-actions"/>
+        <frame id="windowActions" screen="editWindowActions" stylename="window-actions"/>
     </layout>
 </window>

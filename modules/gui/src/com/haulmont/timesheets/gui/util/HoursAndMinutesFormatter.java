@@ -1,5 +1,5 @@
 
-package com.haulmont.timesheets.gui;
+package com.haulmont.timesheets.gui.util;
 
 import com.haulmont.cuba.gui.components.Formatter;
 import com.haulmont.timesheets.global.HoursAndMinutes;

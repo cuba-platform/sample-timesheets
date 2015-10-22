@@ -5,8 +5,6 @@ package com.haulmont.timesheets.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
-import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
-import com.haulmont.cuba.core.global.DeletePolicy;
 import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.*;

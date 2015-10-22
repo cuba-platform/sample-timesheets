@@ -8,7 +8,7 @@ import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.components.LookupPickerField;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.timesheets.entity.Tag;
-import com.haulmont.timesheets.gui.ComponentsHelper;
+import com.haulmont.timesheets.gui.util.ComponentsHelper;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -37,6 +37,6 @@ public class TagEdit extends AbstractEditor<Tag> {
 
         fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
 
-        tagDs.addListener(new ComponentsHelper.EntityCodeGenerationListener<Tag>());
+        tagDs.addItemPropertyChangeListener(new ComponentsHelper.EntityCodeGenerationListener<>());
     }
 }

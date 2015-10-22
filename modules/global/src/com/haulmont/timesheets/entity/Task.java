@@ -4,10 +4,12 @@
 package com.haulmont.timesheets.entity;
 
 import com.haulmont.chile.core.annotations.Composition;
+import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.global.DeletePolicy;
+import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.*;
 import java.util.Set;
@@ -55,8 +57,8 @@ public class Task extends StandardEntity {
     protected Set<Tag> defaultTags;
 
     @JoinTable(name = "TS_TASK_PROJECT_PARTICIPANT_LINK",
-        joinColumns = @JoinColumn(name = "TASK_ID"),
-        inverseJoinColumns = @JoinColumn(name = "PROJECT_PARTICIPANT_ID"))
+            joinColumns = @JoinColumn(name = "TASK_ID"),
+            inverseJoinColumns = @JoinColumn(name = "PROJECT_PARTICIPANT_ID"))
     @ManyToMany
     protected Set<ProjectParticipant> exclusiveParticipants;
 
@@ -144,5 +146,31 @@ public class Task extends StandardEntity {
 
     public String getName() {
         return name;
+    }
+
+    @MetaProperty
+    public String getDefaultTagsList() {
+        if (defaultTags != null) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (Tag defaultTag : defaultTags) {
+                stringBuilder.append(defaultTag.getInstanceName()).append(",");
+            }
+            return StringUtils.chop(stringBuilder.toString());
+        }
+
+        return "";
+    }
+
+    @MetaProperty
+    public String getRequiredTagTypesList() {
+        if (requiredTagTypes != null) {
+            StringBuilder stringBuilder = new StringBuilder();
+            for (TagType requiredTagType : requiredTagTypes) {
+                stringBuilder.append(requiredTagType.getInstanceName()).append(",");
+            }
+            return StringUtils.chop(stringBuilder.toString());
+        }
+
+        return "";
     }
 }

@@ -1,10 +1,9 @@
 
 package com.haulmont.timesheets.global;
 
-import com.haulmont.timesheets.entity.Project;
-import com.haulmont.timesheets.entity.Task;
-import com.haulmont.timesheets.entity.TimeEntry;
-import com.haulmont.timesheets.entity.WeeklyReportEntry;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+import com.haulmont.timesheets.entity.*;
 
 import javax.annotation.ManagedBean;
 import java.util.*;
@@ -14,8 +13,42 @@ import java.util.*;
  */
 @ManagedBean(WeeklyReportConverter.NAME)
 public class WeeklyReportConverter {
-
     public static final String NAME = "ts_WeeklyReportConverter";
+
+    public static class TimeEntryGroupKey {
+        final Project project;
+        final Task task;
+        final ActivityType activityType;
+
+        public TimeEntryGroupKey(TimeEntry timeEntry) {
+            this.project = timeEntry.getTask().getProject();
+            this.task = timeEntry.getTask();
+            this.activityType = timeEntry.getActivityType();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+
+            TimeEntryGroupKey that = (TimeEntryGroupKey) o;
+
+            if (activityType != null ? !activityType.equals(that.activityType) : that.activityType != null)
+                return false;
+            if (!project.equals(that.project)) return false;
+            if (!task.equals(that.task)) return false;
+
+            return true;
+        }
+
+        @Override
+        public int hashCode() {
+            int result = project.hashCode();
+            result = 31 * result + task.hashCode();
+            result = 31 * result + (activityType != null ? activityType.hashCode() : 0);
+            return result;
+        }
+    }
 
     public List<WeeklyReportEntry> convertFromTimeEntries(List<TimeEntry> timeEntries) {
 
@@ -23,45 +56,29 @@ public class WeeklyReportConverter {
             return Collections.emptyList();
         }
 
-        final Map<Project, Map<Task, List<TimeEntry>>> timeEntriesForWeekMap = new HashMap<>();
+        final Multimap<TimeEntryGroupKey, TimeEntry> groupedTimeEntries = ArrayListMultimap.create();
 
         for (TimeEntry timeEntry : timeEntries) {
-            addTimeEntryToMap(timeEntriesForWeekMap, timeEntry);
+            groupedTimeEntries.put(new TimeEntryGroupKey(timeEntry), timeEntry);
         }
 
-        if (timeEntriesForWeekMap.isEmpty()) {
+        if (groupedTimeEntries.isEmpty()) {
             return Collections.emptyList();
         }
 
         List<WeeklyReportEntry> reportEntries = new ArrayList<>();
-        for (Map.Entry<Project, Map<Task, List<TimeEntry>>> projectEntry : timeEntriesForWeekMap.entrySet()) {
-            for (Map.Entry<Task, List<TimeEntry>> taskEntry : projectEntry.getValue().entrySet()) {
-                WeeklyReportEntry reportEntry = new WeeklyReportEntry();
-                reportEntry.setProject(projectEntry.getKey());
-                reportEntry.setTask(taskEntry.getKey());
-                for (TimeEntry timeEntry : taskEntry.getValue()) {
-                    reportEntry.addTimeEntry(timeEntry);
-                }
-                reportEntries.add(reportEntry);
+        for (Map.Entry<TimeEntryGroupKey, Collection<TimeEntry>> entry : groupedTimeEntries.asMap().entrySet()) {
+            WeeklyReportEntry reportEntry = new WeeklyReportEntry();
+            TimeEntryGroupKey entryKey = entry.getKey();
+            reportEntry.setProject(entryKey.project);
+            reportEntry.setTask(entryKey.task);
+            reportEntry.setActivityType(entryKey.activityType);
+            for (TimeEntry timeEntry : entry.getValue()) {
+                reportEntry.addTimeEntry(timeEntry);
             }
+            reportEntries.add(reportEntry);
         }
+
         return reportEntries;
-    }
-
-    protected void addTimeEntryToMap(Map<Project, Map<Task, List<TimeEntry>>> timeEntriesForWeekMap, TimeEntry timeEntry) {
-        Project project = timeEntry.getTask().getProject();
-        Task task = timeEntry.getTask();
-        Map<Task, List<TimeEntry>> taskMap = timeEntriesForWeekMap.get(project);
-        if (taskMap == null) {
-            taskMap = new HashMap<>();
-            timeEntriesForWeekMap.put(project, taskMap);
-        }
-
-        List<TimeEntry> timeEntryList = taskMap.get(task);
-        if (timeEntryList == null) {
-            timeEntryList = new ArrayList<>();
-            taskMap.put(task, timeEntryList);
-        }
-        timeEntryList.add(timeEntry);
     }
 }

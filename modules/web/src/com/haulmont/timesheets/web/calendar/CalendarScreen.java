@@ -8,19 +8,18 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.ValueListener;
+import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
 import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
-import com.haulmont.timesheets.entity.Holiday;
-import com.haulmont.timesheets.entity.TimeEntry;
-import com.haulmont.timesheets.entity.TimeEntryStatus;
+import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.global.*;
-import com.haulmont.timesheets.gui.ComponentsHelper;
 import com.haulmont.timesheets.gui.commandline.CommandLineFrameController;
 import com.haulmont.timesheets.gui.holiday.HolidayEdit;
 import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
+import com.haulmont.timesheets.gui.util.ComponentsHelper;
+import com.haulmont.timesheets.service.ProjectsService;
 import com.haulmont.timesheets.web.toolkit.ui.TimeSheetsCalendar;
 import com.vaadin.event.Action;
 import com.vaadin.shared.ui.label.ContentMode;
@@ -29,7 +28,6 @@ import com.vaadin.ui.Calendar;
 import com.vaadin.ui.components.calendar.CalendarComponentEvents;
 import com.vaadin.ui.components.calendar.CalendarDateRange;
 import com.vaadin.ui.components.calendar.event.CalendarEvent;
-import com.vaadin.ui.components.calendar.event.CalendarEventProvider;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
 
@@ -63,9 +61,25 @@ public class CalendarScreen extends AbstractWindow {
     @Inject
     protected UuidSource uuidSource;
     @Inject
-    protected DateTools dateTools;
+    protected WorkdaysTools workdaysTools;
     @Inject
     protected Label monthSummary;
+    @Inject
+    protected BoxLayout commandLineHBox;
+    @Inject
+    protected BoxLayout simpleViewHBox;
+    @Inject
+    protected CheckBox showSimpleView;
+    @Inject
+    protected LookupField task;
+    @Inject
+    protected TextField spentTime;
+    @Inject
+    protected LookupField activityType;
+    @Inject
+    private CollectionDatasource<Project, UUID> projectsDs;
+    @Inject
+    private ProjectsService projectsService;
 
     protected TimeSheetsCalendar calendar;
     protected Date firstDayOfMonth;
@@ -78,12 +92,9 @@ public class CalendarScreen extends AbstractWindow {
         initCalendar();
         initShowCommandLineAction();
 
-        monthSelector.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                firstDayOfMonth = DateTimeUtils.getFirstDayOfMonth((Date) value);
-                updateCalendarRange();
-            }
+        monthSelector.addValueChangeListener(e -> {
+            firstDayOfMonth = DateTimeUtils.getFirstDayOfMonth((Date) e.getValue());
+            updateCalendarRange();
         });
 
         commandLine.setTimeEntriesHandler(new CommandLineFrameController.ResultTimeEntriesHandler() {
@@ -92,10 +103,16 @@ public class CalendarScreen extends AbstractWindow {
                 if (CollectionUtils.isNotEmpty(resultTimeEntries)) {
                     //todo eude what if there are more than 1 entry
                     final TimeEntry timeEntry = resultTimeEntries.get(0);
-                    ResultAndCause validationResult = validationTools.validateTags(timeEntry);
-                    if (validationResult.isNegative) {
+                    ResultAndCause resultAndCause = validationTools.validateTimeEntry(timeEntry);
+                    if (resultAndCause.isNegative) {
+                        showNotification(resultAndCause.cause, NotificationType.WARNING);
+                        return;
+                    }
+
+                    ResultAndCause tagsValidationResult = validationTools.validateTags(timeEntry);
+                    if (tagsValidationResult.isNegative) {
                         showOptionDialog(getMessage("caption.attention"),
-                                validationResult.cause + getMessage("confirmation.manuallyTagSetting"),
+                                tagsValidationResult.cause + getMessage("confirmation.manuallyTagSetting"),
                                 MessageType.CONFIRMATION_HTML,
                                 Arrays.<com.haulmont.cuba.gui.components.Action>asList(
                                         new DialogAction(DialogAction.Type.YES) {
@@ -119,7 +136,7 @@ public class CalendarScreen extends AbstractWindow {
                 int nextDayMonth = javaCalendar.get(java.util.Calendar.MONTH);
 
                 while (currentMonth == nextDayMonth) {
-                    if (dateTools.isWorkday(javaCalendar.getTime())) {
+                    if (workdaysTools.isWorkday(javaCalendar.getTime())) {
                         TimeEntry copy = (TimeEntry) InstanceUtils.copy(timeEntry);
                         copy.setId(uuidSource.createUuid());
                         copy.setDate(javaCalendar.getTime());
@@ -143,6 +160,45 @@ public class CalendarScreen extends AbstractWindow {
                 dataSource.addEvents(events);
             }
         });
+
+        showSimpleView.addValueChangeListener(e -> {
+            if (Boolean.TRUE.equals(e.getValue())) {
+                commandLine.setWidth("0px");
+                simpleViewHBox.setWidth("100%");
+            } else {
+                commandLine.setWidth("100%");
+                simpleViewHBox.setWidth("0px");
+            }
+        });
+
+        projectsDs.addItemChangeListener(e -> setActivityTypeVisibility(e.getItem(), activityType));
+    }
+
+    protected void setActivityTypeVisibility(Project project, LookupField activityTypeLookupField) {
+        List<ActivityType> activityTypes = getActivityTypesForProject(project);
+        if (CollectionUtils.isNotEmpty(activityTypes)) {
+            activityTypeLookupField.setVisible(true);
+            activityTypeLookupField.setOptionsList(activityTypes);
+        } else {
+            activityTypeLookupField.setVisible(false);
+            activityTypeLookupField.setOptionsList(Collections.emptyList());
+        }
+    }
+
+    protected List<ActivityType> getActivityTypesForProject(Project project) {
+        if (project != null) {
+            List<ActivityType> activityTypesForProject = projectsService.getActivityTypesForProject(project, View.MINIMAL);
+            return activityTypesForProject;
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
+    public void simpleViewApply() {
+        TimeEntry timeEntry = new TimeEntry();
+        timeEntry.setTask(task.getValue());
+        timeEntry.setTimeInMinutes(HoursAndMinutes.fromString(spentTime.getValue()).toMinutes());
+        commandLine.getTimeEntriesHandler().handle(Arrays.asList(timeEntry));
     }
 
     protected void initShowCommandLineAction() {
@@ -154,10 +210,10 @@ public class CalendarScreen extends AbstractWindow {
 
             @Override
             public void actionPerform(Component component) {
-                if (commandLine.getHeight() <= 0) {
-                    commandLine.setHeight("70px");
+                if (commandLineHBox.getHeight() <= 0) {
+                    commandLineHBox.setHeight("50px");
                 } else {
-                    commandLine.setHeight("0px");
+                    commandLineHBox.setHeight("0px");
                 }
             }
         };
@@ -167,58 +223,44 @@ public class CalendarScreen extends AbstractWindow {
 
     protected void initCalendar() {
         dataSource = new TimeSheetsCalendarEventProvider(userSession.getCurrentOrSubstitutedUser());
-        dataSource.addEventSetChangeListener(new CalendarEventProvider.EventSetChangeListener() {
-            @Override
-            public void eventSetChange(CalendarEventProvider.EventSetChangeEvent changeEvent) {
-                updateSummaryColumn();
-            }
-        });
+        dataSource.addEventSetChangeListener(changeEvent -> updateSummaryColumn());
 
         calendar = new TimeSheetsCalendar(dataSource);
 
         calendar.setWidth("100%");
-        calendar.setHeight("87%");
+        calendar.setHeight("100%");
         calendar.setTimeFormat(Calendar.TimeFormat.Format24H);
         calendar.setMoreMsgFormat(messages.getMessage(getClass(), "calendar.moreMsgFormat"));
         calendar.setDropHandler(null);
-        calendar.setHandler(new CalendarComponentEvents.EventMoveHandler() {
-            @Override
-            public void eventMove(CalendarComponentEvents.MoveEvent event) {
-                if (event.getCalendarEvent() instanceof TimeEntryCalendarEventAdapter) {
-                    TimeEntryCalendarEventAdapter adapter = (TimeEntryCalendarEventAdapter) event.getCalendarEvent();
-                    adapter.getTimeEntry().setDate(event.getNewStart());
-                    TimeEntry committed = getDsContext().getDataSupplier().commit(adapter.getTimeEntry(),
-                            viewRepository.getView(TimeEntry.class, "timeEntry-full"));
-                    dataSource.changeEventTimeEntity(committed);
-                    updateSummaryColumn();
-                }
+        calendar.setHandler((CalendarComponentEvents.MoveEvent event) -> {
+            if (event.getCalendarEvent() instanceof TimeEntryCalendarEventAdapter) {
+                TimeEntryCalendarEventAdapter adapter = (TimeEntryCalendarEventAdapter) event.getCalendarEvent();
+                adapter.getTimeEntry().setDate(event.getNewStart());
+                TimeEntry committed = getDsContext().getDataSupplier().commit(adapter.getTimeEntry(),
+                        viewRepository.getView(TimeEntry.class, "timeEntry-full"));
+                dataSource.changeEventTimeEntity(committed);
+                updateSummaryColumn();
             }
         });
         calendar.setHandler((CalendarComponentEvents.WeekClickHandler) null);
-        calendar.setHandler(new CalendarComponentEvents.DateClickHandler() {
-            @Override
-            public void dateClick(CalendarComponentEvents.DateClickEvent event) {
-                TimeEntry timeEntry = new TimeEntry();
-                timeEntry.setDate(event.getDate());
-                editTimeEntry(timeEntry);
-            }
+        calendar.setHandler((CalendarComponentEvents.DateClickEvent event) -> {
+            TimeEntry timeEntry = new TimeEntry();
+            timeEntry.setDate(event.getDate());
+            editTimeEntry(timeEntry);
         });
         calendar.setHandler((CalendarComponentEvents.EventResizeHandler) null);
-        calendar.setHandler(new CalendarComponentEvents.EventClickHandler() {
-            @Override
-            public void eventClick(CalendarComponentEvents.EventClick event) {
-                if (event.getCalendarEvent() instanceof TimeEntryCalendarEventAdapter) {
-                    TimeEntryCalendarEventAdapter eventAdapter = (TimeEntryCalendarEventAdapter) event.getCalendarEvent();
-                    editTimeEntry(eventAdapter.getTimeEntry());
-                } else if (event.getCalendarEvent() instanceof HolidayCalendarEventAdapter) {
-                    HolidayCalendarEventAdapter eventAdapter = (HolidayCalendarEventAdapter) event.getCalendarEvent();
-                    editHoliday(eventAdapter.getHoliday());
-                }
+        calendar.setHandler((CalendarComponentEvents.EventClick event) -> {
+            if (event.getCalendarEvent() instanceof TimeEntryCalendarEventAdapter) {
+                TimeEntryCalendarEventAdapter eventAdapter = (TimeEntryCalendarEventAdapter) event.getCalendarEvent();
+                editTimeEntry(eventAdapter.getTimeEntry());
+            } else if (event.getCalendarEvent() instanceof HolidayCalendarEventAdapter) {
+                HolidayCalendarEventAdapter eventAdapter = (HolidayCalendarEventAdapter) event.getCalendarEvent();
+                editHoliday(eventAdapter.getHoliday());
             }
         });
         calendar.addActionHandler(new CalendarActionHandler());
 
-        AbstractOrderedLayout calendarLayout = WebComponentsHelper.unwrap(calBox);
+        AbstractOrderedLayout calendarLayout = (AbstractOrderedLayout) WebComponentsHelper.unwrap(calBox);
         calendarLayout.addComponent(calendar);
         calendarLayout.setExpandRatio(calendar, 1);
 
@@ -247,7 +289,7 @@ public class CalendarScreen extends AbstractWindow {
 
     protected void updateSummaryColumn() {
         summaryBox.removeAll();
-        CubaVerticalActionsLayout summaryLayout = WebComponentsHelper.unwrap(summaryBox);
+        CubaVerticalActionsLayout summaryLayout = (CubaVerticalActionsLayout) WebComponentsHelper.unwrap(summaryBox);
         CubaVerticalActionsLayout summaryCaptionVbox = new CubaVerticalActionsLayout();
         summaryCaptionVbox.setHeight("30px");
         summaryCaptionVbox.setWidth("100%");
@@ -301,15 +343,15 @@ public class CalendarScreen extends AbstractWindow {
     protected FactAndPlan[] calculateSummariesByWeeks() {
         Date start = firstDayOfMonth;
         java.util.Calendar javaCalendar = java.util.Calendar.getInstance(userSession.getLocale());
+        javaCalendar.setMinimalDaysInFirstWeek(1);
         javaCalendar.setTime(firstDayOfMonth);
         int countOfWeeksInTheMonth = javaCalendar.getActualMaximum(java.util.Calendar.WEEK_OF_MONTH);
-        Date lastDayOfMonth = DateTimeUtils.getLastDayOfMonth(firstDayOfMonth);
+        Date lastDayOfMonth = DateUtils.addHours(DateTimeUtils.getLastDayOfMonth(firstDayOfMonth), 23);
 
         FactAndPlan[] summariesByWeeks = new FactAndPlan[countOfWeeksInTheMonth + 1];
-        int weekIndex = 0;
-        for (; start.getTime() <= lastDayOfMonth.getTime(); start = DateUtils.addWeeks(start, 1)) {
+        for (int i = 0; i < countOfWeeksInTheMonth; i++) {
             Date firstDayOfWeek = DateTimeUtils.getFirstDayOfWeek(start);
-            Date lastDayOfWeek = DateTimeUtils.getLastDayOfWeek(start);
+            Date lastDayOfWeek = DateUtils.addHours(DateTimeUtils.getLastDayOfWeek(start), 23);
 
             if (firstDayOfWeek.getTime() < firstDayOfMonth.getTime()) {
                 firstDayOfWeek = firstDayOfMonth;
@@ -325,7 +367,8 @@ public class CalendarScreen extends AbstractWindow {
             summaryForTheWeek.plan.setTime(
                     validationTools.workHoursForPeriod(firstDayOfWeek, lastDayOfWeek, currentOrSubstitutedUser)
             );
-            summariesByWeeks[++weekIndex] = summaryForTheWeek;
+            summariesByWeeks[i + 1] = summaryForTheWeek;
+            start = DateUtils.addWeeks(start, 1);
         }
         return summariesByWeeks;
     }
@@ -358,25 +401,19 @@ public class CalendarScreen extends AbstractWindow {
     }
 
     protected void editTimeEntry(TimeEntry timeEntry) {
-        final TimeEntryEdit editor = openEditor("ts$TimeEntry.edit", timeEntry, WindowManager.OpenType.DIALOG);
-        editor.addListener(new CloseListener() {
-            @Override
-            public void windowClosed(String actionId) {
-                if (COMMIT_ACTION_ID.equals(actionId)) {
-                    dataSource.changeEventTimeEntity(editor.getItem());
-                }
+        final TimeEntryEdit editor = (TimeEntryEdit) openEditor("ts$TimeEntry.edit", timeEntry, WindowManager.OpenType.DIALOG);
+        editor.addListener(actionId -> {
+            if (COMMIT_ACTION_ID.equals(actionId)) {
+                dataSource.changeEventTimeEntity(editor.getItem());
             }
         });
     }
 
     protected void editHoliday(Holiday holiday) {
-        final HolidayEdit editor = openEditor("ts$Holiday.edit", holiday, WindowManager.OpenType.DIALOG);
-        editor.addListener(new CloseListener() {
-            @Override
-            public void windowClosed(String actionId) {
-                if (COMMIT_ACTION_ID.equals(actionId)) {
-                    dataSource.changeEventHoliday(editor.getItem());
-                }
+        final HolidayEdit editor = (HolidayEdit) openEditor("ts$Holiday.edit", holiday, WindowManager.OpenType.DIALOG);
+        editor.addListener(actionId -> {
+            if (COMMIT_ACTION_ID.equals(actionId)) {
+                dataSource.changeEventHoliday(editor.getItem());
             }
         });
     }
@@ -426,6 +463,8 @@ public class CalendarScreen extends AbstractWindow {
                 if (target instanceof TimeEntryCalendarEventAdapter) {
                     TimeEntry copiedEntry = (TimeEntry) InstanceUtils.copy(((TimeEntryCalendarEventAdapter) target).getTimeEntry());
                     copiedEntry.setId(uuidSource.createUuid());
+                    copiedEntry.setStatus(TimeEntryStatus.NEW);
+
                     CommitContext context = new CommitContext();
                     context.getCommitInstances().add(copiedEntry);
                     Set<Entity> entities = getDsContext().getDataSupplier().commit(context);
@@ -451,15 +490,15 @@ public class CalendarScreen extends AbstractWindow {
 
         protected TimeEntryCalendarEventAdapter event;
 
-        protected EventRemoveAction(String id, IFrame frame, TimeEntryCalendarEventAdapter event) {
+        protected EventRemoveAction(String id, Frame frame, TimeEntryCalendarEventAdapter event) {
             super(id, frame);
             this.event = event;
         }
 
         @Override
         protected void doRemove() {
-            calendar.removeEvent(event);
             getDsContext().getDataSupplier().remove(event.getTimeEntry());
+            calendar.removeEvent(event);
         }
     }
 

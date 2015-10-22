@@ -31,15 +31,16 @@ public class StatisticServiceBean implements StatisticService {
     protected ViewRepository viewRepository;
 
     public Map<Task, BigDecimal> getStatisticsByTasks(Date start, Date end, @Nullable Project project) {
-        LoadContext loadContext = new LoadContext(TimeEntry.class)
-                .setQuery(
-                        new LoadContext.Query("select t from ts$TimeEntry t " +
-                                "where t.date >= :start and t.date <= :end " +
-                                "and (:project is null or t.task.project.id = :project)")
-                                .setParameter("start", start)
-                                .setParameter("end", end)
-                                .setParameter("project", project)
-                )
+        LoadContext.Query query = LoadContext.createQuery(
+                "select t from ts$TimeEntry t where t.date >= :start and t.date <= :end")
+                .setParameter("start", start)
+                .setParameter("end", end);
+        if (project != null) {
+            query.setQueryString(query.getQueryString() + " and t.task.project.id = :project");
+            query.setParameter("project", project);
+        }
+        LoadContext<TimeEntry> loadContext = LoadContext.create(TimeEntry.class)
+                .setQuery(query)
                 .setView(new View(TimeEntry.class)
                                 .addProperty("task",
                                         new View(Task.class)
@@ -64,7 +65,7 @@ public class StatisticServiceBean implements StatisticService {
 
     @Override
     public Map<Integer, Map<String, Object>> getStatisticsByProjects(Date start, Date end) {
-        LoadContext loadContext = new LoadContext(TimeEntry.class)
+        LoadContext<TimeEntry> loadContext = new LoadContext<>(TimeEntry.class)
                 .setQuery(
                         new LoadContext.Query("select t from ts$TimeEntry t where t.date >= :start and t.date <= :end order by t.date")
                                 .setParameter("start", start)

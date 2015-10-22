@@ -2,7 +2,7 @@
 <studio>
     <settings>
         <doNotDeleteColumnsStartedWith>I_</doNotDeleteColumnsStartedWith>
-        <displayXmlAttributesOnSeparateLines>false</displayXmlAttributesOnSeparateLines>
         <maxXmlLineLength>120</maxXmlLineLength>
+        <displayXmlAttributesOnSeparateLines>false</displayXmlAttributesOnSeparateLines>
     </settings>
 </studio>

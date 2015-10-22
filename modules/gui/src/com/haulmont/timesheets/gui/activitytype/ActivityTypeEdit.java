@@ -7,8 +7,7 @@ import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.timesheets.entity.ActivityType;
-import com.haulmont.timesheets.entity.TagType;
-import com.haulmont.timesheets.gui.ComponentsHelper;
+import com.haulmont.timesheets.gui.util.ComponentsHelper;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -28,6 +27,6 @@ public class ActivityTypeEdit extends AbstractEditor<ActivityType> {
         getDialogParams().setWidth(600);
 
         fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
-        activityTypeDs.addListener(new ComponentsHelper.EntityCodeGenerationListener<ActivityType>());
+        activityTypeDs.addItemPropertyChangeListener(new ComponentsHelper.EntityCodeGenerationListener<>());
     }
 }

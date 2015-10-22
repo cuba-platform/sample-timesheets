@@ -36,10 +36,6 @@ public interface ProjectsService {
     List<TimeEntry> getApprovableTimeEntriesForPeriod(
             Date start, Date end, User approver, User user, @Nullable TimeEntryStatus status, @Nullable String viewName);
 
-    List<TimeEntry> getTimeEntriesForUser(User user, @Nullable String viewName);
-
-    List<Holiday> getHolidays();
-
     List<Holiday> getHolidaysForPeriod(Date start, Date end);
 
     List<Task> getActiveTasksForUser(User user, @Nullable String viewName);
@@ -62,5 +58,5 @@ public interface ProjectsService {
 
     List<User> getProjectUsers(Project project, @Nullable String viewName);
 
-    List<User> getManagedUsersForUser(User manager, String viewName);
+    List<User> getManagedUsers(User manager, String viewName);
 }

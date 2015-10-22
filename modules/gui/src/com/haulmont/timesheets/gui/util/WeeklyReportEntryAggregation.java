@@ -1,5 +1,5 @@
 
-package com.haulmont.timesheets.gui.weeklytimesheets;
+package com.haulmont.timesheets.gui.util;
 
 import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
 import com.haulmont.timesheets.entity.TimeEntry;
@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author gorelov
  */
-public class TimeEntryAggregation implements AggregationStrategy<List<TimeEntry>, String> {
+public class WeeklyReportEntryAggregation implements AggregationStrategy<List<TimeEntry>, String> {
 
     @Override
     public String aggregate(Collection<List<TimeEntry>> propertyValues) {

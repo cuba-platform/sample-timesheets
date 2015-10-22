@@ -1,6 +1,6 @@
 @import "../halo/halo";
 
-@import "components/calendar/calendar";
+@import "components/calendar/tscalendar";
 
 /* Define your theme modifications inside next mixin */
 @mixin halo-ext {
@@ -16,19 +16,19 @@
     color: #F46565;
   }
 
-  .v-table-cell-content-project-open,
-  .v-table-cell-content-task-active,
-  .v-table-cell-content-time-entry-approved {
+  .project-open,
+  .task-active,
+  .time-entry-approved {
     color: #4EBA6F;
   }
 
-  .v-table-cell-content-project-closed,
-  .v-table-cell-content-task-inactive,
-  .v-table-cell-content-time-entry-rejected {
+  .project-closed,
+  .task-inactive,
+  .time-entry-rejected {
     color: #F15A5A;
   }
 
-  .v-table-cell-content-time-entry-new {
+  .time-entry-new {
     color: #F0C419;
   }
 
@@ -47,36 +47,36 @@
     top: 0px;
   }
 
-  .v-table-cell-content-time-entry-new-bg {
+  .time-entry-new-bg {
     @include valo-gradient(#FFDC00);
   }
 
-  .v-table-cell-content-time-entry-approved-bg {
+  .time-entry-approved-bg {
     @include valo-gradient(#5DE032);
   }
 
-  .v-table-cell-content-time-entry-rejected-bg {
+  .time-entry-rejected-bg {
     @include valo-gradient(#FF837E);
   }
 
-  .v-table-cell-content-time-entry-closed-bg {
+  .time-entry-closed-bg {
     @include valo-gradient(#F0F0F0);
   }
 
-  .v-table-cell-content-holiday {
+  .holiday {
     background: #EF525B;
   }
 
   $light-font-color: valo-font-color($v-selection-color, 0.9);
 
-  .v-table-cell-content-holiday .v-button-link {
+  .holiday .v-button-link {
     color: $light-font-color;
   }
 
-  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-new-bg .v-button-link,
-  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-approved-bg .v-button-link,
-  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-closed-bg .v-button-link,
-  .v-table [class*="-row"].v-selected .v-table-cell-content-time-entry-rejected-bg .v-button-link {
+  .v-table [class*="-row"].v-selected .time-entry-new-bg .v-button-link,
+  .v-table [class*="-row"].v-selected .time-entry-approved-bg .v-button-link,
+  .v-table [class*="-row"].v-selected .time-entry-closed-bg .v-button-link,
+  .v-table [class*="-row"].v-selected .time-entry-rejected-bg .v-button-link {
     color: $v-link-font-color;
   }
 
@@ -94,7 +94,7 @@
 
   .v-label-overtime,
   .v-label-month-summary-overtime,
-  .v-table-cell-content-overtime-ag {
+  .overtime-ag {
     color: #f15a5a;
   }
 

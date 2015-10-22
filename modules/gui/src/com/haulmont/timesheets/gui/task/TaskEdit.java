@@ -4,16 +4,15 @@
 package com.haulmont.timesheets.gui.task;
 
 import com.haulmont.bali.util.ParamsMap;
-import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.FieldGroup;
-import com.haulmont.cuba.gui.components.LookupPickerField;
-import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.core.global.Metadata;
+import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.components.actions.AddAction;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
+import com.haulmont.cuba.security.entity.EntityOp;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
-import com.haulmont.timesheets.gui.ComponentsHelper;
+import com.haulmont.timesheets.gui.util.ComponentsHelper;
 import org.apache.commons.lang.StringUtils;
 
 import javax.inject.Inject;
@@ -36,9 +35,7 @@ public class TaskEdit extends AbstractEditor<Task> {
     @Inject
     protected CollectionDatasource<TagType, UUID> allTagsTypesDs;
     @Inject
-    protected CollectionDatasource<Tag, UUID> defaultTagsDs;
-    @Inject
-    protected CollectionDatasource<TagType, UUID> requiredTagTypesDs;
+    private TabSheet tabsheet;
 
     @Named("fieldGroup.project")
     protected PickerField projectField;
@@ -46,6 +43,10 @@ public class TaskEdit extends AbstractEditor<Task> {
     protected LookupPickerField typeField;
     @Named("participantsTable.add")
     protected AddAction participantsTableAdd;
+    @Inject
+    private UserSession userSession;
+    @Inject
+    private Metadata metadata;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -56,31 +57,29 @@ public class TaskEdit extends AbstractEditor<Task> {
         projectField.addAction(ComponentsHelper.createLookupAction(projectField));
         typeField.addAction(ComponentsHelper.createLookupAction(typeField));
 
-        taskDs.addListener(new DsListenerAdapter<Task>() {
-            @Override
-            public void valueChanged(Task source, String property, Object prevValue, Object value) {
-                if ("project".equals(property)) {
-                    updateParticipantsTableAddAction();
-                    participantsDs.clear();
-                    allTagsTypesDs.refresh();
-                    allTagsDs.refresh();
+        taskDs.addItemPropertyChangeListener(e -> {
+            if ("project".equals(e.getProperty())) {
+                updateParticipantsTableAddAction();
+                participantsDs.clear();
+                allTagsTypesDs.refresh();
+                allTagsDs.refresh();
+            }
+        });
+
+        taskDs.addItemPropertyChangeListener(e -> {
+            if ("name".equalsIgnoreCase(e.getProperty())) {
+                String codeValue = e.getItem().getCode();
+                if (StringUtils.isBlank(codeValue) && e.getItem().getProject() != null) {
+                    String newName = String.valueOf(e.getValue());
+                    String newCode = e.getItem().getProject().getCode() + "_" + newName.toUpperCase().replaceAll(" ", "_");
+                    e.getItem().setCode(newCode);
                 }
             }
         });
 
-        taskDs.addListener(new DsListenerAdapter<Task>() {
-            @Override
-            public void valueChanged(Task source, String property, Object prevValue, Object value) {
-                if ("name".equalsIgnoreCase(property)) {
-                    String codeValue = source.getCode();
-                    if (StringUtils.isBlank(codeValue) && source.getProject() != null) {
-                        String newName = String.valueOf(value);
-                        String newCode = source.getProject().getCode() + "_" + newName.toUpperCase().replaceAll(" ", "_");
-                        source.setCode(newCode);
-                    }
-                }
-            }
-        });
+        if (!userSession.isEntityOpPermitted(metadata.getClassNN(Task.class), EntityOp.UPDATE)) {
+            tabsheet.getTab("advanced").setVisible(false);
+        }
     }
 
     @Override

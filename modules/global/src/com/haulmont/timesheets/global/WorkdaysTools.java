@@ -2,21 +2,19 @@
 package com.haulmont.timesheets.global;
 
 import com.haulmont.timesheets.entity.DayOfWeek;
-import com.haulmont.timesheets.entity.Holiday;
 import com.haulmont.timesheets.service.ProjectsService;
 
 import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.util.Date;
-import java.util.List;
 
 /**
  * @author gorelov
  */
-@ManagedBean(DateTools.NAME)
-public class DateTools {
+@ManagedBean(WorkdaysTools.NAME)
+public class WorkdaysTools {
 
-    public static final String NAME = "ts_DateTools";
+    public static final String NAME = "ts_WorkdaysTools";
 
     @Inject
     protected WorkTimeConfigBean workTimeConfigBean;

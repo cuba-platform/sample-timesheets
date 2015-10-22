@@ -11,11 +11,10 @@ import com.haulmont.cuba.gui.components.LookupPickerField;
 import com.haulmont.cuba.gui.components.PickerField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.timesheets.entity.Client;
 import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.ProjectStatus;
-import com.haulmont.timesheets.gui.ComponentsHelper;
+import com.haulmont.timesheets.gui.util.ComponentsHelper;
 import com.haulmont.timesheets.service.ProjectsService;
 
 import javax.inject.Inject;
@@ -49,24 +48,21 @@ public class ProjectEdit extends AbstractEditor<Project> {
         clientField.addAction(ComponentsHelper.createLookupAction(clientField));
         clientField.addClearAction();
 
-        projectDs.addListener(new DsListenerAdapter<Project>() {
-            @Override
-            public void valueChanged(Project source, String property, Object prevValue, Object value) {
-                if ("parent".equals(property)) {
-                    clientField.setEnabled(value == null);
-                    if (value != null) {
-                        Project parent = (Project) value;
-                        if (!parent.getClient().equals(getItem().getClient())) {
-                            clientField.setValue(parent.getClient());
-                        }
-                    } else if (prevValue != null) {
-                        clientField.setValue(null);
+        projectDs.addItemPropertyChangeListener(e -> {
+            if ("parent".equals(e.getProperty())) {
+                clientField.setEnabled(e.getValue() == null);
+                if (e.getValue() != null) {
+                    Project parent = (Project) e.getValue();
+                    if (!parent.getClient().equals(getItem().getClient())) {
+                        clientField.setValue(parent.getClient());
                     }
+                } else if (e.getPrevValue() != null) {
+                    clientField.setValue(null);
                 }
             }
         });
 
-        projectDs.addListener(new ComponentsHelper.EntityCodeGenerationListener<Project>());
+        projectDs.addItemPropertyChangeListener(new ComponentsHelper.EntityCodeGenerationListener<>());
         fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
     }
 

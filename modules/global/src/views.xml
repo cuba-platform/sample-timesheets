@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<views xmlns="http://schemas.haulmont.com/cuba/5.5/view.xsd">
+<views xmlns="http://schemas.haulmont.com/cuba/view.xsd">
     <view class="com.haulmont.timesheets.entity.Tag" name="tag-with-type">
         <property name="name"/>
         <property name="code"/>
@@ -31,6 +31,21 @@
             <property name="code"/>
         </property>
         <property name="timeInMinutes"/>
+        <property name="timeInHours"/>
+    </view>
+    <view class="com.haulmont.timesheets.entity.TimeEntry" name="timeEntry-browse">
+        <property name="task" view="_minimal"/>
+        <property name="taskName"/>
+        <property name="user" view="_minimal"/>
+        <property name="date"/>
+        <property name="status"/>
+        <property name="description"/>
+        <property name="rejectionReason"/>
+        <property name="activityType" view="_minimal">
+            <property name="code"/>
+        </property>
+        <property name="timeInMinutes"/>
+        <property name="timeInHours"/>
     </view>
     <view class="com.haulmont.timesheets.entity.Task" name="task-full">
         <property name="name"/>
@@ -49,6 +64,7 @@
                     <property name="name"/>
                 </property>
             </property>
+            <property name="timeEntryNamePattern"/>
         </property>
         <property name="type" view="_minimal"/>
         <property name="status"/>
@@ -99,6 +115,7 @@
             <property name="role" view="_minimal"/>
         </property>
         <property name="tasks" view="task-full"/>
+        <property name="timeEntryNamePattern"/>
     </view>
     <view class="com.haulmont.timesheets.entity.Project" name="project-with-parent">
         <property name="name"/>
@@ -108,6 +125,7 @@
         </property>
         <property name="description"/>
         <property name="status"/>
+        <property name="client" view="_minimal"/>
     </view>
     <view class="com.haulmont.timesheets.entity.ActivityType" name="activityType-with-projects">
         <property name="name"/>

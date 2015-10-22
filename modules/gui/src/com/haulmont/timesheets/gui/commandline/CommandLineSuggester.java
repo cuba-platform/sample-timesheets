@@ -42,44 +42,15 @@ public class CommandLineSuggester implements Suggester {
         CommandLineProcessor commandLineProcessor = new CommandLineProcessor(text);
 
         if (StringUtils.isBlank(text)) {
-            List<Project> projects = projectsService.getActiveProjectsForUser(currentUser, View.LOCAL);
-            for (Project project : projects) {
-                Suggestion suggestion = suggestion("@" + project.getInstanceName(), "@" + project.getCode(), cursorPosition);
-                suggestions.add(suggestion);
-            }
-
-            Collection<Task> tasks = projectsService.getActiveTasksForUser(currentUser, "task-full");
-            for (Task task : tasks) {
-                Suggestion suggestion = suggestion("#" + task.getInstanceName(), "#" + task.getCode(), cursorPosition);
-                suggestions.add(suggestion);
-            }
-
+            addProjectsToSuggestions(cursorPosition, currentUser, suggestions, "@");
+            addTasksToSuggestions(commandLineProcessor, cursorPosition, currentUser, suggestions, "#");
             return suggestions;
         }
 
         if (text.charAt(cursorPosition - 1) == '@') {
-            List<Project> projects = projectsService.getActiveProjectsForUser(currentUser, View.LOCAL);
-            for (Project project : projects) {
-                Suggestion suggestion = suggestion(project.getInstanceName(), project.getCode(), cursorPosition);
-                suggestions.add(suggestion);
-            }
+            addProjectsToSuggestions(cursorPosition, currentUser, suggestions, "");
         } else if (text.charAt(cursorPosition - 1) == '#') {
-            String projectCode = commandLineProcessor.getProjectCode();
-            Collection<Task> tasks = Collections.emptyList();
-            if (projectCode != null) {
-                Project project = projectsService.getEntityByCode(Project.class, projectCode, null);
-                if (project != null) {
-                    tasks = projectsService.getActiveTasksForUserAndProject(currentUser, project, "task-full").values();
-                }
-
-            } else {
-                tasks = projectsService.getActiveTasksForUser(currentUser, "task-full");
-            }
-
-            for (Task task : tasks) {
-                Suggestion suggestion = suggestion(task.getInstanceName(), task.getCode(), cursorPosition);
-                suggestions.add(suggestion);
-            }
+            addTasksToSuggestions(commandLineProcessor, cursorPosition, currentUser, suggestions, "");
         } else if (text.charAt(cursorPosition - 1) == '$') {
             Project project = resolveProjectId(commandLineProcessor);
 
@@ -100,9 +71,43 @@ public class CommandLineSuggester implements Suggester {
                     suggestions.add(suggestion);
                 }
             }
+        } else if (text.charAt(cursorPosition - 1) == ' ') {
+            if (StringUtils.isNotBlank(commandLineProcessor.getTaskCode())) {
+                suggestions.add(suggestion("8:00", "8:00", cursorPosition));
+                suggestions.add(suggestion("4:00", "4:00", cursorPosition));
+                suggestions.add(suggestion("2:00", "2:00", cursorPosition));
+            } else {
+                addTasksToSuggestions(commandLineProcessor, cursorPosition, currentUser, suggestions, "#");
+            }
         }
 
         return suggestions;
+    }
+
+    private void addTasksToSuggestions(CommandLineProcessor commandLineProcessor, int cursorPosition, User currentUser, List<Suggestion> suggestions, String prefix) {
+        String projectCode = commandLineProcessor.getProjectCode();
+        Collection<Task> tasks = Collections.emptyList();
+        if (projectCode != null) {
+            Project project = projectsService.getEntityByCode(Project.class, projectCode, null);
+            if (project != null) {
+                tasks = projectsService.getActiveTasksForUserAndProject(currentUser, project, "task-full").values();
+            }
+        } else {
+            tasks = projectsService.getActiveTasksForUser(currentUser, "task-full");
+        }
+
+        for (Task task : tasks) {
+            Suggestion suggestion = suggestion(prefix + task.getInstanceName(), prefix + task.getCode(), cursorPosition);
+            suggestions.add(suggestion);
+        }
+    }
+
+    private void addProjectsToSuggestions(int cursorPosition, User currentUser, List<Suggestion> suggestions, String prefix) {
+        List<Project> projects = projectsService.getActiveProjectsForUser(currentUser, View.LOCAL);
+        for (Project project : projects) {
+            Suggestion suggestion = suggestion(prefix + project.getInstanceName(), prefix + project.getCode(), cursorPosition);
+            suggestions.add(suggestion);
+        }
     }
 
     protected Project resolveProjectId(CommandLineProcessor commandLineProcessor) {
@@ -121,7 +126,7 @@ public class CommandLineSuggester implements Suggester {
     }
 
     protected Suggestion suggestion(String caption, String value, int cursorPosition) {
-        return new Suggestion(sourceCodeEditor.getAutoCompleteSupport(), caption, value,
+        return new Suggestion(sourceCodeEditor.getAutoCompleteSupport(), caption, value + " ",
                 "", cursorPosition, cursorPosition + 10);
     }
 }

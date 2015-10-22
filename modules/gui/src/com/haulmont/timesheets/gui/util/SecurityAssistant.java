@@ -1,5 +1,5 @@
 
-package com.haulmont.timesheets.gui;
+package com.haulmont.timesheets.gui.util;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Configuration;
@@ -7,7 +7,7 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.RoleType;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
-import com.haulmont.timesheets.core.TimeSheetsSettings;
+import com.haulmont.timesheets.config.TimeSheetsSettings;
 import org.apache.commons.collections.CollectionUtils;
 
 import javax.annotation.ManagedBean;

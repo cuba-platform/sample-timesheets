@@ -1,70 +1,63 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
-        caption="msg://editCaption"
-        class="com.haulmont.timesheets.gui.tagtype.TagTypeEdit"
-        datasource="tagTypeDs"
-        focusComponent="fieldGroup"
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://editCaption"
+        class="com.haulmont.timesheets.gui.tagtype.TagTypeEdit" datasource="tagTypeDs" focusComponent="fieldGroup"
         messagesPack="com.haulmont.timesheets.gui.tagtype">
     <dsContext>
-        <datasource id="tagTypeDs"
-                    class="com.haulmont.timesheets.entity.TagType"
-                    view="tagType-with-project">
+        <datasource id="tagTypeDs" class="com.haulmont.timesheets.entity.TagType" view="tagType-with-project">
             <collectionDatasource id="projectDs" property="projects"/>
             <collectionDatasource id="tagsDs" property="tags"/>
         </datasource>
     </dsContext>
     <layout expand="windowActions" spacing="true">
         <tabSheet>
-            <tab id="main" caption="msg://caption.main" spacing="true" margin="true">
-                <fieldGroup id="fieldGroup"
-                            datasource="tagTypeDs">
+            <tab id="main" caption="msg://caption.main" margin="true" spacing="true">
+                <fieldGroup id="fieldGroup" datasource="tagTypeDs">
                     <column width="250px">
                         <field id="name"/>
                         <field id="code"/>
-                        <field id="description"
-                               custom="true"/>
+                        <field id="description" custom="true"/>
                     </column>
                 </fieldGroup>
-                <groupBox width="100%" height="AUTO" caption="msg://com.haulmont.timesheets.entity/TagType.projects">
-                    <table id="projectsTable" width="100%" height="200px">
+                <groupBox caption="msg://com.haulmont.timesheets.entity/TagType.projects">
+                    <table id="projectsTable" height="200px" width="100%">
                         <actions>
                             <action id="add"/>
                             <action id="remove"/>
                         </actions>
-                        <buttonsPanel>
-                            <button id="add" action="projectsTable.add"/>
-                            <button id="remove" action="projectsTable.remove"/>
-                        </buttonsPanel>
                         <columns>
                             <column id="name"/>
                             <column id="code"/>
                         </columns>
                         <rows datasource="projectDs"/>
+                        <buttonsPanel>
+                            <button id="add" action="projectsTable.add"/>
+                            <button id="remove" action="projectsTable.remove"/>
+                        </buttonsPanel>
                     </table>
                 </groupBox>
             </tab>
-            <tab id="tags" caption="msg://caption.tags" spacing="true" margin="true">
-                <groupBox width="100%" height="AUTO" caption="msg://com.haulmont.timesheets.entity/TagType.tags">
-                    <table id="tagsTable" width="100%" height="AUTO">
+            <tab id="tags" caption="msg://caption.tags" margin="true" spacing="true">
+                <groupBox caption="msg://com.haulmont.timesheets.entity/TagType.tags">
+                    <table id="tagsTable" width="100%">
                         <actions>
                             <action id="create"/>
+                            <action id="edit"/>
                             <action id="remove"/>
                         </actions>
-                        <buttonsPanel>
-                            <button id="createTag" action="tagsTable.create"/>
-                            <button id="removeTag" action="tagsTable.remove"/>
-                        </buttonsPanel>
                         <columns>
                             <column id="name"/>
                             <column id="code"/>
                         </columns>
                         <rows datasource="tagsDs"/>
+                        <buttonsPanel>
+                            <button id="createTag" action="tagsTable.create"/>
+                            <button id="editTag" action="tagsTable.edit"/>
+                            <button id="removeTag" action="tagsTable.remove"/>
+                        </buttonsPanel>
                     </table>
                 </groupBox>
             </tab>
         </tabSheet>
-        <iframe id="windowActions"
-                screen="editWindowActions"
-                stylename="window-actions"/>
+        <frame id="windowActions" screen="editWindowActions" stylename="window-actions"/>
     </layout>
 </window>

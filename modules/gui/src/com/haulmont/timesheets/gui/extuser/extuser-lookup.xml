@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
-        caption="msg://browseCaption"
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://browseCaption"
         class="com.haulmont.timesheets.gui.extuser.ExtUserLookup"
         extends="/com/haulmont/cuba/gui/app/security/user/browse/user-lookup.xml"
         messagesPack="com.haulmont.timesheets.gui.extuser">
     <layout>
-        <table id="usersTable" editable="false" width="100%" multiselect="true">
-            <columns/>
-        </table>
+        <table id="usersTable" multiselect="true"/>
     </layout>
 </window>

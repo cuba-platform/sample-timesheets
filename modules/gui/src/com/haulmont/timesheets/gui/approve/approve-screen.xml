@@ -1,61 +1,94 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
-        caption="msg://approveScreen"
-        class="com.haulmont.timesheets.gui.approve.ApproveScreen"
-        focusComponent="usersTable"
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://approveScreen"
+        class="com.haulmont.timesheets.gui.approve.ApproveScreen" focusComponent="usersTable"
         messagesPack="com.haulmont.timesheets.gui.approve">
+    <dsContext>
+        <collectionDatasource id="usersDs" class="com.haulmont.timesheets.entity.ExtUser" view="_local">
+            <query>
+                <![CDATA[
+                select u from ts$ExtUser u, ts$ProjectParticipant pp
+                where u.id = pp.user.id and
+                exists (
+                        select 1
+                        from ts$ProjectParticipant me
+                        where me.project.id = pp.project.id and me.user.id = :session$userId and (me.role.code = 'manager' or me.role.code = 'approver')
+                        )
+                ]]>
+                <filter>
+                    <and>
+                        <c join="inner join u.timeEntries e">
+                            <![CDATA[(:custom$hasTimeEntries = false or e.date >= :custom$from and e.date <= :custom$to)]]></c>
+                        <c join="inner join u.timeEntries e">e.task.id = :component$task</c>
+                        <c join="inner join u.timeEntries e">e.status = :component$status</c>
+                        <c>u.id = :component$user</c>
+                        <c>u.group.id = :component$group</c>
+                        <c>exists (select 1 from ts$ProjectParticipant p where p.user.id = u.id and
+                            p.project.id = :component$project)
+                        </c>
+                    </and>
+                </filter>
+            </query>
+        </collectionDatasource>
+        <collectionDatasource id="weeklyEntriesDs" allowCommit="false"
+                              class="com.haulmont.timesheets.entity.WeeklyReportEntry" refreshMode="NEVER"/>
+        <collectionDatasource id="projectsDs" class="com.haulmont.timesheets.entity.Project" view="_minimal"/>
+        <collectionDatasource id="groupsDs" class="com.haulmont.cuba.security.entity.Group" view="_minimal"/>
+        <collectionDatasource id="tasksDs" class="com.haulmont.timesheets.entity.Task" view="_minimal">
+            <query>
+                select t from ts$Task t where t.project.id = :ds$projectsDs
+            </query>
+        </collectionDatasource>
+    </dsContext>
     <companions>
         <web class="com.haulmont.timesheets.web.approve.WebApproveScreenCompanion"/>
     </companions>
-    <dsContext>
-        <collectionDatasource id="usersDs"
-                              class="com.haulmont.timesheets.entity.ExtUser"
-                              datasourceClass="com.haulmont.timesheets.gui.data.UsersCollectionDatasource"
-                              view="_local">
-            <query>
-                <![CDATA[select u from sec$User u]]>
-            </query>
-        </collectionDatasource>
-        <collectionDatasource id="weeklyEntriesDs"
-                              allowCommit="false"
-                              class="com.haulmont.timesheets.entity.WeeklyReportEntry"
-                              refreshMode="NEVER"/>
-    </dsContext>
-    <layout spacing="true" expand="split">
+    <assign name="fieldWidth" value="250px"/>
+    <layout expand="split" spacing="true">
+        <grid id="filter" spacing="true">
+            <columns>
+                <column/>
+                <column/>
+                <column/>
+                <column/>
+                <column/>
+                <column/>
+            </columns>
+            <rows>
+                <row>
+                    <label align="MIDDLE_CENTER" value="msg://com.haulmont.timesheets.entity/Task.project"/>
+                    <lookupField id="project" optionsDatasource="projectsDs" width="${fieldWidth}"/>
+                    <label align="MIDDLE_CENTER" value="msg://com.haulmont.timesheets.entity/TimeEntry.task"/>
+                    <lookupField id="task" optionsDatasource="tasksDs" width="${fieldWidth}"/>
+                    <label align="MIDDLE_CENTER" value="msg://com.haulmont.timesheets.entity/TimeEntry.status"/>
+                    <lookupField id="status" width="${fieldWidth}"/>
+                </row>
+                <row>
+                    <label align="MIDDLE_CENTER" value="msg://com.haulmont.cuba.security.entity/Group"/>
+                    <lookupField id="group" width="${fieldWidth}" optionsDatasource="groupsDs"/>
+                    <label align="MIDDLE_CENTER" value="msg://com.haulmont.timesheets.entity/TimeEntry.user"/>
+                    <lookupField id="user" width="${fieldWidth}"/>
+                    <label align="MIDDLE_CENTER" value="msg://caption.hasTimeEntries"/>
+                    <checkBox id="hasTimeEntries" align="MIDDLE_LEFT"/>
+                </row>
+            </rows>
+        </grid>
         <buttonsPanel width="100%">
             <hbox/>
-            <label id="weekCaption" stylename="h2" align="MIDDLE_CENTER"/>
-            <hbox id="weekNavigationBox"
-                  spacing="true"
-                  align="BOTTOM_RIGHT">
-                <linkButton icon="font-icon:CHEVRON_LEFT"
-                            align="MIDDLE_RIGHT"
-                            invoke="showPreviousWeek"/>
-                <linkButton caption="msg://today"
-                            invoke="setToday"
-                            align="MIDDLE_RIGHT"/>
-                <linkButton icon="font-icon:CHEVRON_RIGHT"
-                            align="MIDDLE_RIGHT"
-                            invoke="showNextWeek"/>
-                <dateField id="dateField"
-                           resolution="DAY"
-                           stylename="simple"
-                           align="MIDDLE_RIGHT"/>
+            <label id="weekCaption" align="MIDDLE_CENTER" stylename="h2"/>
+            <hbox id="weekNavigationBox" align="BOTTOM_RIGHT" spacing="true">
+                <linkButton align="MIDDLE_RIGHT" icon="font-icon:CHEVRON_LEFT" invoke="showPreviousWeek"/>
+                <linkButton align="MIDDLE_RIGHT" caption="msg://today" invoke="setToday"/>
+                <linkButton align="MIDDLE_RIGHT" icon="font-icon:CHEVRON_RIGHT" invoke="showNextWeek"/>
+                <dateField id="dateField" align="MIDDLE_RIGHT" resolution="DAY" stylename="simple"/>
             </hbox>
         </buttonsPanel>
-        <split id="split"
-               orientation="horizontal"
-               pos="30"
-               width="100%">
-            <vbox height="100%"
-                  margin="false,true,false,false"
-                  expand="usersTable"
-                  spacing="true">
-                <hbox height="28px">
-                    <label value="msg://participantsTitle" align="MIDDLE_LEFT" stylename="h2"/>
+        <split id="split" orientation="horizontal" pos="30" width="100%">
+            <vbox expand="usersTable" height="100%" margin="false,true,false,false" spacing="true">
+                <hbox spacing="true">
+                    <label align="MIDDLE_LEFT" stylename="h2" value="msg://participantsTitle"/>
+                    <button id="refresh"/>
                 </hbox>
-                <table id="usersTable"
-                       width="100%">
+                <table id="usersTable" width="100%">
                     <columns>
                         <column id="lastName"/>
                         <column id="firstName"/>
@@ -63,18 +96,12 @@
                     <rows datasource="usersDs"/>
                 </table>
             </vbox>
-            <vbox height="100%"
-                  margin="false,false,false,true"
-                  expand="weeklyReportsTable"
-                  spacing="true">
-                <hbox spacing="true" height="28px" width="100%">
-                    <optionsGroup id="statusOption" orientation="horizontal" multiselect="true"/>
-                    <optionsGroup id="typeOption" orientation="horizontal" align="MIDDLE_RIGHT"/>
+            <vbox expand="weeklyReportsTable" height="100%" margin="false,false,false,true" spacing="true">
+                <hbox height="28px" spacing="true" width="100%">
+                    <optionsGroup id="statusOption" multiselect="true" orientation="horizontal"/>
+                    <optionsGroup id="typeOption" align="MIDDLE_RIGHT" orientation="horizontal"/>
                 </hbox>
-                <table id="weeklyReportsTable"
-                       reorderingAllowed="false"
-                       aggregatable="true"
-                       width="100%">
+                <table id="weeklyReportsTable" aggregatable="true" reorderingAllowed="false" width="100%">
                     <columns>
                         <column id="project"/>
                         <column id="task"/>

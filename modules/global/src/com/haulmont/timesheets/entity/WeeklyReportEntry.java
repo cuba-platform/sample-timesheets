@@ -6,8 +6,9 @@ package com.haulmont.timesheets.entity;
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
-import com.haulmont.timesheets.global.StringFormatHelper;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.timesheets.global.HoursAndMinutes;
+import com.haulmont.timesheets.global.StringFormatHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -19,7 +20,7 @@ import java.util.*;
  * @author gorelov
  */
 @MetaClass(name = "ts$WeeklyReportEntry")
-public class WeeklyReportEntry extends AbstractNotPersistentEntity {
+public class WeeklyReportEntry extends AbstractNotPersistentEntity implements TimeEntryBase {
 
     private static final long serialVersionUID = -3857876540680481596L;
 
@@ -332,6 +333,12 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
         for (DayOfWeek day : DayOfWeek.values()) {
             List<TimeEntry> timeEntries = getDayOfWeekTimeEntries(day);
             if (CollectionUtils.isNotEmpty(timeEntries)) {
+                for (TimeEntry timeEntry : timeEntries) {
+                    if (PersistenceHelper.isNew(timeEntry)) {
+                        return false;
+                    }
+                }
+
                 return true;
             }
         }
@@ -361,5 +368,10 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity {
             }
         }
         return false;
+    }
+
+    @Override
+    public Set<Tag> getTags() {
+        throw new UnsupportedOperationException();
     }
 }

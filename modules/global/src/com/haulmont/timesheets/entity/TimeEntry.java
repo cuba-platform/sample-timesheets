@@ -3,6 +3,7 @@
  */
 package com.haulmont.timesheets.entity;
 
+import com.haulmont.chile.core.annotations.MetaProperty;
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
@@ -23,7 +24,7 @@ import java.math.BigDecimal;
 @NamePattern("#getCaption|timeInMinutes")
 @Table(name = "TS_TIME_ENTRY")
 @Entity(name = "ts$TimeEntry")
-public class TimeEntry extends StandardEntity {
+public class TimeEntry extends StandardEntity implements TimeEntryBase {
 
     private static final long serialVersionUID = -5042871389501734493L;
 
@@ -68,6 +69,10 @@ public class TimeEntry extends StandardEntity {
     @Column(name = "TIME_IN_HOURS", nullable = false, precision = 10, scale = 2)
     protected BigDecimal timeInHours;
 
+    @MetaProperty
+    @Transient
+    protected BigDecimal overtimeInHours;
+
     public void setTimeInHours(BigDecimal timeInHours) {
         this.timeInHours = timeInHours;
     }
@@ -75,7 +80,6 @@ public class TimeEntry extends StandardEntity {
     public BigDecimal getTimeInHours() {
         return timeInHours;
     }
-
 
     public void setTimeInMinutes(Integer timeInMinutes) {
         this.timeInMinutes = timeInMinutes;
@@ -165,5 +169,22 @@ public class TimeEntry extends StandardEntity {
 
     public HoursAndMinutes getSpentTime(){
         return HoursAndMinutes.fromTimeEntry(this);
+    }
+
+    public BigDecimal getOvertimeInHours() {
+        return overtimeInHours;
+    }
+
+    public void setOvertimeInHours(BigDecimal overtimeInHours) {
+        this.overtimeInHours = overtimeInHours;
+    }
+
+    @MetaProperty
+    public Overtime getOvertime() {
+        return new Overtime(getUser(), getDate(), overtimeInHours);
+    }
+
+    public void setOvertime(Overtime overtimeInHours) {
+        this.overtimeInHours = overtimeInHours != null ? overtimeInHours.overtimeInHours : null;
     }
 }

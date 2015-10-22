@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<menu-config xmlns="http://schemas.haulmont.com/cuba/5.4/menu.xsd">
+<menu-config xmlns="http://schemas.haulmont.com/cuba/menu.xsd">
     <menu id="timesheets" insertBefore="reports">
         <item id="calendar-screen" shortcut="CTRL-ALT-C"/>
         <item id="simple-weekly-timesheets" shortcut="CTRL-ALT-W"/>
@@ -10,6 +10,8 @@
         <item id="ts$Client.browse"/>
         <item id="ts$Project.browse" shortcut="CTRL-ALT-P"/>
         <item id="approve-screen" shortcut="CTRL-ALT-A"/>
+        <item id="ts$TimeEntry.all-approve"/>
+        <item id="ts$TimeEntry.all"/>
         <item id="charts-screen"/>
     </menu>
     <menu id="timesheet-settings" insertAfter="projects">
@@ -19,5 +21,6 @@
         <item id="ts$TaskType.browse"/>
         <item id="ts$ActivityType.lookup"/>
         <item id="ts$TagType.browse"/>
+        <separator/>
     </menu>
 </menu-config>

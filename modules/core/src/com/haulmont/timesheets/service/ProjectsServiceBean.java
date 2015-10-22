@@ -11,6 +11,7 @@ import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.SystemDataManager;
+import com.haulmont.timesheets.core.HolidaysCacheAPI;
 import com.haulmont.timesheets.entity.*;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
@@ -37,8 +38,11 @@ public class ProjectsServiceBean implements ProjectsService {
     @Inject
     protected Persistence persistence;
 
+    @Inject
+    protected HolidaysCacheAPI holidaysCache;
+
     protected List<Project> getAllProjects() {
-        LoadContext loadContext = new LoadContext(Project.class)
+        LoadContext<Project> loadContext = new LoadContext<>(Project.class)
                 .setView("project-full");
         loadContext.setQueryString("select e from ts$Project e");
 
@@ -66,7 +70,7 @@ public class ProjectsServiceBean implements ProjectsService {
     @Nullable
     @Override
     public ProjectRole getUserProjectRole(Project project, User user) {
-        LoadContext loadContext = new LoadContext(ProjectParticipant.class)
+        LoadContext<ProjectParticipant> loadContext = new LoadContext<>(ProjectParticipant.class)
                 .setView("projectParticipant-full");
         loadContext.setQueryString("select e from ts$ProjectParticipant e " +
                 "where e.user.id = :userId and e.project.id = :projectId")
@@ -89,7 +93,7 @@ public class ProjectsServiceBean implements ProjectsService {
 
     @Override
     public List<TimeEntry> getTimeEntriesForPeriod(Date start, Date end, User user, @Nullable TimeEntryStatus status, @Nullable String viewName) {
-        LoadContext loadContext = new LoadContext(TimeEntry.class);
+        LoadContext<TimeEntry> loadContext = new LoadContext<>(TimeEntry.class);
         if (viewName != null) {
             loadContext.setView(viewName);
         }
@@ -111,7 +115,7 @@ public class ProjectsServiceBean implements ProjectsService {
     public List<TimeEntry> getApprovableTimeEntriesForPeriod(
             Date start, Date end, User approver, User user, @Nullable TimeEntryStatus status, @Nullable String viewName
     ) {
-        LoadContext loadContext = new LoadContext(TimeEntry.class);
+        LoadContext<TimeEntry> loadContext = new LoadContext<>(TimeEntry.class);
         if (viewName != null) {
             loadContext.setView(viewName);
         }
@@ -133,39 +137,13 @@ public class ProjectsServiceBean implements ProjectsService {
     }
 
     @Override
-    public List<TimeEntry> getTimeEntriesForUser(User user, @Nullable String viewName) {
-        LoadContext loadContext = new LoadContext(TimeEntry.class);
-        if (viewName != null) {
-            loadContext.setView(viewName);
-        }
-        loadContext.setQueryString("select e from ts$TimeEntry e where e.user.id = :userId")
-                .setParameter("userId", user.getId());
-        return dataManager.loadList(loadContext);
-    }
-
-    @Override
-    public List<Holiday> getHolidays() {
-        LoadContext loadContext = new LoadContext(Holiday.class);
-        loadContext.setQueryString("select e from ts$Holiday e");
-        return dataManager.loadList(loadContext);
-    }
-
-    @Override
     public List<Holiday> getHolidaysForPeriod(Date start, Date end) {
-        LoadContext loadContext = new LoadContext(Holiday.class);
-        loadContext.setQueryString("select e from ts$Holiday e " +
-                "where (e.startDate between :start and :end)" +
-                " or (e.endDate between :start and :end)" +
-                " or (:start between e.startDate and e.endDate)" +
-                " or (:end between e.startDate and e.endDate)")
-                .setParameter("start", start)
-                .setParameter("end", end);
-        return dataManager.loadList(loadContext);
+        return new ArrayList<>(holidaysCache.getHolidays(start, end));
     }
 
     @Override
     public List<Task> getActiveTasksForUser(User user, @Nullable String viewName) {
-        LoadContext loadContext = new LoadContext(Task.class);
+        LoadContext<Task> loadContext = new LoadContext<>(Task.class);
         if (viewName != null) {
             loadContext.setView(viewName);
         }
@@ -174,7 +152,7 @@ public class ProjectsServiceBean implements ProjectsService {
                 .setParameter("userId", user.getId());
         List<Task> assignedTasks = dataManager.loadList(loadContext);
         loadContext.setQueryString("select e from ts$Task e join e.project pr join pr.participants p " +
-                "where p.user.id = :userId and e.exclusiveParticipants is null and e.status = 'active' order by e.project")
+                "where p.user.id = :userId and e.exclusiveParticipants is empty and e.status = 'active' order by e.project")
                 .setParameter("userId", user.getId());
         List<Task> commonTasks = dataManager.loadList(loadContext);
         if (assignedTasks.isEmpty() && commonTasks.isEmpty()) {
@@ -188,7 +166,7 @@ public class ProjectsServiceBean implements ProjectsService {
 
     @Override
     public Map<String, Task> getActiveTasksForUserAndProject(User user, Project project, @Nullable String viewName) {
-        LoadContext loadContext = new LoadContext(Task.class);
+        LoadContext<Task> loadContext = new LoadContext<>(Task.class);
         if (viewName != null) {
             loadContext.setView(viewName);
         }
@@ -198,7 +176,7 @@ public class ProjectsServiceBean implements ProjectsService {
                 .setParameter("userId", user.getId());
         List<Task> assignedTasks = dataManager.loadList(loadContext);
         loadContext.setQueryString("select e from ts$Task e join e.project pr join pr.participants p " +
-                "where p.user.id = :userId and e.project.id = :projectId and e.exclusiveParticipants is null " +
+                "where p.user.id = :userId and e.project.id = :projectId and e.exclusiveParticipants is empty " +
                 "and e.status = 'active' order by e.project")
                 .setParameter("projectId", project.getId())
                 .setParameter("userId", user.getId());
@@ -209,7 +187,7 @@ public class ProjectsServiceBean implements ProjectsService {
         List<Task> allTasks = new ArrayList<>(assignedTasks.size() + commonTasks.size());
         allTasks.addAll(assignedTasks);
         allTasks.addAll(commonTasks);
-        Map<String, Task> tasksMap = new HashMap<>(allTasks.size());
+        Map<String, Task> tasksMap = new TreeMap<>();
         for (Task task : allTasks) {
             tasksMap.put(task.getName(), task);
         }
@@ -217,20 +195,20 @@ public class ProjectsServiceBean implements ProjectsService {
     }
 
     public List<Project> getActiveProjectsForUser(User user, @Nullable String viewName) {
-        LoadContext loadContext = new LoadContext(Project.class);
+        LoadContext<Project> loadContext = new LoadContext<>(Project.class);
         if (viewName != null) {
             loadContext.setView(viewName);
         }
         LoadContext.Query query =
                 new LoadContext.Query("select pr from ts$Project pr, in(pr.participants) p " +
-                        "where p.user.id = :userId and pr.status = 'open'")
+                        "where p.user.id = :userId and pr.status = 'open' order by pr.name")
                         .setParameter("userId", user.getId());
         loadContext.setQuery(query);
         return dataManager.loadList(loadContext);
     }
 
     public List<Project> getActiveManagedProjectsForUser(User user, @Nullable String viewName) {
-        LoadContext loadContext = new LoadContext(Project.class);
+        LoadContext<Project> loadContext = new LoadContext<>(Project.class);
         if (viewName != null) {
             loadContext.setView(viewName);
         }
@@ -254,7 +232,7 @@ public class ProjectsServiceBean implements ProjectsService {
                 ids.add(project.getId());
             }
 
-            projects = persistence.getEntityManager().createQuery("select pr from ts$Project pr where pr.id in (:ids)", Project.class)
+            projects = persistence.getEntityManager().createQuery("select pr from ts$Project pr where pr.id in :ids", Project.class)
                     .setViewName("project-full")
                     .setParameter("ids", ids)
                     .getResultList();
@@ -289,7 +267,7 @@ public class ProjectsServiceBean implements ProjectsService {
     }
 
     public List<Tag> getTagsForTheProject(@Nullable Project project, @Nullable String viewName) {
-        LoadContext loadContext = new LoadContext(Tag.class);
+        LoadContext<Tag> loadContext = new LoadContext<>(Tag.class);
         if (viewName != null) {
             loadContext.setView(viewName);
         }
@@ -303,7 +281,7 @@ public class ProjectsServiceBean implements ProjectsService {
 
     @Override
     public List<Tag> getTagsWithTheTagType(TagType type, @Nullable String viewName) {
-        LoadContext loadContext = new LoadContext(Tag.class);
+        LoadContext<Tag> loadContext = new LoadContext<>(Tag.class);
         if (viewName != null) {
             loadContext.setView(viewName);
         }
@@ -316,7 +294,7 @@ public class ProjectsServiceBean implements ProjectsService {
 
     @Override
     public List<ProjectParticipant> getProjectParticipants(Project project, @Nullable String viewName) {
-        LoadContext loadContext = new LoadContext(ProjectParticipant.class);
+        LoadContext<ProjectParticipant> loadContext = new LoadContext<>(ProjectParticipant.class);
         if (viewName != null) {
             loadContext.setView(viewName);
         }
@@ -327,7 +305,7 @@ public class ProjectsServiceBean implements ProjectsService {
 
     @Override
     public List<User> getProjectUsers(Project project, @Nullable String viewName) {
-        LoadContext loadContext = new LoadContext(User.class);
+        LoadContext<User> loadContext = new LoadContext<>(User.class);
         if (viewName != null) {
             loadContext.setView(viewName);
         }
@@ -338,12 +316,12 @@ public class ProjectsServiceBean implements ProjectsService {
     }
 
     @Override
-    public List<User> getManagedUsersForUser(User manager, String viewName) {
-        LoadContext loadContext = new LoadContext(User.class);
+    public List<User> getManagedUsers(User manager, String viewName) {
+        LoadContext<User> loadContext = new LoadContext<>(User.class);
         if (viewName != null) {
             loadContext.setView(viewName);
         }
-        loadContext.setQueryString("select u from sec$User u, ts$ProjectParticipant pp " +
+        loadContext.setQueryString("select distinct u from sec$User u, ts$ProjectParticipant pp " +
                 "join pp.project pr join pr.participants me " +
                 "where pp.user.id = u.id and me.user.id = :managerId " +
                 "and (me.role.code = '" + MANAGER.getId() + "' or me.role.code = '" + APPROVER.getId() + "')")
@@ -353,7 +331,7 @@ public class ProjectsServiceBean implements ProjectsService {
 
     @Override
     public List<ActivityType> getActivityTypesForProject(Project project, @Nullable String viewName) {
-        LoadContext loadContext = new LoadContext(ActivityType.class);
+        LoadContext<ActivityType> loadContext = new LoadContext<>(ActivityType.class);
         if (viewName != null) {
             loadContext.setView(viewName);
         }

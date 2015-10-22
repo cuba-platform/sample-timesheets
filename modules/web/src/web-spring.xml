@@ -26,6 +26,8 @@
                        value="com.haulmont.timesheets.service.CommandLineService"/>
                 <entry key="ts_StatisticService"
                        value="com.haulmont.timesheets.service.StatisticService"/>
+                <entry key="ts_CacheService"
+                       value="com.haulmont.timesheets.service.CacheService"/>
             </map>
         </property>
     </bean>

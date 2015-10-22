@@ -1,30 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
-        caption="msg://browseCaption"
-        class="com.haulmont.timesheets.gui.task.TaskLookup"
-        focusComponent="tasksTable"
-        lookupComponent="tasksTable"
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://browseCaption"
+        class="com.haulmont.timesheets.gui.task.TaskLookup" focusComponent="tasksTable" lookupComponent="tasksTable"
         messagesPack="com.haulmont.timesheets.gui.task">
     <dsContext>
-        <collectionDatasource id="tasksDs"
-                              class="com.haulmont.timesheets.entity.Task"
-                              datasourceClass="com.haulmont.timesheets.gui.data.TasksCollectionDatasource">
-        </collectionDatasource>
+        <collectionDatasource id="tasksDs" class="com.haulmont.timesheets.entity.Task"
+                              datasourceClass="com.haulmont.timesheets.gui.data.TasksCollectionDatasource"/>
     </dsContext>
-    <layout expand="tasksTable"
-            spacing="true">
-        <filter id="filter"
-                datasource="tasksDs">
+    <layout expand="tasksTable" spacing="true">
+        <filter id="filter" datasource="tasksDs">
             <properties include=".*"/>
         </filter>
-        <table id="tasksTable"
-               editable="false"
-               width="100%">
+        <table id="tasksTable" width="100%">
             <columns>
                 <column id="name"/>
                 <column id="code"/>
-                <column id="description"
-                        maxTextLength="20"/>
+                <column id="description" maxTextLength="20"/>
                 <column id="project"/>
                 <column id="type"/>
                 <column id="status"/>

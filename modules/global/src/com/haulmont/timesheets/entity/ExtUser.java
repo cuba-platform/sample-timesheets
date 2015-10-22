@@ -11,12 +11,11 @@ import org.apache.commons.lang.StringUtils;
 import javax.persistence.*;
 import java.text.MessageFormat;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * @author gorelov
  */
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorValue("Ext")
 @NamePattern("#getCaption|firstName,lastName,login,name")
 @Entity(name = "ts$ExtUser")
 @Extends(User.class)
@@ -26,6 +25,10 @@ public class ExtUser extends User {
 
     @Column(name = "WORK_HOURS_FOR_WEEK", nullable = false)
     protected BigDecimal workHoursForWeek;
+
+    @OneToMany(mappedBy = "user")
+    private List<TimeEntry> timeEntries;
+
     public BigDecimal getWorkHoursForWeek() {
         return workHoursForWeek;
     }
@@ -45,5 +48,13 @@ public class ExtUser extends User {
             }));
         }
         return super.getCaption();
+    }
+
+    public List<TimeEntry> getTimeEntries() {
+        return timeEntries;
+    }
+
+    public void setTimeEntries(List<TimeEntry> timeEntries) {
+        this.timeEntries = timeEntries;
     }
 }

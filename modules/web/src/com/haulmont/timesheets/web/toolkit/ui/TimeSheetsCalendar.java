@@ -12,10 +12,7 @@ import com.vaadin.shared.ui.calendar.DateConstants;
 import com.vaadin.ui.Calendar;
 import com.vaadin.ui.components.calendar.event.CalendarEventProvider;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author gorelov
@@ -69,11 +66,11 @@ public class TimeSheetsCalendar extends Calendar {
         return DateTimeUtils.getDatesRangeAsSeparateStrings(firstDateToShow, lastDateToShow, "yyyy-MM-dd");
     }
 
-    protected List<Integer> getWeekends() {
+    protected Set<Integer> getWeekends() {
         WorkTimeConfigBean workTimeConfigBean = AppBeans.get(WorkTimeConfigBean.NAME);
         UserSession userSession = AppBeans.get(UserSession.class);
         List<DayOfWeek> weekends = workTimeConfigBean.getWeekends();
-        List<Integer> dayNumbers = new ArrayList<>(weekends.size());
+        Set<Integer> dayNumbers = new LinkedHashSet<>(weekends.size());
         for (DayOfWeek day : weekends) {
             int number = day.convertToDayOfWeekNumber(userSession.getLocale());
             if (number > 0) {

@@ -1,0 +1,115 @@
+@mixin ts-calendar($primary-stylename: v-calendar) {
+
+  $ts-all-day-text-color: valo-font-color($v-selection-color, 0.9);
+
+  .#{$primary-stylename} .#{$primary-stylename}-event:hover {
+    color: $v-focus-color;
+  }
+
+  .#{$primary-stylename} .#{$primary-stylename}-event-time-entry-new:before {
+    color: #F0C419;
+  }
+
+  .#{$primary-stylename} .#{$primary-stylename}-event-time-entry-new-all-day {
+    color: $ts-all-day-text-color;
+    background-color: #F0C419;
+  }
+
+  .#{$primary-stylename} .#{$primary-stylename}-event-time-entry-approved:before {
+    color: #4EBA6F;
+  }
+
+  .#{$primary-stylename} .#{$primary-stylename}-event-time-entry-approved-all-day {
+    color: $ts-all-day-text-color;
+    background-color: #4EBA6F;
+  }
+
+  .#{$primary-stylename} .#{$primary-stylename}-event-time-entry-rejected:before {
+    color: #F15A5A;
+  }
+
+  .#{$primary-stylename} .#{$primary-stylename}-event-time-entry-rejected-all-day {
+    color: $ts-all-day-text-color;
+    background-color: #F15A5A;
+  }
+
+  .#{$primary-stylename} .#{$primary-stylename}-event-time-entry-closed:before {
+    color: #F0F0F0;
+  }
+
+  .#{$primary-stylename} .#{$primary-stylename}-event-time-entry-closed-all-day {
+    color: $ts-all-day-text-color;
+    background-color: #F0F0F0;
+  }
+
+  .#{$primary-stylename} .#{$primary-stylename}-event-holiday:before {
+    color: #EF525B;
+  }
+
+  .#{$primary-stylename} .#{$primary-stylename}-event-holiday-all-day {
+    color: $ts-all-day-text-color;
+    background-color: #EF525B;
+  }
+
+  .#{$primary-stylename}-event-month .#{$primary-stylename}-event-time {
+    display: none;
+  }
+
+  .#{$primary-stylename} .#{$primary-stylename}-month-day.holiday {
+    background: #f8f8f8;
+  }
+
+  .#{$primary-stylename} .#{$primary-stylename}-month-day-prev-month, .#{$primary-stylename} .#{$primary-stylename}-month-day-next-month {
+    color: lightgray;
+  }
+
+  .#{$primary-stylename}-month {
+    width: 100%;
+  }
+
+  .#{$primary-stylename}-header-month {
+    padding-bottom: 3px;
+    margin-bottom: 1px;
+    border-bottom: 1px solid darkgrey;
+  }
+
+  .#{$primary-stylename}-header-day {
+    text-align: left;
+    padding-left: 9px;
+  }
+
+  .#{$primary-stylename}-header-month td:first-child {
+    padding-left: 0px;
+  }
+
+  .#{$primary-stylename}-week-numbers {
+    display: none;
+  }
+
+  .#{$primary-stylename}-day-number {
+    border-top: 0px;
+  }
+
+  .#{$primary-stylename} .#{$primary-stylename}-month-day-today .#{$primary-stylename}-day-number {
+    line-height: 18px;
+    color: inherit;
+  }
+
+  .#{$primary-stylename} .#{$primary-stylename}-month-day {
+    border-bottom: 1px solid #ebf3f9;
+    border-left: 1px solid #ebf3f9;
+    margin-right: -1px;
+  }
+
+  .#{$primary-stylename} .#{$primary-stylename}-month-day-today {
+    background-color: transparent;
+  }
+
+  .#{$primary-stylename}-event-all-day {
+    margin-left: -2px;
+  }
+
+  .#{$primary-stylename}-event-start {
+    margin-left: 4px;
+  }
+}

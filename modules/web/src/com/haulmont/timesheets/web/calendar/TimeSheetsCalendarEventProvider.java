@@ -39,6 +39,8 @@ public class TimeSheetsCalendarEventProvider extends BasicEventProvider {
         for (Holiday holiday : holidays) {
             eventList.add(new HolidayCalendarEventAdapter(holiday));
         }
+
+        fireEventSetChange();
     }
 
     public void changeEventTimeEntity(TimeEntry timeEntry) {

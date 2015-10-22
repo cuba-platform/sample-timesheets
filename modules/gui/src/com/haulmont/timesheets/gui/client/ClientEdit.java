@@ -6,7 +6,7 @@ package com.haulmont.timesheets.gui.client;
 import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.timesheets.entity.Client;
-import com.haulmont.timesheets.gui.ComponentsHelper;
+import com.haulmont.timesheets.gui.util.ComponentsHelper;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -22,6 +22,6 @@ public class ClientEdit extends AbstractEditor<Client> {
     public void init(Map<String, Object> params) {
         getDialogParams().setWidthAuto();
 
-        clientDs.addListener(new ComponentsHelper.EntityCodeGenerationListener<Client>());
+        clientDs.addItemPropertyChangeListener(new ComponentsHelper.EntityCodeGenerationListener<>());
     }
 }

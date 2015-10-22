@@ -5,9 +5,7 @@ import com.haulmont.bali.util.Preconditions;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.timesheets.entity.Tag;
-import com.haulmont.timesheets.entity.TagType;
-import com.haulmont.timesheets.entity.TimeEntry;
+import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.service.ProjectsService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
@@ -30,7 +28,7 @@ public class ValidationTools {
     @Inject
     protected ProjectsService projectsService;
     @Inject
-    protected DateTools dateTools;
+    protected WorkdaysTools workdaysTools;
     @Inject
     protected Messages messages;
 
@@ -39,7 +37,7 @@ public class ValidationTools {
         HoursAndMinutes totalWorkHours = new HoursAndMinutes();
 
         for (; start.getTime() <= end.getTime(); start = DateUtils.addDays(start, 1)) {
-            if (dateTools.isWorkday(start)) {
+            if (workdaysTools.isWorkday(start)) {
                 totalWorkHours.add(dayHourPlan);
             }
         }
@@ -101,15 +99,37 @@ public class ValidationTools {
         );
     }
 
-    public boolean isWorkTimeMatchToPlanForMonth(Date date, User user) {
-        return isWorkTimeMatchToPlanForPeriod(
-                DateTimeUtils.getFirstDayOfMonth(date),
-                DateTimeUtils.getLastDayOfMonth(date),
-                user
-        );
+    public ResultAndCause validateTimeEntry(TimeEntry timeEntry) {
+        ResultAndCause baseValidation = validateTimeEntryBase(timeEntry);
+        if (baseValidation.isPositive) {
+            if (timeEntry.getTimeInMinutes() == null || timeEntry.getTimeInMinutes() == 0) {
+                return ResultAndCause.negative(messages.getMessage(getClass(), "notification.emptySpentTime"));
+            }
+        } else {
+            return baseValidation;
+        }
+
+        return ResultAndCause.POSITIVE;
     }
 
-    public ResultAndCause validateTags(TimeEntry timeEntry) {
+    public ResultAndCause validateWeeklyReport(WeeklyReportEntry weeklyReportEntry) {
+        return validateTimeEntryBase(weeklyReportEntry);
+    }
+
+    protected ResultAndCause validateTimeEntryBase(TimeEntryBase timeEntry) {
+        if (timeEntry.getTask() == null) {
+            return ResultAndCause.negative(messages.getMessage(getClass(), "notification.emptyTask"));
+        }
+
+        List<ActivityType> activityTypes = projectsService.getActivityTypesForProject(timeEntry.getTask().getProject(), View.MINIMAL);
+        if (CollectionUtils.isNotEmpty(activityTypes) && timeEntry.getActivityType() == null) {
+            return ResultAndCause.negative(messages.getMessage(getClass(), "notification.emptyActivityType"));
+        }
+
+        return ResultAndCause.POSITIVE;
+    }
+
+    public ResultAndCause validateTags(TimeEntryBase timeEntry) {
         Preconditions.checkNotNullArgument(timeEntry);
         Preconditions.checkNotNullArgument(timeEntry.getTask());
         Preconditions.checkNotNullArgument(timeEntry.getTask().getRequiredTagTypes());
@@ -129,8 +149,6 @@ public class ValidationTools {
             if (stringBuilder.length() > 0) {
                 stringBuilder.deleteCharAt(stringBuilder.length() - 1);//remove last comma
             }
-
-
 
             return ResultAndCause.negative(
                     messages.formatMessage(getClass(), "notification.requiredTagTypesNotPresent", stringBuilder));

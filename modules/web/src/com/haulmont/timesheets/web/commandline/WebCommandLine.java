@@ -22,4 +22,8 @@ public class WebCommandLine extends WebSourceCodeEditor implements CommandLine {
 
     protected class CommandLineSourceCodeEditorSuggester extends SourceCodeEditorSuggester {
     }
+
+    public CommandLineSuggestionExtension getSuggestionExtension() {
+        return (CommandLineSuggestionExtension) suggestionExtension;
+    }
 }

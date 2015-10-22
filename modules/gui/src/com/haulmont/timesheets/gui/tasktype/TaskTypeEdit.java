@@ -7,7 +7,7 @@ import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.FieldGroup;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.timesheets.entity.TaskType;
-import com.haulmont.timesheets.gui.ComponentsHelper;
+import com.haulmont.timesheets.gui.util.ComponentsHelper;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -28,6 +28,6 @@ public class TaskTypeEdit extends AbstractEditor<TaskType> {
         getDialogParams().setWidthAuto();
 
         fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
-        taskTypeDs.addListener(new ComponentsHelper.EntityCodeGenerationListener<TaskType>());
+        taskTypeDs.addItemPropertyChangeListener(new ComponentsHelper.EntityCodeGenerationListener<>());
     }
 }

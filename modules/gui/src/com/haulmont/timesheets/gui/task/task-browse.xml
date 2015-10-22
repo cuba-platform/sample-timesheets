@@ -1,21 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
-        caption="msg://browseCaption"
-        class="com.haulmont.timesheets.gui.task.TaskBrowse"
-        focusComponent="tasksTable"
-        lookupComponent="tasksTable"
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://browseCaption"
+        class="com.haulmont.timesheets.gui.task.TaskBrowse" focusComponent="tasksTable" lookupComponent="tasksTable"
         messagesPack="com.haulmont.timesheets.gui.task">
     <dsContext>
-        <groupDatasource id="tasksDs"
-                              class="com.haulmont.timesheets.entity.Task"
-                              datasourceClass="com.haulmont.timesheets.gui.data.TasksCollectionDatasource"
-                              view="task-full">
-        </groupDatasource>
+        <groupDatasource id="tasksDs" class="com.haulmont.timesheets.entity.Task"
+                         datasourceClass="com.haulmont.timesheets.gui.data.TasksCollectionDatasource" view="task-full"/>
     </dsContext>
-    <layout expand="tasksTable"
-            spacing="true">
-        <groupTable id="tasksTable"
-               width="100%">
+    <layout spacing="true">
+        <groupTable id="tasksTable" height="100%" width="100%">
             <actions>
                 <action id="edit"/>
                 <action id="createTimeEntry"/>
@@ -24,19 +16,15 @@
                 <column id="name"/>
                 <column id="project"/>
                 <column id="code"/>
-                <column id="description"
-                        maxTextLength="20"/>
+                <column id="description" maxTextLength="20"/>
                 <column id="type"/>
                 <column id="status"/>
             </columns>
             <rows datasource="tasksDs"/>
             <rowsCount/>
-            <buttonsPanel id="buttonsPanel"
-                          alwaysVisible="true">
-                <button id="editBtn"
-                        action="tasksTable.edit"/>
-                <button id="createTimeEntry"
-                        action="tasksTable.createTimeEntry"/>
+            <buttonsPanel id="buttonsPanel" alwaysVisible="true">
+                <button id="editBtn" action="tasksTable.edit"/>
+                <button id="createTimeEntry" action="tasksTable.createTimeEntry"/>
             </buttonsPanel>
         </groupTable>
     </layout>

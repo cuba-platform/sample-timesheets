@@ -1,16 +1,17 @@
 
-package com.haulmont.timesheets.core;
+package com.haulmont.timesheets.config;
 
 import com.haulmont.cuba.core.config.Config;
 import com.haulmont.cuba.core.config.Property;
 import com.haulmont.cuba.core.config.Source;
 import com.haulmont.cuba.core.config.SourceType;
 import com.haulmont.cuba.core.config.defaults.Default;
-import com.haulmont.cuba.core.config.type.Factory;
-import com.haulmont.cuba.core.config.type.StringListTypeFactory;
-import com.haulmont.cuba.core.config.type.Stringify;
+import com.haulmont.cuba.core.config.type.*;
+import com.haulmont.timesheets.core.BigDecimalTypeFactory;
+import com.haulmont.timesheets.core.StringListTypeStringify;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,4 +34,10 @@ public interface WorkTimeConfig extends Config {
     List<String> getWorkDays();
 
     void setWorkDays(List<String> workDays);
+
+    @Property("timesheets.openPeriodStart")
+    @Factory(factory = DateFactory.class)
+    @Stringify(stringify = DateStringify.class)
+    Date getOpenPeriodStart();
+    void setOpenPeriodStart(Date date);
 }

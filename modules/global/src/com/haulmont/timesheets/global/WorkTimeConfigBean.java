@@ -2,7 +2,7 @@
 package com.haulmont.timesheets.global;
 
 import com.haulmont.cuba.security.entity.User;
-import com.haulmont.timesheets.core.WorkTimeConfig;
+import com.haulmont.timesheets.config.WorkTimeConfig;
 import com.haulmont.timesheets.entity.DayOfWeek;
 import com.haulmont.timesheets.entity.ExtUser;
 
@@ -81,5 +81,13 @@ public class WorkTimeConfigBean {
             days.remove(day);
         }
         return Collections.unmodifiableList(days);
+    }
+
+    public Date getOpenPeriodStart(){
+        return workTimeConfig.getOpenPeriodStart();
+    }
+
+    public void setOpenPeriodStart(Date date){
+        workTimeConfig.setOpenPeriodStart(date);
     }
 }

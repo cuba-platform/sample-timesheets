@@ -5,14 +5,12 @@ package com.haulmont.timesheets.gui.timeentry;
 
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.PersistenceHelper;
+import com.haulmont.cuba.core.global.Security;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.components.*;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.gui.data.Datasource;
 import com.haulmont.cuba.gui.data.DsBuilder;
-import com.haulmont.cuba.gui.data.ValueListener;
-import com.haulmont.cuba.gui.data.impl.CollectionDsListenerAdapter;
-import com.haulmont.cuba.gui.data.impl.DsListenerAdapter;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
@@ -20,9 +18,9 @@ import com.haulmont.timesheets.global.HoursAndMinutes;
 import com.haulmont.timesheets.global.ResultAndCause;
 import com.haulmont.timesheets.global.TimeParser;
 import com.haulmont.timesheets.global.ValidationTools;
-import com.haulmont.timesheets.gui.ComponentsHelper;
-import com.haulmont.timesheets.gui.SecurityAssistant;
 import com.haulmont.timesheets.gui.data.TagsCollectionDatasource;
+import com.haulmont.timesheets.gui.util.ComponentsHelper;
+import com.haulmont.timesheets.gui.util.SecurityAssistant;
 import com.haulmont.timesheets.service.ProjectsService;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -64,7 +62,8 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     protected TimeSource timeSource;
     @Inject
     protected TimeParser timeParser;
-
+    @Inject
+    private Security security;
     @Named("fieldGroup.task")
     protected LookupPickerField taskField;
     @Named("fieldGroup.status")
@@ -85,66 +84,66 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         taskField.addClearAction();
         fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
         fieldGroup.addCustomField("rejectionReason", ComponentsHelper.getCustomTextArea());
-        fieldGroup.addCustomField("timeInMinutes", new FieldGroup.CustomFieldGenerator() {
-            @Override
-            public Component generateField(Datasource datasource, String propertyId) {
-                return componentsFactory.<TextField>createComponent(TextField.NAME);
-            }
+        fieldGroup.addCustomField("timeInMinutes", (datasource, propertyId) -> {
+            return componentsFactory.<TextField>createComponent(TextField.NAME);
         });
 
         rejectionReason = fieldGroup.getFieldComponent("rejectionReason");
         time = (TextField) fieldGroup.getFieldComponent("timeInMinutes");
 
-        timeEntryDs.addListener(new DsListenerAdapter<TimeEntry>() {
-            @Override
-            public void valueChanged(TimeEntry source, String property, Object prevValue, Object value) {
-                if ("task".equals(property)) {
-                    tagsDs.clear();
-                    if (value != null) {
-                        Task task = (Task) value;
-                        for (Tag tag : task.getDefaultTags()) {
-                            tagsDs.includeItem(tag);
-                        }
-                        updateOtherTagsDs(task.getProject(), task.getRequiredTagTypes());
+        timeEntryDs.addItemPropertyChangeListener(e -> {
+            if ("task".equals(e.getProperty())) {
+                tagsDs.clear();
+                if (e.getValue() != null) {
+                    Task task = (Task) e.getValue();
+                    for (Tag tag : task.getDefaultTags()) {
+                        tagsDs.includeItem(tag);
                     }
-                    updateStatusField();
-                    updateRejectionReasonField();
-                    updateTagsLists();
-                    setDefaultStatus(getItem());
-                    updateActivityType();
+                    updateOtherTagsDs(task.getProject(), task.getRequiredTagTypes());
                 }
-                updateStatus();
+                updateStatusField();
+                updateRejectionReasonField();
+                updateTagsLists();
+                setDefaultStatus(getItem());
+                updateActivityType();
             }
+            updateStatus();
         });
     }
 
-    private void updateActivityType() {
+    protected void updateActivityType() {
         activityTypesDs.refresh();
         activityType.setVisible(activityTypesDs.getItemIds().size() > 0);
     }
 
-    private void updateTagsLists() {
-        tagsTokenListsBox.removeAll();
-        Task task = getItem().getTask();
-        if (task != null && CollectionUtils.isNotEmpty(task.getRequiredTagTypes())) {
-            for (TagType type : task.getRequiredTagTypes()) {
-                CollectionDatasource<Tag, UUID> ds = createTagsDs(null);
-                CollectionDatasource optionDs = createTagsDs(type);
-                TokenList tokenList = createTokenList(ds, optionDs, getListCaption(type));
-                for (Tag tag : getAssignedTags(type, null)) {
-                    ds.addItem(tag);
+    protected void updateTagsLists() {
+        if (security.isSpecificPermitted("app.canEditTags")) {
+            tagsTokenListsBox.removeAll();
+            Task task = getItem().getTask();
+            if (task != null && CollectionUtils.isNotEmpty(task.getRequiredTagTypes())) {
+                for (TagType type : task.getRequiredTagTypes()) {
+                    CollectionDatasource<Tag, UUID> ds = createTagsDs(null);
+                    CollectionDatasource optionDs = createTagsDs(type);
+                    TokenList tokenList = createTokenList(ds, optionDs, getListCaption(type));
+                    for (Tag tag : getAssignedTags(type, null)) {
+                        ds.addItem(tag);
+                    }
+                    ds.addCollectionChangeListener(new TagDsListener());
+                    tagsTokenListsBox.add(tokenList);
                 }
-                ds.addListener(new TagDsListener());
-                tagsTokenListsBox.add(tokenList);
             }
-        }
-        otherTagsDs.clear();
-        for (Tag tag : getAssignedTags(null, task != null ? task.getRequiredTagTypes() : null)) {
-            otherTagsDs.addItem(tag);
+            otherTagsDs.clear();
+            for (Tag tag : getAssignedTags(null, task != null ? task.getRequiredTagTypes() : null)) {
+                otherTagsDs.addItem(tag);
+            }
+
+            otherTagsTokenList.setVisible(!CollectionUtils.isEmpty(optionOtherTagsDs.getItemIds()));
+        } else {
+            otherTagsTokenList.setVisible(false);
         }
     }
 
-    private Set<Tag> getAssignedTags(TagType required, Set<TagType> exclude) {
+    protected Set<Tag> getAssignedTags(TagType required, Set<TagType> exclude) {
         TimeEntry timeEntry = getItem();
         if (timeEntry == null || CollectionUtils.isEmpty(timeEntry.getTags())) {
             return Collections.emptySet();
@@ -162,7 +161,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         return assigned;
     }
 
-    private String getListCaption(TagType type) {
+    protected String getListCaption(TagType type) {
         return String.format("%s %s*", type.getName(), otherTagsTokenList.getCaption());
     }
 
@@ -186,7 +185,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         if (required == null) {
             return builder.buildCollectionDatasource();
         } else {
-            TagsCollectionDatasource ds = builder.buildCollectionDatasource();
+            TagsCollectionDatasource ds = (TagsCollectionDatasource) builder.buildCollectionDatasource();
             ds.setRequiredTagType(required);
             ds.refresh();
             return ds;
@@ -194,7 +193,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     }
 
     protected TokenList createTokenList(CollectionDatasource ds, CollectionDatasource optionDs, String caption) {
-        TokenList tokenList = componentsFactory.createComponent(TokenList.NAME);
+        TokenList tokenList = componentsFactory.createComponent(TokenList.class);
         tokenList.setCaption(caption);
         tokenList.setWidth("500px");
         tokenList.setInline(true);
@@ -246,7 +245,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
             updateOtherTagsDs(task.getProject(), task.getRequiredTagTypes());
         }
         updateTagsLists();
-        otherTagsDs.addListener(new TagDsListener());
+        otherTagsDs.addCollectionChangeListener(new TagDsListener());
 
         if (!securityAssistant.isSuperUser()) {
             statusField.setOptionsList(Arrays.asList(TimeEntryStatus.NEW, TimeEntryStatus.APPROVED, TimeEntryStatus.REJECTED));
@@ -258,17 +257,14 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
 
         updateActivityType();
 
-        time.addListener(new ValueListener() {
-            @Override
-            public void valueChanged(Object source, String property, Object prevValue, Object value) {
-                HoursAndMinutes hoursAndMinutes = timeParser.parseToHoursAndMinutes(String.valueOf(value));
-                if (hoursAndMinutes.toMinutes() > 0) {
-                    getItem().setTimeInMinutes(hoursAndMinutes.toMinutes());
-                    time.setValue(hoursAndMinutes);
-                } else {
-                    getItem().setTimeInMinutes(null);
-                    time.setValue(null);
-                }
+        time.addValueChangeListener(e -> {
+            HoursAndMinutes hoursAndMin = timeParser.parseToHoursAndMinutes(String.valueOf(e.getValue()));
+            if (hoursAndMin.toMinutes() > 0) {
+                getItem().setTimeInMinutes(hoursAndMin.toMinutes());
+                time.setValue(hoursAndMin);
+            } else {
+                getItem().setTimeInMinutes(null);
+                time.setValue(null);
             }
         });
     }
@@ -345,17 +341,18 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         item.setStatus(TimeEntryStatus.NEW);
     }
 
-    protected class TagDsListener extends CollectionDsListenerAdapter<Tag> {
+    protected class TagDsListener implements CollectionDatasource.CollectionChangeListener<Tag, UUID> {
+
         @Override
-        public void collectionChanged(CollectionDatasource ds, Operation operation, List<Tag> items) {
-            switch (operation) {
+        public void collectionChanged(CollectionDatasource.CollectionChangeEvent<Tag, UUID> e) {
+            switch (e.getOperation()) {
                 case ADD:
-                    for (Tag tag : items) {
+                    for (Tag tag : e.getItems()) {
                         tagsDs.addItem(tag);
                     }
                     break;
                 case REMOVE:
-                    for (Tag tag : items) {
+                    for (Tag tag : e.getItems()) {
                         tagsDs.removeItem(tag);
                     }
                     break;

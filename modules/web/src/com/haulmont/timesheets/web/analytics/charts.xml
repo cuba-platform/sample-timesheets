@@ -1,79 +1,52 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<window xmlns="http://schemas.haulmont.com/cuba/5.5/window.xsd"
-        caption="msg://screenCaption"
+<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://screenCaption"
         class="com.haulmont.timesheets.web.analytics.ChartsController"
         messagesPack="com.haulmont.timesheets.web.analytics"
-        xmlns:chart="http://schemas.haulmont.com/charts/5.5/charts.xsd">
+        xmlns:chart="http://schemas.haulmont.com/charts/charts.xsd">
     <dsContext>
-        <collectionDatasource id="pieDs"
-                              class="com.haulmont.timesheets.web.analytics.TaskTimeSummary"
-                              refreshMode="NEVER"
-                              allowCommit="false"
+        <collectionDatasource id="pieDs" allowCommit="false"
+                              class="com.haulmont.timesheets.web.analytics.TaskTimeSummary" refreshMode="NEVER"
                               view="_local"/>
         <collectionDatasource id="projectsDs" class="com.haulmont.timesheets.entity.Project" view="_minimal"/>
     </dsContext>
-    <layout expand="tabsheet">
-        <tabSheet id="tabsheet">
+    <layout>
+        <tabSheet id="tabsheet" height="100%">
             <tab id="tasks" caption="msg://caption.tasksByPeriodAndProject" expand="tasksChart" spacing="true">
-                <hbox spacing="true" margin="true">
-                    <label align="MIDDLE_LEFT" value="msg://caption.start" stylename="h4"/>
+                <hbox margin="true" spacing="true">
+                    <label align="MIDDLE_LEFT" stylename="h4" value="msg://caption.start"/>
                     <dateField id="taskStart" resolution="DAY"/>
-                    <label align="MIDDLE_LEFT" value="msg://caption.end" stylename="h4"/>
+                    <label align="MIDDLE_LEFT" stylename="h4" value="msg://caption.end"/>
                     <dateField id="taskEnd" resolution="DAY"/>
-                    <label align="MIDDLE_LEFT" value="msg://caption.project" stylename="h4"/>
+                    <label align="MIDDLE_LEFT" stylename="h4" value="msg://caption.project"/>
                     <lookupField id="taskProject" optionsDatasource="projectsDs"/>
                     <button id="taskRefresh" caption="msg://caption.refresh" invoke="refreshTasks"/>
                 </hbox>
-                <chart:pieChart id="tasksChart"
-                                angle="50"
-                                balloonText="[[taskName]] - [[hoursSpentForTheTask]] hrs"
-                                datasource="pieDs"
-                                depth3D="15"
-                                height="100%"
-                                titleField="taskName"
-                                valueField="hoursSpentForTheTask"
+                <chart:pieChart id="tasksChart" angle="50" balloonText="[[taskName]] - [[hoursSpentForTheTask]] hrs"
+                                datasource="pieDs" depth3D="15" titleField="taskName" valueField="hoursSpentForTheTask"
                                 width="100%">
-                    <chart:exportConfig menuTop="0px">
-                        <chart:menuItems>
-                            <chart:menu format="PNG"
-                                        icon="VAADIN/resources/amcharts/images/export.png"/>
-                        </chart:menuItems>
-                    </chart:exportConfig>
-                    <chart:legend markerType="CIRCLE" position="RIGHT" marginRight="80" autoMargins="false" valueText="[[value]] hrs"/>
+                    <chart:export/>
+                    <chart:legend autoMargins="false" marginRight="80" markerType="CIRCLE" position="RIGHT"
+                                  valueText="[[value]] hrs"/>
                 </chart:pieChart>
             </tab>
             <tab id="projects" caption="msg://caption.timePerProject" expand="projectsChart" spacing="true">
-                <hbox spacing="true" margin="true">
-                    <label align="MIDDLE_LEFT" value="msg://caption.start" stylename="h4"/>
+                <hbox margin="true" spacing="true">
+                    <label align="MIDDLE_LEFT" stylename="h4" value="msg://caption.start"/>
                     <dateField id="projectsStart" resolution="DAY"/>
-                    <label align="MIDDLE_LEFT" value="msg://caption.end" stylename="h4"/>
+                    <label align="MIDDLE_LEFT" stylename="h4" value="msg://caption.end"/>
                     <dateField id="projectsEnd" resolution="DAY"/>
                     <button id="projectsRefresh" caption="msg://caption.refresh" invoke="refreshProjects"/>
                 </hbox>
-                <chart:serialChart id="projectsChart"
-                                   marginTop="10" marginLeft="0" marginBottom="0"
-                                   width="100%" height="100%"
-                                   categoryField="week"
-                                   >
+                <chart:serialChart id="projectsChart" categoryField="week" marginBottom="0" marginLeft="0"
+                                   marginTop="10" width="100%">
                     <chart:chartCursor/>
-                    <chart:legend markerType="TRIANGLE_RIGHT"
-                                  position="TOP"
-                                  valueAlign="LEFT"/>
-                    <chart:categoryAxis startOnAxis="true"
-                                        title="msg://caption.week"/>
+                    <chart:legend markerType="TRIANGLE_RIGHT" position="TOP" valueAlign="LEFT"/>
+                    <chart:categoryAxis startOnAxis="true" title="msg://caption.week"/>
                     <chart:valueAxes>
-                        <chart:axis position="LEFT"
-                                    unit=" hrs"
-                                    stackType="NONE"
-                                    title="msg://caption.timeSpent"
-                                    minimum="0"/>
+                        <chart:axis minimum="0" position="LEFT" stackType="NONE" title="msg://caption.timeSpent"
+                                    unit=" hrs"/>
                     </chart:valueAxes>
-                    <chart:exportConfig menuTop="0px">
-                        <chart:menuItems>
-                            <chart:menu format="PNG"
-                                        icon="VAADIN/resources/amcharts/images/export.png"/>
-                        </chart:menuItems>
-                    </chart:exportConfig>
+                    <chart:export/>
                     <chart:chartScrollbar/>
                 </chart:serialChart>
             </tab>
