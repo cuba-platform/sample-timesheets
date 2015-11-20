@@ -1,6 +1,6 @@
 # timesheets
 
-The Timesheets application is a time tracking system developed and in practical use  as a companywide time management tool by [Haulmont] (http://www.haulmont.com/).
+The Timesheets application is a time tracking system developed and in practical use  as a companywide time management tool by [Haulmont] (http://www.haulmont.com/). The application is based on [CUBA platform](https://www.cuba-platform.com/en/).
 
 There are 2 optional modules within the application:
 * Reports
@@ -58,7 +58,7 @@ This application supports such a process out of the box. The *Timesheet Approval
 
 ## Other features
 
-All applications developed by Haulmont are based on [CUBA platform](https://www.cuba-platform.com/en/). Thus the Timesheets application supports all CUBA platform features: reporting, charts, data audit and recovery, scheduling, etc.
+Lori Timesheets inherits all features of [CUBA platform](https://www.cuba-platform.com/en/): reporting, charts, data audit and recovery, scheduling, etc.
 
 ## Usage
 Open the project in CUBA Studio and execute *Run > Create database*, then *Run > Start application server*. The application will start at `http://localhost:8080/app`. Use *admin* as both login and password to access the application.
