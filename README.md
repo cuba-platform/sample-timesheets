@@ -1,6 +1,6 @@
 # Timesheets
 
-The Timesheets application is a time tracking system developed and in practical use  as a companywide time management tool by [Haulmont] (http://www.haulmont.com/). The application is based on [CUBA platform](https://www.cuba-platform.com/en/).
+The Timesheets application is a time tracking system developed and in practical use  as a companywide time management tool by [Haulmont] (http://www.haulmont.com/). The application is based on [CUBA platform](https://www.cuba-platform.com/).
 
 There are 2 optional modules within the application:
 * Reports
