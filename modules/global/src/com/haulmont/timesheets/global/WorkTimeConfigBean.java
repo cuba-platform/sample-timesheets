@@ -21,8 +21,8 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.config.WorkTimeConfig;
 import com.haulmont.timesheets.entity.DayOfWeek;
 import com.haulmont.timesheets.entity.ExtUser;
+import org.springframework.stereotype.Component;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.*;
@@ -30,7 +30,7 @@ import java.util.*;
 /**
  * @author gorelov
  */
-@ManagedBean(WorkTimeConfigBean.NAME)
+@Component(WorkTimeConfigBean.NAME)
 public class WorkTimeConfigBean {
 
     public static final String NAME = "ts_WorkTimeConfigBean";
@@ -80,7 +80,7 @@ public class WorkTimeConfigBean {
 
     public void setWorkDays(Collection<DayOfWeek> workDays) {
         if (workDays.isEmpty()) {
-            workTimeConfig.setWorkDays(Collections.<String>emptyList());
+            workTimeConfig.setWorkDays(Collections.emptyList());
             return;
         }
         int count = 3;
@@ -99,11 +99,11 @@ public class WorkTimeConfigBean {
         return Collections.unmodifiableList(days);
     }
 
-    public Date getOpenPeriodStart(){
+    public Date getOpenPeriodStart() {
         return workTimeConfig.getOpenPeriodStart();
     }
 
-    public void setOpenPeriodStart(Date date){
+    public void setOpenPeriodStart(Date date) {
         workTimeConfig.setOpenPeriodStart(date);
     }
 }

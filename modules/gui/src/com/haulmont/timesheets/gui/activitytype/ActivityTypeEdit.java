@@ -36,8 +36,6 @@ public class ActivityTypeEdit extends AbstractEditor<ActivityType> {
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidth(600);
-
         fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
         activityTypeDs.addItemPropertyChangeListener(new ComponentsHelper.EntityCodeGenerationListener<>());
     }

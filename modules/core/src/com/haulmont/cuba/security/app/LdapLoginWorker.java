@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.app.DataManagerBean;
 import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.Configuration;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.UserRole;
@@ -53,6 +54,9 @@ public class LdapLoginWorker extends LoginWorkerBean {
 
     @Inject
     protected DataManagerBean dataManager;
+
+    @Inject
+    protected Metadata metadata;
 
     @Override
     public UserSession login(String login, String password, Locale locale, Map<String, Object> params) throws LoginException {
@@ -103,7 +107,7 @@ public class LdapLoginWorker extends LoginWorkerBean {
     }
 
     protected void createUserFromLdap(String login, Map<String, String> userAttributes) {
-        ExtUser user = new ExtUser();
+        ExtUser user = metadata.create(ExtUser.class);
         CommitContext context = new CommitContext();
         context.getCommitInstances().add(user);
         user.setLogin(login);
@@ -119,7 +123,7 @@ public class LdapLoginWorker extends LoginWorkerBean {
                     .createQuery("select r from sec$Role r where r.defaultRole = true", Role.class).getResultList();
             List<UserRole> userRoles = new ArrayList<>();
             for (Role defaultRole : defaultRoles) {
-                UserRole userRole = new UserRole();
+                UserRole userRole = metadata.create(UserRole.class);
                 userRole.setUser(user);
                 userRole.setRole(defaultRole);
                 userRoles.add(userRole);

@@ -42,8 +42,6 @@ public class TagEdit extends AbstractEditor<Tag> {
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidthAuto();
-
         tagTypeField.addAction(ComponentsHelper.createLookupAction(tagTypeField));
         tagTypeField.addClearAction();
 

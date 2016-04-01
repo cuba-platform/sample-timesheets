@@ -17,6 +17,7 @@
 
 package com.haulmont.timesheets.service;
 
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.timesheets.SystemDataManager;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 
@@ -44,7 +46,8 @@ public class CommandLineServiceBean implements CommandLineService {
     protected SystemDataManager systemDataManager;
     @Inject
     protected TimeParser timeParser;
-
+    @Inject
+    protected Metadata metadata;
     @Inject
     protected TimeSource timeSource;
 
@@ -61,7 +64,7 @@ public class CommandLineServiceBean implements CommandLineService {
                 List<Tag> tags = systemDataManager.getEntitiesByCodes(Tag.class, tagCodes, View.MINIMAL);
                 ActivityType activityType = systemDataManager.getEntityByCode(ActivityType.class, activityTypeCode, View.LOCAL);
 
-                TimeEntry timeEntry = new TimeEntry();
+                TimeEntry timeEntry = metadata.create(TimeEntry.class);
                 timeEntry.setTask(task);
                 timeEntry.setActivityType(activityType);
                 timeEntry.setTags(new HashSet<>(tags));

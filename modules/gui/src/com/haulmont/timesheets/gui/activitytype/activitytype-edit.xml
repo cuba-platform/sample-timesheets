@@ -8,6 +8,7 @@
             <collectionDatasource id="projectsDs" property="projects"/>
         </datasource>
     </dsContext>
+    <dialogMode width="600"/>
     <layout expand="windowActions" spacing="true">
         <fieldGroup id="fieldGroup" datasource="activityTypeDs">
             <column width="250px">

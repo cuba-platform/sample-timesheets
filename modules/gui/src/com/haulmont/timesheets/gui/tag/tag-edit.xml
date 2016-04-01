@@ -11,6 +11,7 @@
             </query>
         </collectionDatasource>
     </dsContext>
+    <dialogMode width="AUTO"/>
     <layout expand="windowActions" spacing="true">
         <fieldGroup id="fieldGroup" datasource="tagDs">
             <column width="250px">

@@ -25,6 +25,7 @@
             </query>
         </collectionDatasource>
     </dsContext>
+    <dialogMode width="AUTO"/>
     <layout expand="tabsheet" spacing="true">
         <tabSheet id="tabsheet">
             <tab id="main" caption="msg://caption.main" margin="true">

@@ -15,7 +15,6 @@
  */
 package com.haulmont.timesheets.gui.project;
 
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TreeTable;
@@ -40,14 +39,10 @@ public class ProjectLookup extends AbstractLookup {
     @Inject
     protected ProjectsService projectsService;
     @Inject
-    protected TreeTable projectsTable;
+    protected TreeTable<Project> projectsTable;
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidth(800);
-        getDialogParams().setHeight(500);
-        getDialogParams().setResizable(true);
-
         Project project = (Project) params.get("parentProject");
         if (project != null) {
             projectsDs.excludeItem(project);
@@ -62,13 +57,12 @@ public class ProjectLookup extends AbstractLookup {
             projectsDs.excludeItem(project);
         }
 
-        projectsTable.setStyleProvider(new Table.StyleProvider() {
+        projectsTable.setStyleProvider(new Table.StyleProvider<Project>() {
             @Nullable
             @Override
-            public String getStyleName(Entity entity, String property) {
+            public String getStyleName(Project entity, String property) {
                 if ("status".equals(property)) {
-                    Project project = (Project) entity;
-                    return ComponentsHelper.getProjectStatusStyle(project);
+                    return ComponentsHelper.getProjectStatusStyle(entity);
                 }
                 return null;
             }

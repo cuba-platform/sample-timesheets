@@ -15,6 +15,7 @@
             </query>
         </collectionDatasource>
     </dsContext>
+    <dialogMode width="AUTO"/>
     <layout expand="windowActions" spacing="true">
         <grid spacing="true" width="100%">
             <columns>

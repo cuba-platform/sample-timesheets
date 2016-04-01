@@ -10,6 +10,7 @@
             </query>
         </hierarchicalDatasource>
     </dsContext>
+    <dialogMode width="800" height="600" resizable="true"/>
     <layout expand="projectsTable" spacing="true">
         <filter id="filter" datasource="projectsDs">
             <properties include=".*"/>

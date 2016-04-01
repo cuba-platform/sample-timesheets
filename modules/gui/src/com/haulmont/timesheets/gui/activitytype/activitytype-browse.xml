@@ -9,6 +9,7 @@
             </query>
         </collectionDatasource>
     </dsContext>
+    <dialogMode width="800" height="500"/>
     <layout expand="activityTypesTable" spacing="true">
         <filter id="filter" datasource="activityTypesDs">
             <properties include=".*"/>

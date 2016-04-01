@@ -36,9 +36,6 @@ public class ActivityTypeBrowse extends AbstractLookup {
     public void init(Map<String, Object> params) {
         super.init(params);
 
-        getDialogParams().setWidth(800);
-        getDialogParams().setHeight(500);
-
         activityTypesTableCreate.setOpenType(WindowManager.OpenType.DIALOG);
         activityTypesTableEdit.setOpenType(WindowManager.OpenType.DIALOG);
     }

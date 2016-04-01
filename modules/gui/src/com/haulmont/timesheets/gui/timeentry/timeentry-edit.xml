@@ -18,6 +18,7 @@
             </query>
         </collectionDatasource>
     </dsContext>
+    <dialogMode width="AUTO"/>
     <layout expand="scrollBox" spacing="true">
         <scrollBox id="scrollBox" spacing="true">
             <fieldGroup id="fieldGroup" datasource="timeEntryDs" width="500px">

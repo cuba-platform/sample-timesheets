@@ -369,7 +369,7 @@ public class WeeklyReportEntry extends AbstractNotPersistentEntity implements Ti
             }
         }
 
-        return timeEntries != null ? timeEntries : Collections.<TimeEntry>emptyList();
+        return timeEntries != null ? timeEntries : Collections.emptyList();
     }
 
     public boolean hasFilledTime() {

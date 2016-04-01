@@ -20,6 +20,11 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.components.CheckBox;
+import com.haulmont.cuba.gui.components.Component;
+import com.haulmont.cuba.gui.components.DateField;
+import com.haulmont.cuba.gui.components.Label;
+import com.haulmont.cuba.gui.components.TextField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
@@ -92,6 +97,8 @@ public class CalendarScreen extends AbstractWindow {
     private CollectionDatasource<Project, UUID> projectsDs;
     @Inject
     private ProjectsService projectsService;
+    @Inject
+    private Metadata metadata;
 
     protected TimeSheetsCalendar calendar;
     protected Date firstDayOfMonth;
@@ -126,7 +133,7 @@ public class CalendarScreen extends AbstractWindow {
                         showOptionDialog(getMessage("caption.attention"),
                                 tagsValidationResult.cause + getMessage("confirmation.manuallyTagSetting"),
                                 MessageType.CONFIRMATION_HTML,
-                                Arrays.<com.haulmont.cuba.gui.components.Action>asList(
+                                Arrays.asList(
                                         new DialogAction(DialogAction.Type.YES) {
                                             @Override
                                             public void actionPerform(Component component) {
@@ -199,15 +206,14 @@ public class CalendarScreen extends AbstractWindow {
 
     protected List<ActivityType> getActivityTypesForProject(Project project) {
         if (project != null) {
-            List<ActivityType> activityTypesForProject = projectsService.getActivityTypesForProject(project, View.MINIMAL);
-            return activityTypesForProject;
+            return projectsService.getActivityTypesForProject(project, View.MINIMAL);
         } else {
             return Collections.emptyList();
         }
     }
 
     public void simpleViewApply() {
-        TimeEntry timeEntry = new TimeEntry();
+        TimeEntry timeEntry = metadata.create(TimeEntry.class);
         timeEntry.setTask(task.getValue());
         timeEntry.setTimeInMinutes(HoursAndMinutes.fromString(spentTime.getValue()).toMinutes());
         commandLine.getTimeEntriesHandler().handle(Arrays.asList(timeEntry));
@@ -256,7 +262,7 @@ public class CalendarScreen extends AbstractWindow {
         });
         calendar.setHandler((CalendarComponentEvents.WeekClickHandler) null);
         calendar.setHandler((CalendarComponentEvents.DateClickEvent event) -> {
-            TimeEntry timeEntry = new TimeEntry();
+            TimeEntry timeEntry = metadata.create(TimeEntry.class);
             timeEntry.setDate(event.getDate());
             editTimeEntry(timeEntry);
         });
@@ -296,7 +302,7 @@ public class CalendarScreen extends AbstractWindow {
     }
 
     public void addTimeEntry() {
-        editTimeEntry(new TimeEntry());
+        editTimeEntry(metadata.create(TimeEntry.class));
     }
 
     protected void updateSummaryColumn() {
@@ -463,7 +469,7 @@ public class CalendarScreen extends AbstractWindow {
                 // Check that the click was not done on an event
                 if (target instanceof Date) {
                     Date date = (Date) target;
-                    TimeEntry timeEntry = new TimeEntry();
+                    TimeEntry timeEntry = metadata.create(TimeEntry.class);
                     timeEntry.setDate(date);
                     editTimeEntry(timeEntry);
                 } else {

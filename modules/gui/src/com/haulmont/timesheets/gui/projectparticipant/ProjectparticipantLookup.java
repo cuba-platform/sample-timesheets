@@ -33,7 +33,7 @@ import java.util.UUID;
 public class ProjectparticipantLookup extends AbstractLookup {
 
     @Inject
-    protected Table projectParticipantsTable;
+    protected Table<ProjectParticipant> projectParticipantsTable;
     @Inject
     protected CollectionDatasource<ProjectParticipant, UUID> projectParticipantsDs;
 

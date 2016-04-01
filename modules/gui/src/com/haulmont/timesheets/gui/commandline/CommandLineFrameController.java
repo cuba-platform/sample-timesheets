@@ -74,11 +74,11 @@ public class CommandLineFrameController extends AbstractFrame {
         if (timeEntriesHandler != null) {
             try {
                 List<TimeEntry> timeEntries =
-                        commandLineService.createTimeEntriesForTheCommandLine(commandLine.<String>getValue());
+                        commandLineService.createTimeEntriesForTheCommandLine(commandLine.getValue());
                 if (CollectionUtils.isEmpty(timeEntries)) {
                     showNotification(getMessage("notification.emptyCommandResult"), NotificationType.HUMANIZED);
                 }
-                timeEntriesHandler.handle(timeEntries != null ? timeEntries : Collections.<TimeEntry>emptyList());
+                timeEntriesHandler.handle(timeEntries != null ? timeEntries : Collections.emptyList());
             } catch (Exception e) {
                 showNotification(getMessage("error.commandLine"), NotificationType.WARNING);
             }

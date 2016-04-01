@@ -15,7 +15,7 @@
  */
 package com.haulmont.timesheets.gui.task;
 
-import com.haulmont.cuba.core.entity.Entity;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractAction;
 import com.haulmont.cuba.gui.components.AbstractLookup;
@@ -36,16 +36,17 @@ public class TaskBrowse extends AbstractLookup {
 
     @Inject
     protected Table<Task> tasksTable;
+    @Inject
+    protected Metadata metadata;
 
     @Override
     public void init(Map<String, Object> params) {
-        tasksTable.setStyleProvider(new Table.StyleProvider() {
+        tasksTable.setStyleProvider(new Table.StyleProvider<Task>() {
             @Nullable
             @Override
-            public String getStyleName(Entity entity, @Nullable String property) {
+            public String getStyleName(Task entity, @Nullable String property) {
                 if ("status".equals(property)) {
-                    Task task = (Task) entity;
-                    return ComponentsHelper.getTaskStatusStyle(task);
+                    return ComponentsHelper.getTaskStatusStyle(entity);
                 }
                 return null;
             }
@@ -61,7 +62,7 @@ public class TaskBrowse extends AbstractLookup {
             public void actionPerform(Component component) {
                 Task selected = tasksTable.getSingleSelected();
                 if (selected != null) {
-                    TimeEntry timeEntry = new TimeEntry();
+                    TimeEntry timeEntry = metadata.create(TimeEntry.class);
                     timeEntry.setTask(selected);
                     openEditor("ts$TimeEntry.edit", timeEntry, WindowManager.OpenType.DIALOG);
                 }

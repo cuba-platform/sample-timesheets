@@ -36,8 +36,6 @@ public class ProjectParticipantEdit extends AbstractEditor<ProjectParticipant> {
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidthAuto();
-
         userField.addAction(ComponentsHelper.createLookupAction(userField));
         userField.addAction(new PickerField.ClearAction(userField));
 

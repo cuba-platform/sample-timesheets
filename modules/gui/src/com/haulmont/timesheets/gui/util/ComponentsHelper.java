@@ -66,11 +66,11 @@ public class ComponentsHelper {
 
     public static PickerField.LookupAction createLookupAction(PickerField pickerField) {
         PickerField.LookupAction lookupAction = new PickerField.LookupAction(pickerField);
-        lookupAction.setLookupScreenOpenType(WindowManager.OpenType.DIALOG);
-        lookupAction.setLookupScreenDialogParams(new DialogParams()
-                .setWidth(800)
-                .setHeight(500)
-                .setResizable(true));
+        lookupAction.setLookupScreenOpenType(WindowManager.OpenType.DIALOG
+                .width(800)
+                .height(500)
+                .resizable(true)
+        );
         return lookupAction;
     }
 

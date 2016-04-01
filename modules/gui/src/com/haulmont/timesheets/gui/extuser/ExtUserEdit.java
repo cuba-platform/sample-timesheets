@@ -32,13 +32,6 @@ public class ExtUserEdit extends UserEditor {
     protected WorkTimeConfigBean workTimeConfigBean;
 
     @Override
-    public void init(Map<String, Object> params) {
-        super.init(params);
-
-        getDialogParams().setWidthAuto();
-    }
-
-    @Override
     protected void initNewItem(User item) {
         super.initNewItem(item);
         ExtUser user = (ExtUser) item;

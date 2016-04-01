@@ -3,6 +3,7 @@
         class="com.haulmont.timesheets.gui.extuser.ExtUserLookup"
         extends="/com/haulmont/cuba/gui/app/security/user/browse/user-lookup.xml"
         messagesPack="com.haulmont.timesheets.gui.extuser">
+    <dialogMode width="800" height="600" resizable="true"/>
     <layout>
         <table id="usersTable" multiselect="true"/>
     </layout>

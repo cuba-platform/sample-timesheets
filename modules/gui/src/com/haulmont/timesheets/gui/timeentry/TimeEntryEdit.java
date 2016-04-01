@@ -90,8 +90,6 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidthAuto();
-
         taskField.addAction(ComponentsHelper.createLookupAction(taskField));
         taskField.addClearAction();
         fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
@@ -289,7 +287,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
                 showOptionDialog(getMessage("caption.attention"),
                         validationResult.cause + getMessage("confirmation.manuallyTagSetting"),
                         MessageType.CONFIRMATION_HTML,
-                        Arrays.<Action>asList(
+                        Arrays.asList(
                                 new DialogAction(DialogAction.Type.YES) {
                                     @Override
                                     public void actionPerform(Component component) {

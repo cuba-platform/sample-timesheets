@@ -35,9 +35,6 @@ public class TagBrowse extends AbstractLookup {
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidth(800);
-        getDialogParams().setHeight(500);
-
         tagsTableCreate.setOpenType(WindowManager.OpenType.DIALOG);
         tagsTableEdit.setOpenType(WindowManager.OpenType.DIALOG);
     }

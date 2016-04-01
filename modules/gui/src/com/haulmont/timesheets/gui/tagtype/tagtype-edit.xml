@@ -8,6 +8,7 @@
             <collectionDatasource id="tagsDs" property="tags"/>
         </datasource>
     </dsContext>
+    <dialogMode width="600"/>
     <layout expand="windowActions" spacing="true">
         <tabSheet>
             <tab id="main" caption="msg://caption.main" margin="true" spacing="true">

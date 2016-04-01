@@ -32,8 +32,6 @@ public class ClientEdit extends AbstractEditor<Client> {
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidthAuto();
-
         clientDs.addItemPropertyChangeListener(new ComponentsHelper.EntityCodeGenerationListener<>());
     }
 }

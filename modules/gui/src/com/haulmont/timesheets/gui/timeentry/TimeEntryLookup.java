@@ -15,7 +15,6 @@
  */
 package com.haulmont.timesheets.gui.timeentry;
 
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
@@ -33,21 +32,16 @@ import java.util.Map;
 public class TimeEntryLookup extends AbstractLookup {
 
     @Inject
-    protected Table timeEntriesTable;
+    protected Table<TimeEntry> timeEntriesTable;
 
     @Override
     public void init(final Map<String, Object> params) {
-        getDialogParams().setWidth(800);
-        getDialogParams().setHeight(500);
-        getDialogParams().setResizable(true);
-
-        timeEntriesTable.setStyleProvider(new Table.StyleProvider() {
+        timeEntriesTable.setStyleProvider(new Table.StyleProvider<TimeEntry>() {
             @Nullable
             @Override
-            public String getStyleName(Entity entity, String property) {
+            public String getStyleName(TimeEntry entity, String property) {
                 if ("status".equals(property)) {
-                    TimeEntry timeEntry = (TimeEntry) entity;
-                    return ComponentsHelper.getTimeEntryStatusStyle(timeEntry);
+                    return ComponentsHelper.getTimeEntryStatusStyle(entity);
                 }
                 return null;
             }

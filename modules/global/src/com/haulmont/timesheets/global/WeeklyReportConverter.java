@@ -52,9 +52,8 @@ public class WeeklyReportConverter {
             if (activityType != null ? !activityType.equals(that.activityType) : that.activityType != null)
                 return false;
             if (!project.equals(that.project)) return false;
-            if (!task.equals(that.task)) return false;
+            return task.equals(that.task);
 
-            return true;
         }
 
         @Override

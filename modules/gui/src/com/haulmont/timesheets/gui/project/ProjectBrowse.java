@@ -21,6 +21,7 @@ import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -64,6 +65,8 @@ public class ProjectBrowse extends AbstractLookup {
     protected CreateAction participantsTableCreate;
     @Named("participantsTable.edit")
     protected EditAction participantsTableEdit;
+    @Inject
+    protected Metadata metadata;
 
     @Override
     public void init(Map<String, Object> params) {
@@ -143,13 +146,12 @@ public class ProjectBrowse extends AbstractLookup {
         });
         tasksTable.addAction(new ComponentsHelper.TaskStatusTrackingAction(tasksTable, "switchStatus"));
 
-        tasksTable.setStyleProvider(new Table.StyleProvider() {
+        tasksTable.setStyleProvider(new Table.StyleProvider<Task>() {
             @Nullable
             @Override
-            public String getStyleName(Entity entity, @Nullable String property) {
+            public String getStyleName(Task entity, @Nullable String property) {
                 if ("status".equals(property)) {
-                    Task task = (Task) entity;
-                    return ComponentsHelper.getTaskStatusStyle(task);
+                    return ComponentsHelper.getTaskStatusStyle(entity);
                 }
                 return null;
             }
@@ -208,13 +210,12 @@ public class ProjectBrowse extends AbstractLookup {
             });
         }
 
-        projectsTable.setStyleProvider(new Table.StyleProvider() {
+        projectsTable.setStyleProvider(new Table.StyleProvider<Project>() {
             @Nullable
             @Override
-            public String getStyleName(Entity entity, String property) {
+            public String getStyleName(Project entity, @Nullable String property) {
                 if ("status".equals(property)) {
-                    Project project = (Project) entity;
-                    return ComponentsHelper.getProjectStatusStyle(project);
+                    return ComponentsHelper.getProjectStatusStyle(entity);
                 }
                 return null;
             }
@@ -269,7 +270,7 @@ public class ProjectBrowse extends AbstractLookup {
         List<User> assignedUsers = projectsService.getProjectUsers(project, View.MINIMAL);
         for (ProjectParticipant existParticipant : participants) {
             if (!assignedUsers.contains(existParticipant.getUser())) {
-                ProjectParticipant participant = new ProjectParticipant();
+                ProjectParticipant participant = metadata.create(ProjectParticipant.class);
                 participant.setUser(existParticipant.getUser());
                 participant.setRole(existParticipant.getRole());
                 participant.setProject(project);

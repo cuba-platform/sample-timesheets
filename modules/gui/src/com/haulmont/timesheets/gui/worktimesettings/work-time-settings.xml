@@ -2,6 +2,7 @@
 <window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://caption"
         class="com.haulmont.timesheets.gui.worktimesettings.WorkTimeSettings"
         messagesPack="com.haulmont.timesheets.gui.worktimesettings">
+    <dialogMode width="AUTO"/>
     <layout expand="windowActions" spacing="true">
         <hbox spacing="true">
             <label align="MIDDLE_LEFT" value="msg://workHoursForWeek"/>

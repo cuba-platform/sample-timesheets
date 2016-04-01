@@ -5,6 +5,7 @@
     <dsContext>
         <datasource id="holidayDs" class="com.haulmont.timesheets.entity.Holiday" view="_local"/>
     </dsContext>
+    <dialogMode width="AUTO"/>
     <layout expand="windowActions" spacing="true">
         <fieldGroup id="fieldGroup" datasource="holidayDs">
             <column width="250px">

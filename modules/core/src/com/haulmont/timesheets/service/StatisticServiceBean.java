@@ -144,9 +144,8 @@ public class StatisticServiceBean implements StatisticService {
             WeekAndProject that = (WeekAndProject) o;
 
             if (project != null ? !project.equals(that.project) : that.project != null) return false;
-            if (week != null ? !week.equals(that.week) : that.week != null) return false;
+            return week != null ? week.equals(that.week) : that.week == null;
 
-            return true;
         }
 
         @Override

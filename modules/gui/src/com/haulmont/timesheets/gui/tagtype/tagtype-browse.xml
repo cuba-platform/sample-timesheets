@@ -9,6 +9,7 @@
             </query>
         </collectionDatasource>
     </dsContext>
+    <dialogMode width="800" height="600"/>
     <layout expand="tagTypesTable" spacing="true">
         <filter id="filter" datasource="tagTypesDs">
             <properties include=".*"/>

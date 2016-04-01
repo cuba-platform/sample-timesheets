@@ -21,6 +21,7 @@ import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.core.global.Metadata;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.SystemDataManager;
 import com.haulmont.timesheets.core.HolidaysCacheAPI;
@@ -52,6 +53,9 @@ public class ProjectsServiceBean implements ProjectsService {
 
     @Inject
     protected HolidaysCacheAPI holidaysCache;
+
+    @Inject
+    protected Metadata metadata;
 
     protected List<Project> getAllProjects() {
         LoadContext<Project> loadContext = new LoadContext<>(Project.class)
@@ -257,7 +261,7 @@ public class ProjectsServiceBean implements ProjectsService {
 
                 for (User user : users) {
                     if (!assignedUsers.contains(user)) {
-                        ProjectParticipant projectParticipant = new ProjectParticipant();
+                        ProjectParticipant projectParticipant = metadata.create(ProjectParticipant.class);
                         projectParticipant.setRole(projectRole);
                         projectParticipant.setUser(user);
                         projectParticipant.setProject(project);

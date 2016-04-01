@@ -85,6 +85,8 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     protected UuidSource uuidSource;
     @Inject
     protected ValidationTools validationTools;
+    @Inject
+    protected Metadata metadata;
 
     protected Map<String, Label> totalLabelsMap = new HashMap<>();
 
@@ -168,7 +170,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         showOptionDialog(getMessage("caption.attention"),
                                 validationResult.cause + getMessage("confirmation.manuallyTagSetting"),
                                 MessageType.CONFIRMATION_HTML,
-                                Arrays.<Action>asList(
+                                Arrays.asList(
                                         new DialogAction(DialogAction.Type.YES) {
                                             @Override
                                             public void actionPerform(Component component) {
@@ -244,10 +246,10 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             }
         });
 
-        weeklyTsTable.setStyleProvider(new Table.StyleProvider() {
+        weeklyTsTable.setStyleProvider(new Table.StyleProvider<WeeklyReportEntry>() {
             @Nullable
             @Override
-            public String getStyleName(Entity entity, String property) {
+            public String getStyleName(WeeklyReportEntry entity, String property) {
                 String id = null;
                 if (property != null && property.endsWith(COLUMN_SUFFIX)) {
                     id = property.replace(COLUMN_SUFFIX, "");
@@ -273,10 +275,9 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     protected void initProjectColumn() {
         final String projectColumnId = "project";
         weeklyTsTable.addGeneratedColumn(projectColumnId, entity -> {
-            WeeklyReportEntry weeklyReportEntry = (WeeklyReportEntry) entity;
-            if (weeklyReportEntry.hasTimeEntries()) {
+            if (entity.hasTimeEntries()) {
                 Label label = componentsFactory.createComponent(Label.class);
-                label.setValue(weeklyReportEntry.getProject().getName());
+                label.setValue(entity.getProject().getName());
                 return label;
             } else {
                 @SuppressWarnings("unchecked")
@@ -296,16 +297,15 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         final String taskColumnId = "task";
         final String activityTypeColumnId = "activityType";
         weeklyTsTable.addGeneratedColumn(taskColumnId, entity -> {
-            WeeklyReportEntry weeklyReportEntry = (WeeklyReportEntry) entity;
-            if (weeklyReportEntry.hasTimeEntries()) {
+            if (entity.hasTimeEntries()) {
                 Label label = componentsFactory.createComponent(Label.class);
                 String caption;
-                if (weeklyReportEntry.getActivityType() == null) {
-                    caption = weeklyReportEntry.getTask().getName();
+                if (entity.getActivityType() == null) {
+                    caption = entity.getTask().getName();
                 } else {
                     caption = String.format("%s (%s)",
-                            weeklyReportEntry.getTask().getName(),
-                            weeklyReportEntry.getActivityType().getInstanceName());
+                            entity.getTask().getName(),
+                            entity.getActivityType().getInstanceName());
                 }
                 label.setValue(caption);
                 return label;
@@ -364,8 +364,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
     protected List<ActivityType> getActivityTypesForProject(Project project) {
         if (project != null) {
-            List<ActivityType> activityTypesForProject = projectsService.getActivityTypesForProject(project, View.MINIMAL);
-            return activityTypesForProject;
+            return projectsService.getActivityTypesForProject(project, View.MINIMAL);
         } else {
             return Collections.emptyList();
         }
@@ -383,16 +382,15 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         for (Date current = firstDayOfWeek; current.getTime() <= lastDayOfWeek.getTime(); current = DateUtils.addDays(current, 1)) {
             final DayOfWeek day = DayOfWeek.fromCalendarDay(DateUtils.toCalendar(current).get(Calendar.DAY_OF_WEEK));
             final String columnId = day.getId() + COLUMN_SUFFIX;
-            weeklyTsTable.addGeneratedColumn(columnId, new Table.ColumnGenerator() {
+            weeklyTsTable.addGeneratedColumn(columnId, new Table.ColumnGenerator<WeeklyReportEntry>() {
                         @Override
-                        public Component generateCell(final Entity entity) {
-                            final WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
-                            List<TimeEntry> timeEntries = reportEntry.getDayOfWeekTimeEntries(day);
+                        public Component generateCell(final WeeklyReportEntry entity) {
+                            List<TimeEntry> timeEntries = entity.getDayOfWeekTimeEntries(day);
                             if (CollectionUtils.isEmpty(timeEntries)
                                     || timeEntries.size() == 1 && PersistenceHelper.isNew(timeEntries.get(0))) {
-                                return createTextFieldForTimeInput(reportEntry);
+                                return createTextFieldForTimeInput(entity);
                             } else {
-                                return createLinkAndActionsForExistingEntry(reportEntry, timeEntries);
+                                return createLinkAndActionsForExistingEntry(entity, timeEntries);
                             }
                         }
 
@@ -480,10 +478,9 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
     protected void initTotalColumn() {
         weeklyTsTable.addGeneratedColumn(TOTAL_COLUMN_ID, entity -> {
-            WeeklyReportEntry reportEntry = (WeeklyReportEntry) entity;
             Label label = componentsFactory.createComponent(Label.class);
-            label.setValue(reportEntry.getTotal());
-            totalLabelsMap.put(ComponentsHelper.getCacheKeyForEntity(reportEntry, TOTAL_COLUMN_ID), label);
+            label.setValue(entity.getTotal());
+            totalLabelsMap.put(ComponentsHelper.getCacheKeyForEntity(entity, TOTAL_COLUMN_ID), label);
             return label;
         });
         weeklyTsTable.setColumnWidth(TOTAL_COLUMN_ID, 80);
@@ -532,7 +529,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         List<TimeEntry> existingEntries = weeklyReportEntry.getDayOfWeekTimeEntries(day);
                         Set<Tag> defaultTags = weeklyReportEntry.getTask().getDefaultTags();
 
-                        TimeEntry timeEntry = existingEntries != null ? existingEntries.get(0) : new TimeEntry();
+                        TimeEntry timeEntry = existingEntries != null ? existingEntries.get(0) : metadata.create(TimeEntry.class);
                         timeEntry.setUser(userSession.getCurrentOrSubstitutedUser());
                         timeEntry.setTask(weeklyReportEntry.getTask());
                         timeEntry.setTimeInMinutes(hoursAndMinutes.toMinutes());

@@ -4,6 +4,7 @@
         extends="/com/haulmont/cuba/gui/app/security/user/edit/user-edit.xml"
         messagesPack="com.haulmont.timesheets.gui.extuser"
         xmlns:ext="http://schemas.haulmont.com/cuba/window-ext.xsd">
+    <dialogMode width="AUTO"/>
     <layout>
         <groupBox id="propertiesBox">
             <grid id="propertiesGrid">

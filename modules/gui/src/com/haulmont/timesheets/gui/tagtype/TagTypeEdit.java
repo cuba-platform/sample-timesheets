@@ -37,8 +37,6 @@ public class TagTypeEdit extends AbstractEditor<TagType> {
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidth(600);
-
         fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
         tagTypeDs.addItemPropertyChangeListener(new ComponentsHelper.EntityCodeGenerationListener<>());
     }

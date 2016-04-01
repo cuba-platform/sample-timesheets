@@ -37,8 +37,6 @@ public class TaskTypeEdit extends AbstractEditor<TaskType> {
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidthAuto();
-
         fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
         taskTypeDs.addItemPropertyChangeListener(new ComponentsHelper.EntityCodeGenerationListener<>());
     }

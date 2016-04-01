@@ -15,7 +15,6 @@
  */
 package com.haulmont.timesheets.gui.task;
 
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.timesheets.entity.Task;
@@ -31,17 +30,16 @@ import java.util.Map;
 public class TaskLookup extends AbstractLookup {
 
     @Inject
-    protected Table tasksTable;
+    protected Table<Task> tasksTable;
 
     @Override
     public void init(Map<String, Object> params) {
-        tasksTable.setStyleProvider(new Table.StyleProvider() {
+        tasksTable.setStyleProvider(new Table.StyleProvider<Task>() {
             @Nullable
             @Override
-            public String getStyleName(Entity entity, @Nullable String property) {
+            public String getStyleName(Task entity, @Nullable String property) {
                 if ("status".equals(property)) {
-                    Task task = (Task) entity;
-                    return ComponentsHelper.getTaskStatusStyle(task);
+                    return ComponentsHelper.getTaskStatusStyle(entity);
                 }
                 return null;
             }

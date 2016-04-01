@@ -24,7 +24,6 @@ import com.haulmont.timesheets.global.WorkTimeConfigBean;
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -46,8 +45,6 @@ public class WorkTimeSettings extends AbstractWindow {
 
     @Override
     public void init(Map<String, Object> params) {
-        getDialogParams().setWidthAuto();
-
         workHoursTextField.setValue(workTimeConfigBean.getWorkHourForWeek());
 
         initWorkDays();
@@ -64,7 +61,7 @@ public class WorkTimeSettings extends AbstractWindow {
                 BigDecimal workHoursValue = workHoursTextField.getValue();
                 workTimeConfigBean.setWorkHourForWeek(workHoursValue);
                 workTimeConfigBean.setWorkDays(workDaysOptions.<List<DayOfWeek>>getValue());
-                workTimeConfigBean.setOpenPeriodStart(openPeriodStart.<Date>getValue());
+                workTimeConfigBean.setOpenPeriodStart(openPeriodStart.getValue());
                 close(getId());
             }
         };
