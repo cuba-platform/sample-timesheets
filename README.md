@@ -18,7 +18,7 @@ The application consists of:
 
 This particular showcase application illustrates a 3rd party Vaadin visual component integration.
 
-Based on CUBA Platform 6.1.0
+Based on CUBA Platform 6.1.1
 
 ## Data Structure
 
