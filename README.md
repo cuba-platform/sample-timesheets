@@ -50,9 +50,7 @@ There are several ways to create time entries:
 2.	*Calendar* screen - allows creating time entries for the whole month, or for certain dates.
 3.	*My Tasks* screen allows creating time entries for certain tasks.
 4.	*My Time Entries* screen allows creating time entries for any date.
-
     All the listed screens (except the *My Tasks* screen) have the `CommandLine` component, which enables the bulk creation of timesheets using simple text commands.
-
     For example, **@Platform #Development 4h30m** on the Weekly Timesheets screen will fill the whole week (workdays only) with the time entries for the Development task, with spent time = 4 hours and 30 minutes
 
 ## Timesheets approval process
