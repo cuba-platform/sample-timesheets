@@ -14,11 +14,9 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
-<web-app xmlns="http://java.sun.com/xml/ns/javaee"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee     http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
-         version="2.5">
+<web-app xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee     http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
     <context-param>
         <description>Vaadin production mode</description>
         <param-name>productionMode</param-name>
@@ -68,6 +66,7 @@
             <param-name>heartbeatInterval</param-name>
             <param-value>30</param-value>
         </init-param>
+        <async-supported>true</async-supported>
     </servlet>
     <servlet>
         <servlet-name>dispatcher</servlet-name>
