@@ -18,11 +18,6 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee     http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
          version="3.0">
     <context-param>
-        <description>Vaadin production mode</description>
-        <param-name>productionMode</param-name>
-        <param-value>false</param-value>
-    </context-param>
-    <context-param>
         <description>Web resources version for correct caching in browser</description>
         <param-name>webResourcesTs</param-name>
         <param-value>${webResourcesTs}</param-value>
@@ -41,26 +36,6 @@
     <servlet>
         <servlet-name>app_servlet</servlet-name>
         <servlet-class>com.haulmont.cuba.web.sys.CubaApplicationServlet</servlet-class>
-        <init-param>
-            <description>Application class</description>
-            <param-name>application</param-name>
-            <param-value>com.haulmont.timesheets.web.App</param-value>
-        </init-param>
-        <init-param>
-            <description>Widgetset name</description>
-            <param-name>widgetset</param-name>
-            <param-value>com.haulmont.timesheets.web.toolkit.ui.AppWidgetSet</param-value>
-        </init-param>
-        <init-param>
-            <description>UI class</description>
-            <param-name>UI</param-name>
-            <param-value>com.haulmont.cuba.web.AppUI</param-value>
-        </init-param>
-        <init-param>
-            <description>UIProvider class</description>
-            <param-name>UIProvider</param-name>
-            <param-value>com.haulmont.cuba.web.sys.CubaUIProvider</param-value>
-        </init-param>
         <init-param>
             <description>Heartbeat of active UI in seconds</description>
             <param-name>heartbeatInterval</param-name>
@@ -88,5 +63,34 @@
     <filter-mapping>
         <filter-name>cuba_filter</filter-name>
         <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <context-param>
+        <param-name>appComponents</param-name>
+        <param-value>com.haulmont.cuba com.haulmont.reports com.haulmont.charts</param-value>
+    </context-param>
+    <servlet>
+        <servlet-name>rest_api</servlet-name>
+        <servlet-class>com.haulmont.restapi.sys.CubaRestApiServlet</servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>rest_api</servlet-name>
+        <url-pattern>/rest/*</url-pattern>
+    </servlet-mapping>
+    <filter>
+        <filter-name>restSpringSecurityFilterChain</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+        <init-param>
+            <param-name>contextAttribute</param-name>
+            <param-value>org.springframework.web.servlet.FrameworkServlet.CONTEXT.rest_api</param-value>
+        </init-param>
+        <init-param>
+            <param-name>targetBeanName</param-name>
+            <param-value>springSecurityFilterChain</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>restSpringSecurityFilterChain</filter-name>
+        <url-pattern>/rest/*</url-pattern>
     </filter-mapping>
 </web-app>

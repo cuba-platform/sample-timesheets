@@ -44,6 +44,7 @@ import java.util.*;
 /**
  * @author gorelov
  */
+@SuppressWarnings("WeakerAccess")
 public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
     @Inject
     private CollectionDatasource<ActivityType, UUID> activityTypesDs;
@@ -95,9 +96,8 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         taskField.addClearAction();
         fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
         fieldGroup.addCustomField("rejectionReason", ComponentsHelper.getCustomTextArea());
-        fieldGroup.addCustomField("timeInMinutes", (datasource, propertyId) -> {
-            return componentsFactory.<TextField>createComponent(TextField.NAME);
-        });
+        fieldGroup.addCustomField("timeInMinutes", (datasource, propertyId) ->
+                componentsFactory.<TextField>createComponent(TextField.NAME));
 
         rejectionReason = fieldGroup.getFieldComponent("rejectionReason");
         time = (TextField) fieldGroup.getFieldComponent("timeInMinutes");
@@ -181,6 +181,7 @@ public class TimeEntryEdit extends AbstractEditor<TimeEntry> {
         optionOtherTagsDs.refresh(ParamsMap.of("project", project));
     }
 
+    @SuppressWarnings("unchecked")
     protected CollectionDatasource<Tag, UUID> createTagsDs(TagType required) {
         DsBuilder builder;
         if (required == null) {

@@ -46,6 +46,7 @@ import java.util.*;
 /**
  * @author gorelov
  */
+@SuppressWarnings("WeakerAccess")
 public class ProjectBrowse extends AbstractLookup {
     @Inject
     protected TreeTable<Project> projectsTable;
@@ -189,6 +190,7 @@ public class ProjectBrowse extends AbstractLookup {
                     return (getMessage("caption.assign" + StringUtils.capitalize(projectRole.getCode().getId().toLowerCase())));
                 }
 
+                @SuppressWarnings("unchecked")
                 @Override
                 public void actionPerform(Component component) {
                     if (CollectionUtils.isNotEmpty(projectsTable.getSelected())) {
@@ -243,6 +245,7 @@ public class ProjectBrowse extends AbstractLookup {
         });
     }
 
+    @SuppressWarnings("unchecked")
     public void copyParticipants() {
         final Project project = projectsTable.getSingleSelected();
         if (project != null) {

@@ -17,8 +17,6 @@
 package com.haulmont.timesheets.gui.weeklytimesheets;
 
 import com.haulmont.bali.util.ParamsMap;
-import com.haulmont.chile.core.model.utils.InstanceUtils;
-import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
@@ -42,10 +40,12 @@ import org.apache.commons.lang.time.DateUtils;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.*;
+import java.util.Calendar;
 
 /**
  * @author gorelov
  */
+@SuppressWarnings("WeakerAccess")
 public class SimpleWeeklyTimesheets extends AbstractWindow {
     protected static final String COLUMN_SUFFIX = "Column";
     protected static final String TOTAL_COLUMN_ID = "totalColumn";
@@ -223,7 +223,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             }
 
             private TimeEntry doCopy(TimeEntry timeEntry) {
-                TimeEntry copy = (TimeEntry) InstanceUtils.copy(timeEntry);
+                TimeEntry copy = metadata.getTools().copy(timeEntry);
                 copy.setId(uuidSource.createUuid());
                 return copy;
             }
@@ -637,6 +637,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             super(target);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public void actionPerform(Component component) {
             Set<WeeklyReportEntry> entries = target.getSelected();

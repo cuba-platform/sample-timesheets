@@ -23,8 +23,8 @@ import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.DataManager;
 import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.cuba.core.global.Metadata;
+import org.springframework.stereotype.Component;
 
-import javax.annotation.ManagedBean;
 import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.Collections;
@@ -33,7 +33,7 @@ import java.util.List;
 /**
  * @author degtyarjov
  */
-@ManagedBean
+@Component
 public class SystemDataManager {
     @Inject
     protected DataManager dataManager;

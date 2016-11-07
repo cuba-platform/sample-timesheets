@@ -1,7 +1,8 @@
 rootProject.name = 'time-sheets'
-include(':app-global', ':app-core', ':app-gui', ':app-web', ':app-web-toolkit')
+include(':app-global', ':app-core', ':app-gui', ':app-web', ':app-web-toolkit', 'app-web-themes')
 project(':app-global').projectDir = new File(settingsDir, 'modules/global')
 project(':app-core').projectDir = new File(settingsDir, 'modules/core')
 project(':app-gui').projectDir = new File(settingsDir, 'modules/gui')
 project(':app-web').projectDir = new File(settingsDir, 'modules/web')
 project(':app-web-toolkit').projectDir = new File(settingsDir, 'modules/web-toolkit')
+project(':app-web-themes').projectDir = new File(settingsDir, 'modules/web/themes')

@@ -1,4 +1,3 @@
-
 /*
  * Copyright (c) 2016 Haulmont
  *
@@ -16,10 +15,6 @@
  */
 
 package com.haulmont.timesheets.global;
-
-/**
- * @author gorelov
- */
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.timesheets.entity.TimeEntry;

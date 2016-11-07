@@ -20,8 +20,8 @@ package com.haulmont.timesheets.global;
 import com.haulmont.cuba.core.global.Messages;
 import com.haulmont.cuba.core.global.TimeSource;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.stereotype.Component;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
 /**
  * @author gorelov
  */
-@ManagedBean(TimeParser.NAME)
+@Component(TimeParser.NAME)
 public class TimeParser {
 
     public static final String NAME = "ts_TimeParser";

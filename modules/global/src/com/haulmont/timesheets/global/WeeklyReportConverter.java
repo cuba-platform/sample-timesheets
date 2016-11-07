@@ -20,14 +20,14 @@ package com.haulmont.timesheets.global;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.haulmont.timesheets.entity.*;
+import org.springframework.stereotype.Component;
 
-import javax.annotation.ManagedBean;
 import java.util.*;
 
 /**
  * @author gorelov
  */
-@ManagedBean(WeeklyReportConverter.NAME)
+@Component(WeeklyReportConverter.NAME)
 public class WeeklyReportConverter {
     public static final String NAME = "ts_WeeklyReportConverter";
 
@@ -51,8 +51,7 @@ public class WeeklyReportConverter {
 
             if (activityType != null ? !activityType.equals(that.activityType) : that.activityType != null)
                 return false;
-            if (!project.equals(that.project)) return false;
-            return task.equals(that.task);
+            return project.equals(that.project) && task.equals(that.task);
 
         }
 

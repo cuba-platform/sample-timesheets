@@ -19,8 +19,6 @@ package com.haulmont.timesheets.gui.extuser;
 
 import com.haulmont.cuba.gui.app.security.user.browse.UserLookup;
 
-import java.util.Map;
-
 /**
  * @author gorelov
  */

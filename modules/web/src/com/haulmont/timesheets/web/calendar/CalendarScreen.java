@@ -16,7 +16,6 @@
 
 package com.haulmont.timesheets.web.calendar;
 
-import com.haulmont.chile.core.model.utils.InstanceUtils;
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
 import com.haulmont.cuba.gui.WindowManager;
@@ -55,6 +54,7 @@ import java.util.*;
 /**
  * @author gorelov
  */
+@SuppressWarnings("WeakerAccess")
 public class CalendarScreen extends AbstractWindow {
     @Inject
     protected BoxLayout calBox;
@@ -157,7 +157,7 @@ public class CalendarScreen extends AbstractWindow {
 
                 while (currentMonth == nextDayMonth) {
                     if (workdaysTools.isWorkday(javaCalendar.getTime())) {
-                        TimeEntry copy = (TimeEntry) InstanceUtils.copy(timeEntry);
+                        TimeEntry copy = metadata.getTools().copy(timeEntry);
                         copy.setId(uuidSource.createUuid());
                         copy.setDate(javaCalendar.getTime());
                         copy.setStatus(TimeEntryStatus.NEW);
@@ -480,7 +480,7 @@ public class CalendarScreen extends AbstractWindow {
             } else if (action == copyEventAction) {
                 // Check that the click was not done on an event
                 if (target instanceof TimeEntryCalendarEventAdapter) {
-                    TimeEntry copiedEntry = (TimeEntry) InstanceUtils.copy(((TimeEntryCalendarEventAdapter) target).getTimeEntry());
+                    TimeEntry copiedEntry = metadata.getTools().copy(((TimeEntryCalendarEventAdapter) target).getTimeEntry());
                     copiedEntry.setId(uuidSource.createUuid());
                     copiedEntry.setStatus(TimeEntryStatus.NEW);
 

@@ -19,15 +19,15 @@ package com.haulmont.timesheets.global;
 
 import com.haulmont.timesheets.entity.DayOfWeek;
 import com.haulmont.timesheets.service.ProjectsService;
+import org.springframework.stereotype.Component;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.util.Date;
 
 /**
  * @author gorelov
  */
-@ManagedBean(WorkdaysTools.NAME)
+@Component(WorkdaysTools.NAME)
 public class WorkdaysTools {
 
     public static final String NAME = "ts_WorkdaysTools";

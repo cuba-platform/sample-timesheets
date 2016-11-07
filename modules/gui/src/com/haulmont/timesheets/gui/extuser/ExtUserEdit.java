@@ -22,7 +22,6 @@ import com.haulmont.timesheets.entity.ExtUser;
 import com.haulmont.timesheets.global.WorkTimeConfigBean;
 
 import javax.inject.Inject;
-import java.util.Map;
 
 /**
  * @author gorelov

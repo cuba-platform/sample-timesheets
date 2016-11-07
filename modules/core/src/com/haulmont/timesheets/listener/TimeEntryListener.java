@@ -16,7 +16,6 @@
 
 package com.haulmont.timesheets.listener;
 
-import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.listener.BeforeDeleteEntityListener;
 import com.haulmont.cuba.core.listener.BeforeInsertEntityListener;
 import com.haulmont.cuba.core.listener.BeforeUpdateEntityListener;
@@ -26,15 +25,16 @@ import com.haulmont.timesheets.entity.TimeEntryStatus;
 import com.haulmont.timesheets.exception.ClosedPeriodException;
 import com.haulmont.timesheets.global.EntityDeletionException;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.math.BigDecimal;
 import java.util.Date;
+import com.haulmont.cuba.core.EntityManager;
+import org.springframework.stereotype.Component;
 
 /**
  * @author degtyarjov
  */
-@ManagedBean("ts_TimeEntryListener")
+@Component("ts_TimeEntryListener")
 public class TimeEntryListener implements BeforeInsertEntityListener<TimeEntry>,
         BeforeUpdateEntityListener<TimeEntry>,
         BeforeDeleteEntityListener<TimeEntry> {
@@ -42,13 +42,10 @@ public class TimeEntryListener implements BeforeInsertEntityListener<TimeEntry>,
     protected static final BigDecimal MINUTES_IN_HOUR = BigDecimal.valueOf(60);
 
     @Inject
-    protected Persistence persistence;
-
-    @Inject
     protected WorkTimeConfig workTimeConfig;
 
     @Override
-    public void onBeforeInsert(TimeEntry entity) {
+    public void onBeforeInsert(TimeEntry entity, EntityManager entityManager) {
         if (entity.getTask() != null) {
             entity.setTaskName(entity.getTask().getName());
         }
@@ -61,7 +58,7 @@ public class TimeEntryListener implements BeforeInsertEntityListener<TimeEntry>,
     }
 
     @Override
-    public void onBeforeUpdate(TimeEntry entity) {
+    public void onBeforeUpdate(TimeEntry entity, EntityManager entityManager) {
         if (entity.getTask() != null) {
             entity.setTaskName(entity.getTask().getName());
         }
@@ -74,7 +71,7 @@ public class TimeEntryListener implements BeforeInsertEntityListener<TimeEntry>,
     }
 
     @Override
-    public void onBeforeDelete(TimeEntry entity) {
+    public void onBeforeDelete(TimeEntry entity, EntityManager entityManager) {
         if (entity.getStatus() != null && TimeEntryStatus.CLOSED.equals(entity.getStatus())) {
             throw new EntityDeletionException("Deletion of closed TimeEntry");
         }

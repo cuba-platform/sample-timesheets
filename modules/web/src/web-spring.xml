@@ -14,10 +14,8 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.2.xsd"
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.3.xsd"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:context="http://www.springframework.org/schema/context"
        xmlns:task="http://www.springframework.org/schema/task">
@@ -32,19 +30,15 @@
     <!--<task:scheduled ref="cuba_BackgroundWorker_WatchDog" method="cleanupTasks" fixed-delay="2000"/>-->
     <!--</task:scheduled-tasks>-->
     <bean class="com.haulmont.cuba.web.sys.remoting.WebRemoteProxyBeanCreator">
-        <property name="clusterInvocationSupport"
-                  ref="cuba_clusterInvocationSupport"/>
+        <property name="clusterInvocationSupport" ref="cuba_clusterInvocationSupport"/>
         <property name="remoteServices">
             <map>
-                <entry key="ts_ProjectsService"
-                       value="com.haulmont.timesheets.service.ProjectsService"/>
-                <entry key="ts_CommandLineService"
-                       value="com.haulmont.timesheets.service.CommandLineService"/>
-                <entry key="ts_StatisticService"
-                       value="com.haulmont.timesheets.service.StatisticService"/>
-                <entry key="ts_CacheService"
-                       value="com.haulmont.timesheets.service.CacheService"/>
+                <entry key="ts_ProjectsService" value="com.haulmont.timesheets.service.ProjectsService"/>
+                <entry key="ts_CommandLineService" value="com.haulmont.timesheets.service.CommandLineService"/>
+                <entry key="ts_StatisticService" value="com.haulmont.timesheets.service.StatisticService"/>
+                <entry key="ts_CacheService" value="com.haulmont.timesheets.service.CacheService"/>
             </map>
         </property>
     </bean>
+    <bean class="com.haulmont.timesheets.web.App" name="cuba_App" scope="prototype"/>
 </beans>

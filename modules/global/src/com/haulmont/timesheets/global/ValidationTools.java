@@ -25,8 +25,8 @@ import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.service.ProjectsService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
+import org.springframework.stereotype.Component;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 import java.util.Date;
 import java.util.HashSet;
@@ -35,7 +35,8 @@ import java.util.List;
 /**
  * @author gorelov
  */
-@ManagedBean(ValidationTools.NAME)
+@SuppressWarnings({"unused", "WeakerAccess"})
+@Component(ValidationTools.NAME)
 public class ValidationTools {
     public static final String NAME = "ts_ValidationTools";
 

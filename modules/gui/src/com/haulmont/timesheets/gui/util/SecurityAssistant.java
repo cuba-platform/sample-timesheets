@@ -25,14 +25,14 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.timesheets.config.TimeSheetsSettings;
 import org.apache.commons.collections.CollectionUtils;
+import org.springframework.stereotype.Component;
 
-import javax.annotation.ManagedBean;
 import javax.inject.Inject;
 
 /**
  * @author degtyarjov
  */
-@ManagedBean(SecurityAssistant.NAME)
+@Component(SecurityAssistant.NAME)
 public class SecurityAssistant {
     @Inject
     protected UserSessionSource userSessionSource;
