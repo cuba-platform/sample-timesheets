@@ -1,5 +1,5 @@
 buildscript {
-    ext.cubaVersion = '6.3.5'
+    ext.cubaVersion = '6.4.0'
     repositories {
         maven {
             url 'https://repo.cuba-platform.com/content/groups/work'
@@ -331,5 +331,5 @@ task distribution(dependsOn: buildDistributionZip) << {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.13'
+    gradleVersion = '3.1'
 }
