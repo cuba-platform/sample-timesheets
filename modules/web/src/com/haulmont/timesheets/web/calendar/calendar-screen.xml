@@ -40,19 +40,18 @@
 
     <assign name="fieldWidth" value="200px"/>
     <layout expand="calendarHBox" spacing="true">
-        <hbox id="commandLineHBox" spacing="true" height="0px">
+        <hbox id="commandLineHBox" spacing="true" visible="false">
             <frame id="commandLine" screen="command-line-frame"/>
-            <hbox id="simpleViewHBox" width="0px" spacing="true">
+            <hbox id="simpleViewHBox" visible="false" spacing="true">
                 <lookupField id="project" optionsDatasource="projectsDs" inputPrompt="msg://com.haulmont.timesheets.entity/Task.project" width="${fieldWidth}"/>
                 <lookupField id="task" optionsDatasource="tasksDs" inputPrompt="msg://com.haulmont.timesheets.entity/TimeEntry.task" width="${fieldWidth}"/>
                 <lookupField id="activityType" inputPrompt="msg://com.haulmont.timesheets.entity/TimeEntry.activityType" visible="false" width="${fieldWidth}"/>
                 <textField id="spentTime" inputPrompt="msg://com.haulmont.timesheets.entity/TimeEntry.timeInMinutes" width="${fieldWidth}"/>
                 <button id="simpleViewApply" caption="msg://caption.apply" invoke="simpleViewApply"/>
             </hbox>
-            <hbox margin="true">
-                <checkBox id="showSimpleView" caption="msg://caption.showSimpleView"/>
+            <hbox>
+                <checkBox id="showSimpleView" caption="msg://caption.showSimpleView" align="MIDDLE_LEFT"/>
             </hbox>
-
         </hbox>
 
         <hbox width="100%">
@@ -60,11 +59,11 @@
             <label id="monthLabel" align="MIDDLE_CENTER" stylename="h1"/>
             <hbox align="MIDDLE_RIGHT" spacing="true">
                 <button id="addTimeEntry" caption="msg://addTimeEntry" invoke="addTimeEntry" visible="false"/>
-                <linkButton id="showCommandLine" action="showCommandLine" icon="icons/gear.png"/>
-                <linkButton align="MIDDLE_LEFT" icon="font-icon:CHEVRON_LEFT" invoke="showPreviousMonth"/>
-                <linkButton caption="msg://today" invoke="setToday"/>
+                <linkButton id="showCommandLine" action="showCommandLine" icon="icons/gear.png" align="MIDDLE_RIGHT"/>
+                <linkButton align="MIDDLE_RIGHT" icon="font-icon:CHEVRON_LEFT" invoke="showPreviousMonth"/>
+                <linkButton caption="msg://today" invoke="setToday" align="MIDDLE_RIGHT"/>
                 <linkButton align="MIDDLE_RIGHT" icon="font-icon:CHEVRON_RIGHT" invoke="showNextMonth"/>
-                <dateField id="monthSelector" align="MIDDLE_LEFT" resolution="DAY" stylename="simple"/>
+                <dateField id="monthSelector" align="MIDDLE_RIGHT" resolution="DAY" stylename="simple"/>
             </hbox>
         </hbox>
         <hbox id="calendarHBox" expand="calBox" width="100%">

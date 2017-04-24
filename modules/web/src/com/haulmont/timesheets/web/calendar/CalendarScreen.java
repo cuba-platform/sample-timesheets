@@ -183,11 +183,11 @@ public class CalendarScreen extends AbstractWindow {
 
         showSimpleView.addValueChangeListener(e -> {
             if (Boolean.TRUE.equals(e.getValue())) {
-                commandLine.setWidth("0px");
-                simpleViewHBox.setWidth("100%");
+                commandLine.setVisible(false);
+                simpleViewHBox.setVisible(true);
             } else {
-                commandLine.setWidth("100%");
-                simpleViewHBox.setWidth("0px");
+                commandLine.setVisible(true);
+                simpleViewHBox.setVisible(false);
             }
         });
 
@@ -229,11 +229,7 @@ public class CalendarScreen extends AbstractWindow {
 
             @Override
             public void actionPerform(Component component) {
-                if (commandLineHBox.getHeight() <= 0) {
-                    commandLineHBox.setHeight("50px");
-                } else {
-                    commandLineHBox.setHeight("0px");
-                }
+                commandLineHBox.setVisible(!commandLineHBox.isVisible());
             }
         };
         action.setShortcut("CTRL-ALT-Q");
