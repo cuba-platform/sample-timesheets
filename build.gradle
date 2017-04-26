@@ -45,7 +45,7 @@ cuba {
         dir = "$project.rootDir/build/tomcat"
     }
     ide {
-        vcs = 'Git'
+        
         copyright = 'Copyright (c) ${YEAR} ${PACKAGE_NAME}'
         classComment = '''/**
  * @author ${USER}
