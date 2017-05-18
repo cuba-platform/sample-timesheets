@@ -128,11 +128,13 @@ configure(coreModule) {
 
     }
 
-    task cleanConf(description: 'Cleans up conf directory') << {
-        def dir = new File(cuba.tomcat.dir, '/conf/app-core')
-        if (dir.isDirectory()) {
-            ant.delete(includeemptydirs: true) {
-                fileset(dir: dir, includes: '**/*', excludes: 'local.app.properties')
+    task cleanConf(description: 'Cleans up conf directory') {
+        doLast {
+            def dir = new File(cuba.tomcat.dir, '/conf/app-core')
+            if (dir.isDirectory()) {
+                ant.delete(includeemptydirs: true) {
+                    fileset(dir: dir, includes: '**/*', excludes: 'local.app.properties')
+                }
             }
         }
     }
@@ -218,11 +220,13 @@ configure(webModule) {
     deployConf.dependsOn clearMessagesCache
 
 
-    task cleanConf(description: 'Cleans up conf directory') << {
-        def dir = new File(cuba.tomcat.dir, '/conf/app')
-        if (dir.isDirectory()) {
-            ant.delete(includeemptydirs: true) {
-                fileset(dir: dir, includes: '**/*', excludes: 'local.app.properties')
+    task cleanConf(description: 'Cleans up conf directory') {
+        doLast {
+            def dir = new File(cuba.tomcat.dir, '/conf/app')
+            if (dir.isDirectory()) {
+                ant.delete(includeemptydirs: true) {
+                    fileset(dir: dir, includes: '**/*', excludes: 'local.app.properties')
+                }
             }
         }
     }
@@ -263,14 +267,16 @@ configure(webToolkitModule) {
         archives webArchive
     }
 
-    task deploy(dependsOn: buildWidgetSet) << {
-        delete {
-            "$cuba.tomcat.dir/webapps/app/VAADIN/widgetsets"
-        }
-        copy {
-            from "$buildDir/web"
-            into "$cuba.tomcat.dir/webapps/app"
-            exclude '**/gwt-unitCache/'
+    task deploy(dependsOn: buildWidgetSet)  {
+        doLast {
+            delete {
+                "$cuba.tomcat.dir/webapps/app/VAADIN/widgetsets"
+            }
+            copy {
+                from "$buildDir/web"
+                into "$cuba.tomcat.dir/webapps/app"
+                exclude '**/gwt-unitCache/'
+            }
         }
     }
 }
@@ -284,23 +290,27 @@ task undeploy(type: Delete, dependsOn: ':app-web:cleanConf') {
     delete("$cuba.tomcat.dir/webapps/app")
 }
 
-task restart(dependsOn: ['stop', ':app-core:deploy', ':app-web:deploy'], description: 'Redeploys applications and restarts local Tomcat') << {
-    ant.waitfor(maxwait: 6, maxwaitunit: 'second', checkevery: 2, checkeveryunit: 'second') {
-        not {
-            socket(server: 'localhost', port: '8787')
+task restart(dependsOn: ['stop', ':app-core:deploy', ':app-web:deploy'], description: 'Redeploys applications and restarts local Tomcat') {
+    doLast {
+        ant.waitfor(maxwait: 6, maxwaitunit: 'second', checkevery: 2, checkeveryunit: 'second') {
+            not {
+                socket(server: 'localhost', port: '8787')
+            }
         }
+        start.execute()
     }
-    start.execute()
 }
 
 def distribDir="./distrib"
 def scriptsDir="./scripts"
 
-task cleanTomcatLogs << {
-    def dir = new File(cuba.tomcat.dir, '/logs/')
-    if (dir.isDirectory()) {
-        ant.delete(includeemptydirs: true) {
-            fileset(dir: dir, includes: '**/*')
+task cleanTomcatLogs {
+    doLast {
+        def dir = new File(cuba.tomcat.dir, '/logs/')
+        if (dir.isDirectory()) {
+            ant.delete(includeemptydirs: true) {
+                fileset(dir: dir, includes: '**/*')
+            }
         }
     }
 }
@@ -331,7 +341,8 @@ task buildDistributionZip(type: Zip, dependsOn: ['copyLoriScripts', 'copyTomcatS
     destinationDir = file("$distribDir")
 }
 
-task distribution(dependsOn: buildDistributionZip) << {
+task distribution(dependsOn: buildDistributionZip)  {
+    doLast{}
 }
 
 task wrapper(type: Wrapper) {
