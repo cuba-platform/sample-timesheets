@@ -22,6 +22,7 @@ import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.Listeners;
 import com.haulmont.cuba.core.entity.annotation.OnDeleteInverse;
 import com.haulmont.cuba.core.global.DeletePolicy;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.global.HoursAndMinutes;
 
@@ -192,8 +193,13 @@ public class TimeEntry extends StandardEntity implements TimeEntryBase {
         this.overtimeInHours = overtimeInHours;
     }
 
-    @MetaProperty
+    @MetaProperty(related = {"user", "date"})
     public Overtime getOvertime() {
+        if (!PersistenceHelper.isLoaded(this, "user")
+                || !PersistenceHelper.isLoaded(this, "date")) {
+            return null;
+        }
+
         return new Overtime(getUser(), getDate(), overtimeInHours);
     }
 

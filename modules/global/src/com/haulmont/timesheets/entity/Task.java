@@ -22,6 +22,7 @@ import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
 import com.haulmont.cuba.core.entity.annotation.OnDelete;
 import com.haulmont.cuba.core.global.DeletePolicy;
+import com.haulmont.cuba.core.global.PersistenceHelper;
 import org.apache.commons.lang.StringUtils;
 
 import javax.persistence.*;
@@ -161,8 +162,12 @@ public class Task extends StandardEntity {
         return name;
     }
 
-    @MetaProperty
+    @MetaProperty(related = {"defaultTags"})
     public String getDefaultTagsList() {
+        if (!PersistenceHelper.isLoaded(this, "defaultTags")) {
+            return null;
+        }
+
         if (defaultTags != null) {
             StringBuilder stringBuilder = new StringBuilder();
             for (Tag defaultTag : defaultTags) {
@@ -174,8 +179,12 @@ public class Task extends StandardEntity {
         return "";
     }
 
-    @MetaProperty
+    @MetaProperty(related = {"requiredTagTypes"})
     public String getRequiredTagTypesList() {
+        if (!PersistenceHelper.isLoaded(this, "requiredTagTypes")) {
+            return null;
+        }
+
         if (requiredTagTypes != null) {
             StringBuilder stringBuilder = new StringBuilder();
             for (TagType requiredTagType : requiredTagTypes) {
