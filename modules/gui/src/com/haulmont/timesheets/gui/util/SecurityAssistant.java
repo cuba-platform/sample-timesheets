@@ -24,7 +24,7 @@ import com.haulmont.cuba.security.entity.RoleType;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.timesheets.config.TimeSheetsSettings;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;

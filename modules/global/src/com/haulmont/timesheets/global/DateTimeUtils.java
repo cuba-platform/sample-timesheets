@@ -23,7 +23,7 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.Holiday;
 import com.haulmont.timesheets.service.ProjectsService;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
 
 import java.text.DateFormat;

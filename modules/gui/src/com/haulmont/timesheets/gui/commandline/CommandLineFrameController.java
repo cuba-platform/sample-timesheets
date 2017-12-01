@@ -23,7 +23,7 @@ import com.haulmont.cuba.gui.components.BoxLayout;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.service.CommandLineService;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import javax.inject.Inject;
 import java.util.Collections;

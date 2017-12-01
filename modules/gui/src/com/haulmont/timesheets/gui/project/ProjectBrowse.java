@@ -34,7 +34,7 @@ import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.gui.util.ComponentsHelper;
 import com.haulmont.timesheets.gui.util.SecurityAssistant;
 import com.haulmont.timesheets.service.ProjectsService;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 

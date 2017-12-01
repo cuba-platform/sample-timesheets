@@ -23,7 +23,7 @@ import com.haulmont.cuba.core.global.View;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.service.ProjectsService;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.springframework.stereotype.Component;
 

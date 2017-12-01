@@ -1,5 +1,5 @@
 buildscript {
-    ext.cubaVersion = '6.6.5'
+    ext.cubaVersion = '6.7.3'
     repositories {
         maven {
             url 'https://repo.cuba-platform.com/content/groups/work'
@@ -187,8 +187,6 @@ configure(webModule) {
         compile(guiModule)
         themes("com.haulmont.cuba:cuba-web-themes:$cubaVersion")
         provided("com.haulmont.cuba:cuba-web-themes:$cubaVersion")
-
-        webcontent(group: 'com.haulmont.charts', name: 'charts-web', version: cubaVersion, classifier: 'web', ext: 'zip')
     }
 
     jar {

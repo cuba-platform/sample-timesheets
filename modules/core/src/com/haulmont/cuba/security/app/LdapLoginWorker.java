@@ -16,9 +16,9 @@
 
 package com.haulmont.cuba.security.app;
 
+import com.haulmont.cuba.core.Persistence;
 import com.haulmont.cuba.core.Transaction;
 import com.haulmont.cuba.core.app.DataManagerBean;
-import com.haulmont.cuba.core.app.ServerConfig;
 import com.haulmont.cuba.core.global.CommitContext;
 import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.core.global.Metadata;
@@ -27,19 +27,14 @@ import com.haulmont.cuba.security.entity.Role;
 import com.haulmont.cuba.security.entity.UserRole;
 import com.haulmont.cuba.security.global.LoginException;
 import com.haulmont.cuba.security.global.UserSession;
-import com.haulmont.timesheets.EncryptDecrypt;
-import com.haulmont.timesheets.config.LdapConfig;
 import com.haulmont.timesheets.config.TimeSheetsSettings;
 import com.haulmont.timesheets.config.WorkTimeConfig;
 import com.haulmont.timesheets.entity.ExtUser;
-import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.ldap.core.support.LookupAttemptingCallback;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
 
 import javax.inject.Inject;
-import javax.naming.directory.Attributes;
 import java.util.*;
 
 public class LdapLoginWorker extends LoginWorkerBean {
@@ -58,14 +53,17 @@ public class LdapLoginWorker extends LoginWorkerBean {
     @Inject
     protected Metadata metadata;
 
+    @Inject
+    protected Persistence persistence;
+
     @Override
     public UserSession login(String login, String password, Locale locale, Map<String, Object> params) throws LoginException {
-        LdapConfig ldapConfig = configuration.getConfig(LdapConfig.class);
+        /*LdapConfig ldapConfig = configuration.getConfig(LdapConfig.class);
 
         // use standard implementation, if ldap is disabled in config
-        if (!ldapConfig.getLdapAuth()) {
-            return super.login(login, password, locale, params);
-        }
+        if (!ldapConfig.getLdapAuth()) {*/
+        return super.login(login, password, locale, params);
+        /*}
 
         // attempt to login and get fresh user info from ldap directory
         Map<String, String> userAttributes = ldapAuthenticate(
@@ -103,7 +101,7 @@ public class LdapLoginWorker extends LoginWorkerBean {
         }
 
         // perform trusted login
-        return super.loginTrusted(login, configuration.getConfig(ServerConfig.class).getTrustedClientPassword(), locale);
+        return super.loginTrusted(login, configuration.getConfig(ServerConfig.class).getTrustedClientPassword(), locale);*/
     }
 
     protected void createUserFromLdap(String login, Map<String, String> userAttributes) {
@@ -139,8 +137,7 @@ public class LdapLoginWorker extends LoginWorkerBean {
         dataManager.commit(context);
     }
 
-
-    protected Map<String, String> ldapAuthenticate(String login, String password, Locale locale) throws LoginException {
+    /*protected Map<String, String> ldapAuthenticate(String login, String password, Locale locale) throws LoginException {
         if (!ldapTemplate.authenticate(
                 DistinguishedName.EMPTY_PATH,
                 buildPersonFilter(login),
@@ -170,12 +167,11 @@ public class LdapLoginWorker extends LoginWorkerBean {
 
         //noinspection unchecked
         return (Map<String, String>) result.get(0);
-    }
+    }*/
 
     protected static String buildPersonFilter(String login) {
         AndFilter filter = new AndFilter();
         filter.and(new EqualsFilter("objectclass", "person")).and(new EqualsFilter("sAMAccountName", login));
         return filter.encode();
     }
-
 }

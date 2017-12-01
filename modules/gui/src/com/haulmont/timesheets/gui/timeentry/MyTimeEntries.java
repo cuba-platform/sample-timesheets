@@ -25,7 +25,7 @@ import com.haulmont.cuba.gui.components.actions.EditAction;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.gui.commandline.CommandLineFrameController;
 import com.haulmont.timesheets.gui.util.ComponentsHelper;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 
 import javax.inject.Inject;
 import javax.inject.Named;

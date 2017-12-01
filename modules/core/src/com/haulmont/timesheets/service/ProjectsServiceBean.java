@@ -27,7 +27,7 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.SystemDataManager;
 import com.haulmont.timesheets.core.HolidaysCacheAPI;
 import com.haulmont.timesheets.entity.*;
-import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
