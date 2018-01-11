@@ -115,8 +115,6 @@ public class ApproveScreen extends AbstractWindow {
     @Inject
     private LookupField task;
 
-    protected Map<String, Label> totalLabelsMap = new HashMap<>();
-
     protected Date firstDayOfWeek;
     protected Date lastDayOfWeek;
     protected List<Project> managedProjects;
@@ -175,14 +173,6 @@ public class ApproveScreen extends AbstractWindow {
         initDaysColumns();
         initTotalColumn();
         initActionsColumn();
-
-        weeklyEntriesDs.addCollectionChangeListener(e -> {
-            if (Operation.REMOVE.equals(e.getOperation()) || Operation.CLEAR.equals(e.getOperation())) {
-                for (WeeklyReportEntry entry : e.getItems()) {
-                    totalLabelsMap.remove(ComponentsHelper.getCacheKeyForEntity(entry, TOTAL_COLUMN_ID));
-                }
-            }
-        });
 
         weeklyReportsTable.setStyleProvider((entity, property) -> {
             String id = null;
@@ -308,7 +298,6 @@ public class ApproveScreen extends AbstractWindow {
         weeklyReportsTable.addGeneratedColumn(TOTAL_COLUMN_ID, entity -> {
             Label label = componentsFactory.createComponent(Label.class);
             label.setValue(entity.getTotal());
-            totalLabelsMap.put(ComponentsHelper.getCacheKeyForEntity(entity, TOTAL_COLUMN_ID), label);
             return label;
         });
         weeklyReportsTable.setColumnWidth(TOTAL_COLUMN_ID, 80);
