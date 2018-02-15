@@ -40,5 +40,5 @@
             </map>
         </property>
     </bean>
-    <bean class="com.haulmont.timesheets.web.App" name="cuba_App" scope="prototype"/>
+    <bean class="com.haulmont.timesheets.web.App" name="cuba_App" scope="vaadin"/>
 </beans>
