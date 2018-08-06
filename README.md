@@ -72,4 +72,4 @@ Lori Timesheets inherits all features of [CUBA platform](https://www.cuba-platfo
 Open the project in CUBA Studio and execute *Run > Create database*, then *Run > Start application server*. The application will start at `http://localhost:8080/app`. Use *admin* as both login and password to access the application.
 
 ## Issues
-Please use https://www.cuba-platform.com/discuss for discussion, support, and reporting problems about CUBA Studio.
+Please use https://www.cuba-platform.com/discuss for discussion, support, and reporting problems coressponding to this sample.
