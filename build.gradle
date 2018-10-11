@@ -1,5 +1,5 @@
 buildscript {
-    ext.cubaVersion = '6.9.5'
+    ext.cubaVersion = '6.10.1'
     repositories {
         maven {
             url 'https://repo.cuba-platform.com/content/groups/work'
@@ -88,7 +88,9 @@ configure(globalModule) {
 
     }
 
-    task enhance(type: CubaEnhancing) 
+    entitiesEnhancing {
+        main { enabled = true }
+    }
 }
 configure(webThemesModule) {
     apply(plugin: 'java')
