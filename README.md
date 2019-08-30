@@ -69,7 +69,7 @@ This application supports such a process out of the box. The *Timesheet Approval
 Lori Timesheets inherits all features of [CUBA platform](https://www.cuba-platform.com/en/): reporting, charts, data audit and recovery, scheduling, etc.
 
 ## Usage
-Open the project in CUBA Studio and execute *Run > Create database*, then *Run > Start application server*. The application will start at `http://localhost:8080/app`. Use *admin* as both login and password to access the application.
+Open the project in CUBA Studio and click "Run" button next to "CUBA Application" run/debug configuration on the main toolbar. The application will start at `http://localhost:8080/app`. Use *admin* as both login and password to access the application.
 
 ## Issues
 Please use https://www.cuba-platform.com/discuss for discussion, support, and reporting problems coressponding to this sample.
