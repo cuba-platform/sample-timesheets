@@ -16,32 +16,6 @@
   -->
 
 <screen-config xmlns="http://schemas.haulmont.com/cuba/screens.xsd">
-    <screen id="ts$Client.browse" template="/com/haulmont/timesheets/gui/client/client-browse.xml"/>
-    <screen id="ts$Client.edit" template="/com/haulmont/timesheets/gui/client/client-edit.xml"/>
-    <screen id="ts$Holiday.browse" template="/com/haulmont/timesheets/gui/holiday/holiday-browse.xml"/>
-    <screen id="ts$Holiday.lookup" template="com/haulmont/timesheets/gui/holiday/holiday-lookup.xml"/>
-    <screen id="ts$Holiday.edit" template="/com/haulmont/timesheets/gui/holiday/holiday-edit.xml"/>
-    <screen id="ts$TaskType.browse" template="/com/haulmont/timesheets/gui/tasktype/tasktype-browse.xml"/>
-    <screen id="ts$TaskType.edit" template="/com/haulmont/timesheets/gui/tasktype/tasktype-edit.xml"/>
-    <screen id="ts$Tag.browse" template="/com/haulmont/timesheets/gui/tag/tag-browse.xml"/>
-    <screen id="ts$Tag.edit" template="/com/haulmont/timesheets/gui/tag/tag-edit.xml"/>
-    <screen id="ts$TagType.browse" template="/com/haulmont/timesheets/gui/tagtype/tagtype-browse.xml"/>
-    <screen id="ts$TagType.edit" template="/com/haulmont/timesheets/gui/tagtype/tagtype-edit.xml"/>
-    <screen id="ts$TimeEntry.browse" template="/com/haulmont/timesheets/gui/timeentry/timeentry-my.xml"/>
-    <screen id="ts$TimeEntry.lookup" template="com/haulmont/timesheets/gui/timeentry/timeentry-lookup.xml"/>
-    <screen id="ts$TimeEntry.edit" template="/com/haulmont/timesheets/gui/timeentry/timeentry-edit.xml"/>
-    <screen id="ts$Task.browse" template="/com/haulmont/timesheets/gui/task/task-browse.xml"/>
-    <screen id="ts$Task.lookup" template="com/haulmont/timesheets/gui/task/task-lookup.xml"/>
-    <screen id="ts$Task.edit" template="/com/haulmont/timesheets/gui/task/task-edit.xml"/>
-    <screen id="ts$ProjectParticipant.browse"
-            template="/com/haulmont/timesheets/gui/projectparticipant/projectparticipant-browse.xml"/>
-    <screen id="ts$ProjectParticipant.lookup"
-            template="com/haulmont/timesheets/gui/projectparticipant/projectparticipant-lookup.xml"/>
-    <screen id="ts$ProjectParticipant.edit"
-            template="/com/haulmont/timesheets/gui/projectparticipant/projectparticipant-edit.xml"/>
-    <screen id="ts$Project.browse" template="/com/haulmont/timesheets/gui/project/project-browse.xml"/>
-    <screen id="ts$Project.lookup" template="com/haulmont/timesheets/gui/project/project-lookup.xml"/>
-    <screen id="ts$Project.edit" template="/com/haulmont/timesheets/gui/project/project-edit.xml"/>
     <screen id="sec$User.edit" template="/com/haulmont/timesheets/gui/extuser/extuser-edit.xml"/>
     <screen id="sec$User.browse" template="/com/haulmont/timesheets/gui/extuser/extuser-browse.xml"/>
     <screen id="sec$User.lookup" template="/com/haulmont/timesheets/gui/extuser/extuser-lookup.xml"/>
@@ -50,9 +24,5 @@
             template="com/haulmont/timesheets/gui/weeklytimesheets/simple-weekly-timesheets.xml"/>
     <screen id="work-time-settings" template="com/haulmont/timesheets/gui/worktimesettings/work-time-settings.xml"/>
     <screen id="command-line-frame" template="com/haulmont/timesheets/gui/commandline/command-line-frame.xml"/>
-    <screen id="rejection-reason" template="com/haulmont/timesheets/gui/rejection/rejection-reason.xml"/>
-    <screen id="ts$ActivityType.lookup" template="com/haulmont/timesheets/gui/activitytype/activitytype-browse.xml"/>
-    <screen id="ts$ActivityType.edit" template="com/haulmont/timesheets/gui/activitytype/activitytype-edit.xml"/>
-    <screen id="ts$TimeEntry.all" template="com/haulmont/timesheets/gui/timeentry/timeentry-all.xml"/>
     <screen id="ts$TimeEntry.all-approve" template="com/haulmont/timesheets/gui/approve/timeentry-all-approve.xml"/>
 </screen-config>

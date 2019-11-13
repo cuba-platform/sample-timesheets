@@ -23,8 +23,8 @@ import com.haulmont.cuba.core.global.PersistenceHelper;
 import com.haulmont.timesheets.global.HoursAndMinutes;
 import com.haulmont.timesheets.global.StringFormatHelper;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import javax.annotation.Nullable;
 import java.util.*;

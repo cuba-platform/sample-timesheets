@@ -16,27 +16,47 @@
 
 package com.haulmont.timesheets.gui.client;
 
+import com.haulmont.cuba.gui.ScreenBuilders;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractLookup;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.actions.CreateAction;
 import com.haulmont.cuba.gui.components.actions.EditAction;
+import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.timesheets.entity.Client;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Map;
 
 /**
  * @author gorelov
  */
-public class ClientBrowse extends AbstractLookup {
+@UiController("ts$Client.browse")
+@UiDescriptor("client-browse.xml")
+@LookupComponent("clientsTable")
+@LoadDataBeforeShow
+public class ClientBrowse extends StandardLookup<Client> {
+    @Inject
+    protected ScreenBuilders screenBuilders;
+    @Inject
+    protected Table<Client> clientsTable;
 
-    @Named("clientsTable.create")
-    protected CreateAction clientsTableCreate;
-    @Named("clientsTable.edit")
-    protected EditAction clientsTableEdit;
+    @Subscribe("clientsTable.create")
+    protected void onCreateActionPerformed(Action.ActionPerformedEvent event) {
+        screenBuilders.editor(clientsTable)
+                .newEntity()
+                .withLaunchMode(OpenMode.DIALOG)
+                .build()
+                .show();
+    }
 
-    @Override
-    public void init(Map<String, Object> params) {
-        clientsTableCreate.setOpenType(WindowManager.OpenType.DIALOG);
-        clientsTableEdit.setOpenType(WindowManager.OpenType.DIALOG);
+    @Subscribe("clientsTable.edit")
+    protected void onEditActionPerformed(Action.ActionPerformedEvent event) {
+        screenBuilders.editor(clientsTable)
+                .withLaunchMode(OpenMode.DIALOG)
+                .build()
+                .show();
     }
 }

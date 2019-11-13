@@ -15,23 +15,28 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://browseCaption"
-        class="com.haulmont.timesheets.gui.project.ProjectLookup" focusComponent="projectsTable"
-        lookupComponent="projectsTable" messagesPack="com.haulmont.timesheets.gui.project">
-    <dsContext>
-        <hierarchicalDatasource id="projectsDs" class="com.haulmont.timesheets.entity.Project"
-                                hierarchyProperty="parent" view="project-full">
-            <query>
-                <![CDATA[select e from ts$Project e]]>
-            </query>
-        </hierarchicalDatasource>
-    </dsContext>
-    <dialogMode width="800" height="600" resizable="true"/>
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd" caption="msg://browseCaption"
+        focusComponent="projectsTable"
+        messagesPack="com.haulmont.timesheets.gui.project">
+    <data readOnly="true">
+        <collection id="projectsDc" class="com.haulmont.timesheets.entity.Project"
+                    view="project-full">
+            <loader id="projectsDl">
+                <query>
+                    <![CDATA[select e from ts$Project e]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <dialogMode width="800"
+                height="500"
+                resizable="true"/>
     <layout expand="projectsTable" spacing="true">
-        <filter id="filter" datasource="projectsDs">
+        <filter id="filter" dataLoader="projectsDl">
             <properties include=".*"/>
         </filter>
-        <treeTable id="projectsTable" width="100%" multiselect="true">
+        <treeTable id="projectsTable" width="100%" multiselect="true"
+                   dataContainer="projectsDc" hierarchyProperty="parent">
             <columns>
                 <column id="name"/>
                 <column id="code"/>
@@ -39,8 +44,11 @@
                 <column id="status"/>
                 <column id="description" maxTextLength="20"/>
             </columns>
-            <rows datasource="projectsDs"/>
             <rowsCount/>
         </treeTable>
+        <hbox id="lookupActions" spacing="true" visible="false">
+            <button action="lookupSelectAction"/>
+            <button action="lookupCancelAction"/>
+        </hbox>
     </layout>
 </window>

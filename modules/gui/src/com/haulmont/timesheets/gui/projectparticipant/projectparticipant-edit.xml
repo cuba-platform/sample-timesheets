@@ -15,32 +15,49 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://editCaption"
-        class="com.haulmont.timesheets.gui.projectparticipant.ProjectParticipantEdit" datasource="projectParticipantDs"
-        focusComponent="fieldGroup" messagesPack="com.haulmont.timesheets.gui.projectparticipant">
-    <dsContext>
-        <datasource id="projectParticipantDs" class="com.haulmont.timesheets.entity.ProjectParticipant"
-                    view="projectParticipant-full"/>
-        <collectionDatasource id="rolesDs" class="com.haulmont.timesheets.entity.ProjectRole">
-            <query>
-                <![CDATA[select e from ts$ProjectRole e]]>
-            </query>
-        </collectionDatasource>
-        <collectionDatasource id="usersDs" class="com.haulmont.cuba.security.entity.User">
-            <query>
-                <![CDATA[select e from sec$User e]]>
-            </query>
-        </collectionDatasource>
-    </dsContext>
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd" caption="msg://editCaption"
+        focusComponent="form" messagesPack="com.haulmont.timesheets.gui.projectparticipant">
+    <data>
+        <instance id="projectParticipantDc" class="com.haulmont.timesheets.entity.ProjectParticipant"
+                  view="projectParticipant-full">
+            <loader/>
+        </instance>
+        <collection id="rolesDc" class="com.haulmont.timesheets.entity.ProjectRole">
+            <loader id="rolesDl">
+                <query>
+                    <![CDATA[select e from ts$ProjectRole e]]>
+                </query>
+            </loader>
+        </collection>
+        <collection id="usersDc" class="com.haulmont.cuba.security.entity.User">
+            <loader id="usersDl">
+                <query>
+                    <![CDATA[select e from sec$User e]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
     <dialogMode width="AUTO"/>
-    <layout expand="windowActions" spacing="true">
-        <fieldGroup id="fieldGroup" datasource="projectParticipantDs">
+    <layout expand="editActions" spacing="true">
+        <form id="form" dataContainer="projectParticipantDc">
             <column width="250px">
-                <field id="user" optionsDatasource="usersDs"/>
-                <field id="project"/>
-                <field id="role" optionsDatasource="rolesDs"/>
+                <lookupPickerField id="user" property="user" optionsContainer="usersDc">
+                    <actions>
+                        <action id="clear" type="picker_clear"/>
+                    </actions>
+                </lookupPickerField>
+                <pickerField id="project" property="project">
+                    <actions>
+                        <action id="lookup" type="picker_lookup"/>
+                        <action id="clear" type="picker_clear"/>
+                    </actions>
+                </pickerField>
+                <lookupField id="role" property="role" optionsContainer="rolesDc"/>
             </column>
-        </fieldGroup>
-        <frame id="windowActions" screen="editWindowActions" stylename="window-actions"/>
+        </form>
+        <hbox id="editActions" spacing="true">
+            <button action="windowCommitAndClose"/>
+            <button action="windowClose"/>
+        </hbox>
     </layout>
 </window>

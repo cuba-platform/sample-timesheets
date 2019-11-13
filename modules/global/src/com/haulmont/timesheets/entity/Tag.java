@@ -18,7 +18,7 @@ package com.haulmont.timesheets.entity;
 
 import com.haulmont.chile.core.annotations.NamePattern;
 import com.haulmont.cuba.core.entity.StandardEntity;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.persistence.*;
 import java.text.MessageFormat;

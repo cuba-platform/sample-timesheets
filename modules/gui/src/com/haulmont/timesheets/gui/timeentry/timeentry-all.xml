@@ -15,31 +15,33 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://browseCaption"
-        class="com.haulmont.timesheets.gui.timeentry.AllTimeEntries" focusComponent="timeEntriesTable"
-        lookupComponent="timeEntriesTable" messagesPack="com.haulmont.timesheets.gui.timeentry">
-    <dsContext>
-        <groupDatasource id="timeEntriesDs" class="com.haulmont.timesheets.entity.TimeEntry" view="timeEntry-browse">
-            <query>
-                <![CDATA[
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd" caption="msg://browseCaption"
+        focusComponent="timeEntriesTable"
+        messagesPack="com.haulmont.timesheets.gui.timeentry">
+    <data>
+        <collection id="timeEntriesDc" view="timeEntry-browse" class="com.haulmont.timesheets.entity.TimeEntry">
+            <loader id="timeEntriesDl">
+                <query>
+                    <![CDATA[
                 select e from ts$TimeEntry e
                 where exists (select 1 from ts$ProjectParticipant pa
-                                where pa.project.id = e.task.project.id and pa.user.id = :session$userId
+                                where pa.project = e.task.project and pa.user.id = :user
                                 and (pa.role.code = 'manager' or pa.role.code = 'approver'))
                 ]]>
-            </query>
-        </groupDatasource>
-    </dsContext>
+                </query>
+            </loader>
+        </collection>
+    </data>
     <layout expand="timeEntriesTable" spacing="true">
-        <filter id="filter" datasource="timeEntriesDs">
+        <filter id="filter" dataLoader="timeEntriesDl">
             <properties include=".*"/>
         </filter>
-        <groupTable id="timeEntriesTable" width="100%" aggregatable="true">
+        <groupTable id="timeEntriesTable" width="100%" aggregatable="true" dataContainer="timeEntriesDc">
             <actions>
-                <action id="create"/>
-                <action id="edit"/>
-                <action id="remove"/>
-                <action id="excel"/>
+                <action id="create" type="create"/>
+                <action id="edit" type="edit"/>
+                <action id="excel" type="excel"/>
+                <action id="remove" type="remove"/>
             </actions>
             <columns>
                 <column id="task.project"/>
@@ -57,7 +59,6 @@
                 <column id="rejectionReason" maxTextLength="20"/>
                 <column id="activityType"/>
             </columns>
-            <rows datasource="timeEntriesDs"/>
             <rowsCount/>
             <buttonsPanel id="buttonsPanel" alwaysVisible="true">
                 <button id="createBtn" action="timeEntriesTable.create"/>
@@ -66,5 +67,9 @@
                 <button id="excelBtn" action="timeEntriesTable.excel"/>
             </buttonsPanel>
         </groupTable>
+        <hbox id="lookupActions" spacing="true" visible="false">
+            <button action="lookupSelectAction"/>
+            <button action="lookupCancelAction"/>
+        </hbox>
     </layout>
 </window>

@@ -16,38 +16,43 @@
 
 package com.haulmont.timesheets.gui.tag;
 
-import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.FieldGroup;
+import com.haulmont.cuba.gui.ScreenBuilders;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.LookupPickerField;
-import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.timesheets.entity.Tag;
-import com.haulmont.timesheets.gui.util.ComponentsHelper;
+import com.haulmont.timesheets.entity.TagType;
+import com.haulmont.timesheets.gui.util.ScreensHelper;
 
 import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.Map;
 
 /**
  * @author gorelov
  */
-public class TagEdit extends AbstractEditor<Tag> {
+@UiController("ts$Tag.edit")
+@UiDescriptor("tag-edit.xml")
+@EditedEntityContainer("tagDc")
+@LoadDataBeforeShow
+public class TagEdit extends StandardEditor<Tag> {
+    @Inject
+    protected ScreenBuilders screenBuilders;
 
     @Inject
-    protected FieldGroup fieldGroup;
-
-    @Named("fieldGroup.tagType")
-    protected LookupPickerField tagTypeField;
-
+    protected LookupPickerField<TagType> tagType;
     @Inject
-    private Datasource<Tag> tagDs;
+    private InstanceContainer<Tag> tagDc;
 
-    @Override
-    public void init(Map<String, Object> params) {
-        tagTypeField.addAction(ComponentsHelper.createLookupAction(tagTypeField));
-        tagTypeField.addClearAction();
+    @Subscribe("tagType.lookup")
+    protected void onTagTypeLookupActionPerformed(Action.ActionPerformedEvent e) {
+        screenBuilders.lookup(tagType)
+                .withLaunchMode(OpenMode.DIALOG)
+                .build()
+                .show();
+    }
 
-        fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
-
-        tagDs.addItemPropertyChangeListener(new ComponentsHelper.EntityCodeGenerationListener<>());
+    @Subscribe
+    protected void onInit(InitEvent event) {
+        tagDc.addItemPropertyChangeListener(new ScreensHelper.EntityCodeGenerationListener<>());
     }
 }

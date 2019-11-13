@@ -15,27 +15,36 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://browseCaption"
-        class="com.haulmont.timesheets.gui.timeentry.TimeEntryLookup" focusComponent="timeEntriesTable"
-        lookupComponent="timeEntriesTable" messagesPack="com.haulmont.timesheets.gui.timeentry">
-    <dsContext>
-        <collectionDatasource id="timeEntriesDs" class="com.haulmont.timesheets.entity.TimeEntry" view="timeEntry-browse">
-            <query>
-                <![CDATA[select e from ts$TimeEntry e left join e.activityType at on at.id = :param$activityType
-                where e.user.id = :param$user and e.date = :param$date and e.task.id = :param$task]]>
-            </query>
-        </collectionDatasource>
-    </dsContext>
-    <dialogMode width="800" height="600" resizable="true"/>
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd" caption="msg://browseCaption"
+        focusComponent="timeEntriesTable"
+        messagesPack="com.haulmont.timesheets.gui.timeentry">
+    <data>
+        <collection id="timeEntriesDc" class="com.haulmont.timesheets.entity.TimeEntry" view="timeEntry-browse">
+            <loader id="timeEntriesDl">
+                <query>
+                    <![CDATA[
+                    select e from ts$TimeEntry e left join e.activityType at
+                    left join e.tags t
+                    where e.user = :user
+                        and e.date = :date
+                        and e.task = :task
+                    ]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <dialogMode width="800"
+                height="600"
+                resizable="true"/>
     <layout expand="timeEntriesTable" spacing="true">
-        <filter id="filter" datasource="timeEntriesDs">
+        <filter id="filter" dataLoader="timeEntriesDl">
             <properties include=".*"/>
         </filter>
-        <table id="timeEntriesTable" width="100%">
+        <table id="timeEntriesTable" width="100%" dataContainer="timeEntriesDc">
             <actions>
-                <action id="create"/>
-                <action id="edit"/>
-                <action id="remove"/>
+                <action id="create" type="create"/>
+                <action id="edit" type="edit"/>
+                <action id="remove" type="remove"/>
             </actions>
             <columns>
                 <column id="task"/>
@@ -46,7 +55,6 @@
                 <column id="description" maxTextLength="20"/>
                 <column id="activityType"/>
             </columns>
-            <rows datasource="timeEntriesDs"/>
             <rowsCount/>
             <buttonsPanel id="buttonsPanel" alwaysVisible="true">
                 <button id="createBtn" action="timeEntriesTable.create"/>
@@ -54,5 +62,9 @@
                 <button id="removeBtn" action="timeEntriesTable.remove"/>
             </buttonsPanel>
         </table>
+        <hbox id="lookupActions" spacing="true" visible="false">
+            <button action="lookupSelectAction"/>
+            <button action="lookupCancelAction"/>
+        </hbox>
     </layout>
 </window>

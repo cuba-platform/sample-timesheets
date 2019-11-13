@@ -16,34 +16,40 @@
 
 package com.haulmont.timesheets.gui.task;
 
-import com.haulmont.cuba.gui.components.AbstractLookup;
-import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.core.global.AppBeans;
+import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.Task;
-import com.haulmont.timesheets.gui.util.ComponentsHelper;
+import com.haulmont.timesheets.gui.util.ScreensHelper;
+import com.haulmont.timesheets.service.ProjectsService;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.Map;
+import java.util.List;
 
 /**
  * @author gorelov
  */
-public class TaskLookup extends AbstractLookup {
+@UiController("ts$Task.lookup")
+@UiDescriptor("task-lookup.xml")
+@LookupComponent("tasksTable")
+@LoadDataBeforeShow
+public class TaskLookup extends StandardLookup<Task> {
 
     @Inject
-    protected Table<Task> tasksTable;
+    protected UserSession userSession;
 
-    @Override
-    public void init(Map<String, Object> params) {
-        tasksTable.setStyleProvider(new Table.StyleProvider<Task>() {
-            @Nullable
-            @Override
-            public String getStyleName(Task entity, @Nullable String property) {
-                if ("status".equals(property)) {
-                    return ComponentsHelper.getTaskStatusStyle(entity);
-                }
-                return null;
-            }
-        });
+    @Install(to = "tasksDl", target = Target.DATA_LOADER)
+    protected List<Task> tasksDlLoadDelegate(LoadContext<Task> loadContext) {
+        ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);
+        return projectsService.getActiveTasksForUser(userSession.getCurrentOrSubstitutedUser(), "task-preview");
+    }
+
+    @Install(to = "tasksTable", subject = "styleProvider")
+    protected String tasksTableStyleProvider(Task task, String property) {
+        if ("status".equals(property)) {
+            return ScreensHelper.getTaskStatusStyle(task);
+        }
+        return null;
     }
 }

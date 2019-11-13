@@ -16,23 +16,28 @@
 
 package com.haulmont.timesheets.gui.client;
 
-import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.timesheets.entity.Client;
-import com.haulmont.timesheets.gui.util.ComponentsHelper;
+import com.haulmont.timesheets.gui.util.ScreensHelper;
 
 import javax.inject.Inject;
-import java.util.Map;
 
 /**
  * @author gorelov
  */
-public class ClientEdit extends AbstractEditor<Client> {
+@UiController("ts$Client.edit")
+@UiDescriptor("client-edit.xml")
+@EditedEntityContainer("clientDc")
+@LoadDataBeforeShow
+public class ClientEdit extends StandardEditor<Client> {
     @Inject
-    private Datasource<Client> clientDs;
+    protected InstanceContainer<Client> clientDc;
 
-    @Override
-    public void init(Map<String, Object> params) {
-        clientDs.addItemPropertyChangeListener(new ComponentsHelper.EntityCodeGenerationListener<>());
+    @Subscribe
+    public void onInit(InitEvent event) {
+        getWindow().setWidthAuto();
+
+        clientDc.addItemPropertyChangeListener(new ScreensHelper.EntityCodeGenerationListener<>());
     }
 }

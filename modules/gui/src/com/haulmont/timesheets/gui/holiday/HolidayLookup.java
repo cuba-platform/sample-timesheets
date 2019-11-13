@@ -16,10 +16,15 @@
 
 package com.haulmont.timesheets.gui.holiday;
 
-import com.haulmont.cuba.gui.components.AbstractLookup;
+import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.timesheets.entity.Holiday;
 
 /**
  * @author gorelov
  */
-public class HolidayLookup extends AbstractLookup {
+@UiController("ts$Holiday.lookup")
+@UiDescriptor("holiday-lookup.xml")
+@LookupComponent("holidaysTable")
+@LoadDataBeforeShow
+public class HolidayLookup extends StandardLookup<Holiday> {
 }

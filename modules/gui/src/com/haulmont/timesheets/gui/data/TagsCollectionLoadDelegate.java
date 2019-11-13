@@ -1,58 +1,47 @@
-
 /*
- * Copyright (c) 2016 Haulmont
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Copyright (c) ${YEAR} ${PACKAGE_NAME}
  */
 
 package com.haulmont.timesheets.gui.data;
 
 import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.gui.data.impl.CollectionDatasourceImpl;
+import com.haulmont.cuba.core.global.LoadContext;
 import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.Tag;
 import com.haulmont.timesheets.entity.TagType;
 import com.haulmont.timesheets.service.ProjectsService;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.function.Function;
 
-/**
- * @author gorelov
- */
-public class TagsCollectionDatasource extends CollectionDatasourceImpl<Tag, UUID> {
-
+public class TagsCollectionLoadDelegate implements Function<LoadContext<Tag>, List<Tag>> {
     protected TagType requiredTagType;
     protected Set<TagType> excludeTagTypes;
+    protected Project project;
 
     @Override
-    protected void loadData(Map<String, Object> params) {
-        detachListener(data.values());
-        data.clear();
-
+    public List<Tag> apply(LoadContext<Tag> tagLoadContext) {
         ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);
         List<Tag> loaded;
         if (requiredTagType != null) {
             loaded = projectsService.getTagsWithTheTagType(requiredTagType, "tag-with-type");
         } else {
-            Project project = (Project) params.get("project");
             loaded = projectsService.getTagsForTheProject(project, "tag-with-type");
         }
+        List<Tag> data = new ArrayList<>();
         for (Tag tag : loaded) {
             if (excludeTagTypes == null || !excludeTagTypes.contains(tag.getTagType())) {
-                data.put(tag.getId(), tag);
-                attachListener(tag);
+                data.add(tag);
             }
         }
+        return data;
+    }
+
+    public void setProject(Project project) {
+        this.project = project;
     }
 
     public void setRequiredTagType(TagType requiredTagType) {

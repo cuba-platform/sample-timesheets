@@ -16,10 +16,15 @@
 
 package com.haulmont.timesheets.gui.projectparticipant;
 
-import com.haulmont.cuba.gui.components.AbstractLookup;
+import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.timesheets.entity.ProjectParticipant;
 
 /**
  * @author gorelov
  */
-public class ProjectParticipantBrowse extends AbstractLookup {
+@UiController("ts$ProjectParticipant.browse")
+@UiDescriptor("projectparticipant-browse.xml")
+@LookupComponent("projectParticipantsTable")
+@LoadDataBeforeShow
+public class ProjectParticipantBrowse extends StandardLookup<ProjectParticipant> {
 }

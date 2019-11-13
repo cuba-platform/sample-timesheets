@@ -32,8 +32,8 @@ import com.haulmont.cuba.gui.data.aggregation.AggregationStrategy;
 import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
 import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.global.WorkdaysTools;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import java.util.Calendar;
 import java.util.Date;

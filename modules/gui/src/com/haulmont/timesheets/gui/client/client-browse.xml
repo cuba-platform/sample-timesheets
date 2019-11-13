@@ -15,31 +15,34 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://browseCaption"
-        class="com.haulmont.timesheets.gui.client.ClientBrowse" focusComponent="clientsTable"
-        lookupComponent="clientsTable" messagesPack="com.haulmont.timesheets.gui.client">
-    <dsContext>
-        <collectionDatasource id="clientsDs" class="com.haulmont.timesheets.entity.Client" view="_local">
-            <query>
-                <![CDATA[select e from ts$Client e]]>
-            </query>
-        </collectionDatasource>
-    </dsContext>
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd" caption="msg://browseCaption"
+        focusComponent="clientsTable" messagesPack="com.haulmont.timesheets.gui.client">
+    <data>
+        <collection id="clientsDc" class="com.haulmont.timesheets.entity.Client" view="_local">
+            <loader id="clientsDl">
+                <query>
+                    <![CDATA[select e from ts$Client e]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <dialogMode height="500"
+                width="800"
+                resizable="true"/>
     <layout expand="clientsTable" spacing="true">
-        <filter id="filter" datasource="clientsDs">
+        <filter id="filter" dataLoader="clientsDl">
             <properties include=".*"/>
         </filter>
-        <table id="clientsTable" width="100%">
+        <table id="clientsTable" width="100%" dataContainer="clientsDc">
             <actions>
-                <action id="create"/>
-                <action id="edit"/>
-                <action id="remove"/>
+                <action id="create" type="create"/>
+                <action id="edit" type="edit"/>
+                <action id="remove" type="remove"/>
             </actions>
             <columns>
                 <column id="name"/>
                 <column id="code"/>
             </columns>
-            <rows datasource="clientsDs"/>
             <rowsCount/>
             <buttonsPanel id="buttonsPanel" alwaysVisible="true">
                 <button id="createBtn" action="clientsTable.create"/>
@@ -47,5 +50,9 @@
                 <button id="removeBtn" action="clientsTable.remove"/>
             </buttonsPanel>
         </table>
+        <hbox id="lookupActions" spacing="true" visible="false">
+            <button action="lookupSelectAction"/>
+            <button action="lookupCancelAction"/>
+        </hbox>
     </layout>
 </window>

@@ -16,39 +16,63 @@
 
 package com.haulmont.timesheets.gui.projectparticipant;
 
+import com.haulmont.bali.util.ParamsMap;
+import com.haulmont.cuba.gui.ScreenBuilders;
+import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.AbstractEditor;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.LookupPickerField;
 import com.haulmont.cuba.gui.components.PickerField;
+import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.cuba.security.entity.User;
+import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.ProjectParticipant;
 import com.haulmont.timesheets.gui.util.ComponentsHelper;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.Map;
 
 /**
  * @author gorelov
  */
-public class ProjectParticipantEdit extends AbstractEditor<ProjectParticipant> {
+@UiController("ts$ProjectParticipant.edit")
+@UiDescriptor("projectparticipant-edit.xml")
+@EditedEntityContainer("projectParticipantDc")
+@LoadDataBeforeShow
+public class ProjectParticipantEdit extends StandardEditor<ProjectParticipant> {
+    @Inject
+    protected ScreenBuilders screenBuilders;
 
-    @Named("fieldGroup.user")
-    protected LookupPickerField userField;
-    @Named("fieldGroup.project")
-    protected PickerField projectField;
+    @Inject
+    protected PickerField<Project> project;
+    @Inject
+    protected LookupPickerField<User> user;
 
-    @Override
-    public void init(Map<String, Object> params) {
-        userField.addAction(ComponentsHelper.createLookupAction(userField));
-        userField.addAction(new PickerField.ClearAction(userField));
-
-        projectField.addAction(ComponentsHelper.createLookupAction(projectField));
+    @Subscribe("project.lookup")
+    protected void onProjectLookup(Action.ActionPerformedEvent event) {
+        screenBuilders.lookup(Project.class, this)
+                .withLaunchMode(OpenMode.DIALOG)
+                .build()
+                .show();
     }
 
-    @Override
-    protected void postInit() {
-        super.postInit();
-        ProjectParticipant participant = getItem();
+    @Subscribe
+    protected void onInit(InitEvent event) {
+        PickerField.LookupAction lookupAction = new PickerField.LookupAction(user);
+        lookupAction.setLookupScreenOpenType(WindowManager.OpenType.DIALOG
+                .setWidth(800f)
+                .setHeight(500f)
+                .setResizable(true));
+        lookupAction.setLookupScreenParams(ParamsMap.of("multiselect", false));
+        user.addAction(lookupAction, 0);
+    }
+
+    @Subscribe
+    protected void onAfterShow(AfterShowEvent event) {
+        ProjectParticipant participant = getEditedEntity();
         if (participant.getProject() != null) {
-            projectField.setEnabled(false);
+            project.setEnabled(false);
         }
     }
 }

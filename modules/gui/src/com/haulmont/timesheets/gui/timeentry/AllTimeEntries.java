@@ -16,57 +16,74 @@
 
 package com.haulmont.timesheets.gui.timeentry;
 
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.AbstractLookup;
+import com.haulmont.cuba.gui.ScreenBuilders;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.GroupTable;
-import com.haulmont.cuba.gui.components.actions.CreateAction;
-import com.haulmont.cuba.gui.components.actions.EditAction;
-import com.haulmont.cuba.gui.components.actions.ExcelAction;
-import com.haulmont.cuba.gui.data.GroupDatasource;
+import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.TimeEntry;
-import com.haulmont.timesheets.gui.util.ComponentsHelper;
+import com.haulmont.timesheets.gui.util.ScreensHelper;
 import com.haulmont.timesheets.gui.util.SecurityAssistant;
-import com.haulmont.timesheets.service.ProjectsService;
 
 import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * @author gorelov
  */
-public class AllTimeEntries extends AbstractLookup {
-    @Inject
-    protected GroupTable<TimeEntry> timeEntriesTable;
-    @Named("timeEntriesTable.edit")
-    protected EditAction timeEntriesTableEdit;
-    @Named("timeEntriesTable.create")
-    protected CreateAction timeEntriesTableCreate;
+@UiController("ts$TimeEntry.all")
+@UiDescriptor("timeentry-all.xml")
+public class AllTimeEntries extends StandardLookup<TimeEntry> {
+
     @Inject
     protected SecurityAssistant securityAssistant;
     @Inject
-    protected ProjectsService projectsService;
+    protected UserSession userSession;
+
     @Inject
-    protected GroupDatasource<TimeEntry, UUID> timeEntriesDs;
+    protected CollectionLoader<TimeEntry> timeEntriesDl;
+    @Inject
+    protected ScreenBuilders screenBuilders;
+    @Inject
+    protected GroupTable<TimeEntry> timeEntriesTable;
 
-    @Override
-    public void init(Map<String, Object> params) {
+    @Subscribe
+    protected void onInit(Screen.InitEvent e) {
         if (securityAssistant.isSuperUser()) {
-            timeEntriesDs.setQuery("select e from ts$TimeEntry e");
+            timeEntriesDl.setQuery("select e from ts$TimeEntry e");
         }
+    }
 
-        timeEntriesTableCreate.setOpenType(WindowManager.OpenType.DIALOG);
-        timeEntriesTableEdit.setOpenType(WindowManager.OpenType.DIALOG);
+    @Subscribe("timeEntriesTable.create")
+    protected void onTimeEntriesTableCreateActionPerformed(Action.ActionPerformedEvent e) {
+        screenBuilders.editor(timeEntriesTable)
+                .newEntity()
+                .withLaunchMode(OpenMode.DIALOG)
+                .build()
+                .show();
+    }
 
-        timeEntriesTable.setStyleProvider((entity, property) -> {
-            if ("status".equals(property)) {
-                if (entity != null) {
-                    return ComponentsHelper.getTimeEntryStatusStyle(entity);
-                }
+    @Subscribe("timeEntriesTable.edit")
+    protected void onTimeEntriesTableEditActionPerformed(Action.ActionPerformedEvent e) {
+        screenBuilders.editor(timeEntriesTable)
+                .withLaunchMode(OpenMode.DIALOG)
+                .build()
+                .show();
+    }
+
+    @Install(to = "timeEntriesTable", subject = "styleProvider")
+    protected String timeEntriesTableStyleProvider(TimeEntry entity, String property) {
+        if ("status".equals(property)) {
+            if (entity != null) {
+                return ScreensHelper.getTimeEntryStatusStyle(entity);
             }
-            return null;
-        });
-        timeEntriesTable.addAction(new ExcelAction(timeEntriesTable));
+        }
+        return null;
+    }
+
+    @Subscribe
+    protected void onBeforeShow(Screen.BeforeShowEvent e) {
+        timeEntriesDl.setParameter("user", userSession.getUser());
+        timeEntriesDl.load();
     }
 }

@@ -15,37 +15,37 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://editCaption"
-        class="com.haulmont.timesheets.gui.tagtype.TagTypeEdit" datasource="tagTypeDs" focusComponent="fieldGroup"
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd" caption="msg://editCaption"
+        focusComponent="form"
         messagesPack="com.haulmont.timesheets.gui.tagtype">
-    <dsContext>
-        <datasource id="tagTypeDs" class="com.haulmont.timesheets.entity.TagType" view="tagType-with-project">
-            <collectionDatasource id="projectDs" property="projects"/>
-            <collectionDatasource id="tagsDs" property="tags"/>
-        </datasource>
-    </dsContext>
-    <dialogMode width="600"/>
-    <layout expand="windowActions" spacing="true">
+    <data>
+        <instance id="tagTypeDc" class="com.haulmont.timesheets.entity.TagType" view="tagType-with-project">
+            <loader id="tagTypeDl"/>
+            <collection id="projectsDc" property="projects"/>
+            <collection id="tagsDc" property="tags"/>
+        </instance>
+    </data>
+    <dialogMode width="AUTO"/>
+    <layout expand="editActions" spacing="true">
         <tabSheet>
             <tab id="main" caption="msg://caption.main" margin="true" spacing="true">
-                <fieldGroup id="fieldGroup" datasource="tagTypeDs">
+                <form id="form" dataContainer="tagTypeDc">
                     <column width="250px">
-                        <field id="name"/>
-                        <field id="code"/>
-                        <field id="description" custom="true"/>
+                        <textField id="name" property="name"/>
+                        <textField id="code" property="code"/>
+                        <resizableTextArea id="description" height="100px" resizable="true" property="description"/>
                     </column>
-                </fieldGroup>
-                <groupBox caption="msg://com.haulmont.timesheets.entity/TagType.projects">
-                    <table id="projectsTable" height="200px" width="100%">
+                </form>
+                <groupBox caption="msg://com.haulmont.timesheets.entity/TagType.projects" width="600px">
+                    <table id="projectsTable" height="200px" width="100%" dataContainer="projectsDc">
                         <actions>
-                            <action id="add"/>
-                            <action id="remove"/>
+                            <action id="add" type="add"/>
+                            <action id="remove" type="remove"/>
                         </actions>
                         <columns>
                             <column id="name"/>
                             <column id="code"/>
                         </columns>
-                        <rows datasource="projectDs"/>
                         <buttonsPanel>
                             <button id="add" action="projectsTable.add"/>
                             <button id="remove" action="projectsTable.remove"/>
@@ -55,17 +55,16 @@
             </tab>
             <tab id="tags" caption="msg://caption.tags" margin="true" spacing="true">
                 <groupBox caption="msg://com.haulmont.timesheets.entity/TagType.tags">
-                    <table id="tagsTable" width="100%">
+                    <table id="tagsTable" height="200px" width="600px" dataContainer="tagsDc">
                         <actions>
-                            <action id="create"/>
-                            <action id="edit"/>
-                            <action id="remove"/>
+                            <action id="create" type="create"/>
+                            <action id="edit" type="edit"/>
+                            <action id="remove" type="remove"/>
                         </actions>
                         <columns>
                             <column id="name"/>
                             <column id="code"/>
                         </columns>
-                        <rows datasource="tagsDs"/>
                         <buttonsPanel>
                             <button id="createTag" action="tagsTable.create"/>
                             <button id="editTag" action="tagsTable.edit"/>
@@ -75,6 +74,9 @@
                 </groupBox>
             </tab>
         </tabSheet>
-        <frame id="windowActions" screen="editWindowActions" stylename="window-actions"/>
+        <hbox id="editActions" spacing="true">
+            <button action="windowCommitAndClose"/>
+            <button action="windowClose"/>
+        </hbox>
     </layout>
 </window>

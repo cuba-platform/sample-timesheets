@@ -15,47 +15,78 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://editCaption"
-        class="com.haulmont.timesheets.gui.timeentry.TimeEntryEdit" datasource="timeEntryDs"
-        focusComponent="fieldGroup" messagesPack="com.haulmont.timesheets.gui.timeentry">
-    <dsContext>
-        <datasource id="timeEntryDs" class="com.haulmont.timesheets.entity.TimeEntry" view="timeEntry-full">
-            <collectionDatasource id="tagsDs" property="tags"/>
-        </datasource>
-        <collectionDatasource id="optionOtherTagsDs" class="com.haulmont.timesheets.entity.Tag"
-                              datasourceClass="com.haulmont.timesheets.gui.data.TagsCollectionDatasource"/>
-        <collectionDatasource id="activeTasksDs" class="com.haulmont.timesheets.entity.Task"
-                              datasourceClass="com.haulmont.timesheets.gui.data.TasksCollectionDatasource"/>
-        <collectionDatasource id="otherTagsDs" allowCommit="false" class="com.haulmont.timesheets.entity.Tag"
-                              refreshMode="NEVER"/>
-        <collectionDatasource id="activityTypesDs" class="com.haulmont.timesheets.entity.ActivityType">
-            <query>
-                <![CDATA[select e from ts$ActivityType e left join e.projects pr where pr.id is null or (pr.id = :component$fieldGroup.task.project)]]>
-            </query>
-        </collectionDatasource>
-    </dsContext>
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        xmlns:c="http://schemas.haulmont.com/cuba/screen/jpql_condition.xsd"
+        caption="msg://editCaption"
+        focusComponent="form.task"
+        messagesPack="com.haulmont.timesheets.gui.timeentry">
+    <data>
+        <instance id="timeEntryDc"
+                  class="com.haulmont.timesheets.entity.TimeEntry"
+                  view="timeEntry-full">
+            <loader id="timeEntryDl"/>
+            <collection id="tagsDc" property="tags"/>
+        </instance>
+        <collection id="optionOtherTagsDc" class="com.haulmont.timesheets.entity.Tag">
+            <loader id="optionOtherTagsDl">
+            </loader>
+        </collection>
+        <collection id="activeTasksDc" class="com.haulmont.timesheets.entity.Task">
+            <loader id="activeTasksDl">
+            </loader>
+        </collection>
+        <collection id="otherTagsDc" class="com.haulmont.timesheets.entity.Tag">
+            <loader id="otherTagsDl">
+            </loader>
+        </collection>
+        <collection id="activityTypesDc" class="com.haulmont.timesheets.entity.ActivityType">
+            <loader id="activityTypesDl">
+                <query>
+                    select e from ts$ActivityType e left join e.projects pr
+                    <condition>
+                        <or>
+                            <c:jpql>
+                                <c:where>pr = :project</c:where>
+                            </c:jpql>
+                            <c:jpql>
+                                <c:where>e.projects is empty</c:where>
+                            </c:jpql>
+                        </or>
+                    </condition>
+                </query>
+            </loader>
+        </collection>
+    </data>
     <dialogMode width="AUTO"/>
     <layout expand="scrollBox" spacing="true">
         <scrollBox id="scrollBox" spacing="true">
-            <fieldGroup id="fieldGroup" datasource="timeEntryDs" width="500px">
+            <form id="form" dataContainer="timeEntryDc" width="500px">
                 <column width="100%">
-                    <field id="task" optionsDatasource="activeTasksDs"/>
-                    <field id="activityType" optionsDatasource="activityTypesDs" required="true"/>
-                    <field id="user" enable="false"/>
-                    <field id="date"/>
-                    <field id="timeInMinutes" custom="true" required="true" requiredMessage="msg://required.time"/>
-                    <field id="status"/>
-                    <field id="description" custom="true"/>
-                    <field id="rejectionReason" custom="true"/>
+                    <dateField id="date" property="date"/>
+                    <lookupPickerField id="taskField" optionsContainer="activeTasksDc" property="task">
+                        <actions>
+                            <action id="lookup" type="picker_lookup"/>
+                            <action id="clear" type="picker_clear"/>
+                        </actions>
+                    </lookupPickerField>
+                    <lookupField id="activityType" optionsContainer="activityTypesDc" property="activityType" required="true"/>
+                    <lookupField id="user" property="user" enable="false"/>
+                    <textField id="timeInMinutes" required="true" requiredMessage="msg://required.time" inputPrompt="msg://required.time"/>
+                    <lookupField id="status" property="status"/>
+                    <textArea id="description" property="description" height="100px"/>
+                    <textArea id="rejectionReason" property="rejectionReason" height="100px"/>
                 </column>
-            </fieldGroup>
+            </form>
             <vbox id="tagsTokenListsBox" spacing="true"/>
-            <tokenList id="otherTagsTokenList" caption="msg://com.haulmont.timesheets.entity/TimeEntry.tags"
-                       datasource="otherTagsDs" inline="true" width="500px">
-                <button icon="icons/plus-btn.png"/>
-                <lookup optionsDatasource="optionOtherTagsDs"/>
+            <tokenList id="otherTagsTokenList"
+                       inline="true" width="500px">
+                <addButton icon="icons/plus-btn.png"/>
+                <lookup optionsContainer="optionOtherTagsDc"/>
             </tokenList>
         </scrollBox>
-        <frame id="windowActions" screen="editWindowActions"/>
+        <hbox id="editActions" spacing="true">
+            <button action="windowCommitAndClose"/>
+            <button action="windowClose"/>
+        </hbox>
     </layout>
 </window>

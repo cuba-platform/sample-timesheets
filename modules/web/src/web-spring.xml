@@ -14,11 +14,11 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd         http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd         http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.3.xsd"
+<beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:task="http://www.springframework.org/schema/task">
+       xmlns:task="http://www.springframework.org/schema/task"
+       xmlns:gui="http://schemas.haulmont.com/cuba/spring/cuba-gui.xsd">
     <!-- Annotation-based beans -->
     <context:component-scan base-package="com.haulmont.timesheets"/>
     <!-- Background Tasks -->
@@ -41,4 +41,5 @@
         </property>
     </bean>
     <bean class="com.haulmont.timesheets.web.App" name="cuba_App" scope="vaadin"/>
+    <gui:screens base-packages="com.haulmont.timesheets.web"/>
 </beans>

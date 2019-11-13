@@ -15,21 +15,29 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://editCaption"
-        class="com.haulmont.timesheets.gui.tasktype.TaskTypeEdit" datasource="taskTypeDs" focusComponent="fieldGroup"
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        caption="msg://editCaption"
+        focusComponent="form"
         messagesPack="com.haulmont.timesheets.gui.tasktype">
-    <dsContext>
-        <datasource id="taskTypeDs" class="com.haulmont.timesheets.entity.TaskType" view="_local"/>
-    </dsContext>
-    <dialogMode width="AUTO"/>
-    <layout expand="windowActions" spacing="true">
-        <fieldGroup id="fieldGroup" datasource="taskTypeDs">
+    <data>
+        <instance id="taskTypeDc"
+                  class="com.haulmont.timesheets.entity.TaskType"
+                  view="_local">
+            <loader/>
+        </instance>
+    </data>
+    <dialogMode width="AUTO" height="AUTO"/>
+    <layout expand="editActions" spacing="true">
+        <form id="form" dataContainer="taskTypeDc">
             <column width="250px">
-                <field id="name"/>
-                <field id="code"/>
-                <field id="description" custom="true"/>
+                <textField id="name" property="name"/>
+                <textField id="code" property="code"/>
+                <resizableTextArea id="description" property="description" height="100px" resizable="true"/>
             </column>
-        </fieldGroup>
-        <frame id="windowActions" screen="editWindowActions" stylename="window-actions"/>
+        </form>
+        <hbox id="editActions" spacing="true">
+            <button action="windowCommitAndClose"/>
+            <button action="windowClose"/>
+        </hbox>
     </layout>
 </window>

@@ -16,34 +16,38 @@
 
 package com.haulmont.timesheets.gui.projectparticipant;
 
-import com.haulmont.bali.util.ParamsMap;
-import com.haulmont.cuba.gui.components.AbstractLookup;
 import com.haulmont.cuba.gui.components.Table;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.ProjectParticipant;
-import org.apache.commons.lang.BooleanUtils;
 
 import javax.inject.Inject;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * @author gorelov
  */
-public class ProjectparticipantLookup extends AbstractLookup {
+@UiController("ts$ProjectParticipant.lookup")
+@UiDescriptor("projectparticipant-lookup.xml")
+@LookupComponent("projectParticipantsTable")
+@LoadDataBeforeShow
+public class ProjectparticipantLookup extends StandardLookup<ProjectParticipant> {
 
     @Inject
     protected Table<ProjectParticipant> projectParticipantsTable;
     @Inject
-    protected CollectionDatasource<ProjectParticipant, UUID> projectParticipantsDs;
+    protected CollectionLoader<ProjectParticipant> projectParticipantsDl;
 
-    @Override
-    public void init(Map<String, Object> params) {
-        if (BooleanUtils.isTrue((Boolean) params.get("multiselect"))) {
-            projectParticipantsTable.setMultiSelect(true);
-        }
-        Project project = (Project) params.get("project");
-        projectParticipantsDs.refresh(ParamsMap.of("project", project));
+    protected Project project;
+
+    public void setProject(Project project) {
+        this.project = project;
+        projectParticipantsDl.setParameter("project", project);
+    }
+
+    @Subscribe
+    protected void onBeforeShow(BeforeShowEvent event) {
+        if (project != null)
+            projectParticipantsDl.load();
     }
 }

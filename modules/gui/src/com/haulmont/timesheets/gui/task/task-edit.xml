@@ -15,33 +15,42 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://editCaption"
-        class="com.haulmont.timesheets.gui.task.TaskEdit" datasource="taskDs" focusComponent="fieldGroup"
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        caption="msg://editCaption"
+        focusComponent="form"
         messagesPack="com.haulmont.timesheets.gui.task">
-    <dsContext>
-        <datasource id="taskDs" class="com.haulmont.timesheets.entity.Task" view="task-full">
-            <collectionDatasource id="requiredTagTypesDs" property="requiredTagTypes"/>
-            <collectionDatasource id="defaultTagsDs" property="defaultTags"/>
-            <collectionDatasource id="participantsDs" property="exclusiveParticipants"/>
-        </datasource>
-        <collectionDatasource id="taskTypesDs" class="com.haulmont.timesheets.entity.TaskType">
-            <query>
-                <![CDATA[select e from ts$TaskType e order by e.name]]>
-            </query>
-        </collectionDatasource>
-        <collectionDatasource id="allTagsDs" class="com.haulmont.timesheets.entity.Tag" view="tag-with-type">
-            <query>
-                <![CDATA[select e from ts$Tag e left join e.tagType.projects pr where pr.id is null or (pr.id = :component$fieldGroup.project)]]>
-            </query>
-        </collectionDatasource>
-        <collectionDatasource id="allTagsTypesDs" class="com.haulmont.timesheets.entity.TagType"
-                              view="tagType-with-project">
-            <query>
-                <![CDATA[select e from ts$TagType e left join e.projects pr where pr.id is null or (pr.id = :component$fieldGroup.project)]]>
-            </query>
-        </collectionDatasource>
-    </dsContext>
-    <dialogMode width="AUTO"/>
+    <data>
+        <instance id="taskDc"
+                  class="com.haulmont.timesheets.entity.Task"
+                  view="task-full">
+            <loader id="taskDl"/>
+            <collection id="requiredTagTypesDc" property="requiredTagTypes"/>
+            <collection id="defaultTagsDc" property="defaultTags"/>
+            <collection id="exclusiveParticipantsDc" property="exclusiveParticipants"/>
+        </instance>
+        <collection id="taskTypesDc" class="com.haulmont.timesheets.entity.TaskType">
+            <loader id="taskTypesDl">
+                <query>
+                    <![CDATA[select e from ts$TaskType e order by e.name]]>
+                </query>
+            </loader>
+        </collection>
+        <collection id="allTagsDc" class="com.haulmont.timesheets.entity.Tag" view="tag-with-type">
+            <loader id="allTagsDl">
+                <query>
+                    <![CDATA[select e from ts$Tag e left join e.tagType.projects pr where pr.id is null or (pr = :project)]]>
+                </query>
+            </loader>
+        </collection>
+        <collection id="allTagsTypesDc" class="com.haulmont.timesheets.entity.TagType" view="tagType-with-project">
+            <loader id="allTagsTypesDl">
+                <query>
+                    <![CDATA[select e from ts$TagType e left join e.projects pr where pr.id is null or (pr = :project)]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <dialogMode width="AUTO" height="AUTO"/>
     <layout expand="tabsheet" spacing="true">
         <tabSheet id="tabsheet">
             <tab id="main" caption="msg://caption.main" margin="true">
@@ -52,44 +61,54 @@
                     </columns>
                     <rows>
                         <row>
-                            <fieldGroup id="fieldGroup" datasource="taskDs">
-                                <column width="250px">
-                                    <field id="name"/>
-                                    <field id="code"/>
-                                    <field id="description" custom="true"/>
-                                    <field id="project"/>
-                                    <field id="type" optionsDatasource="taskTypesDs"/>
-                                    <field id="status"/>
+                            <form id="form" dataContainer="taskDc">
+                                <column width="300px">
+                                    <textField id="name" property="name"/>
+                                    <textField id="code" property="code"/>
+                                    <resizableTextArea id="description" height="100px" property="description" resizable="true"/>
+                                    <pickerField id="project" property="project">
+                                        <actions>
+                                            <action id="lookup" type="picker_lookup"/>
+                                            <action id="clear" type="picker_clear"/>
+                                        </actions>
+                                    </pickerField>
+                                    <lookupPickerField id="type" property="type" optionsContainer="taskTypesDc">
+                                        <actions>
+                                            <action id="lookup" type="picker_lookup"/>
+                                            <action id="clear" type="picker_clear"/>
+                                        </actions>
+                                    </lookupPickerField>
+                                    <lookupField id="status" property="status"/>
                                 </column>
-                            </fieldGroup>
+                            </form>
                         </row>
                     </rows>
                 </grid>
             </tab>
             <tab id="advanced" caption="msg://caption.advanced" expand="participantsBox" margin="true">
                 <tokenList id="tagsTypesTokenList" caption="msg://com.haulmont.timesheets.entity/Task.requiredTagTypes"
-                           datasource="requiredTagTypesDs" inline="true" width="480px">
-                    <button icon="icons/plus-btn.png"/>
-                    <lookup optionsDatasource="allTagsTypesDs"/>
+                           property="requiredTagTypes" dataContainer="taskDc" inline="true" width="480px">
+                    <addButton icon="icons/plus-btn.png"/>
+                    <lookup optionsContainer="allTagsTypesDc"/>
                 </tokenList>
                 <tokenList id="tagsTokenList" caption="msg://com.haulmont.timesheets.entity/Task.defaultTags"
-                           datasource="defaultTagsDs" inline="true" width="480px">
-                    <button icon="icons/plus-btn.png"/>
-                    <lookup optionsDatasource="allTagsDs"/>
+                           property="defaultTags" dataContainer="taskDc" inline="true" width="480px">
+                    <addButton icon="icons/plus-btn.png"/>
+                    <lookup optionsContainer="allTagsDc"/>
                 </tokenList>
-                <groupBox id="participantsBox" caption="msg://com.haulmont.timesheets.entity/Task.exclusiveParticipants">
+                <groupBox id="participantsBox"
+                          caption="msg://com.haulmont.timesheets.entity/Task.exclusiveParticipants">
                     <table id="participantsTable" columnControlVisible="false" height="100%" multiselect="true"
-                           width="100%">
+                           width="100%" dataContainer="exclusiveParticipantsDc">
                         <actions>
-                            <action id="add"/>
-                            <action id="remove"/>
+                            <action id="add" type="add"/>
+                            <action id="remove" type="remove"/>
                         </actions>
                         <columns>
                             <column id="user" link="true"/>
                             <column id="role"/>
                             <column id="user.position"/>
                         </columns>
-                        <rows datasource="participantsDs"/>
                         <buttonsPanel>
                             <button action="participantsTable.add"/>
                             <button action="participantsTable.remove"/>
@@ -98,6 +117,9 @@
                 </groupBox>
             </tab>
         </tabSheet>
-        <frame id="windowActions" screen="editWindowActions" stylename="window-actions"/>
+        <hbox id="editActions" spacing="true">
+            <button action="windowCommitAndClose"/>
+            <button action="windowClose"/>
+        </hbox>
     </layout>
 </window>

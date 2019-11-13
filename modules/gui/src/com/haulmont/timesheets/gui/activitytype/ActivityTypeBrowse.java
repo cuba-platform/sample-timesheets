@@ -16,28 +16,41 @@
 
 package com.haulmont.timesheets.gui.activitytype;
 
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.AbstractLookup;
-import com.haulmont.cuba.gui.components.actions.CreateAction;
-import com.haulmont.cuba.gui.components.actions.EditAction;
+import com.haulmont.cuba.gui.ScreenBuilders;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.timesheets.entity.ActivityType;
 
-import javax.inject.Named;
-import java.util.Map;
+import javax.inject.Inject;
 
 /**
  * @author degtyarjov
  */
-public class ActivityTypeBrowse extends AbstractLookup {
-    @Named("activityTypesTable.create")
-    private CreateAction activityTypesTableCreate;
-    @Named("activityTypesTable.edit")
-    private EditAction activityTypesTableEdit;
+@UiController("ts$ActivityType.lookup")
+@UiDescriptor("activitytype-browse.xml")
+@LookupComponent("activityTypesTable")
+@LoadDataBeforeShow
+public class ActivityTypeBrowse extends StandardLookup<ActivityType> {
+    @Inject
+    protected ScreenBuilders screenBuilders;
+    @Inject
+    protected Table<ActivityType> activityTypesTable;
 
-    @Override
-    public void init(Map<String, Object> params) {
-        super.init(params);
+    @Subscribe("activityTypesTable.create")
+    protected void onCreateActionPerformed(Action.ActionPerformedEvent event) {
+        screenBuilders.editor(activityTypesTable)
+                .newEntity()
+                .withLaunchMode(OpenMode.DIALOG)
+                .build()
+                .show();
+    }
 
-        activityTypesTableCreate.setOpenType(WindowManager.OpenType.DIALOG);
-        activityTypesTableEdit.setOpenType(WindowManager.OpenType.DIALOG);
+    @Subscribe("activityTypesTable.edit")
+    protected void onEditActionPerformed(Action.ActionPerformedEvent event) {
+        screenBuilders.editor(activityTypesTable)
+                .withLaunchMode(OpenMode.DIALOG)
+                .build()
+                .show();
     }
 }

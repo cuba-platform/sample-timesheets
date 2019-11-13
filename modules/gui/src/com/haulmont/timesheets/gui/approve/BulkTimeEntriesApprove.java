@@ -29,7 +29,7 @@ import com.haulmont.timesheets.global.WorkdaysTools;
 import com.haulmont.timesheets.gui.timeentry.AllTimeEntries;
 import com.haulmont.timesheets.gui.util.ComponentsHelper;
 import com.haulmont.timesheets.gui.util.TimeEntryOvertimeAggregation;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
