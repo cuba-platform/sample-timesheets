@@ -17,26 +17,26 @@
 
 <menu-config xmlns="http://schemas.haulmont.com/cuba/menu.xsd">
     <menu id="timesheets" insertBefore="reports">
-        <item id="calendar-screen" shortcut="CTRL-ALT-C"/>
-        <item id="simple-weekly-timesheets" shortcut="CTRL-ALT-W"/>
-        <item id="ts$TimeEntry.browse"/>
-        <item id="ts$Task.browse" shortcut="CTRL-ALT-T"/>
+        <item screen="calendar-screen" shortcut="CTRL-ALT-C"/>
+        <item screen="simple-weekly-timesheets" shortcut="CTRL-ALT-W"/>
+        <item screen="ts$TimeEntry.browse"/>
+        <item screen="ts$Task.browse" shortcut="CTRL-ALT-T"/>
     </menu>
     <menu id="projects" insertAfter="timesheets">
-        <item id="ts$Client.browse"/>
-        <item id="ts$Project.browse" shortcut="CTRL-ALT-P"/>
-        <item id="approve-screen" shortcut="CTRL-ALT-A"/>
-        <item id="ts$TimeEntry.all-approve"/>
-        <item id="ts$TimeEntry.all"/>
-        <item id="charts-screen"/>
+        <item screen="ts$Client.browse"/>
+        <item screen="ts$Project.browse" shortcut="CTRL-ALT-P"/>
+        <item screen="approve-screen" shortcut="CTRL-ALT-A"/>
+        <item screen="ts$TimeEntry.all-approve"/>
+        <item screen="ts$TimeEntry.all"/>
+        <item screen="charts-screen"/>
     </menu>
     <menu id="timesheet-settings" insertAfter="projects">
-        <item id="work-time-settings" openType="DIALOG"/>
-        <item id="ts$Holiday.browse"/>
+        <item screen="work-time-settings" openType="DIALOG"/>
+        <item screen="ts$Holiday.browse"/>
         <separator/>
-        <item id="ts$TaskType.browse"/>
-        <item id="ts$ActivityType.lookup"/>
-        <item id="ts$TagType.browse"/>
+        <item screen="ts$TaskType.browse"/>
+        <item screen="ts$ActivityType.lookup"/>
+        <item screen="ts$TagType.browse"/>
         <separator/>
     </menu>
 </menu-config>

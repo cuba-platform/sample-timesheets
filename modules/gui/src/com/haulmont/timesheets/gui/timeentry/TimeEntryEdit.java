@@ -151,6 +151,11 @@ public class TimeEntryEdit extends StandardEditor<TimeEntry> {
     }
 
     protected void updateActivityType() {
+        if (getEditedEntity().getTask() != null) {
+            activityTypesDl.setParameter("project", getEditedEntity().getTask().getProject());
+        } else {
+            activityTypesDl.setParameter("project", null);
+        }
         activityTypesDl.load();
         activityType.setVisible(activityTypesDc.getItems().size() > 0);
     }
@@ -275,10 +280,11 @@ public class TimeEntryEdit extends StandardEditor<TimeEntry> {
     @Subscribe
     protected void onBeforeShow(BeforeShowEvent event) {
         timeEntryDl.load();
-        if (getEditedEntity().getTask() != null)
+        if (getEditedEntity().getTask() != null) {
             activityTypesDl.setParameter("project", getEditedEntity().getTask().getProject());
-        else
+        } else {
             activityTypesDl.setParameter("project", null);
+        }
         activeTasksDl.load();
     }
 

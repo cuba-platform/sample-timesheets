@@ -53,12 +53,13 @@
         </filter>
         <split id="split" orientation="horizontal" width="100%">
             <vbox id="leftBox" height="100%" margin="false,true,false,false" spacing="true">
-                <treeTable id="projectsTable" height="100%" multiselect="true" width="100%" dataContainer="projectsDc">
+                <treeTable id="projectsTable" height="100%" multiselect="true" width="100%"
+                           dataContainer="projectsDc" hierarchyProperty="parent">
                     <actions>
-                        <action id="create"/>
-                        <action id="edit"/>
-                        <action id="remove"/>
-                        <action id="excel"/>
+                        <action id="create" type="create"/>
+                        <action id="edit" type="edit"/>
+                        <action id="remove" type="remove"/>
+                        <action id="excel" type="excel"/>
                     </actions>
                     <columns>
                         <column id="name"/>
@@ -81,11 +82,11 @@
                     <tab id="tasks" caption="msg://caption.tasks" margin="true,false,false,false">
                         <table id="tasksTable" height="100%" width="100%" dataContainer="tasksDc">
                             <actions>
-                                <action id="create"/>
-                                <action id="edit"/>
-                                <action id="remove"/>
+                                <action id="create" type="create"/>
+                                <action id="edit" type="edit"/>
+                                <action id="remove" type="remove"/>
                                 <action id="switchStatus"/>
-                                <action id="excel"/>
+                                <action id="excel" type="excel"/>
                             </actions>
                             <columns>
                                 <column id="name"/>
@@ -109,11 +110,11 @@
                         <table id="participantsTable" columnControlVisible="false" editable="true" height="100%"
                                multiselect="true" width="100%" dataContainer="participantsDc">
                             <actions>
-                                <action id="create"/>
-                                <action id="edit"/>
-                                <action id="remove"/>
-                                <action id="copy"/>
-                                <action id="excel"/>
+                                <action id="create" type="create"/>
+                                <action id="edit" type="edit"/>
+                                <action id="remove" type="remove"/>
+                                <action id="copy" caption="msg://caption.copy"/>
+                                <action id="excel" type="excel"/>
                             </actions>
                             <columns>
                                 <column id="user" link="true"/>

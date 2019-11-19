@@ -97,7 +97,7 @@ public class TaskEdit extends StandardEditor<Task> {
 
     @Subscribe("project.lookup")
     protected void onProjectLookupActionPerformed(Action.ActionPerformedEvent event) {
-        screenBuilders.lookup(Project.class, this)
+        screenBuilders.lookup(project)
                 .withLaunchMode(OpenMode.DIALOG)
                 .build()
                 .show();
@@ -105,7 +105,7 @@ public class TaskEdit extends StandardEditor<Task> {
 
     @Subscribe("type.lookup")
     protected void onTypeLookupActionPerformed(Action.ActionPerformedEvent event) {
-        screenBuilders.lookup(TaskType.class, this)
+        screenBuilders.lookup(type)
                 .withLaunchMode(OpenMode.DIALOG)
                 .build()
                 .show();

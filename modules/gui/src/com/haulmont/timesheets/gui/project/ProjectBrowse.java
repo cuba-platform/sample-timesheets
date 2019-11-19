@@ -249,7 +249,6 @@ public class ProjectBrowse extends StandardLookup<Project> {
         for (final ProjectRole projectRole : projectCreateRoles) {
             assignBtn.addAction(createAssignAction(projectRole));
         }
-        assignBtn.addAction(createAssignAction(null));
     }
 
     protected Action createAssignAction(final ProjectRole projectRole) {

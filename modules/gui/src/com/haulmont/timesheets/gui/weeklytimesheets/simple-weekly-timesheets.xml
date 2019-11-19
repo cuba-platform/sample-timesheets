@@ -15,42 +15,45 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://browseCaption"
-        class="com.haulmont.timesheets.gui.weeklytimesheets.SimpleWeeklyTimesheets" focusComponent="weeklyTsTable"
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd" caption="msg://browseCaption"
+        focusComponent="commandLine"
         messagesPack="com.haulmont.timesheets.gui.weeklytimesheets">
-    <dsContext>
-        <groupDatasource id="weeklyEntriesDs" allowCommit="false"
-                         class="com.haulmont.timesheets.entity.WeeklyReportEntry" refreshMode="NEVER"/>
-        <collectionDatasource id="projectsDs" class="com.haulmont.timesheets.entity.Project" view="project-full">
-            <query>
-                <![CDATA[
-                select pr
-                from ts$Project pr,
-                    in(pr.participants) p
-                where
-                    p.user.id = :session$userId and
-                    pr.status = 'open'
-                order by pr.name
+    <data readOnly="true">
+        <collection id="weeklyEntriesDc" class="com.haulmont.timesheets.entity.WeeklyReportEntry">
+            <loader id="weeklyEntriesDl"/>
+        </collection>
+        <collection id="projectsDc" class="com.haulmont.timesheets.entity.Project" view="_local">
+            <loader id="projectsDl">
+                <query>
+                    <![CDATA[
+                    select pr
+                    from ts$Project pr,
+                        in(pr.participants) p
+                    where
+                        p.user = :user and
+                        pr.status = 'open'
+                    order by pr.name
                     ]]>
-            </query>
-        </collectionDatasource>
-    </dsContext>
+                </query>
+            </loader>
+        </collection>
+    </data>
     <actions>
-        <action id="add" icon="icons/plus-btn.png" invoke="addReport" shortcut="CTRL-ALT-PLUS"/>
-        <action id="submitAll" caption="msg://submitAll" invoke="submitAll" shortcut="CTRL-ENTER"/>
+        <action id="add" icon="icons/plus-btn.png" shortcut="CTRL-ALT-PLUS"/>
+        <action id="submitAll" caption="msg://submitAll" shortcut="CTRL-ENTER"/>
     </actions>
     <layout expand="weeklyTsTable" spacing="true">
         <frame id="commandLine" screen="command-line-frame"/>
 
-        <groupTable id="weeklyTsTable" aggregatable="true" editable="true" multiselect="true" width="100%">
+        <groupTable id="weeklyTsTable" aggregatable="true" editable="true" multiselect="true" width="100%"
+                    dataContainer="weeklyEntriesDc">
             <actions>
-                <action id="remove"/>
+                <action id="remove" type="remove"/>
             </actions>
             <columns>
                 <column id="project"/>
                 <column id="task"/>
             </columns>
-            <rows datasource="weeklyEntriesDs"/>
             <buttonsPanel width="100%">
                 <hbox align="MIDDLE_LEFT" spacing="true">
                     <button action="add"/>

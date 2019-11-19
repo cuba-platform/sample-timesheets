@@ -41,5 +41,5 @@
         </property>
     </bean>
     <bean class="com.haulmont.timesheets.web.App" name="cuba_App" scope="vaadin"/>
-    <gui:screens base-packages="com.haulmont.timesheets.web"/>
+    <gui:screens base-packages="com.haulmont.timesheets.web, com.haulmont.timesheets.gui"/>
 </beans>

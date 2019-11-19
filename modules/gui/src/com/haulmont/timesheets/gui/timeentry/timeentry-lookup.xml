@@ -23,7 +23,7 @@
             <loader id="timeEntriesDl">
                 <query>
                     <![CDATA[
-                    select e from ts$TimeEntry e left join e.activityType at
+                    select e from ts$TimeEntry e left join e.activityType at on at.id = :activityType
                     left join e.tags t
                     where e.user = :user
                         and e.date = :date

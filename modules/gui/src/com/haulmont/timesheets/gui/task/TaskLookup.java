@@ -16,16 +16,14 @@
 
 package com.haulmont.timesheets.gui.task;
 
-import com.haulmont.cuba.core.global.AppBeans;
-import com.haulmont.cuba.core.global.LoadContext;
+import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.Task;
+import com.haulmont.timesheets.gui.data.TasksCollectionLoadDelegate;
 import com.haulmont.timesheets.gui.util.ScreensHelper;
-import com.haulmont.timesheets.service.ProjectsService;
 
 import javax.inject.Inject;
-import java.util.List;
 
 /**
  * @author gorelov
@@ -38,12 +36,14 @@ public class TaskLookup extends StandardLookup<Task> {
 
     @Inject
     protected UserSession userSession;
+    @Inject
+    protected CollectionLoader<Task> tasksDl;
 
-    @Install(to = "tasksDl", target = Target.DATA_LOADER)
-    protected List<Task> tasksDlLoadDelegate(LoadContext<Task> loadContext) {
-        ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);
-        return projectsService.getActiveTasksForUser(userSession.getCurrentOrSubstitutedUser(), "task-preview");
+    @Subscribe
+    public void onInit(InitEvent event) {
+        tasksDl.setLoadDelegate(new TasksCollectionLoadDelegate());
     }
+
 
     @Install(to = "tasksTable", subject = "styleProvider")
     protected String tasksTableStyleProvider(Task task, String property) {

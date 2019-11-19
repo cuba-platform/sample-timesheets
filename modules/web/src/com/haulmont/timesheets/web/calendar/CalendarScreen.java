@@ -18,58 +18,60 @@ package com.haulmont.timesheets.web.calendar;
 
 import com.haulmont.cuba.core.entity.Entity;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.Dialogs;
+import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.ScreenBuilders;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.CheckBox;
-import com.haulmont.cuba.gui.components.Component;
-import com.haulmont.cuba.gui.components.DateField;
-import com.haulmont.cuba.gui.components.Label;
-import com.haulmont.cuba.gui.components.TextField;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.cuba.web.gui.components.WebComponentsHelper;
-import com.haulmont.cuba.web.toolkit.ui.CubaVerticalActionsLayout;
+import com.haulmont.cuba.web.widgets.CubaVerticalActionsLayout;
 import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.global.*;
 import com.haulmont.timesheets.gui.commandline.CommandLineFrameController;
 import com.haulmont.timesheets.gui.holiday.HolidayEdit;
 import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
-import com.haulmont.timesheets.gui.util.ComponentsHelper;
+import com.haulmont.timesheets.gui.util.ScreensHelper;
 import com.haulmont.timesheets.service.ProjectsService;
 import com.haulmont.timesheets.web.toolkit.ui.TimeSheetsCalendar;
 import com.vaadin.event.Action;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.AbstractOrderedLayout;
-import com.vaadin.ui.Calendar;
-import com.vaadin.ui.components.calendar.CalendarComponentEvents;
-import com.vaadin.ui.components.calendar.CalendarDateRange;
-import com.vaadin.ui.components.calendar.event.CalendarEvent;
+import com.vaadin.ui.Alignment;
+import com.vaadin.v7.ui.Calendar;
+import com.vaadin.v7.ui.components.calendar.CalendarComponentEvents;
+import com.vaadin.v7.ui.components.calendar.CalendarDateRange;
+import com.vaadin.v7.ui.components.calendar.event.CalendarEvent;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import javax.inject.Inject;
 import java.util.*;
+
+import static com.haulmont.cuba.gui.components.Window.COMMIT_ACTION_ID;
 
 /**
  * @author gorelov
  */
 @SuppressWarnings("WeakerAccess")
-public class CalendarScreen extends AbstractWindow {
-    @Inject
-    protected BoxLayout calBox;
-    @Inject
-    protected BoxLayout summaryBox;
-    @Inject
-    protected Label monthLabel;
-    @Inject
-    protected DateField monthSelector;
-    @Inject
-    protected CommandLineFrameController commandLine;
+@UiController("calendar-screen")
+@UiDescriptor("calendar-screen.xml")
+public class CalendarScreen extends Screen {
     @Inject
     protected ViewRepository viewRepository;
     @Inject
     protected UserSession userSession;
+    @Inject
+    protected DataManager dataManager;
+    @Inject
+    protected Dialogs dialogs;
+    @Inject
+    protected ScreenBuilders screenBuilders;
+    @Inject
+    protected Notifications notifications;
     @Inject
     protected Messages messages;
     @Inject
@@ -79,69 +81,88 @@ public class CalendarScreen extends AbstractWindow {
     @Inject
     protected UuidSource uuidSource;
     @Inject
+    protected MessageBundle messageBundle;
+    @Inject
     protected WorkdaysTools workdaysTools;
     @Inject
-    protected Label monthSummary;
+    protected ProjectsService projectsService;
     @Inject
-    protected BoxLayout commandLineHBox;
+    protected Metadata metadata;
     @Inject
-    protected BoxLayout simpleViewHBox;
+    protected CollectionLoader<Project> projectsDl;
     @Inject
-    protected CheckBox showSimpleView;
+    protected CollectionContainer<Project> projectsDc;
     @Inject
-    protected LookupField task;
+    protected TextField<String> spentTime;
     @Inject
-    protected TextField spentTime;
+    protected LookupField<Task> task;
     @Inject
     protected LookupField activityType;
     @Inject
-    private CollectionDatasource<Project, UUID> projectsDs;
+    protected DateField<java.sql.Date> monthSelector;
     @Inject
-    private ProjectsService projectsService;
+    protected HBoxLayout simpleViewHBox;
     @Inject
-    private Metadata metadata;
+    protected HBoxLayout commandLineHBox;
+    @Inject
+    protected VBoxLayout calBox;
+    @Inject
+    protected VBoxLayout summaryBox;
+    @Inject
+    protected Label<String> monthSummary;
+    @Inject
+    protected CheckBox showSimpleView;
+    @Inject
+    protected Label<String> monthLabel;
+    @Inject
+    protected Fragment commandLine;
 
     protected TimeSheetsCalendar calendar;
     protected Date firstDayOfMonth;
     protected TimeSheetsCalendarEventProvider dataSource;
 
-    @Override
-    public void init(Map<String, Object> params) {
+    @Subscribe
+    public void onInit(InitEvent event) {
+        projectsDl.setParameter("user", userSession.getCurrentOrSubstitutedUser());
+        projectsDl.load();
         firstDayOfMonth = DateTimeUtils.getFirstDayOfMonth(timeSource.currentTimestamp());
 
         initCalendar();
-        initShowCommandLineAction();
 
         monthSelector.addValueChangeListener(e -> {
-            firstDayOfMonth = DateTimeUtils.getFirstDayOfMonth((Date) e.getValue());
+            firstDayOfMonth = DateTimeUtils.getFirstDayOfMonth(e.getValue());
             updateCalendarRange();
         });
 
-        commandLine.setTimeEntriesHandler(new CommandLineFrameController.ResultTimeEntriesHandler() {
+        ((CommandLineFrameController) commandLine.getFrameOwner()).setTimeEntriesHandler(new CommandLineFrameController.ResultTimeEntriesHandler() {
             @Override
             public void handle(List<TimeEntry> resultTimeEntries) {
                 if (CollectionUtils.isNotEmpty(resultTimeEntries)) {
-                    //todo eude what if there are more than 1 entry
-                    final TimeEntry timeEntry = resultTimeEntries.get(0);
+                    TimeEntry timeEntry = resultTimeEntries.get(0);
                     ResultAndCause resultAndCause = validationTools.validateTimeEntry(timeEntry);
                     if (resultAndCause.isNegative) {
-                        showNotification(resultAndCause.cause, NotificationType.WARNING);
+                        notifications.create()
+                                .withType(Notifications.NotificationType.WARNING)
+                                .withCaption(resultAndCause.cause)
+                                .show();
                         return;
                     }
 
                     ResultAndCause tagsValidationResult = validationTools.validateTags(timeEntry);
                     if (tagsValidationResult.isNegative) {
-                        showOptionDialog(getMessage("caption.attention"),
-                                tagsValidationResult.cause + getMessage("confirmation.manuallyTagSetting"),
-                                MessageType.CONFIRMATION_HTML,
-                                Arrays.asList(
+                        dialogs.createOptionDialog(Dialogs.MessageType.CONFIRMATION)
+                                .withContentMode(com.haulmont.cuba.gui.components.ContentMode.HTML)
+                                .withCaption(messageBundle.getMessage("caption.attention"))
+                                .withMessage(tagsValidationResult.cause + messageBundle.getMessage("confirmation.manuallyTagSetting"))
+                                .withActions(
                                         new DialogAction(DialogAction.Type.YES) {
                                             @Override
                                             public void actionPerform(Component component) {
                                                 doHandle(timeEntry);
                                             }
                                         },
-                                        new DialogAction(DialogAction.Type.NO)));
+                                        new DialogAction(DialogAction.Type.NO))
+                                .show();
                     } else {
                         doHandle(timeEntry);
                     }
@@ -172,7 +193,7 @@ public class CalendarScreen extends AbstractWindow {
                 CommitContext context = new CommitContext();
                 context.getCommitInstances().addAll(results);
                 @SuppressWarnings("unchecked")
-                Set<TimeEntry> committed = (Set) getDsContext().getDataSupplier().commit(context);
+                Set<TimeEntry> committed = (Set) dataManager.commit(context);
                 List<CalendarEvent> events = new ArrayList<>();
                 for (TimeEntry entry : committed) {
                     events.add(new TimeEntryCalendarEventAdapter(entry));
@@ -191,7 +212,14 @@ public class CalendarScreen extends AbstractWindow {
             }
         });
 
-        projectsDs.addItemChangeListener(e -> setActivityTypeVisibility(e.getItem(), activityType));
+        projectsDc.addItemChangeListener(e -> {
+            setActivityTypeVisibility(e.getItem(), activityType);
+        });
+    }
+
+    @Subscribe("showCommandLine")
+    public void onShowCommandLine(com.haulmont.cuba.gui.components.Action.ActionPerformedEvent event) {
+        showCommandLine();
     }
 
     protected void setActivityTypeVisibility(Project project, LookupField activityTypeLookupField) {
@@ -217,23 +245,11 @@ public class CalendarScreen extends AbstractWindow {
         TimeEntry timeEntry = metadata.create(TimeEntry.class);
         timeEntry.setTask(task.getValue());
         timeEntry.setTimeInMinutes(HoursAndMinutes.fromString(spentTime.getValue()).toMinutes());
-        commandLine.getTimeEntriesHandler().handle(Arrays.asList(timeEntry));
+        ((CommandLineFrameController) commandLine.getFrameOwner()).getTimeEntriesHandler().handle(Arrays.asList(timeEntry));
     }
 
-    protected void initShowCommandLineAction() {
-        AbstractAction action = new AbstractAction("showCommandLine") {
-            @Override
-            public String getCaption() {
-                return "";
-            }
-
-            @Override
-            public void actionPerform(Component component) {
-                commandLineHBox.setVisible(!commandLineHBox.isVisible());
-            }
-        };
-        action.setShortcut("CTRL-ALT-Q");
-        addAction(action);
+    protected void showCommandLine() {
+        commandLineHBox.setVisible(!commandLineHBox.isVisible());
     }
 
     protected void initCalendar() {
@@ -251,7 +267,7 @@ public class CalendarScreen extends AbstractWindow {
             if (event.getCalendarEvent() instanceof TimeEntryCalendarEventAdapter) {
                 TimeEntryCalendarEventAdapter adapter = (TimeEntryCalendarEventAdapter) event.getCalendarEvent();
                 adapter.getTimeEntry().setDate(event.getNewStart());
-                TimeEntry committed = getDsContext().getDataSupplier().commit(adapter.getTimeEntry(),
+                TimeEntry committed = dataManager.commit(adapter.getTimeEntry(),
                         viewRepository.getView(TimeEntry.class, "timeEntry-full"));
                 dataSource.changeEventTimeEntity(committed);
                 updateSummaryColumn();
@@ -310,10 +326,10 @@ public class CalendarScreen extends AbstractWindow {
         summaryCaptionVbox.setWidth("100%");
         com.vaadin.ui.Label summaryCaption = new com.vaadin.ui.Label();
         summaryCaption.setContentMode(ContentMode.HTML);
-        summaryCaption.setValue(getMessage("label.summaryCaption"));
+        summaryCaption.setValue(messageBundle.getMessage("label.summaryCaption"));
         summaryCaption.setWidthUndefined();
         summaryCaptionVbox.addComponent(summaryCaption);
-        summaryCaptionVbox.setComponentAlignment(summaryCaption, com.vaadin.ui.Alignment.MIDDLE_CENTER);
+        summaryCaptionVbox.setComponentAlignment(summaryCaption, Alignment.MIDDLE_CENTER);
         summaryLayout.addComponent(summaryCaptionVbox);
 
         FactAndPlan[] summariesByWeeks = calculateSummariesByWeeks();
@@ -326,10 +342,10 @@ public class CalendarScreen extends AbstractWindow {
                 summaryForTheWeek = new FactAndPlan();
             }
             if (summaryForTheWeek.isMatch()) {
-                hourLabel.setValue(formatMessage("label.hoursSummary",
+                hourLabel.setValue(messages.formatMessage(CalendarScreen.class, "label.hoursSummary",
                         summaryForTheWeek.fact.getHours(), summaryForTheWeek.fact.getMinutes()));
             } else {
-                hourLabel.setValue(formatMessage("label.hoursSummaryNotMatch",
+                hourLabel.setValue(messages.formatMessage(CalendarScreen.class, "label.hoursSummaryNotMatch",
                         summaryForTheWeek.fact.getHours(), summaryForTheWeek.fact.getMinutes(),
                         summaryForTheWeek.plan.getHours(), summaryForTheWeek.plan.getMinutes()));
                 hourLabel.addStyleName("overtime");
@@ -337,18 +353,18 @@ public class CalendarScreen extends AbstractWindow {
             hourLabel.setWidthUndefined();
             summaryLayout.addComponent(hourLabel);
             summaryLayout.setExpandRatio(hourLabel, 1);
-            summaryLayout.setComponentAlignment(hourLabel, com.vaadin.ui.Alignment.MIDDLE_CENTER);
+            summaryLayout.setComponentAlignment(hourLabel, Alignment.MIDDLE_CENTER);
 
             summaryForMonth.fact.add(summaryForTheWeek.fact);
             summaryForMonth.plan.add(summaryForTheWeek.plan);
         }
 
         if (summaryForMonth.isMatch()) {
-            monthSummary.setValue(formatMessage("label.monthSummaryFormat",
+            monthSummary.setValue(messages.formatMessage(CalendarScreen.class, "label.monthSummaryFormat",
                     summaryForMonth.fact.getHours(), summaryForMonth.fact.getMinutes()));
             monthSummary.setStyleName("month-summary");
         } else {
-            monthSummary.setValue(formatMessage("label.monthSummaryFormatNotMatch",
+            monthSummary.setValue(messages.formatMessage(CalendarScreen.class, "label.monthSummaryFormatNotMatch",
                     summaryForMonth.fact.getHours(), summaryForMonth.fact.getMinutes(),
                     summaryForMonth.plan.getHours(), summaryForMonth.plan.getMinutes()));
             monthSummary.setStyleName("month-summary-overtime");
@@ -416,21 +432,31 @@ public class CalendarScreen extends AbstractWindow {
     }
 
     protected void editTimeEntry(TimeEntry timeEntry) {
-        final TimeEntryEdit editor = (TimeEntryEdit) openEditor("ts$TimeEntry.edit", timeEntry, WindowManager.OpenType.DIALOG);
-        editor.addListener(actionId -> {
-            if (COMMIT_ACTION_ID.equals(actionId)) {
-                dataSource.changeEventTimeEntity(editor.getItem());
-            }
-        });
+        screenBuilders.editor(TimeEntry.class, this)
+                .withScreenClass(TimeEntryEdit.class)
+                .editEntity(timeEntry)
+                .withLaunchMode(OpenMode.DIALOG)
+                .withAfterCloseListener(ace -> {
+                    if (COMMIT_ACTION_ID.equals(((StandardCloseAction) ace.getCloseAction()).getActionId())) {
+                        dataSource.changeEventTimeEntity(ace.getScreen().getEditedEntity());
+                    }
+                })
+                .build()
+                .show();
     }
 
     protected void editHoliday(Holiday holiday) {
-        final HolidayEdit editor = (HolidayEdit) openEditor("ts$Holiday.edit", holiday, WindowManager.OpenType.DIALOG);
-        editor.addListener(actionId -> {
-            if (COMMIT_ACTION_ID.equals(actionId)) {
-                dataSource.changeEventHoliday(editor.getItem());
-            }
-        });
+        screenBuilders.editor(Holiday.class, this)
+                .withScreenClass(HolidayEdit.class)
+                .editEntity(holiday)
+                .withLaunchMode(OpenMode.DIALOG)
+                .withAfterCloseListener(ace -> {
+                    if (COMMIT_ACTION_ID.equals(((StandardCloseAction) ace.getCloseAction()).getActionId())) {
+                        dataSource.changeEventHoliday(ace.getScreen().getEditedEntity());
+                    }
+                })
+                .build()
+                .show();
     }
 
     protected class CalendarActionHandler implements Action.Handler {
@@ -470,8 +496,10 @@ public class CalendarScreen extends AbstractWindow {
                     timeEntry.setDate(date);
                     editTimeEntry(timeEntry);
                 } else {
-                    showNotification(messages.getMessage(getClass(), "cantAddTimeEntry"),
-                            NotificationType.WARNING);
+                    notifications.create()
+                            .withType(Notifications.NotificationType.WARNING)
+                            .withCaption(messages.getMessage(getClass(), "cantAddTimeEntry"))
+                            .show();
                 }
             } else if (action == copyEventAction) {
                 // Check that the click was not done on an event
@@ -482,37 +510,41 @@ public class CalendarScreen extends AbstractWindow {
 
                     CommitContext context = new CommitContext();
                     context.getCommitInstances().add(copiedEntry);
-                    Set<Entity> entities = getDsContext().getDataSupplier().commit(context);
+                    Set<Entity> entities = dataManager.commit(context);
                     dataSource.changeEventTimeEntity((TimeEntry) entities.iterator().next());
                 }
             } else if (action == deleteEventAction) {
                 // Check if the action was clicked on top of an event
                 if (target instanceof HolidayCalendarEventAdapter) {
-                    showNotification(messages.getMessage(getClass(), "cantDeleteHoliday"),
-                            NotificationType.WARNING);
+                    notifications.create()
+                            .withType(Notifications.NotificationType.WARNING)
+                            .withCaption(messages.getMessage(getClass(), "cantDeleteHoliday"))
+                            .show();
                 } else if (target instanceof TimeEntryCalendarEventAdapter) {
                     TimeEntryCalendarEventAdapter event = (TimeEntryCalendarEventAdapter) target;
-                    new EventRemoveAction("eventRemove", getFrame(), event).actionPerform(null);
+                    new EventRemoveAction("eventRemove", dialogs, event).actionPerform(null);
                 } else {
-                    showNotification(messages.getMessage(getClass(), "cantDeleteTimeEntry"),
-                            NotificationType.WARNING);
+                    notifications.create()
+                            .withType(Notifications.NotificationType.WARNING)
+                            .withCaption(messages.getMessage(getClass(), "cantDeleteTimeEntry"))
+                            .show();
                 }
             }
         }
     }
 
-    protected class EventRemoveAction extends ComponentsHelper.CustomRemoveAction {
+    protected class EventRemoveAction extends ScreensHelper.CustomRemoveAction {
 
         protected TimeEntryCalendarEventAdapter event;
 
-        protected EventRemoveAction(String id, Frame frame, TimeEntryCalendarEventAdapter event) {
-            super(id, frame);
+        protected EventRemoveAction(String id, Dialogs dialogs, TimeEntryCalendarEventAdapter event) {
+            super(id, dialogs);
             this.event = event;
         }
 
         @Override
         protected void doRemove() {
-            getDsContext().getDataSupplier().remove(event.getTimeEntry());
+            dataManager.remove(event.getTimeEntry());
             calendar.removeEvent(event);
         }
     }

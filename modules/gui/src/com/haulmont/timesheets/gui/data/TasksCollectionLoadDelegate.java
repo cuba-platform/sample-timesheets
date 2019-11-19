@@ -19,6 +19,6 @@ public class TasksCollectionLoadDelegate implements Function<LoadContext<Task>, 
     public List<Task> apply(LoadContext<Task> taskLoadContext) {
         UserSessionSource source = AppBeans.get(UserSessionSource.NAME);
         ProjectsService projectsService = AppBeans.get(ProjectsService.NAME);
-        return projectsService.getActiveTasksForUser(source.getUserSession().getCurrentOrSubstitutedUser(), "task-preview");
+        return projectsService.getActiveTasksForUser(source.getUserSession().getCurrentOrSubstitutedUser(), "task-full");
     }
 }

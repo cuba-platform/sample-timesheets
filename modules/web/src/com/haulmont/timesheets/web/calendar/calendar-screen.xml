@@ -15,38 +15,43 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://caption"
-        class="com.haulmont.timesheets.web.calendar.CalendarScreen" messagesPack="com.haulmont.timesheets.web.calendar">
-    <dsContext>
-        <collectionDatasource id="projectsDs" class="com.haulmont.timesheets.entity.Project" view="_minimal">
-            <query>
-                <![CDATA[
-                select pr
-                from ts$Project pr,
-                    in(pr.participants) p
-                where
-                    p.user.id = :session$userId and
-                    pr.status = 'open'
-                order by pr.name
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd" caption="msg://caption">
+    <data>
+        <collection id="projectsDc" class="com.haulmont.timesheets.entity.Project" view="_local">
+            <loader id="projectsDl">
+                <query>
+                    <![CDATA[
+                    select pr
+                    from ts$Project pr,
+                        in(pr.participants) p
+                    where
+                        p.user = :user and
+                        pr.status = 'open'
+                    order by pr.name
                     ]]>
-            </query>
-        </collectionDatasource>
-        <collectionDatasource id="tasksDs" class="com.haulmont.timesheets.entity.Task" view="task-full">
-            <query>
-                select t from ts$Task t where t.project.id = :ds$projectsDs
-            </query>
-        </collectionDatasource>
-    </dsContext>
+                </query>
+            </loader>
+        </collection>
+        <collection id="tasksDc" class="com.haulmont.timesheets.entity.Task" view="task-full">
+            <loader id="tasksDl">
+                <query>
+                    <![CDATA[select t from ts$Task t where t.project = :project]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <actions>
+        <action id="showCommandLine" shortcut="CTRL-ALT-Q"/>
+    </actions>
 
-    <assign name="fieldWidth" value="200px"/>
     <layout expand="calendarHBox" spacing="true">
         <hbox id="commandLineHBox" spacing="true" visible="false">
-            <frame id="commandLine" screen="command-line-frame"/>
+            <fragment id="commandLine" screen="command-line-frame"/>
             <hbox id="simpleViewHBox" visible="false" spacing="true">
-                <lookupField id="project" optionsDatasource="projectsDs" inputPrompt="msg://com.haulmont.timesheets.entity/Task.project" width="${fieldWidth}"/>
-                <lookupField id="task" optionsDatasource="tasksDs" inputPrompt="msg://com.haulmont.timesheets.entity/TimeEntry.task" width="${fieldWidth}"/>
-                <lookupField id="activityType" inputPrompt="msg://com.haulmont.timesheets.entity/TimeEntry.activityType" visible="false" width="${fieldWidth}"/>
-                <textField id="spentTime" inputPrompt="msg://com.haulmont.timesheets.entity/TimeEntry.timeInMinutes" width="${fieldWidth}"/>
+                <lookupField id="project" optionsContainer="projectsDc" inputPrompt="msg://com.haulmont.timesheets.entity/Task.project" width="200px"/>
+                <lookupField id="task" optionsContainer="tasksDc" inputPrompt="msg://com.haulmont.timesheets.entity/TimeEntry.task" width="200px"/>
+                <lookupField id="activityType" inputPrompt="msg://com.haulmont.timesheets.entity/TimeEntry.activityType" visible="false" width="200px"/>
+                <textField id="spentTime" inputPrompt="msg://com.haulmont.timesheets.entity/TimeEntry.timeInMinutes" width="200px"/>
                 <button id="simpleViewApply" caption="msg://caption.apply" invoke="simpleViewApply"/>
             </hbox>
             <hbox>

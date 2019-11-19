@@ -19,17 +19,18 @@ package com.haulmont.timesheets.web.analytics;
 import com.haulmont.charts.gui.amcharts.model.Graph;
 import com.haulmont.charts.gui.amcharts.model.GraphType;
 import com.haulmont.charts.gui.amcharts.model.charts.SerialChart;
-import com.haulmont.charts.gui.amcharts.model.data.ListDataProvider;
-import com.haulmont.charts.gui.amcharts.model.data.MapDataItem;
+import com.haulmont.charts.gui.data.ListDataProvider;
+import com.haulmont.charts.gui.data.MapDataItem;
 import com.haulmont.charts.gui.components.charts.Chart;
 import com.haulmont.cuba.core.global.TimeSource;
 import com.haulmont.cuba.gui.components.AbstractWindow;
 import com.haulmont.cuba.gui.components.DateField;
 import com.haulmont.cuba.gui.components.LookupField;
 import com.haulmont.cuba.gui.data.CollectionDatasource;
+import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.Task;
 import com.haulmont.timesheets.service.StatisticService;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
@@ -76,7 +77,7 @@ public class ChartsController extends AbstractWindow {
     public void refreshTasks() {
         pieDs.clear();
         Map<Task, BigDecimal> statistics = statisticService.getStatisticsByTasks(
-                taskStart.getValue(), taskEnd.getValue(), taskProject.getValue());
+                (Date) taskStart.getValue(), (Date) taskEnd.getValue(), (Project) taskProject.getValue());
         for (Map.Entry<Task, BigDecimal> entry : statistics.entrySet()) {
             Task task = entry.getKey();
             pieDs.addItem(new TaskTimeSummary("[" + task.getProject().getInstanceName() + "] " + task.getName(), entry.getValue()));
@@ -87,7 +88,7 @@ public class ChartsController extends AbstractWindow {
 
     public void refreshProjects() {
         Map<Integer, Map<String, Object>> statisticsByProjects = statisticService.getStatisticsByProjects(
-                projectsStart.getValue(), projectsEnd.getValue());
+                (Date) projectsStart.getValue(), (Date) projectsEnd.getValue());
         ListDataProvider dataProvider = new ListDataProvider();
         Set<String> allProjects = new LinkedHashSet<>();
         for (Map.Entry<Integer, Map<String, Object>> entry : statisticsByProjects.entrySet()) {

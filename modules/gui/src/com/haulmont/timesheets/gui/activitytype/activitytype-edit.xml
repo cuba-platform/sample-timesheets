@@ -27,16 +27,16 @@
     <layout expand="editActions" spacing="true">
         <form id="form" dataContainer="activityTypeDc">
             <column width="250px">
-                <textField id="name"/>
-                <textField id="code"/>
+                <textField id="name" property="name"/>
+                <textField id="code" property="code"/>
                 <resizableTextArea id="description" height="100px" resizable="true" property="description"/>
             </column>
         </form>
         <groupBox id="projectsBox" caption="msg://com.haulmont.timesheets.entity/ActivityType.projects">
             <table id="projectsTable" height="200px" width="100%" dataContainer="projectsDc">
                 <actions>
-                    <action id="add"/>
-                    <action id="remove"/>
+                    <action id="add" type="add"/>
+                    <action id="remove" type="remove"/>
                 </actions>
                 <columns>
                     <column id="name"/>

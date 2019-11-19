@@ -17,7 +17,7 @@
 
 package com.haulmont.timesheets.web.toolkit.ui.client.calendar;
 
-import com.vaadin.shared.ui.calendar.CalendarState;
+import com.vaadin.v7.shared.ui.calendar.CalendarState;
 
 import java.util.HashSet;
 import java.util.Set;

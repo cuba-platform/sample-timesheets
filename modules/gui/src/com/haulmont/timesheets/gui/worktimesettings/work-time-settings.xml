@@ -15,17 +15,24 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://caption"
-        class="com.haulmont.timesheets.gui.worktimesettings.WorkTimeSettings"
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        caption="msg://caption"
         messagesPack="com.haulmont.timesheets.gui.worktimesettings">
+    <actions>
+        <action id="confirm" caption="mainMsg://actions.Ok" shortcut="${COMMIT_SHORTCUT}"/>
+        <action id="cancel" caption="mainMsg://actions.Cancel"/>
+    </actions>
     <dialogMode width="AUTO"/>
-    <layout expand="windowActions" spacing="true">
+    <layout expand="buttonsPanel" spacing="true">
         <hbox spacing="true">
             <label align="MIDDLE_LEFT" value="msg://workHoursForWeek"/>
             <textField id="workHoursTextField" datatype="decimal"/>
         </hbox>
         <optionsGroup id="workDaysOptions" caption="msg://workDays" multiselect="true" stylename="h2"/>
         <dateField id="openPeriodStart" caption="msg://caption.openPeriodStart" stylename="h2"/>
-        <frame id="windowActions" screen="editWindowActions" stylename="window-actions"/>
+        <buttonsPanel id="buttonsPanel">
+            <button id="okButton" action="confirm" icon="icons/ok.png"/>
+            <button id="cancelButton" action="cancel"  icon="icons/cancel.png"/>
+        </buttonsPanel>
     </layout>
 </window>

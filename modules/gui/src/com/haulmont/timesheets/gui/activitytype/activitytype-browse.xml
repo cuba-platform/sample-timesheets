@@ -38,9 +38,9 @@
         </filter>
         <table id="activityTypesTable" width="100%" dataContainer="activityTypesDc">
             <actions>
-                <action id="create"/>
-                <action id="edit"/>
-                <action id="remove"/>
+                <action id="create" type="create"/>
+                <action id="edit" type="edit"/>
+                <action id="remove" type="remove"/>
             </actions>
             <columns>
                 <column id="name"/>

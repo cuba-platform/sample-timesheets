@@ -18,7 +18,7 @@
 package com.haulmont.timesheets.web.calendar;
 
 import com.haulmont.timesheets.entity.Holiday;
-import com.vaadin.ui.components.calendar.event.BasicEvent;
+import com.vaadin.v7.ui.components.calendar.event.BasicEvent;
 
 import java.util.Date;
 

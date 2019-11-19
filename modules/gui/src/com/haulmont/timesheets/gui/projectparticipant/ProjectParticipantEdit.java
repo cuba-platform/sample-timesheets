@@ -19,7 +19,6 @@ package com.haulmont.timesheets.gui.projectparticipant;
 import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.gui.ScreenBuilders;
 import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.AbstractEditor;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.LookupPickerField;
 import com.haulmont.cuba.gui.components.PickerField;
@@ -27,11 +26,8 @@ import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.ProjectParticipant;
-import com.haulmont.timesheets.gui.util.ComponentsHelper;
 
 import javax.inject.Inject;
-import javax.inject.Named;
-import java.util.Map;
 
 /**
  * @author gorelov

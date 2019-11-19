@@ -22,7 +22,6 @@
     <data>
         <collection id="tasksDc" class="com.haulmont.timesheets.entity.Task" view="task-full">
             <loader id="tasksDl">
-                <query/>
             </loader>
         </collection>
     </data>

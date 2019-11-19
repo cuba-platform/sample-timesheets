@@ -19,6 +19,7 @@ package com.haulmont.timesheets.gui.timeentry;
 import com.haulmont.cuba.gui.ScreenBuilders;
 import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.GroupTable;
+import com.haulmont.cuba.gui.model.CollectionContainer;
 import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.security.global.UserSession;
@@ -43,14 +44,18 @@ public class AllTimeEntries extends StandardLookup<TimeEntry> {
     @Inject
     protected CollectionLoader<TimeEntry> timeEntriesDl;
     @Inject
+    protected CollectionContainer<TimeEntry> timeEntriesDc;
+    @Inject
     protected ScreenBuilders screenBuilders;
     @Inject
     protected GroupTable<TimeEntry> timeEntriesTable;
 
     @Subscribe
-    protected void onInit(Screen.InitEvent e) {
+    protected void onInit(InitEvent e) {
         if (securityAssistant.isSuperUser()) {
             timeEntriesDl.setQuery("select e from ts$TimeEntry e");
+        } else {
+            timeEntriesDl.setParameter("user", userSession.getUser());
         }
     }
 
@@ -82,8 +87,7 @@ public class AllTimeEntries extends StandardLookup<TimeEntry> {
     }
 
     @Subscribe
-    protected void onBeforeShow(Screen.BeforeShowEvent e) {
-        timeEntriesDl.setParameter("user", userSession.getUser());
+    protected void onBeforeShow(BeforeShowEvent e) {
         timeEntriesDl.load();
     }
 }

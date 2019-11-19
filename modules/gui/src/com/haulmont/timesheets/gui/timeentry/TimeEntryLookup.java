@@ -25,6 +25,7 @@ import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.model.CollectionLoader;
 import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.timesheets.entity.ActivityType;
 import com.haulmont.timesheets.entity.Task;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.gui.util.ScreensHelper;
@@ -56,6 +57,7 @@ public class TimeEntryLookup extends StandardLookup<TimeEntry> {
     protected Task task;
     protected User user;
     protected Date date;
+    protected ActivityType activityType;
 
     public void setTask(Task task) {
         this.task = task;
@@ -67,6 +69,10 @@ public class TimeEntryLookup extends StandardLookup<TimeEntry> {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public void setActivityType(ActivityType activityType) {
+        this.activityType = activityType;
     }
 
     @Install(to = "timeEntriesTable", subject = "styleProvider")
@@ -82,6 +88,7 @@ public class TimeEntryLookup extends StandardLookup<TimeEntry> {
         context.getQuery().setParameter("task", task);
         context.getQuery().setParameter("user", user);
         context.getQuery().setParameter("date", date);
+        context.getQuery().setParameter("activityType", activityType);
         return dataManager.loadList(context);
     }
 

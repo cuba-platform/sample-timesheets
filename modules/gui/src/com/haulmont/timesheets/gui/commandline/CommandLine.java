@@ -24,4 +24,7 @@ import com.haulmont.cuba.gui.components.SourceCodeEditor;
  */
 public interface CommandLine extends SourceCodeEditor {
     String NAME = "commandLine";
+
+    default public void setApplyHandler(Runnable handler) {
+    }
 }
