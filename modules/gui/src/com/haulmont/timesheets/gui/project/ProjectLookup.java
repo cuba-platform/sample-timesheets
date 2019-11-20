@@ -16,62 +16,65 @@
 
 package com.haulmont.timesheets.gui.project;
 
-import com.haulmont.cuba.gui.components.AbstractLookup;
-import com.haulmont.cuba.gui.components.Table;
 import com.haulmont.cuba.gui.components.TreeTable;
-import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.timesheets.entity.Project;
-import com.haulmont.timesheets.gui.util.ComponentsHelper;
+import com.haulmont.timesheets.gui.util.ScreensHelper;
 import com.haulmont.timesheets.service.ProjectsService;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * @author gorelov
  */
-public class ProjectLookup extends AbstractLookup {
+@UiController("ts$Project.lookup")
+@UiDescriptor("project-lookup.xml")
+@LookupComponent("projectsTable")
+@LoadDataBeforeShow
+public class ProjectLookup extends StandardLookup<Project> {
 
-    @Inject
-    protected HierarchicalDatasource<Project, UUID> projectsDs;
     @Inject
     protected ProjectsService projectsService;
+
     @Inject
     protected TreeTable<Project> projectsTable;
+    @Inject
+    protected CollectionContainer<Project> projectsDc;
 
-    @Override
-    public void init(Map<String, Object> params) {
-        Project project = (Project) params.get("parentProject");
-        if (project != null) {
-            projectsDs.excludeItem(project);
-            List<Project> childrenProjects = projectsService.getProjectChildren(project);
-            for (Project child : childrenProjects) {
-                projectsDs.excludeItem(child);
-            }
-        }
+    protected Project excludedProject;
+    protected Project parentProject;
 
-        project = (Project) params.get("exclude");
-        if (project != null) {
-            projectsDs.excludeItem(project);
-        }
-
-        projectsTable.setStyleProvider(new Table.StyleProvider<Project>() {
-            @Nullable
-            @Override
-            public String getStyleName(Project entity, String property) {
-                if ("status".equals(property)) {
-                    return ComponentsHelper.getProjectStatusStyle(entity);
-                }
-                return null;
-            }
-        });
+    public void setExcludedProject(Project excludedProject) {
+        this.excludedProject = excludedProject;
     }
 
-    @Override
-    public void ready() {
+    public void setParentProject(Project parentProject) {
+        this.parentProject = parentProject;
+    }
+
+    @Install(to = "projectsTable", subject = "styleProvider")
+    protected String projectsTableStyleProvider(Project entity, String property) {
+        if ("status".equals(property)) {
+            return ScreensHelper.getProjectStatusStyle(entity);
+        }
+        return null;
+    }
+
+    @Subscribe
+    protected void onAfterShow(AfterShowEvent event) {
+        if (parentProject != null) {
+            projectsDc.getMutableItems().remove(parentProject);
+            List<Project> childrenProjects = projectsService.getProjectChildren(parentProject);
+            for (Project child : childrenProjects) {
+                projectsDc.getMutableItems().remove(child);
+            }
+        }
+        if (excludedProject != null) {
+            projectsDc.getMutableItems().remove(excludedProject);
+        }
+
         projectsTable.expandAll();
     }
 }

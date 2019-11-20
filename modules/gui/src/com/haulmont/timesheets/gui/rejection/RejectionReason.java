@@ -16,29 +16,34 @@
 
 package com.haulmont.timesheets.gui.rejection;
 
-import com.haulmont.cuba.gui.components.AbstractWindow;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.TextArea;
+import com.haulmont.cuba.gui.screen.*;
 
 import javax.inject.Inject;
 
 /**
  * @author gorelov
  */
-public class RejectionReason extends AbstractWindow {
+@UiController("rejection-reason")
+@UiDescriptor("rejection-reason.xml")
+public class RejectionReason extends Screen {
 
     public static final String CONFIRM_ACTION_AD = "confirm";
     public static final String CANCEL_ACTION_AD = "cancel";
 
     @Inject
-    protected TextArea rejectionReasonText;
+    protected TextArea<String> rejectionReasonText;
 
-    public void confirm() {
-        close(CONFIRM_ACTION_AD);
+    @Subscribe("confirm")
+    protected void onConfirm(Action.ActionPerformedEvent event) {
+        close(new StandardCloseAction(CONFIRM_ACTION_AD));
     }
 
-    public void cancel() {
+    @Subscribe("cancel")
+    protected void onCancel(Action.ActionPerformedEvent event) {
         rejectionReasonText.setValue(null);
-        close(CANCEL_ACTION_AD);
+        close(new StandardCloseAction(CANCEL_ACTION_AD));
     }
 
     public String getRejectionReason() {

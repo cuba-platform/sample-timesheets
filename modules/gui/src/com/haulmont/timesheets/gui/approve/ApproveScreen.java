@@ -16,17 +16,16 @@
 
 package com.haulmont.timesheets.gui.approve;
 
-import com.haulmont.bali.util.ParamsMap;
-import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.core.global.TimeSource;
-import com.haulmont.cuba.core.global.View;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.ScreenBuilders;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.actions.RefreshAction;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.CollectionDatasource.Operation;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.cuba.security.entity.Group;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
@@ -36,100 +35,150 @@ import com.haulmont.timesheets.global.ValidationTools;
 import com.haulmont.timesheets.global.WeeklyReportConverter;
 import com.haulmont.timesheets.gui.rejection.RejectionReason;
 import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
-import com.haulmont.timesheets.gui.util.ComponentsHelper;
+import com.haulmont.timesheets.gui.timeentry.TimeEntryLookup;
+import com.haulmont.timesheets.gui.util.ScreensHelper;
 import com.haulmont.timesheets.gui.util.SecurityAssistant;
 import com.haulmont.timesheets.gui.util.WeeklyReportEntryAggregation;
 import com.haulmont.timesheets.gui.weeklytimesheets.TotalColumnAggregation;
 import com.haulmont.timesheets.service.ProjectsService;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.*;
 import java.util.Calendar;
+import java.util.*;
 
 /**
  * @author gorelov
  */
-@SuppressWarnings("WeakerAccess")
-public class ApproveScreen extends AbstractWindow {
+@UiController("approve-screen")
+@UiDescriptor("approve-screen.xml")
+public class ApproveScreen extends Screen {
 
     protected static final String COLUMN_SUFFIX = "Column";
     protected static final String TOTAL_COLUMN_ID = "totalColumn";
 
-    public interface Companion {
-        void initTable(Table table);
-    }
-
-    @Inject
-    private CheckBox hasTimeEntries;
-    @Inject
-    protected Table<ExtUser> usersTable;
-    @Inject
-    protected Table<WeeklyReportEntry> weeklyReportsTable;
-    @Inject
-    protected DateField dateField;
-    @Inject
-    protected Label weekCaption;
-    @Inject
-    protected OptionsGroup statusOption;
-    @Inject
-    protected OptionsGroup typeOption;
-    @Inject
-    protected ComponentsFactory componentsFactory;
-    @Inject
-    protected CollectionDatasource<ExtUser, UUID> usersDs;
-    @Inject
-    protected CollectionDatasource<WeeklyReportEntry, UUID> weeklyEntriesDs;
-    @Inject
-    protected Messages messages;
-    @Inject
-    protected UserSession userSession;
-    @Inject
-    protected ProjectsService projectsService;
     @Inject
     protected TimeSource timeSource;
     @Inject
-    protected WeeklyReportConverter reportConverterBean;
+    protected UserSession userSession;
     @Inject
-    protected Companion companion;
+    protected UiComponents uiComponents;
+    @Inject
+    protected ScreenBuilders screenBuilders;
+    @Inject
+    protected MetadataTools metadataTools;
+    @Inject
+    protected ProjectsService projectsService;
+    @Inject
+    protected SecurityAssistant securityAssistant;
     @Inject
     protected ValidationTools validationTools;
     @Inject
-    protected SecurityAssistant securityAssistant;
+    protected DataManager dataManager;
+    @Inject
+    protected WeeklyReportConverter weeklyReportConverter;
+    @Inject
+    protected Messages messages;
 
     @Inject
-    private LookupField user;
-
+    protected CollectionLoader<Project> projectsDl;
     @Inject
-    private LookupField status;
-
+    protected CollectionLoader<Group> groupsDl;
     @Inject
-    private Button refresh;
-
+    protected LookupField status;
     @Inject
-    private LookupField project;
-
+    protected LookupField user;
     @Inject
-    private LookupField task;
+    protected LookupField<Task> task;
+    @Inject
+    protected LookupField<Project> project;
+    @Inject
+    protected Table<ExtUser> usersTable;
+    @Inject
+    protected CheckBox hasTimeEntries;
+    @Inject
+    protected CollectionContainer<ExtUser> usersDc;
+    @Inject
+    protected RadioButtonGroup typeOption;
+    @Inject
+    protected CheckBoxGroup statusOption;
+    @Inject
+    protected DateField<java.sql.Date> dateField;
+    @Inject
+    protected Table<WeeklyReportEntry> weeklyReportsTable;
+    @Inject
+    protected CollectionLoader<ExtUser> usersDl;
+    @Inject
+    protected CollectionLoader<Task> tasksDl;
+    @Inject
+    protected LookupField<Group> group;
+    @Inject
+    protected CollectionContainer<WeeklyReportEntry> weeklyEntriesDc;
+    @Inject
+    protected Label<String> weekCaption;
 
     protected Date firstDayOfWeek;
     protected Date lastDayOfWeek;
     protected List<Project> managedProjects;
     protected List<User> managedUsers;
 
-    @Override
-    public void init(Map<String, Object> params) {
-        if (companion != null) {
-            companion.initTable(weeklyReportsTable);
-        }
+    protected boolean isSuperUser = false;
 
+    public void setSuperUser(boolean superUser) {
+        isSuperUser = superUser;
+    }
+
+    @Install(to = "weeklyReportsTable", subject = "styleProvider")
+    private String weeklyReportsTableStyleProvider(WeeklyReportEntry entity, String property) {
+        String id = null;
+        if (property != null && property.endsWith(COLUMN_SUFFIX)) {
+            id = property.replace(COLUMN_SUFFIX, "");
+        }
+        DayOfWeek day = DayOfWeek.fromId(id != null ? id : property);
+        if (entity == null && usersTable.getSingleSelected() != null) {
+            if (day != null) {
+                return validationTools.isWorkTimeMatchToPlanForDay(
+                        DateTimeUtils.getSpecificDayOfWeek(firstDayOfWeek, day.getJavaCalendarDay()),
+                        usersTable.<User>getSingleSelected()) ? null : "overtime";
+            } else if (TOTAL_COLUMN_ID.equals(property)) {
+                return validationTools.isWorkTimeMatchToPlanForWeek(
+                        firstDayOfWeek, usersTable.<User>getSingleSelected()) ? null : "overtime";
+            }
+        } else if (entity != null && day != null) {
+            List<TimeEntry> timeEntries = entity.getDayOfWeekTimeEntries(day);
+            if (CollectionUtils.isNotEmpty(timeEntries)) {
+                return ScreensHelper.getTimeEntryStatusStyleBg(timeEntries);
+            }
+        }
+        return null;
+    }
+
+    @Subscribe(id = "projectsDc", target = Target.DATA_CONTAINER)
+    protected void onProjectsDcItemChange(InstanceContainer.ItemChangeEvent<Project> event) {
+        tasksDl.setParameter("project", event.getItem());
+        tasksDl.load();
+    }
+
+    @Subscribe("usersTable.refresh")
+    protected void onUsersTableRefresh(Action.ActionPerformedEvent event) {
+        updateUsersTable();
+    }
+
+    @Subscribe
+    private void onInit(InitEvent event) {
         setWeekRange(DateTimeUtils.getFirstDayOfWeek(DateUtils.addWeeks(timeSource.currentTimestamp(), -1)));
+
         User currentOrSubstitutedUser = userSession.getCurrentOrSubstitutedUser();
         managedProjects = projectsService.getActiveManagedProjectsForUser(currentOrSubstitutedUser, View.LOCAL);
         managedUsers = projectsService.getManagedUsers(currentOrSubstitutedUser, View.LOCAL);
+
+        projectsDl.setParameter("superuser", isSuperUser);
+        projectsDl.setParameter("user", userSession.getCurrentOrSubstitutedUser());
+        projectsDl.load();
+        groupsDl.load();
 
         initUsersTable();
         initUserReportsTable();
@@ -141,7 +190,6 @@ public class ApproveScreen extends AbstractWindow {
 
         project.addValueChangeListener(e -> task.setValue(null));
         status.setOptionsList(Arrays.asList(TimeEntryStatus.values()));
-        refresh.setAction(new RefreshAction(usersTable));
         user.setOptionsList(projectsService.getManagedUsers(userSession.getCurrentOrSubstitutedUser(), View.MINIMAL));
     }
 
@@ -149,20 +197,19 @@ public class ApproveScreen extends AbstractWindow {
         final String actionsColumnId = "actions";
         usersTable.addGeneratedColumn(actionsColumnId, entity -> {
             UserChangeStatusActionsProvider provider = new UserChangeStatusActionsProvider(entity);
-            return getApproveControls(provider.getApproveAction(),
-                    provider.getRejectAction(), provider.getCloseAction());
+            return getApproveControls(provider.getApproveAction(), provider.getRejectAction(),
+                    provider.getCloseAction());
         });
-        usersTable.setColumnWidth(actionsColumnId, 100);
-        usersTable.setColumnCaption(actionsColumnId, messages.getMessage(getClass(), actionsColumnId));
+        usersTable.getColumn(actionsColumnId).setWidth(100);
+        usersTable.getColumn(actionsColumnId).setCaption(messages.getMessage(getClass(), actionsColumnId));
 
-        usersDs.addItemChangeListener(e -> {
+        usersDc.addItemChangeListener(e -> {
             updateReportTableItems();
             updateStatusOption(e.getItem());
         });
 
         hasTimeEntries.setValue(true);
         hasTimeEntries.addValueChangeListener(e -> updateUsersTable());
-
     }
 
     protected void initUserReportsTable() {
@@ -173,36 +220,12 @@ public class ApproveScreen extends AbstractWindow {
         initDaysColumns();
         initTotalColumn();
         initActionsColumn();
-
-        weeklyReportsTable.setStyleProvider((entity, property) -> {
-            String id = null;
-            if (property != null && property.endsWith(COLUMN_SUFFIX)) {
-                id = property.replace(COLUMN_SUFFIX, "");
-            }
-            DayOfWeek day = DayOfWeek.fromId(id != null ? id : property);
-            if (entity == null && usersTable.getSingleSelected() != null) {
-                if (day != null) {
-                    return validationTools.isWorkTimeMatchToPlanForDay(
-                            DateTimeUtils.getSpecificDayOfWeek(firstDayOfWeek, day.getJavaCalendarDay()),
-                            usersTable.<User>getSingleSelected()) ? null : "overtime";
-                } else if (TOTAL_COLUMN_ID.equals(property)) {
-                    return validationTools.isWorkTimeMatchToPlanForWeek(
-                            firstDayOfWeek, usersTable.<User>getSingleSelected()) ? null : "overtime";
-                }
-            } else if (entity != null && day != null) {
-                List<TimeEntry> timeEntries = entity.getDayOfWeekTimeEntries(day);
-                if (CollectionUtils.isNotEmpty(timeEntries)) {
-                    return ComponentsHelper.getTimeEntryStatusStyleBg(timeEntries);
-                }
-            }
-            return null;
-        });
     }
 
     protected void initProjectColumn() {
         final String projectColumnId = "project";
         weeklyReportsTable.addGeneratedColumn(projectColumnId, entity -> {
-            Label label = componentsFactory.createComponent(Label.class);
+            Label label = uiComponents.create(Label.class);
             label.setValue(entity.getProject().getName());
             return label;
         });
@@ -211,14 +234,14 @@ public class ApproveScreen extends AbstractWindow {
     protected void initTaskColumn() {
         final String taskColumnId = "task";
         weeklyReportsTable.addGeneratedColumn(taskColumnId, entity -> {
-            Label label = componentsFactory.createComponent(Label.class);
+            Label label = uiComponents.create(Label.class);
             String caption;
             if (entity.getActivityType() == null) {
                 caption = entity.getTask().getName();
             } else {
                 caption = String.format("%s (%s)",
                         entity.getTask().getName(),
-                        entity.getActivityType().getInstanceName());
+                        metadataTools.getInstanceName(entity));
             }
             label.setValue(caption);
             return label;
@@ -244,27 +267,29 @@ public class ApproveScreen extends AbstractWindow {
                 }
 
                 private Component createLinkToMultipleTimeEntries(final WeeklyReportEntry reportEntry, final Date date) {
-                    final LinkButton linkButton = componentsFactory.createComponent(LinkButton.class);
+                    final LinkButton linkButton = uiComponents.create(LinkButton.class);
                     linkButton.setCaption(StringFormatHelper.getDayHoursString(reportEntry.getTotalForDay(day)));
-                    linkButton.setAction(new AbstractAction("edit") {
+                    linkButton.setAction(new BaseAction("edit") {
 
                         @Override
                         public void actionPerform(Component component) {
                             User user = usersTable.getSingleSelected();
                             if (user != null) {
-                                openLookup(
-                                        "ts$TimeEntry.lookup",
-                                        items -> {
+                                TimeEntryLookup lookup = screenBuilders.lookup(TimeEntry.class, ApproveScreen.this)
+                                        .withScreenClass(TimeEntryLookup.class)
+                                        .withLaunchMode(OpenMode.DIALOG)
+                                        .withSelectHandler(items -> {
                                             if (CollectionUtils.isNotEmpty(items)) {
-                                                TimeEntry timeEntry = (TimeEntry) items.iterator().next();
+                                                TimeEntry timeEntry = items.iterator().next();
                                                 openTimeEntryEditor(timeEntry);
                                             }
-                                        },
-                                        WindowManager.OpenType.DIALOG,
-                                        ParamsMap.of("date", date,
-                                                "task", reportEntry.getTask(),
-                                                "activityType", reportEntry.getActivityType(),
-                                                "user", user.getId()));
+                                        })
+                                        .build();
+                                lookup.setDate(date);
+                                lookup.setActivityType(reportEntry.getActivityType());
+                                lookup.setTask(reportEntry.getTask());
+                                lookup.setUser(user);
+                                lookup.show();
                             }
                         }
                     });
@@ -273,9 +298,9 @@ public class ApproveScreen extends AbstractWindow {
 
                 private Component createLinkToSingleTimeEntry(WeeklyReportEntry reportEntry, List<TimeEntry> timeEntries) {
                     final TimeEntry timeEntry = timeEntries.get(0);
-                    final LinkButton linkButton = componentsFactory.createComponent(LinkButton.class);
+                    final LinkButton linkButton = uiComponents.create(LinkButton.class);
                     linkButton.setCaption(StringFormatHelper.getDayHoursString(reportEntry.getTotalForDay(day)));
-                    linkButton.setAction(new AbstractAction("edit") {
+                    linkButton.setAction(new BaseAction("edit") {
                         @Override
                         public void actionPerform(Component component) {
                             openTimeEntryEditor(timeEntry);
@@ -284,10 +309,11 @@ public class ApproveScreen extends AbstractWindow {
                     return linkButton;
                 }
             });
-            weeklyReportsTable.setColumnWidth(columnId, 80);
+            weeklyReportsTable.getColumn(columnId).setWidth(80);
+            weeklyReportsTable.getColumn(columnId).setCaptionAsHtml(true);
 
             Table.Column column = weeklyReportsTable.getColumn(columnId);
-            column.setAggregation(ComponentsHelper.createAggregationInfo(
+            column.setAggregation(ScreensHelper.createAggregationInfo(
                     projectsService.getEntityMetaPropertyPath(WeeklyReportEntry.class, day.getId()),
                     new WeeklyReportEntryAggregation()
             ));
@@ -296,15 +322,15 @@ public class ApproveScreen extends AbstractWindow {
 
     protected void initTotalColumn() {
         weeklyReportsTable.addGeneratedColumn(TOTAL_COLUMN_ID, entity -> {
-            Label label = componentsFactory.createComponent(Label.class);
+            Label label = uiComponents.create(Label.class);
             label.setValue(entity.getTotal());
             return label;
         });
-        weeklyReportsTable.setColumnWidth(TOTAL_COLUMN_ID, 80);
-        weeklyReportsTable.setColumnCaption(TOTAL_COLUMN_ID, messages.getMessage(getClass(), "total"));
+        weeklyReportsTable.getColumn(TOTAL_COLUMN_ID).setWidth(80);
+        weeklyReportsTable.getColumn(TOTAL_COLUMN_ID).setCaption(messages.getMessage(getClass(), "total"));
 
         Table.Column column = weeklyReportsTable.getColumn(TOTAL_COLUMN_ID);
-        column.setAggregation(ComponentsHelper.createAggregationInfo(
+        column.setAggregation(ScreensHelper.createAggregationInfo(
                 projectsService.getEntityMetaPropertyPath(WeeklyReportEntry.class, "total"),
                 new TotalColumnAggregation()
         ));
@@ -318,40 +344,44 @@ public class ApproveScreen extends AbstractWindow {
             return getApproveControls(provider.getApproveAction(),
                     provider.getRejectAction(), provider.getCloseAction());
         });
-        weeklyReportsTable.setColumnWidth(actionsColumnId, 100);
-        weeklyReportsTable.setColumnCaption(actionsColumnId, messages.getMessage(getClass(), actionsColumnId));
+        weeklyReportsTable.getColumn(actionsColumnId).setWidth(100);
+        weeklyReportsTable.getColumn(actionsColumnId).setCaption(messages.getMessage(getClass(), actionsColumnId));
     }
 
     protected void openTimeEntryEditor(
             TimeEntry timeEntry) {
-        final TimeEntryEdit editor = (TimeEntryEdit) openEditor(
-                "ts$TimeEntry.edit", timeEntry, WindowManager.OpenType.DIALOG);
-        editor.addListener(actionId -> {
-            if (COMMIT_ACTION_ID.equals(actionId)) {
-                updateReportTableItems();
-            }
-        });
+        screenBuilders.editor(TimeEntry.class, this)
+                .withScreenClass(TimeEntryEdit.class)
+                .withLaunchMode(OpenMode.DIALOG)
+                .editEntity(timeEntry)
+                .withAfterCloseListener(ev -> {
+                    if (Window.COMMIT_ACTION_ID.equals(((StandardCloseAction) ev.getCloseAction()).getActionId())) {
+                        updateReportTableItems();
+                    }
+                })
+                .build()
+                .show();
     }
 
     protected Component getApproveControls(@Nullable Action approveAction,
                                            @Nullable Action rejectAction,
                                            @Nullable Action closeAction) {
-        HBoxLayout hBoxLayout = componentsFactory.createComponent(HBoxLayout.class);
+        HBoxLayout hBoxLayout = uiComponents.create(HBoxLayout.class);
         hBoxLayout.setSpacing(true);
         hBoxLayout.setWidth("100%");
 
         if (approveAction != null) {
-            hBoxLayout.add(ComponentsHelper.createCaptionlessLinkButton("icons/ok.png",
+            hBoxLayout.add(ScreensHelper.createCaptionlessLinkButton("icons/ok.png",
                     messages.getMessage(getClass(), AbstractChangeStatusAction.APPROVE_ACTION_ID),
                     approveAction));
         }
         if (rejectAction != null) {
-            hBoxLayout.add(ComponentsHelper.createCaptionlessLinkButton("icons/remove.png",
+            hBoxLayout.add(ScreensHelper.createCaptionlessLinkButton("icons/remove.png",
                     messages.getMessage(getClass(), AbstractChangeStatusAction.REJECT_ACTION_ID),
                     rejectAction));
         }
         if (closeAction != null) {
-            hBoxLayout.add(ComponentsHelper.createCaptionlessLinkButton("font-icon:LOCK",
+            hBoxLayout.add(ScreensHelper.createCaptionlessLinkButton("font-icon:LOCK",
                     messages.getMessage(getClass(), AbstractChangeStatusAction.CLOSE_ACTION_ID),
                     closeAction));
         }
@@ -407,15 +437,40 @@ public class ApproveScreen extends AbstractWindow {
     }
 
     protected void updateUsersTable() {
-        Map<String, Object> params = new HashMap<>();
-        params.put("from", firstDayOfWeek);
-        params.put("to", lastDayOfWeek);
-        params.put("hasTimeEntries", Boolean.TRUE.equals(hasTimeEntries.getValue()));
-        usersDs.refresh(params);
+        usersDl.setParameter("sessionUser", userSession.getCurrentOrSubstitutedUser());
+        if (user.getValue() != null) {
+            usersDl.setParameter("user", user.getValue());
+        } else {
+            usersDl.removeParameter("user");
+        }
+        if (task.getValue() != null) {
+            usersDl.setParameter("task", task.getValue());
+        } else {
+            usersDl.removeParameter("task");
+        }
+        if (status.getValue() != null) {
+            usersDl.setParameter("status", status.getValue());
+        } else {
+            usersDl.removeParameter("status");
+        }
+        if (group.getValue() != null) {
+            usersDl.setParameter("group", group.getValue());
+        } else {
+            usersDl.removeParameter("group");
+        }
+        if (project.getValue() != null) {
+            usersDl.setParameter("project", project.getValue());
+        } else {
+            usersDl.removeParameter("project");
+        }
+        usersDl.setParameter("from", firstDayOfWeek);
+        usersDl.setParameter("to", lastDayOfWeek);
+        usersDl.setParameter("hasTimeEntries", Boolean.TRUE.equals(hasTimeEntries.getValue()));
+        usersDl.load();
     }
 
     protected void updateReportTableItems() {
-        weeklyEntriesDs.clear();
+        weeklyEntriesDc.getMutableItems().clear();
         User user = usersTable.getSingleSelected();
         if (user != null) {
             fillExistingTimeEntries(user);
@@ -433,34 +488,44 @@ public class ApproveScreen extends AbstractWindow {
         for (Date current = firstDayOfWeek; current.getTime() <= lastDayOfWeek.getTime(); current = DateUtils.addDays(current, 1)) {
             DayOfWeek day = DayOfWeek.fromCalendarDay(DateTimeUtils.getCalendarDayOfWeek(current));
             String columnId = day.getId() + COLUMN_SUFFIX;
-            weeklyReportsTable.setColumnCaption(columnId, ComponentsHelper.getColumnCaption(day.getId(), current));
+            weeklyReportsTable.getColumn(columnId).setCaption(ScreensHelper.getColumnCaption(day.getId(), current));
         }
     }
 
     protected void updateStatusOption(User user) {
-        List<TimeEntryStatus> values = new ArrayList<>(statusOption.getValue());
+        List<TimeEntryStatus> values;
+        if (statusOption.getValue() != null)
+            values = new ArrayList<>((Collection) statusOption.getValue());
+        else
+            values = new ArrayList<>();
         if (securityAssistant.isSuperUser() || managedUsers.contains(user)) {
             if (!values.contains(TimeEntryStatus.NEW)) {
                 values.add(TimeEntryStatus.NEW);
             }
         }
+
         if (isUserCanClose()) {
             if (!values.contains(TimeEntryStatus.APPROVED)) {
                 values.add(TimeEntryStatus.APPROVED);
+            }
+
+            if (!values.contains(TimeEntryStatus.REJECTED)) {
+                values.add(TimeEntryStatus.REJECTED);
             }
         }
         statusOption.setValue(values);
     }
 
     protected boolean showApprovable() {
-        return StringUtils.equals(messages.getMessage(getClass(), "approvable"), typeOption.getValue());
+        return StringUtils.equals(messages.getMessage(getClass(), "approvable"), typeOption.getValue().toString());
     }
 
     protected void fillExistingTimeEntries(User user) {
+        weeklyEntriesDc.getMutableItems().clear();
         List<TimeEntry> timeEntries = new TimeEntriesProvider(user).setApprovable(showApprovable()).getUserTimeEntries();
-        List<WeeklyReportEntry> reportEntries = reportConverterBean.convertFromTimeEntries(timeEntries);
+        List<WeeklyReportEntry> reportEntries = weeklyReportConverter.convertFromTimeEntries(timeEntries);
         for (WeeklyReportEntry entry : reportEntries) {
-            weeklyEntriesDs.addItem(entry);
+            weeklyEntriesDc.getMutableItems().add(entry);
         }
     }
 
@@ -468,7 +533,7 @@ public class ApproveScreen extends AbstractWindow {
         return securityAssistant.isSuperUser() || securityAssistant.isUserCloser();
     }
 
-    protected abstract class AbstractChangeStatusAction extends AbstractAction {
+    protected abstract class AbstractChangeStatusAction extends BaseAction {
 
         public static final String APPROVE_ACTION_ID = "approve";
         public static final String REJECT_ACTION_ID = "reject";
@@ -492,14 +557,17 @@ public class ApproveScreen extends AbstractWindow {
                 return;
             }
             if (TimeEntryStatus.REJECTED.equals(status)) {
-                final RejectionReason rejectionReasonWindow = (RejectionReason) openWindow(
-                        "rejection-reason", WindowManager.OpenType.DIALOG);
-                rejectionReasonWindow.addListener(actionId -> {
-                    if (RejectionReason.CONFIRM_ACTION_AD.equals(actionId)) {
-                        rejectReason = rejectionReasonWindow.getRejectionReason();
-                        commitTimeEntries(timeEntries);
-                    }
-                });
+                screenBuilders.screen(ApproveScreen.this)
+                        .withScreenClass(RejectionReason.class)
+                        .withLaunchMode(OpenMode.DIALOG)
+                        .withAfterCloseListener(e -> {
+                            if (RejectionReason.CONFIRM_ACTION_AD.equals(((StandardCloseAction) e.getCloseAction()).getActionId())) {
+                                rejectReason = e.getScreen().getRejectionReason();
+                                commitTimeEntries(timeEntries);
+                            }
+                        })
+                        .build()
+                        .show();
             } else {
                 commitTimeEntries(timeEntries);
             }
@@ -510,9 +578,9 @@ public class ApproveScreen extends AbstractWindow {
             for (TimeEntry entry : timeEntries) {
                 entry.setStatus(status);
                 entry.setRejectionReason(rejectReason);
-                commitContext.getCommitInstances().add(entry);
+                commitContext.addInstanceToCommit(entry, "timeEntry-full");
             }
-            getDsContext().getDataSupplier().commit(commitContext);
+            dataManager.commit(commitContext);
 
             updateReportTableItems();
         }
@@ -713,7 +781,7 @@ public class ApproveScreen extends AbstractWindow {
                 return Collections.emptyList();
             }
 
-            List<TimeEntryStatus> statuses = new ArrayList<>(statusOption.getValue());
+            List<TimeEntryStatus> statuses = new ArrayList<>((Collection) statusOption.getValue());
             if (specificStatus != null) {
                 if (statuses.contains(specificStatus)) {
                     statuses = Collections.singletonList(specificStatus);

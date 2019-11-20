@@ -15,33 +15,36 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://browseCaption"
-        class="com.haulmont.timesheets.gui.tagtype.TagTypeBrowse" focusComponent="tagTypesTable"
-        lookupComponent="tagTypesTable" messagesPack="com.haulmont.timesheets.gui.tagtype">
-    <dsContext>
-        <collectionDatasource id="tagTypesDs" class="com.haulmont.timesheets.entity.TagType" view="tagType-with-project">
-            <query>
-                <![CDATA[select e from ts$TagType e]]>
-            </query>
-        </collectionDatasource>
-    </dsContext>
-    <dialogMode width="800" height="600"/>
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd" caption="msg://browseCaption"
+        focusComponent="tagTypesTable"
+        messagesPack="com.haulmont.timesheets.gui.tagtype">
+    <data>
+        <collection id="tagTypesDc" class="com.haulmont.timesheets.entity.TagType" view="tagType-with-project">
+            <loader id="tagTypesDl">
+                <query>
+                    <![CDATA[select e from ts$TagType e]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <dialogMode width="800"
+                height="500"
+                resizable="true"/>
     <layout expand="tagTypesTable" spacing="true">
-        <filter id="filter" datasource="tagTypesDs">
+        <filter id="filter" dataLoader="tagTypesDl">
             <properties include=".*"/>
         </filter>
-        <table id="tagTypesTable" width="100%">
+        <table id="tagTypesTable" width="100%" dataContainer="tagTypesDc">
             <actions>
-                <action id="create"/>
-                <action id="edit"/>
-                <action id="remove"/>
+                <action id="create" type="create"/>
+                <action id="edit" type="edit"/>
+                <action id="remove" type="remove"/>
             </actions>
             <columns>
                 <column id="name"/>
                 <column id="code"/>
                 <column id="description" maxTextLength="20"/>
             </columns>
-            <rows datasource="tagTypesDs"/>
             <rowsCount/>
             <buttonsPanel id="buttonsPanel" alwaysVisible="true">
                 <button id="createBtn" action="tagTypesTable.create"/>
@@ -49,5 +52,9 @@
                 <button id="removeBtn" action="tagTypesTable.remove"/>
             </buttonsPanel>
         </table>
+        <hbox id="lookupActions" spacing="true" visible="false">
+            <button action="lookupSelectAction"/>
+            <button action="lookupCancelAction"/>
+        </hbox>
     </layout>
 </window>

@@ -18,20 +18,20 @@ package com.haulmont.timesheets.web;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Messages;
-import com.haulmont.cuba.gui.components.Frame;
+import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.exception.AbstractUiExceptionHandler;
 import com.haulmont.cuba.web.App;
 import com.haulmont.cuba.web.Connection;
-import com.haulmont.cuba.web.WebWindowManager;
-import com.haulmont.cuba.web.exception.AbstractExceptionHandler;
 import com.haulmont.timesheets.exception.ClosedPeriodException;
 
+import javax.annotation.Nullable;
 import java.util.Locale;
 
 /**
  * @author degtyarjov
  * @version $Id$
  */
-public class ClosedPeriodExceptionHandler extends AbstractExceptionHandler {
+public class ClosedPeriodExceptionHandler extends AbstractUiExceptionHandler {
     private Locale locale;
 
     public ClosedPeriodExceptionHandler() {
@@ -44,9 +44,11 @@ public class ClosedPeriodExceptionHandler extends AbstractExceptionHandler {
     }
 
     @Override
-    protected void doHandle(App app, String className, String message, Throwable throwable) {
-        WebWindowManager wm = app.getWindowManager();
+    protected void doHandle(String className, String message, @Nullable Throwable throwable, UiContext context) {
+        Notifications notifications = context.getNotifications();
         Messages messages = AppBeans.get(Messages.NAME);
-        wm.showNotification(messages.getMessage(App.class, "exception.closedPeriod", locale), Frame.NotificationType.WARNING);
+        notifications.create(Notifications.NotificationType.WARNING)
+                .withCaption(messages.getMessage(App.class, "exception.closedPeriod", locale))
+                .show();
     }
 }

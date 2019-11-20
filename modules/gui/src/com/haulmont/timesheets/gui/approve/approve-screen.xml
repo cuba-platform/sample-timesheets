@@ -15,46 +15,89 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://approveScreen"
-        class="com.haulmont.timesheets.gui.approve.ApproveScreen" focusComponent="usersTable"
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        xmlns:c="http://schemas.haulmont.com/cuba/screen/jpql_condition.xsd"
+        caption="msg://approveScreen"
+        focusComponent="usersTable"
         messagesPack="com.haulmont.timesheets.gui.approve">
-    <dsContext>
-        <collectionDatasource id="usersDs" class="com.haulmont.timesheets.entity.ExtUser" view="_local">
-            <query>
-                <![CDATA[
-                select u from ts$ExtUser u, ts$ProjectParticipant pp
-                where u.id = pp.user.id and
-                exists (
+    <data>
+        <collection id="usersDc" class="com.haulmont.timesheets.entity.ExtUser" view="_local">
+            <loader id="usersDl">
+                <query>
+                    <![CDATA[
+                    select u from ts$ExtUser u, ts$ProjectParticipant pp
+                    where u = pp.user and
+                    exists (
                         select 1
                         from ts$ProjectParticipant me
-                        where me.project.id = pp.project.id and me.user.id = :session$userId and (me.role.code = 'manager' or me.role.code = 'approver')
+                        where me.project = pp.project and me.user = :sessionUser and (me.role.code = 'manager' or me.role.code = 'approver')
                         )
-                ]]>
-                <filter>
-                    <and>
-                        <c join="inner join u.timeEntries e">
-                            <![CDATA[(:custom$hasTimeEntries = false or e.date >= :custom$from and e.date <= :custom$to)]]></c>
-                        <c join="inner join u.timeEntries e">e.task.id = :component$task</c>
-                        <c join="inner join u.timeEntries e">e.status = :component$status</c>
-                        <c>u.id = :component$user</c>
-                        <c>u.group.id = :component$group</c>
-                        <c>exists (select 1 from ts$ProjectParticipant p where p.user.id = u.id and
-                            p.project.id = :component$project)
-                        </c>
-                    </and>
-                </filter>
-            </query>
-        </collectionDatasource>
-        <collectionDatasource id="weeklyEntriesDs" allowCommit="false"
-                              class="com.haulmont.timesheets.entity.WeeklyReportEntry" refreshMode="NEVER"/>
-        <collectionDatasource id="projectsDs" class="com.haulmont.timesheets.entity.Project" view="_minimal"/>
-        <collectionDatasource id="groupsDs" class="com.haulmont.cuba.security.entity.Group" view="_minimal"/>
-        <collectionDatasource id="tasksDs" class="com.haulmont.timesheets.entity.Task" view="_minimal">
-            <query>
-                select t from ts$Task t where t.project.id = :ds$projectsDs
-            </query>
-        </collectionDatasource>
-    </dsContext>
+                    ]]>
+                    <condition>
+                        <and>
+                            <c:jpql>
+                                <c:join>inner join u.timeEntries e</c:join>
+                                <c:where>
+                                    <![CDATA[(:hasTimeEntries = false or (e.date >= :from and e.date <= :to))]]></c:where>
+                            </c:jpql>
+                            <c:jpql>
+                                <c:join>inner join u.timeEntries e</c:join>
+                                <c:where>e.task = :task</c:where>
+                            </c:jpql>
+                            <c:jpql>
+                                <c:join>inner join u.timeEntries e</c:join>
+                                <c:where>e.status = :status</c:where>
+                            </c:jpql>
+                            <c:jpql>
+                                <c:where>u = :user</c:where>
+                            </c:jpql>
+                            <c:jpql>
+                                <c:where>u.group = :group</c:where>
+                            </c:jpql>
+                            <c:jpql>
+                                <c:where>exists (select 1 from ts$ProjectParticipant p where p.user = u and
+                                    p.project = :project)
+                                </c:where>
+                            </c:jpql>
+                        </and>
+                    </condition>
+                </query>
+            </loader>
+        </collection>
+        <collection id="weeklyEntriesDc" class="com.haulmont.timesheets.entity.WeeklyReportEntry"/>
+        <collection id="projectsDc" class="com.haulmont.timesheets.entity.Project" view="_minimal">
+            <loader id="projectsDl">
+                <query>
+                    <![CDATA[select e
+                         from
+                            ts$Project e
+                         where
+                            exists (
+                                select p from ts$ProjectParticipant p
+                                where
+                                p.user = :user
+                                and p.project = e
+                                and (p.role.code = 'manager' or p.role.code = 'approver' or p.role.code = 'observer'))
+                             or :superuser = true
+                    ]]>
+                </query>
+            </loader>
+        </collection>
+        <collection id="groupsDc" class="com.haulmont.cuba.security.entity.Group" view="_minimal">
+            <loader id="groupsDl">
+                <query>
+                    <![CDATA[select e from sec$Group e]]>
+                </query>
+            </loader>
+        </collection>
+        <collection id="tasksDc" class="com.haulmont.timesheets.entity.Task" view="_minimal">
+            <loader id="tasksDl">
+                <query>
+                    select t from ts$Task t where t.project = :project
+                </query>
+            </loader>
+        </collection>
+    </data>
     <companions>
         <web class="com.haulmont.timesheets.web.approve.WebApproveScreenCompanion"/>
     </companions>
@@ -72,15 +115,15 @@
             <rows>
                 <row>
                     <label align="MIDDLE_CENTER" value="msg://com.haulmont.timesheets.entity/Task.project"/>
-                    <lookupField id="project" optionsDatasource="projectsDs" width="${fieldWidth}"/>
+                    <lookupField id="project" optionsContainer="projectsDc" width="${fieldWidth}"/>
                     <label align="MIDDLE_CENTER" value="msg://com.haulmont.timesheets.entity/TimeEntry.task"/>
-                    <lookupField id="task" optionsDatasource="tasksDs" width="${fieldWidth}"/>
+                    <lookupField id="task" optionsContainer="tasksDc" width="${fieldWidth}"/>
                     <label align="MIDDLE_CENTER" value="msg://com.haulmont.timesheets.entity/TimeEntry.status"/>
                     <lookupField id="status" width="${fieldWidth}"/>
                 </row>
                 <row>
                     <label align="MIDDLE_CENTER" value="msg://com.haulmont.cuba.security.entity/Group"/>
-                    <lookupField id="group" width="${fieldWidth}" optionsDatasource="groupsDs"/>
+                    <lookupField id="group" width="${fieldWidth}" optionsContainer="groupsDc"/>
                     <label align="MIDDLE_CENTER" value="msg://com.haulmont.timesheets.entity/TimeEntry.user"/>
                     <lookupField id="user" width="${fieldWidth}"/>
                     <label align="MIDDLE_CENTER" value="msg://caption.hasTimeEntries"/>
@@ -102,27 +145,29 @@
             <vbox expand="usersTable" height="100%" margin="false,true,false,false" spacing="true">
                 <hbox spacing="true">
                     <label align="MIDDLE_LEFT" stylename="h2" value="msg://participantsTitle"/>
-                    <button id="refresh"/>
+                    <button id="refresh" action="usersTable.refresh"/>
                 </hbox>
-                <table id="usersTable" width="100%">
+                <table id="usersTable" width="100%" dataContainer="usersDc">
+                    <actions>
+                        <action id="refresh" type="refresh"/>
+                    </actions>
                     <columns>
                         <column id="lastName"/>
                         <column id="firstName"/>
                     </columns>
-                    <rows datasource="usersDs"/>
                 </table>
             </vbox>
             <vbox expand="weeklyReportsTable" height="100%" margin="false,false,false,true" spacing="true">
                 <hbox height="28px" spacing="true" width="100%">
-                    <optionsGroup id="statusOption" multiselect="true" orientation="horizontal"/>
-                    <optionsGroup id="typeOption" align="MIDDLE_RIGHT" orientation="horizontal"/>
+                    <checkBoxGroup id="statusOption" orientation="horizontal"/>
+                    <radioButtonGroup id="typeOption" align="MIDDLE_RIGHT" orientation="horizontal"/>
                 </hbox>
-                <table id="weeklyReportsTable" aggregatable="true" reorderingAllowed="false" width="100%">
+                <table id="weeklyReportsTable" aggregatable="true" reorderingAllowed="false" width="100%"
+                       dataContainer="weeklyEntriesDc">
                     <columns>
                         <column id="project"/>
                         <column id="task"/>
                     </columns>
-                    <rows datasource="weeklyEntriesDs"/>
                 </table>
             </vbox>
         </split>

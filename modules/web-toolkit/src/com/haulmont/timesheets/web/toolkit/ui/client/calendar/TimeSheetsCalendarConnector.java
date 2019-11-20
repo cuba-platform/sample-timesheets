@@ -19,7 +19,7 @@ package com.haulmont.timesheets.web.toolkit.ui.client.calendar;
 
 import com.haulmont.timesheets.web.toolkit.ui.TimeSheetsCalendar;
 import com.vaadin.client.communication.StateChangeEvent;
-import com.vaadin.client.ui.calendar.CalendarConnector;
+import com.vaadin.v7.client.ui.calendar.CalendarConnector;
 import com.vaadin.shared.ui.Connect;
 
 /**

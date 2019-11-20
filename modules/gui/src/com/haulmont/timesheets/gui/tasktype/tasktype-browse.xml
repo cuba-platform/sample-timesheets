@@ -15,32 +15,38 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://browseCaption"
-        class="com.haulmont.timesheets.gui.tasktype.TaskTypeBrowse" focusComponent="taskTypesTable"
-        lookupComponent="taskTypesTable" messagesPack="com.haulmont.timesheets.gui.tasktype">
-    <dsContext>
-        <collectionDatasource id="taskTypesDs" class="com.haulmont.timesheets.entity.TaskType" view="_local">
-            <query>
-                <![CDATA[select e from ts$TaskType e]]>
-            </query>
-        </collectionDatasource>
-    </dsContext>
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        caption="msg://browseCaption"
+        focusComponent="taskTypesTable"
+        messagesPack="com.haulmont.timesheets.gui.tasktype">
+    <data>
+        <collection id="taskTypesDc" class="com.haulmont.timesheets.entity.TaskType" view="_local">
+            <loader id="taskTypesDl">
+                <query>
+                    <![CDATA[select e from ts$TaskType e]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <dialogMode height="500"
+                width="800"
+                resizable="true"
+    />
     <layout expand="taskTypesTable" spacing="true">
-        <filter id="filter" datasource="taskTypesDs">
+        <filter id="filter" dataLoader="taskTypesDl">
             <properties include=".*"/>
         </filter>
-        <table id="taskTypesTable" width="100%">
+        <table id="taskTypesTable" width="100%" dataContainer="taskTypesDc">
             <actions>
-                <action id="create"/>
-                <action id="edit"/>
-                <action id="remove"/>
+                <action id="create" type="create"/>
+                <action id="edit" type="edit"/>
+                <action id="remove" type="remove"/>
             </actions>
             <columns>
                 <column id="name"/>
                 <column id="code"/>
                 <column id="description" maxTextLength="20"/>
             </columns>
-            <rows datasource="taskTypesDs"/>
             <rowsCount/>
             <buttonsPanel id="buttonsPanel" alwaysVisible="true">
                 <button id="createBtn" action="taskTypesTable.create"/>
@@ -48,5 +54,9 @@
                 <button id="removeBtn" action="taskTypesTable.remove"/>
             </buttonsPanel>
         </table>
+        <hbox id="lookupActions" spacing="true" visible="false">
+            <button action="lookupSelectAction"/>
+            <button action="lookupCancelAction"/>
+        </hbox>
     </layout>
 </window>

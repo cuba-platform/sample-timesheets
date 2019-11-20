@@ -31,7 +31,7 @@ import com.haulmont.timesheets.entity.Tag;
 import com.haulmont.timesheets.entity.Task;
 import com.haulmont.timesheets.global.CommandLineProcessor;
 import com.haulmont.timesheets.service.ProjectsService;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;

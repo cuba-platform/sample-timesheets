@@ -15,34 +15,34 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://browseCaption"
-        class="com.haulmont.timesheets.gui.projectparticipant.ProjectParticipantBrowse"
-        focusComponent="projectParticipantsTable" lookupComponent="projectParticipantsTable"
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        caption="msg://browseCaption"
+        focusComponent="projectParticipantsTable"
         messagesPack="com.haulmont.timesheets.gui.projectparticipant">
-    <dsContext>
-        <collectionDatasource id="projectParticipantsDs" class="com.haulmont.timesheets.entity.ProjectParticipant"
-                              view="projectParticipant-full">
-            <query>
-                <![CDATA[select e from ts$ProjectParticipant e]]>
-            </query>
-        </collectionDatasource>
-    </dsContext>
+    <data>
+        <collection id="projectParticipantsDc" class="com.haulmont.timesheets.entity.ProjectParticipant" view="projectParticipant-full">
+            <loader id="projectParticipantsDl">
+                <query>
+                    <![CDATA[select e from ts$ProjectParticipant e]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
     <layout expand="projectParticipantsTable" spacing="true">
-        <filter id="filter" datasource="projectParticipantsDs">
+        <filter id="filter" dataLoader="projectParticipantsDl">
             <properties include=".*"/>
         </filter>
-        <table id="projectParticipantsTable" width="100%">
+        <table id="projectParticipantsTable" width="100%" dataContainer="projectParticipantsDc">
             <actions>
-                <action id="create"/>
-                <action id="edit"/>
-                <action id="remove"/>
+                <action id="create" type="create"/>
+                <action id="edit" type="edit"/>
+                <action id="remove" type="remove"/>
             </actions>
             <columns>
                 <column id="user"/>
                 <column id="project"/>
                 <column id="role"/>
             </columns>
-            <rows datasource="projectParticipantsDs"/>
             <rowsCount/>
             <buttonsPanel id="buttonsPanel" alwaysVisible="true">
                 <button id="createBtn" action="projectParticipantsTable.create"/>
@@ -50,5 +50,9 @@
                 <button id="removeBtn" action="projectParticipantsTable.remove"/>
             </buttonsPanel>
         </table>
+        <hbox id="lookupActions" spacing="true" visible="false">
+            <button action="lookupSelectAction"/>
+            <button action="lookupCancelAction"/>
+        </hbox>
     </layout>
 </window>

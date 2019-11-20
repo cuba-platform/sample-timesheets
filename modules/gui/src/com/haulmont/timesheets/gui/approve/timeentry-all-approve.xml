@@ -15,38 +15,74 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://approveScreen"
-        class="com.haulmont.timesheets.gui.approve.BulkTimeEntriesApprove" focusComponent="timeEntriesTable"
-        lookupComponent="timeEntriesTable" messagesPack="com.haulmont.timesheets.gui.approve">
-    <dsContext>
-        <groupDatasource id="timeEntriesDs" class="com.haulmont.timesheets.entity.TimeEntry" view="timeEntry-browse">
-            <query>
-                <![CDATA[
-                select e from ts$TimeEntry e
-                where exists (select pa from ts$ProjectParticipant pa
-                                where pa.project.id = e.task.project.id and pa.user.id = :session$userId
-                                and (pa.role.code = 'manager' or pa.role.code = 'approver'))
-                and e.date >= :component$dateFrom and e.date <= :component$dateTo
-                ]]>
-                <filter>
-                    <and>
-                        <c>pr.id = :component$project</c>
-                        <c>t.id = :component$task</c>
-                        <c>e.user.id = :component$user</c>
-                        <c>e.status = :component$status</c>
-                        <c>e.user.group.id = :component$group</c>
-                    </and>
-                </filter>
-            </query>
-        </groupDatasource>
-        <collectionDatasource id="projectsDs" class="com.haulmont.timesheets.entity.Project" view="_minimal"/>
-        <collectionDatasource id="groupsDs" class="com.haulmont.cuba.security.entity.Group" view="_minimal"/>
-        <collectionDatasource id="tasksDs" class="com.haulmont.timesheets.entity.Task" view="_minimal">
-            <query>
-                select t from ts$Task t where t.project.id = :ds$projectsDs
-            </query>
-        </collectionDatasource>
-    </dsContext>
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd" caption="msg://approveScreen"
+        xmlns:c="http://schemas.haulmont.com/cuba/screen/jpql_condition.xsd"
+        messagesPack="com.haulmont.timesheets.gui.approve">
+    <data>
+        <collection id="timeEntriesDc" class="com.haulmont.timesheets.entity.TimeEntry" view="timeEntry-browse">
+            <loader id="timeEntriesDl" maxResults="1000">
+                <query>
+                    <![CDATA[select e from ts$TimeEntry e
+                            where
+                                exists (select pa from ts$ProjectParticipant pa
+                                    where pa.project = e.task.project and pa.user = :sessionUser
+                                    and (pa.role.code = 'manager' or pa.role.code = 'approver'))
+                                and e.date >= :dateFrom and e.date <= :dateTo]]>
+                    <condition>
+                        <and>
+                            <c:jpql>
+                                <c:where>e.task = :task</c:where>
+                            </c:jpql>
+                            <c:jpql>
+                                <c:where>e.task.project = :project</c:where>
+                            </c:jpql>
+                            <c:jpql>
+                                <c:where>e.user = :user</c:where>
+                            </c:jpql>
+                            <c:jpql>
+                                <c:where>e.status = :status</c:where>
+                            </c:jpql>
+                            <c:jpql>
+                                <c:where>e.user.group = :group</c:where>
+                            </c:jpql>
+                        </and>
+                    </condition>
+                </query>
+            </loader>
+        </collection>
+        <collection id="projectsDc" class="com.haulmont.timesheets.entity.Project" view="_minimal">
+            <loader id="projectsDl">
+                <query>
+                    <![CDATA[select e
+                         from
+                            ts$Project e
+                         where
+                            exists (
+                                select p from ts$ProjectParticipant p
+                                where
+                                p.user = :user
+                                and p.project = e
+                                and (p.role.code = 'manager' or p.role.code = 'approver'))
+                             or :superUser = true
+                         ]]>
+                </query>
+            </loader>
+        </collection>
+        <collection id="groupsDc" class="com.haulmont.cuba.security.entity.Group" view="_minimal">
+            <loader id="groupsDl">
+                <query>
+                    <![CDATA[select e from sec$Group e]]>
+                </query>
+            </loader>
+        </collection>
+        <collection id="tasksDc" class="com.haulmont.timesheets.entity.Task" view="_minimal">
+            <loader id="tasksDl">
+                <query>
+                    select t from ts$Task t where t.project = :project
+                </query>
+            </loader>
+        </collection>
+    </data>
     <assign name="fieldWidth" value="250px"/>
     <layout expand="timeEntriesTable" spacing="true">
         <grid spacing="true">
@@ -69,25 +105,26 @@
                 </row>
                 <row>
                     <label align="MIDDLE_CENTER" value="msg://com.haulmont.timesheets.entity/Task.project"/>
-                    <lookupField id="project" optionsDatasource="projectsDs" width="${fieldWidth}"/>
+                    <lookupField id="project" optionsContainer="projectsDc" width="${fieldWidth}"/>
                     <label align="MIDDLE_CENTER" value="msg://com.haulmont.timesheets.entity/TimeEntry.task"/>
-                    <lookupField id="task" optionsDatasource="tasksDs" width="${fieldWidth}"/>
+                    <lookupField id="task" optionsContainer="tasksDc" width="${fieldWidth}"/>
                 </row>
                 <row>
                     <label align="MIDDLE_CENTER" value="msg://com.haulmont.cuba.security.entity/Group"/>
-                    <lookupField id="group" width="${fieldWidth}" optionsDatasource="groupsDs"/>
+                    <lookupField id="group" width="${fieldWidth}" optionsContainer="groupsDc"/>
                     <label align="MIDDLE_CENTER" value="msg://com.haulmont.timesheets.entity/TimeEntry.user"/>
                     <lookupField id="user" width="${fieldWidth}"/>
                 </row>
             </rows>
         </grid>
-        <groupTable id="timeEntriesTable" width="100%" aggregatable="true" multiselect="true">
+        <groupTable id="timeEntriesTable" width="100%" aggregatable="true" multiselect="true"
+                    dataContainer="timeEntriesDc">
             <actions>
-                <action id="create"/>
-                <action id="edit"/>
-                <action id="remove"/>
-                <action id="excel"/>
-                <action id="refresh"/>
+                <action id="create" type="create"/>
+                <action id="edit" type="edit"/>
+                <action id="remove" type="remove"/>
+                <action id="excel" type="excel"/>
+                <action id="refresh" type="refresh"/>
             </actions>
             <columns>
                 <group>
@@ -110,7 +147,6 @@
                 <column id="rejectionReason" maxTextLength="20"/>
                 <column id="activityType"/>
             </columns>
-            <rows datasource="timeEntriesDs"/>
             <rowsCount/>
             <buttonsPanel id="buttonsPanel" alwaysVisible="true">
                 <button id="createBtn" action="timeEntriesTable.create"/>

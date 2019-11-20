@@ -16,86 +16,150 @@
 
 package com.haulmont.timesheets.gui.weeklytimesheets;
 
-import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.*;
-import com.haulmont.cuba.gui.WindowManager;
+import com.haulmont.cuba.gui.Dialogs;
+import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.ScreenBuilders;
+import com.haulmont.cuba.gui.UiComponents;
+import com.haulmont.cuba.gui.actions.list.RemoveAction;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.CollectionDatasource.Operation;
-import com.haulmont.cuba.gui.data.Datasource;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
+import com.haulmont.cuba.gui.components.data.options.ContainerOptions;
+import com.haulmont.cuba.gui.components.data.value.ContainerValueSource;
+import com.haulmont.cuba.gui.model.CollectionChangeType;
+import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
 import com.haulmont.timesheets.global.*;
 import com.haulmont.timesheets.gui.commandline.CommandLineFrameController;
 import com.haulmont.timesheets.gui.timeentry.TimeEntryEdit;
-import com.haulmont.timesheets.gui.util.ComponentsHelper;
+import com.haulmont.timesheets.gui.timeentry.TimeEntryLookup;
+import com.haulmont.timesheets.gui.util.ScreensHelper;
 import com.haulmont.timesheets.gui.util.WeeklyReportEntryAggregation;
 import com.haulmont.timesheets.service.ProjectsService;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
-import java.util.*;
 import java.util.Calendar;
+import java.util.*;
 
 /**
  * @author gorelov
  */
-@SuppressWarnings("WeakerAccess")
-public class SimpleWeeklyTimesheets extends AbstractWindow {
+@UiController("simple-weekly-timesheets")
+@UiDescriptor("simple-weekly-timesheets.xml")
+public class SimpleWeeklyTimesheets extends Screen {
     protected static final String COLUMN_SUFFIX = "Column";
     protected static final String TOTAL_COLUMN_ID = "totalColumn";
 
-    @Inject
-    private LinkButton setToday;
-    @Inject
-    private LinkButton showNextWeek;
-    @Inject
-    private LinkButton showPreviousWeek;
-    @Inject
-    private CommandLineFrameController commandLine;
-    @Inject
-    protected Table<WeeklyReportEntry> weeklyTsTable;
-    @Inject
-    protected DateField dateField;
-    @Inject
-    protected CollectionDatasource<WeeklyReportEntry, UUID> weeklyEntriesDs;
-    @Inject
-    protected CollectionDatasource<Project, UUID> projectsDs;
-    @Inject
-    protected ComponentsFactory componentsFactory;
-    @Inject
-    protected UserSession userSession;
-    @Inject
-    protected Label weekCaption;
-    @Inject
-    protected Messages messages;
-    @Inject
-    protected ProjectsService projectsService;
-    @Inject
-    protected WeeklyReportConverter reportConverterBean;
-    @Inject
-    protected TimeParser timeParser;
     @Inject
     protected TimeSource timeSource;
     @Inject
     protected UuidSource uuidSource;
     @Inject
+    protected Messages messages;
+    @Inject
+    protected MessageBundle messageBundle;
+    @Inject
+    protected Dialogs dialogs;
+    @Inject
+    protected Notifications notifications;
+    @Inject
+    protected UiComponents uiComponents;
+    @Inject
+    protected ScreenBuilders screenBuilders;
+    @Inject
+    protected ProjectsService projectsService;
+    @Inject
+    protected WeeklyReportConverter weeklyReportConverter;
+    @Inject
+    protected TimeParser timeParser;
+    @Inject
     protected ValidationTools validationTools;
     @Inject
+    protected UserSession userSession;
+    @Inject
+    protected DataManager dataManager;
+    @Inject
     protected Metadata metadata;
+    @Inject
+    protected Label<String> weekCaption;
+    @Inject
+    protected CollectionContainer<WeeklyReportEntry> weeklyEntriesDc;
+    @Inject
+    protected CollectionContainer<Project> projectsDc;
+    @Inject
+    protected CollectionLoader<Project> projectsDl;
+    @Inject
+    protected LinkButton showPreviousWeek;
+    @Inject
+    protected LinkButton showNextWeek;
+    @Inject
+    protected LinkButton setToday;
+    @Inject
+    protected CommandLineFrameController commandLine;
+    @Inject
+    protected GroupTable<WeeklyReportEntry> weeklyTsTable;
 
     protected Map<String, Label> totalLabelsMap = new HashMap<>();
 
     protected Date firstDayOfWeek;
     protected Date lastDayOfWeek;
 
-    @Override
-    public void init(Map<String, Object> params) {
+    @Install(to = "weeklyTsTable", subject = "styleProvider")
+    private String weeklyTsTableStyleProvider(WeeklyReportEntry entity, String property) {
+        String id = null;
+        if (property != null && property.endsWith(COLUMN_SUFFIX)) {
+            id = property.replace(COLUMN_SUFFIX, "");
+        }
+
+        DayOfWeek day = DayOfWeek.fromId(id != null ? id : property);
+        if (entity == null) {
+            User currentOrSubstitutedUser = userSession.getCurrentOrSubstitutedUser();
+            if (day != null) {
+                return validationTools.isWorkTimeMatchToPlanForDay(
+                        DateTimeUtils.getSpecificDayOfWeek(firstDayOfWeek, day.getJavaCalendarDay()),
+                        currentOrSubstitutedUser) ? null : "overtime";
+            } else if (TOTAL_COLUMN_ID.equals(property)) {
+                return validationTools.isWorkTimeMatchToPlanForWeek(
+                        firstDayOfWeek, currentOrSubstitutedUser) ? null : "overtime";
+            }
+        }
+        return null;
+    }
+
+    @Subscribe("add")
+    protected void onAdd(Action.ActionPerformedEvent event) {
+        addReport();
+    }
+
+    @Subscribe("submitAll")
+    protected void onSubmitAll(Action.ActionPerformedEvent event) {
+        submitAll();
+    }
+
+    @Subscribe("weeklyTsTable.remove")
+    protected void onWeeklyTsTableRemove(Action.ActionPerformedEvent event) {
+        Set<WeeklyReportEntry> selected = weeklyTsTable.getSelected();
+        if (!selected.isEmpty()) {
+            for (WeeklyReportEntry entry : selected) {
+                removeTimeEntries(entry.getExistTimeEntries());
+            }
+
+            for (WeeklyReportEntry item : selected) {
+                weeklyEntriesDc.getMutableItems().remove(item);
+            }
+        }
+    }
+
+    @Subscribe
+    protected void onInit(InitEvent event) {
         setWeekRange(DateTimeUtils.getFirstDayOfWeek(timeSource.currentTimestamp()));
         weeklyTsTable.setSettingsEnabled(false);
         updateWeekCaption();
@@ -104,6 +168,28 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         initDateChangeComponents();
         initCommandLine();
         updateDayColumnsCaptions();
+    }
+
+    @Subscribe("dateField")
+    protected void onDateFieldValueChange(HasValue.ValueChangeEvent<Date> e) {
+        if (hasUnsavedData()) {
+            dialogs.createOptionDialog(Dialogs.MessageType.CONFIRMATION)
+                    .withCaption(messages.getMainMessage("closeUnsaved.caption"))
+                    .withMessage(messageBundle.getMessage("notification.unsavedData"))
+                    .withActions(
+                            new DialogAction(DialogAction.Type.OK) {
+                                @Override
+                                public void actionPerform(Component component) {
+                                    setWeekRange(DateTimeUtils.getFirstDayOfWeek(e.getValue()));
+                                    updateWeek();
+                                }
+                            },
+                            new DialogAction(DialogAction.Type.CANCEL))
+                    .show();
+        } else {
+            setWeekRange(DateTimeUtils.getFirstDayOfWeek(e.getValue()));
+            updateWeek();
+        }
     }
 
     protected void initDateChangeComponents() {
@@ -128,29 +214,6 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                 showPreviousWeek();
             }
         });
-
-        dateField.addValueChangeListener(e -> {
-            if (hasUnsavedData()) {
-                showOptionDialog(
-                        messages.getMainMessage("closeUnsaved.caption"),
-                        getMessage("notification.unsavedData"),
-                        MessageType.CONFIRMATION,
-                        new Action[]{
-                                new DialogAction(DialogAction.Type.OK) {
-                                    @Override
-                                    public void actionPerform(Component component) {
-                                        setWeekRange(DateTimeUtils.getFirstDayOfWeek((Date) e.getValue()));
-                                        updateWeek();
-                                    }
-                                },
-                                new DialogAction(DialogAction.Type.CANCEL)
-                        }
-                );
-            } else {
-                setWeekRange(DateTimeUtils.getFirstDayOfWeek((Date) e.getValue()));
-                updateWeek();
-            }
-        });
     }
 
     protected void initCommandLine() {
@@ -158,27 +221,29 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             @Override
             public void handle(List<TimeEntry> resultTimeEntries) {
                 if (CollectionUtils.isNotEmpty(resultTimeEntries)) {
-                    //todo eude what if there are more than 1 entry
-                    final TimeEntry timeEntry = resultTimeEntries.get(0);
+                    TimeEntry timeEntry = resultTimeEntries.get(0);
                     ResultAndCause resultAndCause = validationTools.validateTimeEntry(timeEntry);
                     if (resultAndCause.isNegative) {
-                        showNotification(resultAndCause.cause, NotificationType.WARNING);
+                        notifications.create(Notifications.NotificationType.WARNING)
+                                .withCaption(resultAndCause.cause)
+                                .show();
                         return;
                     }
-
                     ResultAndCause validationResult = validationTools.validateTags(timeEntry);
                     if (validationResult.isNegative) {
-                        showOptionDialog(getMessage("caption.attention"),
-                                validationResult.cause + getMessage("confirmation.manuallyTagSetting"),
-                                MessageType.CONFIRMATION_HTML,
-                                Arrays.asList(
+                        dialogs.createOptionDialog(Dialogs.MessageType.CONFIRMATION)
+                                .withContentMode(ContentMode.HTML)
+                                .withCaption(messageBundle.getMessage("caption.attention"))
+                                .withMessage(validationResult.cause + messageBundle.getMessage("confirmation.manuallyTagSetting"))
+                                .withActions(
                                         new DialogAction(DialogAction.Type.YES) {
                                             @Override
                                             public void actionPerform(Component component) {
                                                 doHandle(timeEntry);
                                             }
                                         },
-                                        new DialogAction(DialogAction.Type.NO)));
+                                        new DialogAction(DialogAction.Type.NO))
+                                .show();
                     } else {
                         doHandle(timeEntry);
                     }
@@ -187,7 +252,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
             private void doHandle(TimeEntry timeEntry) {
                 WeeklyReportEntry weeklyReportEntry = setTimeEntryToEachWeekDay(timeEntry);
-                weeklyEntriesDs.addItem(weeklyReportEntry);
+                weeklyEntriesDc.getMutableItems().add(weeklyReportEntry);
                 weeklyTsTable.setSelected(weeklyReportEntry);
             }
 
@@ -230,103 +295,75 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         });
     }
 
-
     protected void initWeeklyEntriesTable() {
-        weeklyTsTable.addAction(new WeeklyReportEntryRemoveAction(weeklyTsTable));
-
         initProjectColumn();
         initTaskColumn();
         initDaysColumns();
         initTotalColumn();
 
-        weeklyEntriesDs.addCollectionChangeListener(e -> {
-            if (Operation.REMOVE.equals(e.getOperation()) || Operation.CLEAR.equals(e.getOperation())) {
-                for (WeeklyReportEntry entry : e.getItems()) {
-                    totalLabelsMap.remove(ComponentsHelper.getCacheKeyForEntity(entry, TOTAL_COLUMN_ID));
+        weeklyEntriesDc.addCollectionChangeListener(e -> {
+            if (CollectionChangeType.REMOVE_ITEMS.equals(e.getChangeType())) {
+                for (WeeklyReportEntry entry : e.getChanges()) {
+                    totalLabelsMap.remove(ScreensHelper.getCacheKeyForEntity(entry, TOTAL_COLUMN_ID));
                 }
-            }
-        });
-
-        weeklyTsTable.setStyleProvider(new Table.StyleProvider<WeeklyReportEntry>() {
-            @Nullable
-            @Override
-            public String getStyleName(WeeklyReportEntry entity, String property) {
-                String id = null;
-                if (property != null && property.endsWith(COLUMN_SUFFIX)) {
-                    id = property.replace(COLUMN_SUFFIX, "");
-                }
-
-                DayOfWeek day = DayOfWeek.fromId(id != null ? id : property);
-                if (entity == null) {
-                    User currentOrSubstitutedUser = userSession.getCurrentOrSubstitutedUser();
-                    if (day != null) {
-                        return validationTools.isWorkTimeMatchToPlanForDay(
-                                DateTimeUtils.getSpecificDayOfWeek(firstDayOfWeek, day.getJavaCalendarDay()),
-                                currentOrSubstitutedUser) ? null : "overtime";
-                    } else if (TOTAL_COLUMN_ID.equals(property)) {
-                        return validationTools.isWorkTimeMatchToPlanForWeek(
-                                firstDayOfWeek, currentOrSubstitutedUser) ? null : "overtime";
-                    }
-                }
-                return null;
             }
         });
     }
 
     protected void initProjectColumn() {
-        final String projectColumnId = "project";
-        weeklyTsTable.addGeneratedColumn(projectColumnId, entity -> {
-            if (entity.hasTimeEntries()) {
-                Label label = componentsFactory.createComponent(Label.class);
-                label.setValue(entity.getProject().getName());
+        String projectColumnId = "project";
+        weeklyTsTable.addGeneratedColumn(projectColumnId, weeklyReportEntry -> {
+            if (weeklyReportEntry.hasTimeEntries()) {
+                Label label = uiComponents.create(Label.class);
+                label.setValue(weeklyReportEntry.getProject().getName());
                 return label;
             } else {
-                @SuppressWarnings("unchecked")
-                Datasource<WeeklyReportEntry> ds =
-                        (Datasource<WeeklyReportEntry>) weeklyTsTable.getItemDatasource(entity);
-                final LookupField lookupField = componentsFactory.createComponent(LookupField.class);
-                lookupField.setDatasource(ds, projectColumnId);
-                lookupField.setOptionsDatasource(projectsDs);
+                InstanceContainer<WeeklyReportEntry> dc = weeklyTsTable.getInstanceContainer(weeklyReportEntry);
+                LookupField lookupField = uiComponents.create(LookupField.class);
+                lookupField.setValueSource(new ContainerValueSource(dc, projectColumnId));
+                lookupField.setOptions(new ContainerOptions<>(projectsDc));
                 lookupField.setWidth("100%");
                 lookupField.setInputPrompt(messages.getMessage(WeeklyReportEntry.class, "WeeklyReportEntry.project"));
+                lookupField.focus();
                 return lookupField;
             }
         });
+
+        weeklyTsTable.sort(projectColumnId, Table.SortDirection.ASCENDING);
     }
 
     protected void initTaskColumn() {
-        final String taskColumnId = "task";
-        final String activityTypeColumnId = "activityType";
-        weeklyTsTable.addGeneratedColumn(taskColumnId, entity -> {
-            if (entity.hasTimeEntries()) {
-                Label label = componentsFactory.createComponent(Label.class);
+        String taskColumnId = "task";
+        String activityTypeColumnId = "activityType";
+        weeklyTsTable.addGeneratedColumn(taskColumnId, weeklyReportEntry -> {
+            if (weeklyReportEntry.hasTimeEntries()) {
+                Label label = uiComponents.create(Label.class);
                 String caption;
-                if (entity.getActivityType() == null) {
-                    caption = entity.getTask().getName();
+                if (weeklyReportEntry.getActivityType() == null) {
+                    caption = weeklyReportEntry.getTask().getName();
                 } else {
                     caption = String.format("%s (%s)",
-                            entity.getTask().getName(),
-                            entity.getActivityType().getInstanceName());
+                            weeklyReportEntry.getTask().getName(),
+                            weeklyReportEntry.getActivityType().getInstanceName());
                 }
                 label.setValue(caption);
                 return label;
             } else {
-                @SuppressWarnings("unchecked")
-                Datasource<WeeklyReportEntry> ds =
-                        (Datasource<WeeklyReportEntry>) weeklyTsTable.getItemDatasource(entity);
-                final LookupField taskLookupField = componentsFactory.createComponent(LookupField.class);
-                taskLookupField.setDatasource(ds, taskColumnId);
+                InstanceContainer<WeeklyReportEntry> dc =
+                        weeklyTsTable.getInstanceContainer(weeklyReportEntry);
+                LookupField taskLookupField = uiComponents.create(LookupField.class);
+                taskLookupField.setValueSource(new ContainerValueSource<>(dc, taskColumnId));
                 taskLookupField.setWidth("100%");
                 taskLookupField.setInputPrompt(messages.getMessage(WeeklyReportEntry.class, "WeeklyReportEntry.task"));
 
-                final LookupField activityTypeLookupField = componentsFactory.createComponent(LookupField.class);
-                activityTypeLookupField.setDatasource(ds, activityTypeColumnId);
+                LookupField activityTypeLookupField = uiComponents.create(LookupField.class);
+                activityTypeLookupField.setValueSource(new ContainerValueSource<>(dc, activityTypeColumnId));
                 activityTypeLookupField.setWidth("100%");
                 activityTypeLookupField.setRequired(true);
                 activityTypeLookupField.setInputPrompt(messages.getMessage(WeeklyReportEntry.class, "WeeklyReportEntry.activityType"));
-                setActivityTypeVisibility(ds.getItem().getProject(), activityTypeLookupField);
+                setActivityTypeVisibility(dc.getItem().getProject(), activityTypeLookupField);
 
-                ds.addItemPropertyChangeListener(e -> {
+                dc.addItemPropertyChangeListener(e -> {
                     if ("project".equals(e.getProperty())) {
                         Project project = (Project) e.getValue();
                         taskLookupField.setValue(null);
@@ -336,13 +373,13 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                     }
                 });
 
-                Project project = ds.getItem().getProject();
+                Project project = dc.getItem().getProject();
                 if (project != null) {
                     Map<String, Object> tasks = getTasksForCurrentUserAndProject(project);
                     taskLookupField.setOptionsMap(tasks);
                 }
 
-                BoxLayout boxLayout = componentsFactory.createComponent(HBoxLayout.class);
+                HBoxLayout boxLayout = uiComponents.create(HBoxLayout.class);
                 boxLayout.setWidth("100%");
                 boxLayout.setSpacing(true);
                 boxLayout.add(taskLookupField);
@@ -381,8 +418,10 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
     protected void initDaysColumns() {
         for (Date current = firstDayOfWeek; current.getTime() <= lastDayOfWeek.getTime(); current = DateUtils.addDays(current, 1)) {
-            final DayOfWeek day = DayOfWeek.fromCalendarDay(DateUtils.toCalendar(current).get(Calendar.DAY_OF_WEEK));
-            final String columnId = day.getId() + COLUMN_SUFFIX;
+            DayOfWeek day = DayOfWeek.fromCalendarDay(DateUtils.toCalendar(current).get(Calendar.DAY_OF_WEEK));
+            String columnId = day.getId() + COLUMN_SUFFIX;
+            projectsDl.setParameter("user", userSession.getCurrentOrSubstitutedUser());
+            projectsDl.load();
             weeklyTsTable.addGeneratedColumn(columnId, new Table.ColumnGenerator<WeeklyReportEntry>() {
                         @Override
                         public Component generateCell(final WeeklyReportEntry entity) {
@@ -396,7 +435,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         }
 
                         private Component createLinkAndActionsForExistingEntry(WeeklyReportEntry reportEntry, List<TimeEntry> timeEntries) {
-                            HBoxLayout hBox = componentsFactory.createComponent(HBoxLayout.class);
+                            HBoxLayout hBox = uiComponents.create(HBoxLayout.class);
                             hBox.setSpacing(true);
 
                             if (timeEntries.size() == 1) {
@@ -410,45 +449,42 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         }
 
                         private void createRemoveButton(final WeeklyReportEntry reportEntry, HBoxLayout hBox) {
-                            LinkButton removeButton = componentsFactory.createComponent(LinkButton.class);
+                            LinkButton removeButton = uiComponents.create(LinkButton.class);
                             removeButton.setIcon("icons/remove.png");
-                            removeButton.setAlignment(Alignment.MIDDLE_RIGHT);
-                            removeButton.setAction(new ComponentsHelper.CustomRemoveAction("timeEntryRemove", getFrame()) {
+                            removeButton.setAlignment(Component.Alignment.MIDDLE_RIGHT);
+                            removeButton.setAction(new ScreensHelper.CustomRemoveAction("timeEntryRemove", dialogs) {
                                 @Override
                                 protected void doRemove() {
                                     removeTimeEntries(reportEntry.getDayOfWeekTimeEntries(day));
                                     reportEntry.changeDayOfWeekTimeEntries(day, null);
-                                    weeklyTsTable.repaint();
                                 }
                             });
                             hBox.add(removeButton);
                         }
 
                         private void createLinkToMultipleTimeEntries(final WeeklyReportEntry reportEntry, HBoxLayout hBox, final Date date) {
-                            final LinkButton linkButton = componentsFactory.createComponent(LinkButton.class);
+                            LinkButton linkButton = uiComponents.create(LinkButton.class);
                             linkButton.setCaption(reportEntry.getTotalForDay(day).toString());
-                            linkButton.setAction(new AbstractAction("edit") {
-
-                                @Override
-                                public void actionPerform(Component component) {
-                                    Window window = openWindow(
-                                            "ts$TimeEntry.lookup",
-                                            WindowManager.OpenType.DIALOG,
-                                            ParamsMap.of("date", date,
-                                                    "task", reportEntry.getTask(),
-                                                    "activityType", reportEntry.getActivityType(),
-                                                    "user", userSession.getCurrentOrSubstitutedUser()));
-                                    window.addCloseListener(actionId -> updateWeek());
-                                }
-                            });
+                            linkButton.setAction(new BaseAction("edit").withHandler(ae -> {
+                                TimeEntryLookup lookup = screenBuilders.lookup(TimeEntry.class, SimpleWeeklyTimesheets.this)
+                                        .withScreenClass(TimeEntryLookup.class)
+                                        .withLaunchMode(OpenMode.DIALOG)
+                                        .withAfterCloseListener(ce -> updateWeek())
+                                        .build();
+                                lookup.setUser(userSession.getCurrentOrSubstitutedUser());
+                                lookup.setTask(reportEntry.getTask());
+                                lookup.setDate(date);
+                                lookup.setActivityType(reportEntry.getActivityType());
+                                lookup.show();
+                            }));
                             hBox.add(linkButton);
                         }
 
                         private void createLinkToSingleTimeEntry(final WeeklyReportEntry reportEntry, List<TimeEntry> timeEntries, HBoxLayout hBox) {
-                            final TimeEntry timeEntry = timeEntries.get(0);
-                            final LinkButton linkButton = componentsFactory.createComponent(LinkButton.class);
+                            TimeEntry timeEntry = timeEntries.get(0);
+                            LinkButton linkButton = uiComponents.create(LinkButton.class);
                             linkButton.setCaption(reportEntry.getTotalForDay(day).toString());
-                            linkButton.setAction(new AbstractAction("edit") {
+                            linkButton.setAction(new CheckUnsavedAction("edit") {
                                 @Override
                                 public void actionPerform(Component component) {
                                     openTimeEntryEditor(timeEntry);
@@ -459,18 +495,19 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                         }
 
                         private Component createTextFieldForTimeInput(WeeklyReportEntry reportEntry) {
-                            TextField timeField = componentsFactory.createComponent(TextField.class);
+                            TextField timeField = uiComponents.create(TextField.class);
                             timeField.setWidth("100%");
                             timeField.setHeight("22px");
-                            timeField.setDatasource(weeklyTsTable.getItemDatasource(reportEntry), day.getId() + "Time");
+                            timeField.setValueSource(new ContainerValueSource<>(weeklyTsTable.getInstanceContainer(reportEntry), day.getId() + "Time"));
                             return timeField;
                         }
                     }
             );
-            weeklyTsTable.setColumnWidth(columnId, 80);
+            weeklyTsTable.getColumn(columnId).setWidth(80);
+            weeklyTsTable.getColumn(columnId).setCaptionAsHtml(true);
 
             Table.Column column = weeklyTsTable.getColumn(columnId);
-            column.setAggregation(ComponentsHelper.createAggregationInfo(
+            column.setAggregation(ScreensHelper.createAggregationInfo(
                     projectsService.getEntityMetaPropertyPath(WeeklyReportEntry.class, day.getId()),
                     new WeeklyReportEntryAggregation()
             ));
@@ -478,48 +515,53 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     }
 
     protected void initTotalColumn() {
-        weeklyTsTable.addGeneratedColumn(TOTAL_COLUMN_ID, entity -> {
-            Label label = componentsFactory.createComponent(Label.class);
-            label.setValue(entity.getTotal());
-            totalLabelsMap.put(ComponentsHelper.getCacheKeyForEntity(entity, TOTAL_COLUMN_ID), label);
+        weeklyTsTable.addGeneratedColumn(TOTAL_COLUMN_ID, reportEntry -> {
+            Label label = uiComponents.create(Label.class);
+            label.setValue(reportEntry.getTotal());
+            totalLabelsMap.put(ScreensHelper.getCacheKeyForEntity(reportEntry, TOTAL_COLUMN_ID), label);
             return label;
         });
-        weeklyTsTable.setColumnWidth(TOTAL_COLUMN_ID, 80);
-        weeklyTsTable.setColumnCaption(TOTAL_COLUMN_ID, messages.getMessage(getClass(), "total"));
+        weeklyTsTable.getColumn(TOTAL_COLUMN_ID).setWidth(80);
+        weeklyTsTable.getColumn(TOTAL_COLUMN_ID).setCaption(messages.getMessage(getClass(), "total"));
 
         Table.Column column = weeklyTsTable.getColumn(TOTAL_COLUMN_ID);
-        column.setAggregation(ComponentsHelper.createAggregationInfo(
+        column.setAggregation(ScreensHelper.createAggregationInfo(
                 projectsService.getEntityMetaPropertyPath(WeeklyReportEntry.class, "total"),
                 new TotalColumnAggregation()
         ));
     }
 
     protected void openTimeEntryEditor(TimeEntry timeEntry) {
-        final TimeEntryEdit editor = (TimeEntryEdit) openEditor(
-                "ts$TimeEntry.edit", timeEntry, WindowManager.OpenType.DIALOG);
-        editor.addListener(actionId -> {
-            if (COMMIT_ACTION_ID.equals(actionId)) {
-                updateWeek();
-            }
-        });
+        screenBuilders.editor(TimeEntry.class, this)
+                .withScreenClass(TimeEntryEdit.class)
+                .editEntity(timeEntry)
+                .withLaunchMode(OpenMode.DIALOG)
+                .withAfterCloseListener(ace -> {
+                    if (Window.COMMIT_ACTION_ID.equals(((StandardCloseAction) ace.getCloseAction()).getActionId())) {
+                        updateWeek();
+                    }
+                })
+                .build()
+                .show();
     }
 
     public void addReport() {
         WeeklyReportEntry item = new WeeklyReportEntry();
-        weeklyEntriesDs.addItem(item);
+        weeklyEntriesDc.getMutableItems().add(item);
         weeklyTsTable.setSelected(item);
-        weeklyTsTable.requestFocus();
     }
 
     public void submitAll() {
-        Collection<WeeklyReportEntry> entries = weeklyEntriesDs.getItems();
+        Collection<WeeklyReportEntry> entries = weeklyEntriesDc.getMutableItems();
         if (!entries.isEmpty()) {
             CommitContext commitContext = new CommitContext();
             List<String> validationAlerts = new ArrayList<>();
             for (WeeklyReportEntry weeklyReportEntry : entries) {
                 ResultAndCause resultAndCause = validationTools.validateWeeklyReport(weeklyReportEntry);
                 if (resultAndCause.isNegative) {
-                    showNotification(resultAndCause.cause, NotificationType.WARNING);
+                    notifications.create(Notifications.NotificationType.WARNING)
+                            .withCaption(resultAndCause.cause)
+                            .show();
                     return;
                 }
 
@@ -549,7 +591,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
 
                         ResultAndCause validationResult = validationTools.validateTags(timeEntry);
                         if (validationResult.isNegative) {
-                            validationAlerts.add(formatMessage("notification.timeEntryValidation",
+                            validationAlerts.add(messages.formatMessage("notification.timeEntryValidation",
                                     validationResult.cause, timeEntry.getTask().getName(),
                                     timeEntry.getDate(), HoursAndMinutes.fromTimeEntry(timeEntry)));
                         }
@@ -559,11 +601,15 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
                 }
             }
 
-            getDsContext().getDataSupplier().commit(commitContext);
+            dataManager.commit(commitContext);
             updateWeek();
 
             if (validationAlerts.size() > 0) {
-                showMessageDialog(getMessage("caption.attention"), StringUtils.join(validationAlerts, "<br/>"), MessageType.WARNING_HTML);
+                dialogs.createMessageDialog(Dialogs.MessageType.WARNING)
+                        .withContentMode(ContentMode.HTML)
+                        .withCaption(messageBundle.getMessage("caption.attention"))
+                        .withMessage(StringUtils.join(validationAlerts, "<br/>"))
+                        .show();
             }
         }
     }
@@ -594,7 +640,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         for (Date current = firstDayOfWeek; current.getTime() <= lastDayOfWeek.getTime(); current = DateUtils.addDays(current, 1)) {
             DayOfWeek day = DayOfWeek.fromCalendarDay(DateTimeUtils.getCalendarDayOfWeek(current));
             String columnId = day.getId() + COLUMN_SUFFIX;
-            weeklyTsTable.setColumnCaption(columnId, ComponentsHelper.getColumnCaption(day.getId(), current));
+            weeklyTsTable.getColumn(columnId).setCaption(ScreensHelper.getColumnCaption(day.getId(), current));
         }
     }
 
@@ -604,19 +650,22 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
     }
 
     protected void updateWeek() {
-        weeklyEntriesDs.clear();
+        weeklyEntriesDc.getMutableItems().clear();
         updateWeekCaption();
         fillExistingTimeEntries();
-        weeklyTsTable.repaint();
+        Table.SortInfo sortInfo = weeklyTsTable.getSortInfo();
+        if (sortInfo != null) {
+            weeklyTsTable.sortBy(sortInfo.getPropertyId(), sortInfo.getAscending());
+        }
         updateDayColumnsCaptions();
     }
 
     protected void fillExistingTimeEntries() {
         List<TimeEntry> timeEntries = projectsService.getTimeEntriesForPeriod(firstDayOfWeek,
                 lastDayOfWeek, userSession.getCurrentOrSubstitutedUser(), null, "timeEntry-full");
-        List<WeeklyReportEntry> reportEntries = reportConverterBean.convertFromTimeEntries(timeEntries);
+        List<WeeklyReportEntry> reportEntries = weeklyReportConverter.convertFromTimeEntries(timeEntries);
         for (WeeklyReportEntry entry : reportEntries) {
-            weeklyEntriesDs.addItem(entry);
+            weeklyEntriesDc.getMutableItems().add(entry);
         }
     }
 
@@ -628,52 +677,33 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
             }
         }
 
-        getDsContext().getDataSupplier().commit(commitContext);
+        dataManager.commit(commitContext);
+        // work around (metadata model does not activates listeners now)
+        weeklyEntriesDc.setItems(null);
     }
 
-    protected class WeeklyReportEntryRemoveAction extends ComponentsHelper.CaptionlessRemoveAction {
-
-        public WeeklyReportEntryRemoveAction(ListComponent target) {
-            super(target);
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public void actionPerform(Component component) {
-            Set<WeeklyReportEntry> entries = target.getSelected();
-            if (!entries.isEmpty()) {
-                for (WeeklyReportEntry entry : entries) {
-                    removeTimeEntries(entry.getExistTimeEntries());
-                }
-            }
-            super.actionPerform(component);
-        }
-    }
-
-    @Override
-    protected boolean preClose(final String actionId) {
+    @Subscribe()
+    public void onBeforeClose(BeforeCloseEvent event) {
         if (hasUnsavedData()) {
-            showOptionDialog(
-                    messages.getMainMessage("closeUnsaved.caption"),
-                    messages.getMainMessage("closeUnsaved"),
-                    MessageType.CONFIRMATION,
-                    new Action[]{
+            dialogs.createOptionDialog(Dialogs.MessageType.CONFIRMATION)
+                    .withCaption(messages.getMainMessage("closeUnsaved.caption"))
+                    .withMessage(messages.getMainMessage("closeUnsaved"))
+                    .withActions(
                             new DialogAction(DialogAction.Type.OK) {
                                 @Override
                                 public void actionPerform(Component component) {
-                                    close(actionId, true);
+                                    close(event.getCloseAction());
                                 }
                             },
                             new DialogAction(DialogAction.Type.CANCEL)
-                    }
-            );
-            return false;
+                    )
+                    .show();
+            event.preventWindowClose();
         }
-        return true;
     }
 
     protected boolean hasUnsavedData() {
-        for (WeeklyReportEntry reportEntry : weeklyEntriesDs.getItems()) {
+        for (WeeklyReportEntry reportEntry : weeklyEntriesDc.getItems()) {
             if (reportEntry.hasFilledTime() || hasNewEntries(reportEntry)) {
                 return true;
             }
@@ -690,7 +720,7 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         return false;
     }
 
-    protected class CheckUnsavedAction extends AbstractAction {
+    protected class CheckUnsavedAction extends BaseAction {
         public CheckUnsavedAction(String id) {
             super(id);
         }
@@ -698,20 +728,18 @@ public class SimpleWeeklyTimesheets extends AbstractWindow {
         @Override
         public void actionPerform(Component component) {
             if (hasUnsavedData()) {
-                showOptionDialog(
-                        messages.getMainMessage("closeUnsaved.caption"),
-                        getMessage("notification.unsavedData"),
-                        MessageType.CONFIRMATION,
-                        new Action[]{
+                dialogs.createOptionDialog(Dialogs.MessageType.CONFIRMATION)
+                        .withCaption(messages.getMainMessage("closeUnsaved.caption"))
+                        .withMessage(messageBundle.getMessage("notification.unsavedData"))
+                        .withActions(
                                 new DialogAction(DialogAction.Type.OK) {
                                     @Override
                                     public void actionPerform(Component component) {
                                         doAction();
                                     }
                                 },
-                                new DialogAction(DialogAction.Type.CANCEL)
-                        }
-                );
+                                new DialogAction(DialogAction.Type.CANCEL))
+                        .show();
             } else {
                 doAction();
             }

@@ -16,27 +16,42 @@
 
 package com.haulmont.timesheets.gui.tasktype;
 
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.AbstractLookup;
-import com.haulmont.cuba.gui.components.actions.CreateAction;
-import com.haulmont.cuba.gui.components.actions.EditAction;
+import com.haulmont.cuba.gui.ScreenBuilders;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.timesheets.entity.TaskType;
 
-import javax.inject.Named;
-import java.util.Map;
+import javax.inject.Inject;
 
 /**
  * @author gorelov
  */
-public class TaskTypeBrowse extends AbstractLookup {
+@UiController("ts$TaskType.browse")
+@UiDescriptor("tasktype-browse.xml")
+@LookupComponent("taskTypesTable")
+@LoadDataBeforeShow
+public class TaskTypeBrowse extends StandardLookup<TaskType> {
 
-    @Named("taskTypesTable.create")
-    protected CreateAction taskTypesTableCreate;
-    @Named("taskTypesTable.edit")
-    protected EditAction taskTypesTableEdit;
+    @Inject
+    protected ScreenBuilders screenBuilders;
+    @Inject
+    protected Table<TaskType> taskTypesTable;
 
-    @Override
-    public void init(Map<String, Object> params) {
-        taskTypesTableCreate.setOpenType(WindowManager.OpenType.DIALOG);
-        taskTypesTableEdit.setOpenType(WindowManager.OpenType.DIALOG);
+    @Subscribe("taskTypesTable.create")
+    protected void onTaskTypesTableCreateActionPerformed(Action.ActionPerformedEvent event) {
+        screenBuilders.editor(taskTypesTable)
+                .newEntity()
+                .withLaunchMode(OpenMode.DIALOG)
+                .build()
+                .show();
+    }
+
+    @Subscribe("taskTypesTable.edit")
+    protected void onTaskTypesTableEditActionPerformed(Action.ActionPerformedEvent event) {
+        screenBuilders.editor(taskTypesTable)
+                .withLaunchMode(OpenMode.DIALOG)
+                .build()
+                .show();
     }
 }

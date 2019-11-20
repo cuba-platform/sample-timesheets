@@ -19,27 +19,31 @@ package com.haulmont.timesheets.web.toolkit.ui;
 
 import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.security.global.UserSession;
+import com.haulmont.cuba.web.widgets.CubaCalendar;
 import com.haulmont.timesheets.entity.DayOfWeek;
 import com.haulmont.timesheets.global.DateTimeUtils;
 import com.haulmont.timesheets.global.WorkTimeConfigBean;
 import com.haulmont.timesheets.web.calendar.TimeSheetsCalendarEventProvider;
 import com.haulmont.timesheets.web.toolkit.ui.client.calendar.TimeSheetsCalendarState;
-import com.vaadin.shared.ui.calendar.DateConstants;
-import com.vaadin.ui.Calendar;
-import com.vaadin.ui.components.calendar.event.CalendarEventProvider;
+import com.vaadin.v7.shared.ui.calendar.DateConstants;
+import com.vaadin.v7.ui.components.calendar.event.CalendarEventProvider;
 
-import java.util.*;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author gorelov
  */
-public class TimeSheetsCalendar extends Calendar {
+public class TimeSheetsCalendar extends CubaCalendar {
 
     protected String moreMsgFormat = "";
 
     public TimeSheetsCalendar(CalendarEventProvider eventProvider) {
-        super(eventProvider);
+        super();
 
+        this.setEventProvider(eventProvider);
         getState().weekends = getWeekends();
     }
 
@@ -49,8 +53,8 @@ public class TimeSheetsCalendar extends Calendar {
     }
 
     @Override
-    public TimeSheetsCalendarEventProvider getEventProvider() {
-        return (TimeSheetsCalendarEventProvider) super.getEventProvider();
+    public CalendarEventProvider getEventProvider() {
+        return super.getEventProvider();
     }
 
     @Override

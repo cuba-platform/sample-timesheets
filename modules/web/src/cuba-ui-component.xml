@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<components>
+    <component>
+        <name>commandLine</name>
+        <componentLoader>com.haulmont.timesheets.gui.xml.layout.loaders.CommandLineLoader</componentLoader>
+        <class>com.haulmont.timesheets.web.commandline.WebCommandLine</class>
+    </component>
+</components>

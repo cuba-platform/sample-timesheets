@@ -1,8 +1,10 @@
 rootProject.name = 'time-sheets'
-include(':app-global', ':app-core', ':app-gui', ':app-web', ':app-web-toolkit', 'app-web-themes')
-project(':app-global').projectDir = new File(settingsDir, 'modules/global')
-project(':app-core').projectDir = new File(settingsDir, 'modules/core')
-project(':app-gui').projectDir = new File(settingsDir, 'modules/gui')
-project(':app-web').projectDir = new File(settingsDir, 'modules/web')
-project(':app-web-toolkit').projectDir = new File(settingsDir, 'modules/web-toolkit')
-project(':app-web-themes').projectDir = new File(settingsDir, 'modules/web/themes')
+def modulePrefix = 'app'
+include(":${modulePrefix}-global" , ":${modulePrefix}-core" , ":${modulePrefix}-gui" , ":${modulePrefix}-web" , ":${modulePrefix}-portal" , ":${modulePrefix}-web-toolkit", ":${modulePrefix}-web-themes")
+project(":${modulePrefix}-global" ).projectDir = new File(settingsDir, 'modules/global')
+project(":${modulePrefix}-core" ).projectDir = new File(settingsDir, 'modules/core')
+project(":${modulePrefix}-gui" ).projectDir = new File(settingsDir, 'modules/gui')
+project(":${modulePrefix}-web" ).projectDir = new File(settingsDir, 'modules/web')
+project(":${modulePrefix}-web-toolkit" ).projectDir = new File(settingsDir, 'modules/web-toolkit')
+project(":${modulePrefix}-portal" ).projectDir = new File(settingsDir, 'modules/portal')
+project(":${modulePrefix}-web-themes").projectDir = new File(settingsDir, 'modules/web/themes')

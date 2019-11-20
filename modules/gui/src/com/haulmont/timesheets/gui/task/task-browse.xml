@@ -15,18 +15,21 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://browseCaption"
-        class="com.haulmont.timesheets.gui.task.TaskBrowse" focusComponent="tasksTable" lookupComponent="tasksTable"
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
+        caption="msg://browseCaption"
+        focusComponent="tasksTable"
         messagesPack="com.haulmont.timesheets.gui.task">
-    <dsContext>
-        <groupDatasource id="tasksDs" class="com.haulmont.timesheets.entity.Task"
-                         datasourceClass="com.haulmont.timesheets.gui.data.TasksCollectionDatasource" view="task-full"/>
-    </dsContext>
+    <data>
+        <collection id="tasksDc" class="com.haulmont.timesheets.entity.Task" view="task-full">
+            <loader id="tasksDl">
+            </loader>
+        </collection>
+    </data>
     <layout spacing="true">
-        <groupTable id="tasksTable" height="100%" width="100%">
+        <groupTable id="tasksTable" height="100%" width="100%" dataContainer="tasksDc">
             <actions>
-                <action id="edit"/>
-                <action id="createTimeEntry"/>
+                <action id="edit" type="edit"/>
+                <action id="createTimeEntry" caption="msg://caption.createTimeEntry"/>
             </actions>
             <columns>
                 <column id="name"/>
@@ -36,12 +39,15 @@
                 <column id="type"/>
                 <column id="status"/>
             </columns>
-            <rows datasource="tasksDs"/>
             <rowsCount/>
             <buttonsPanel id="buttonsPanel" alwaysVisible="true">
                 <button id="editBtn" action="tasksTable.edit"/>
                 <button id="createTimeEntry" action="tasksTable.createTimeEntry"/>
             </buttonsPanel>
         </groupTable>
+        <hbox id="lookupActions" spacing="true" visible="false">
+            <button action="lookupSelectAction"/>
+            <button action="lookupCancelAction"/>
+        </hbox>
     </layout>
 </window>

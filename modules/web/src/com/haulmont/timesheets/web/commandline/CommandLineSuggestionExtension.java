@@ -18,8 +18,8 @@
 package com.haulmont.timesheets.web.commandline;
 
 import com.haulmont.timesheets.web.toolkit.ui.client.commandline.CommandLineRpc;
-import org.vaadin.aceeditor.Suggester;
-import org.vaadin.aceeditor.SuggestionExtension;
+import com.haulmont.cuba.web.widgets.addons.aceeditor.Suggester;
+import com.haulmont.cuba.web.widgets.addons.aceeditor.SuggestionExtension;
 
 /**
  * @author degtyarjov

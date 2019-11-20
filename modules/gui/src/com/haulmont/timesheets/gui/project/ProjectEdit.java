@@ -16,105 +16,116 @@
 
 package com.haulmont.timesheets.gui.project;
 
-import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.FieldGroup;
+import com.haulmont.cuba.core.global.DataManager;
+import com.haulmont.cuba.gui.ScreenBuilders;
+import com.haulmont.cuba.gui.components.Action;
 import com.haulmont.cuba.gui.components.LookupPickerField;
-import com.haulmont.cuba.gui.components.PickerField;
-import com.haulmont.cuba.gui.data.CollectionDatasource;
-import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.DataContext;
+import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.Client;
 import com.haulmont.timesheets.entity.Project;
 import com.haulmont.timesheets.entity.ProjectStatus;
-import com.haulmont.timesheets.gui.util.ComponentsHelper;
+import com.haulmont.timesheets.gui.util.ScreensHelper;
 import com.haulmont.timesheets.service.ProjectsService;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
 /**
  * @author gorelov
  */
-public class ProjectEdit extends AbstractEditor<Project> {
-    @Inject
-    protected FieldGroup fieldGroup;
-    @Inject
-    protected CollectionDatasource<Project, UUID> projectsDs;
+@UiController("ts$Project.edit")
+@UiDescriptor("project-edit.xml")
+@EditedEntityContainer("projectDc")
+@LoadDataBeforeShow
+public class ProjectEdit extends StandardEditor<Project> {
+
     @Inject
     protected ProjectsService projectsService;
     @Inject
-    protected Datasource<Project> projectDs;
+    protected UserSession userSession;
+    @Inject
+    protected ScreenBuilders screenBuilders;
+    @Inject
+    protected DataManager dataManager;
+    @Inject
+    protected LookupPickerField<Client> client;
+    @Inject
+    protected LookupPickerField<Project> parent;
+    @Inject
+    protected InstanceContainer<Project> projectDc;
+    @Inject
+    protected CollectionContainer<Project> projectsDc;
 
-    @Named("fieldGroup.parent")
-    protected LookupPickerField parentField;
-    @Named("fieldGroup.client")
-    protected LookupPickerField clientField;
+    @Subscribe(id = "projectDc", target = Target.DATA_CONTAINER)
+    protected void onProjectDcItemPropertyChange(InstanceContainer.ItemPropertyChangeEvent<Project> e) {
+        if ("parent".equals(e.getProperty())) {
+            client.setEnabled(e.getValue() == null);
+            if (e.getValue() != null) {
+                Project parent = (Project) e.getValue();
 
-    @Override
-    public void init(final Map<String, Object> params) {
-        clientField.addAction(ComponentsHelper.createLookupAction(clientField));
-        clientField.addClearAction();
-
-        projectDs.addItemPropertyChangeListener(e -> {
-            if ("parent".equals(e.getProperty())) {
-                clientField.setEnabled(e.getValue() == null);
-                if (e.getValue() != null) {
-                    Project parent = (Project) e.getValue();
-                    if (!parent.getClient().equals(getItem().getClient())) {
-                        clientField.setValue(parent.getClient());
-                    }
-                } else if (e.getPrevValue() != null) {
-                    clientField.setValue(null);
+                if (!parent.getClient().equals(e.getItem().getClient())) {
+                    client.setValue(parent.getClient());
                 }
+            } else if (e.getPrevValue() != null) {
+                client.setValue(null);
             }
-        });
-
-        projectDs.addItemPropertyChangeListener(new ComponentsHelper.EntityCodeGenerationListener<>());
-        fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
-    }
-
-    @Override
-    protected void initNewItem(Project item) {
-        super.initNewItem(item);
-        if (item.getStatus() == null) {
-            item.setStatus(ProjectStatus.OPEN);
         }
     }
 
-    @Override
-    protected void postInit() {
-        Project project = getItem();
-        projectsDs.excludeItem(project);
+    @Subscribe("client.lookup")
+    protected void onClientLookup(Action.ActionPerformedEvent e) {
+        screenBuilders.lookup(client)
+                .withLaunchMode(OpenMode.DIALOG)
+                .build()
+                .show();
+    }
 
-        List<Project> childrenProjects = projectsService.getProjectChildren(project);
+    @Subscribe("parent.lookup")
+    protected void onParentLookup(Action.ActionPerformedEvent event) {
+        ProjectLookup lookup = screenBuilders.lookup(parent)
+                .withScreenClass(ProjectLookup.class)
+                .withLaunchMode(OpenMode.DIALOG)
+                .build();
+        lookup.setParentProject(getEditedEntity());
+        lookup.show();
+    }
+
+    @Subscribe
+    protected void onInit(InitEvent e) {
+        projectDc.addItemPropertyChangeListener(new ScreensHelper.EntityCodeGenerationListener<>());
+    }
+
+    @Subscribe
+    protected void onInitEntity(InitEntityEvent<Project> e) {
+        if (e.getEntity().getStatus() == null) {
+            e.getEntity().setStatus(ProjectStatus.OPEN);
+        }
+    }
+
+    @Subscribe
+    protected void onAfterShow(AfterShowEvent e) {
+        Project project = getEditedEntity();
+
+        projectsDc.getMutableItems().remove(project);
+        projectsDc.getMutableItems().removeAll(projectsService.getProjectChildren(project));
+
+        client.setEnabled(project.getParent() == null);
+    }
+
+    @Subscribe(target = Target.DATA_CONTEXT)
+    protected void onPostCommit(DataContext.PostCommitEvent e) {
+        Client client = getEditedEntity().getClient();
+        List<Project> childrenProjects = projectsService.getProjectChildren(getEditedEntity());
+        CommitContext commitContext = new CommitContext();
         for (Project child : childrenProjects) {
-            projectsDs.excludeItem(child);
+            child.setClient(client);
+            commitContext.addInstanceToCommit(child);
         }
-
-        clientField.setEnabled(project.getParent() == null);
-
-        PickerField.LookupAction lookupAction = ComponentsHelper.createLookupAction(parentField);
-        lookupAction.setLookupScreenParams(ParamsMap.of("parentProject", getItem()));
-        parentField.addAction(lookupAction);
-        parentField.addClearAction();
-    }
-
-    @Override
-    protected boolean postCommit(boolean committed, boolean close) {
-        if (committed) {
-            Client client = getItem().getClient();
-            List<Project> childrenProjects = projectsService.getProjectChildren(getItem());
-            CommitContext commitContext = new CommitContext();
-            for (Project child : childrenProjects) {
-                child.setClient(client);
-                commitContext.getCommitInstances().add(child);
-            }
-            getDsContext().getDataSupplier().commit(commitContext);
-        }
-        return super.postCommit(committed, close);
+        dataManager.commit(commitContext);
     }
 }

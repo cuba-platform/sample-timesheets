@@ -21,10 +21,10 @@ import com.haulmont.cuba.core.global.AppBeans;
 import com.haulmont.cuba.core.global.Scripting;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.global.HoursAndMinutes;
-import com.haulmont.timesheets.gui.util.ComponentsHelper;
-import com.vaadin.ui.components.calendar.event.BasicEvent;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang.time.DateUtils;
+import com.haulmont.timesheets.gui.util.ScreensHelper;
+import com.vaadin.v7.ui.components.calendar.event.BasicEvent;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -49,7 +49,7 @@ public class TimeEntryCalendarEventAdapter extends BasicEvent {
 
     public void setTimeEntry(TimeEntry timeEntry) {
         this.timeEntry = timeEntry;
-        super.setStyleName(ComponentsHelper.getTimeEntryStatusStyle(this.timeEntry));
+        super.setStyleName(ScreensHelper.getTimeEntryStatusStyle(this.timeEntry));
     }
 
     @Override

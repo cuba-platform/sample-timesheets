@@ -18,9 +18,11 @@
 package com.haulmont.timesheets.gui.commandline;
 
 import com.haulmont.cuba.gui.GuiDevelopmentException;
-import com.haulmont.cuba.gui.components.AbstractFrame;
+import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.UiComponents;
 import com.haulmont.cuba.gui.components.BoxLayout;
-import com.haulmont.cuba.gui.xml.layout.ComponentsFactory;
+import com.haulmont.cuba.gui.components.Button;
+import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.service.CommandLineService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -28,62 +30,69 @@ import org.apache.commons.collections4.CollectionUtils;
 import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author degtyarjov
  */
-public class CommandLineFrameController extends AbstractFrame {
+@UiController("command-line-frame")
+@UiDescriptor("command-line-frame.xml")
+public class CommandLineFrameController extends ScreenFragment {
+
     protected CommandLine commandLine;
 
     @Inject
-    protected ComponentsFactory componentsFactory;
-
+    protected UiComponents uiComponents;
     @Inject
     protected BoxLayout commandLineHBox;
-
     @Inject
     protected CommandLineService commandLineService;
-
     @Inject
-    protected Companion companion;
+    protected Notifications notifications;
+    @Inject
+    protected MessageBundle messageBundle;
 
     protected ResultTimeEntriesHandler timeEntriesHandler;
 
-    public interface Companion {
-        void setApplyHandler(CommandLine commandLine, Runnable handler);
+    @Subscribe("apply")
+    protected void onApplyClick(Button.ClickEvent event) {
+        apply();
     }
 
-    @Override
-    public void init(Map<String, Object> params) {
-        super.init(params);
-
-        commandLine = componentsFactory.createComponent(CommandLine.class);
+    @Subscribe
+    protected void onInit(InitEvent event) {
+        commandLine = uiComponents.create(CommandLine.class);
         commandLine.setWidth("800px");
         commandLine.setHeight("30px");
+
         commandLineHBox.add(commandLine, 0);
 
         commandLine.setShowGutter(false);
         commandLine.setShowPrintMargin(false);
         commandLine.setHighlightActiveLine(false);
         commandLine.setSuggester(new CommandLineSuggester(commandLine));
-        companion.setApplyHandler(commandLine, this::apply);
+        commandLine.setApplyHandler(this::apply);
+
+        commandLine.focus();
     }
 
     public void apply() {
         if (timeEntriesHandler != null) {
             try {
                 List<TimeEntry> timeEntries =
-                        commandLineService.createTimeEntriesForTheCommandLine(commandLine.getValue());
+                        commandLineService.createTimeEntriesForTheCommandLine(String.valueOf(commandLine.getValue()));
                 if (CollectionUtils.isEmpty(timeEntries)) {
-                    showNotification(getMessage("notification.emptyCommandResult"), NotificationType.HUMANIZED);
+                    notifications.create(Notifications.NotificationType.HUMANIZED)
+                            .withCaption(messageBundle.getMessage("notification.emptyCommandResult"))
+                            .show();
                 }
-                timeEntriesHandler.handle(timeEntries != null ? timeEntries : Collections.emptyList());
+                timeEntriesHandler.handle(timeEntries != null ? timeEntries : Collections.<TimeEntry>emptyList());
             } catch (Exception e) {
-                showNotification(getMessage("error.commandLine"), NotificationType.WARNING);
+                notifications.create(Notifications.NotificationType.WARNING)
+                        .withCaption(messageBundle.getMessage("error.commandLine"))
+                        .show();
             }
         } else {
-            throw new GuiDevelopmentException("ResultTimeEntriesHandler is not set for CommandLineFrameController", getFrame().getId());
+            throw new GuiDevelopmentException("ResultTimeEntriesHandler is not set for CommandLineFrameController", getId());
         }
     }
 

@@ -18,7 +18,7 @@ package com.haulmont.timesheets.entity;
 
 import com.haulmont.chile.core.annotations.MetaClass;
 import com.haulmont.chile.core.annotations.MetaProperty;
-import com.haulmont.cuba.core.entity.AbstractNotPersistentEntity;
+import com.haulmont.cuba.core.entity.BaseUuidEntity;
 import com.haulmont.cuba.security.entity.User;
 
 import java.math.BigDecimal;
@@ -29,13 +29,16 @@ import java.util.Date;
  * @version $Id$
  */
 @MetaClass(name = "ts$Overtime")
-public class Overtime extends AbstractNotPersistentEntity {
+public class Overtime extends BaseUuidEntity {
     @MetaProperty
     protected User user;
     @MetaProperty
     protected Date date;
     @MetaProperty
     protected BigDecimal overtimeInHours;
+
+    public Overtime() {
+    }
 
     public Overtime(User user, Date date, BigDecimal overtimeInHours) {
         this.user = user;

@@ -15,14 +15,10 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
-        class="com.haulmont.timesheets.gui.commandline.CommandLineFrameController"
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
         messagesPack="com.haulmont.timesheets.gui.commandline">
-    <companions>
-        <web class="com.haulmont.timesheets.web.commandline.WebCommandLineCompanion"/>
-    </companions>
     <actions>
-        <action id="applyAction" invoke="apply"/>
+        <action id="applyAction"/>
     </actions>
     <layout>
         <hbox id="commandLineHBox" spacing="true">

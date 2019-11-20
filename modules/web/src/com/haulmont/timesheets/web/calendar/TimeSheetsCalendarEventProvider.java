@@ -22,9 +22,9 @@ import com.haulmont.cuba.security.entity.User;
 import com.haulmont.timesheets.entity.Holiday;
 import com.haulmont.timesheets.entity.TimeEntry;
 import com.haulmont.timesheets.service.ProjectsService;
-import com.vaadin.ui.components.calendar.event.BasicEvent;
-import com.vaadin.ui.components.calendar.event.BasicEventProvider;
-import com.vaadin.ui.components.calendar.event.CalendarEvent;
+import com.vaadin.v7.ui.components.calendar.event.BasicEvent;
+import com.vaadin.v7.ui.components.calendar.event.BasicEventProvider;
+import com.vaadin.v7.ui.components.calendar.event.CalendarEvent;
 
 import javax.annotation.Nullable;
 import java.util.Collection;

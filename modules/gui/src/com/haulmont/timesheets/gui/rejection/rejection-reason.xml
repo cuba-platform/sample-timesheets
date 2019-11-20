@@ -15,13 +15,12 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd"
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd"
         caption="msg://com.haulmont.timesheets.entity/TimeEntry.rejectionReason"
-        class="com.haulmont.timesheets.gui.rejection.RejectionReason"
         messagesPack="com.haulmont.timesheets.gui.rejection">
     <actions>
-        <action id="confirm" invoke="confirm" shortcut="CTRL-ENTER"/>
-        <action id="cancel" caption="msg://cancel" invoke="cancel"/>
+        <action id="confirm" shortcut="CTRL-ENTER"/>
+        <action id="cancel" caption="msg://cancel"/>
     </actions>
     <layout expand="rejectionReasonText" spacing="true">
         <textArea id="rejectionReasonText" width="100%"/>

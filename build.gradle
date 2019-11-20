@@ -1,5 +1,5 @@
 buildscript {
-    ext.cubaVersion = '6.10.1'
+    ext.cubaVersion = '7.1.2'
     repositories {
         maven {
             url 'https://repo.cuba-platform.com/content/groups/work'
@@ -21,18 +21,18 @@ buildscript {
     }
 }
 
-def globalModule = project(':app-global')
-def webThemesModule= project(':app-web-themes')
-def coreModule = project(':app-core')
-def guiModule = project(':app-gui')
-def webModule = project(':app-web')
-def webToolkitModule = project(':app-web-toolkit')
+def modulePrefix = 'app'
+
+def globalModule = project(":${modulePrefix}-global" )
+def coreModule = project(":${modulePrefix}-core" )
+def guiModule = project(":${modulePrefix}-gui" )
+def webModule = project(":${modulePrefix}-web" )
+def webToolkitModule = project(":${modulePrefix}-web-toolkit" )
 
 def servletApi = 'javax.servlet:javax.servlet-api:3.1.0'
 
 def jmockit = [group: 'org.jmockit', name: 'jmockit', version: '1.14']
 
-apply(plugin: 'idea')
 apply(plugin: 'cuba')
 
 cuba {
@@ -60,12 +60,11 @@ dependencies {
 }
 
 
-def hsql = 'org.hsqldb:hsqldb:2.2.9'
+def hsql = 'org.hsqldb:hsqldb:2.4.1'
 
 configure([globalModule, coreModule, guiModule, webModule, webToolkitModule]) {
     apply(plugin: 'java')
     apply(plugin: 'maven')
-    apply(plugin: 'idea')
     apply(plugin: 'cuba')
 
     dependencies {
@@ -86,30 +85,14 @@ configure([globalModule, coreModule, guiModule, webModule, webToolkitModule]) {
 configure(globalModule) {
     dependencies {
 
+    if (!JavaVersion.current().isJava8()) {
+        runtime('javax.xml.bind:jaxb-api:2.3.1')
+        runtime('org.glassfish.jaxb:jaxb-runtime:2.3.1')
+    }
     }
 
     entitiesEnhancing {
         main { enabled = true }
-    }
-}
-configure(webThemesModule) {
-    apply(plugin: 'java')
-    apply(plugin: 'maven')
-    apply(plugin: 'cuba')
-
-    appModuleType = 'web-themes'
-
-    buildDir = file('../build/scss-themes')
-
-    sourceSets {
-        main {
-            java {
-                srcDir '.'
-            }
-            resources {
-                srcDir '.'
-            }
-        }
     }
 }
 
@@ -124,7 +107,7 @@ configure(coreModule) {
     dependencies {
         compile('org.springframework.ldap:spring-ldap-core:2.3.1.RELEASE')
         compile(globalModule)
-        provided(servletApi)
+        compileOnly(servletApi)
         jdbc(hsql)
         testRuntime(hsql)
 
@@ -132,7 +115,7 @@ configure(coreModule) {
 
     task cleanConf(description: 'Cleans up conf directory') {
         doLast {
-            def dir = new File(cuba.tomcat.dir, '/conf/app-core')
+            def dir = new File(cuba.tomcat.dir, "/conf/${modulePrefix}-core" )
             if (dir.isDirectory()) {
                 ant.delete(includeemptydirs: true) {
                     fileset(dir: dir, includes: '**/*', excludes: 'local.app.properties')
@@ -142,8 +125,8 @@ configure(coreModule) {
     }
 
     task deploy(dependsOn: [assemble, cleanConf], type: CubaDeployment) {
-        appName = 'app-core'
-        appJars('app-global', 'app-core')
+        appName = "${modulePrefix}-core"
+        appJars(modulePrefix + '-global', modulePrefix + '-core')
     }
 
     task createDb(dependsOn: assembleDbScripts, description: 'Creates local database', type: CubaDbCreation) {
@@ -172,23 +155,19 @@ configure(guiModule) {
     task deployConf(type: Copy) {
         from file('src')
         include "com/haulmont/timesheets/**"
-        into "$cuba.tomcat.dir/conf/app"
+        into "$cuba.tomcat.dir/conf/${modulePrefix}"
     }
 }
 
 configure(webModule) {
     configurations {
         webcontent
-        themes
-
     }
 
     dependencies {
-        provided(servletApi)
+        compileOnly(servletApi)
         compile(globalModule)
         compile(guiModule)
-        themes("com.haulmont.cuba:cuba-web-themes:$cubaVersion")
-        provided("com.haulmont.cuba:cuba-web-themes:$cubaVersion")
     }
 
     jar {
@@ -211,18 +190,18 @@ configure(webModule) {
     task deployConf(type: Copy) {
         from file('src')
         include "com/haulmont/timesheets/**"
-        into "$cuba.tomcat.dir/conf/app"
+        into "$cuba.tomcat.dir/conf/${modulePrefix}"
     }
 
     task clearMessagesCache(type: CubaClearMessagesCache) {
-        appName = 'app'
+        appName = "${modulePrefix}"
     }
     deployConf.dependsOn clearMessagesCache
 
 
     task cleanConf(description: 'Cleans up conf directory') {
         doLast {
-            def dir = new File(cuba.tomcat.dir, '/conf/app')
+            def dir = new File(cuba.tomcat.dir, "/conf/${modulePrefix}" )
             if (dir.isDirectory()) {
                 ant.delete(includeemptydirs: true) {
                     fileset(dir: dir, includes: '**/*', excludes: 'local.app.properties')
@@ -232,11 +211,20 @@ configure(webModule) {
     }
 
     task deploy(dependsOn: [assemble, cleanConf], type: CubaDeployment) {
-        appName = 'app'
-        appJars('app-global', 'app-gui', 'app-web')
+        appName = "${modulePrefix}"
+        appJars(modulePrefix + '-global', modulePrefix + '-gui', modulePrefix + '-web')
     }
     task buildScssThemes(type: CubaWebScssThemeCreation)
     assemble.dependsOn buildScssThemes
+
+    task themesJar(type: Jar) {
+        from file('themes')
+        classifier = 'themes'
+    }
+
+    artifacts {
+        archives themesJar
+    }
 }
 
 configure(webToolkitModule) {
@@ -258,39 +246,31 @@ configure(webToolkitModule) {
         widgetSetClass = 'com.haulmont.timesheets.web.toolkit.ui.AppWidgetSet'
     }
 
-    task webArchive(dependsOn: buildWidgetSet, type: Zip) {
+    task webArchive(dependsOn: buildWidgetSet, type: Jar) {
         from file("$buildDir/web")
-        classifier = 'web'
+        classifier = 'client'
     }
 
     artifacts {
         archives webArchive
     }
 
-    task deploy(dependsOn: buildWidgetSet)  {
-        doLast {
-            delete {
-                "$cuba.tomcat.dir/webapps/app/VAADIN/widgetsets"
-            }
-            copy {
-                from "$buildDir/web"
-                into "$cuba.tomcat.dir/webapps/app"
-                exclude '**/gwt-unitCache/'
-            }
-        }
+    task deploy(dependsOn: webArchive, type: Copy) {
+        from webArchive
+        into "$cuba.tomcat.dir/webapps/${modulePrefix}/WEB-INF/lib"
     }
 }
 
 
 
 
-task undeploy(type: Delete, dependsOn: ':app-web:cleanConf') {
+task undeploy(type: Delete, dependsOn: ":${modulePrefix}-web:cleanConf" ) {
     delete("$cuba.tomcat.dir/shared")
-    delete("$cuba.tomcat.dir/webapps/app-core")
-    delete("$cuba.tomcat.dir/webapps/app")
+    delete("$cuba.tomcat.dir/webapps/${modulePrefix}-core" )
+    delete("$cuba.tomcat.dir/webapps/${modulePrefix}" )
 }
 
-task restart(dependsOn: ['stop', ':app-core:deploy', ':app-web:deploy'], description: 'Redeploys applications and restarts local Tomcat') {
+task restart(dependsOn: ['stop', ":${modulePrefix}-core:deploy" , ":${modulePrefix}-web:deploy" ], description: 'Redeploys applications and restarts local Tomcat') {
     doLast {
         ant.waitfor(maxwait: 6, maxwaitunit: 'second', checkevery: 2, checkeveryunit: 'second') {
             not {
@@ -315,7 +295,7 @@ task cleanTomcatLogs {
     }
 }
 
-task copyTomcat(type: Copy, dependsOn: ['setupTomcat',':app-core:deploy', ':app-web:deploy', ':app-web-toolkit:deploy', 'cleanTomcatLogs']) {
+task copyTomcat(type: Copy, dependsOn: ['setupTomcat',":${modulePrefix}-core:deploy" , ":${modulePrefix}-web:deploy" , ":${modulePrefix}-web-toolkit:deploy" , 'cleanTomcatLogs']) {
     from file("$cuba.tomcat.dir/..")
     include "tomcat/**"
     into "$distribDir"
@@ -345,6 +325,3 @@ task distribution(dependsOn: buildDistributionZip)  {
     doLast{}
 }
 
-task wrapper(type: Wrapper) {
-    gradleVersion = '4.3.1'
-}

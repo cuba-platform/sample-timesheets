@@ -21,8 +21,8 @@ import com.google.gwt.core.client.JavaScriptObject;
 import com.haulmont.timesheets.web.commandline.CommandLineSuggestionExtension;
 import com.vaadin.client.communication.RpcProxy;
 import com.vaadin.shared.ui.Connect;
-import org.vaadin.aceeditor.client.SuggesterConnector;
-import org.vaadin.aceeditor.client.gwt.GwtAceKeyboardEvent;
+import com.haulmont.cuba.web.widgets.client.addons.aceeditor.SuggesterConnector;
+import com.haulmont.cuba.web.widgets.client.addons.aceeditor.gwt.GwtAceKeyboardEvent;
 
 /**
  * @author degtyarjov

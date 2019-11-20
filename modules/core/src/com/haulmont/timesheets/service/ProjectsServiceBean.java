@@ -90,9 +90,9 @@ public class ProjectsServiceBean implements ProjectsService {
         LoadContext<ProjectParticipant> loadContext = new LoadContext<>(ProjectParticipant.class)
                 .setView("projectParticipant-full");
         loadContext.setQueryString("select e from ts$ProjectParticipant e " +
-                "where e.user.id = :userId and e.project.id = :projectId")
-                .setParameter("userId", user.getId())
-                .setParameter("projectId", project.getId());
+                "where e.user = :user and e.project = :project")
+                .setParameter("user", user)
+                .setParameter("project", project);
         ProjectParticipant participant = dataManager.load(loadContext);
         return participant != null ? participant.getRole() : null;
     }
@@ -114,16 +114,16 @@ public class ProjectsServiceBean implements ProjectsService {
         if (viewName != null) {
             loadContext.setView(viewName);
         }
-        String queryStr = "select e from ts$TimeEntry e where e.user.id = :userId and (e.date between :start and :end)";
+        String queryStr = "select e from ts$TimeEntry e where e.user = :user and (e.date between :start and :end)";
         if (status != null) {
             queryStr += " and e.status = :status";
         }
         LoadContext.Query query = loadContext.setQueryString(queryStr)
                 .setParameter("start", start)
                 .setParameter("end", end)
-                .setParameter("userId", user.getId());
+                .setParameter("user", user);
         if (status != null) {
-            query.setParameter("status", status.getId());
+            query.setParameter("status", status);
         }
         return dataManager.loadList(loadContext);
     }
@@ -148,7 +148,7 @@ public class ProjectsServiceBean implements ProjectsService {
                 .setParameter("approverId", approver.getId())
                 .setParameter("userId", user.getId());
         if (status != null) {
-            query.setParameter("status", status.getId());
+            query.setParameter("status", status);
         }
         return dataManager.loadList(loadContext);
     }
@@ -290,7 +290,7 @@ public class ProjectsServiceBean implements ProjectsService {
         }
         LoadContext.Query query =
                 new LoadContext.Query("select e from ts$Tag e left join e.tagType.projects pr where pr.id is null" +
-                        " or (pr.id = :project)")
+                        " or (pr = :project)")
                         .setParameter("project", project);
         loadContext.setQuery(query);
         return dataManager.loadList(loadContext);
@@ -303,7 +303,7 @@ public class ProjectsServiceBean implements ProjectsService {
             loadContext.setView(viewName);
         }
         LoadContext.Query query =
-                new LoadContext.Query("select e from ts$Tag e where e.tagType.id = :type")
+                new LoadContext.Query("select e from ts$Tag e where e.tagType = :type")
                         .setParameter("type", type);
         loadContext.setQuery(query);
         return dataManager.loadList(loadContext);

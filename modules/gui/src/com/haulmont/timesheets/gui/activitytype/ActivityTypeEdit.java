@@ -16,28 +16,26 @@
 
 package com.haulmont.timesheets.gui.activitytype;
 
-import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.FieldGroup;
-import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.timesheets.entity.ActivityType;
-import com.haulmont.timesheets.gui.util.ComponentsHelper;
+import com.haulmont.timesheets.gui.util.ScreensHelper;
 
 import javax.inject.Inject;
-import java.util.Map;
 
 /**
  * @author degtyarjov
  */
-public class ActivityTypeEdit extends AbstractEditor<ActivityType> {
+@UiController("ts$ActivityType.edit")
+@UiDescriptor("activitytype-edit.xml")
+@EditedEntityContainer("activityTypeDc")
+@LoadDataBeforeShow
+public class ActivityTypeEdit extends StandardEditor<ActivityType> {
     @Inject
-    private FieldGroup fieldGroup;
+    protected InstanceContainer<ActivityType> activityTypeDc;
 
-    @Inject
-    private Datasource<ActivityType> activityTypeDs;
-
-    @Override
-    public void init(Map<String, Object> params) {
-        fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
-        activityTypeDs.addItemPropertyChangeListener(new ComponentsHelper.EntityCodeGenerationListener<>());
+    @Subscribe
+    protected void onInit(InitEvent event) {
+        activityTypeDc.addItemPropertyChangeListener(new ScreensHelper.EntityCodeGenerationListener<>());
     }
 }

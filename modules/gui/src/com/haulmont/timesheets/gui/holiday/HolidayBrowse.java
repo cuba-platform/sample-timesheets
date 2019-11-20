@@ -16,27 +16,42 @@
 
 package com.haulmont.timesheets.gui.holiday;
 
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.AbstractLookup;
-import com.haulmont.cuba.gui.components.actions.CreateAction;
-import com.haulmont.cuba.gui.components.actions.EditAction;
+import com.haulmont.cuba.gui.ScreenBuilders;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.timesheets.entity.Holiday;
 
-import javax.inject.Named;
-import java.util.Map;
+import javax.inject.Inject;
 
 /**
  * @author gorelov
  */
-public class HolidayBrowse extends AbstractLookup {
+@UiController("ts$Holiday.browse")
+@UiDescriptor("holiday-browse.xml")
+@LookupComponent("holidaysTable")
+@LoadDataBeforeShow
+public class HolidayBrowse extends StandardLookup<Holiday> {
 
-    @Named("holidaysTable.edit")
-    protected EditAction holidaysTableEdit;
-    @Named("holidaysTable.create")
-    protected CreateAction holidaysTableCreate;
+    @Inject
+    protected Table<Holiday> holidaysTable;
+    @Inject
+    protected ScreenBuilders screenBuilders;
 
-    @Override
-    public void init(Map<String, Object> params) {
-        holidaysTableCreate.setOpenType(WindowManager.OpenType.DIALOG);
-        holidaysTableEdit.setOpenType(WindowManager.OpenType.DIALOG);
+    @Subscribe("holidaysTable.create")
+    protected void onCreateActionPerformed(Action.ActionPerformedEvent event) {
+        screenBuilders.editor(holidaysTable)
+                .newEntity()
+                .withLaunchMode(OpenMode.DIALOG)
+                .build()
+                .show();
+    }
+
+    @Subscribe("holidaysTable.edit")
+    protected void onEditActionPerformed(Action.ActionPerformedEvent event) {
+        screenBuilders.editor(holidaysTable)
+                .withLaunchMode(OpenMode.DIALOG)
+                .build()
+                .show();
     }
 }

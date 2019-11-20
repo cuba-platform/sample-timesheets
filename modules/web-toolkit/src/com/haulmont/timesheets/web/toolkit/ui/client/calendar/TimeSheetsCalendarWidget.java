@@ -18,9 +18,9 @@
 package com.haulmont.timesheets.web.toolkit.ui.client.calendar;
 
 import com.haulmont.timesheets.web.toolkit.ui.client.calendar.shedule.TimeSheetsSimpleDayCell;
-import com.vaadin.client.ui.VCalendar;
-import com.vaadin.client.ui.calendar.schedule.CalendarDay;
-import com.vaadin.client.ui.calendar.schedule.SimpleDayCell;
+import com.vaadin.v7.client.ui.VCalendar;
+import com.vaadin.v7.client.ui.calendar.schedule.CalendarDay;
+import com.vaadin.v7.client.ui.calendar.schedule.SimpleDayCell;
 
 import java.util.*;
 

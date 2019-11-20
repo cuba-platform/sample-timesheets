@@ -17,7 +17,7 @@
 
 package com.haulmont.timesheets.web.toolkit.ui.client.calendar;
 
-import com.vaadin.shared.ui.calendar.CalendarServerRpc;
+import com.vaadin.v7.shared.ui.calendar.CalendarServerRpc;
 
 /**
  * @author gorelov

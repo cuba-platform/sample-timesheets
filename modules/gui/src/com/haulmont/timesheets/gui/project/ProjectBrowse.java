@@ -17,37 +17,38 @@
 package com.haulmont.timesheets.gui.project;
 
 import com.google.common.collect.ImmutableMap;
-import com.haulmont.bali.util.ParamsMap;
 import com.haulmont.cuba.core.entity.Entity;
-import com.haulmont.cuba.core.global.CommitContext;
-import com.haulmont.cuba.core.global.LoadContext;
-import com.haulmont.cuba.core.global.Metadata;
-import com.haulmont.cuba.core.global.View;
+import com.haulmont.cuba.core.global.*;
+import com.haulmont.cuba.gui.Notifications;
+import com.haulmont.cuba.gui.ScreenBuilders;
 import com.haulmont.cuba.gui.WindowManager;
 import com.haulmont.cuba.gui.components.*;
-import com.haulmont.cuba.gui.components.actions.CreateAction;
-import com.haulmont.cuba.gui.components.actions.EditAction;
+import com.haulmont.cuba.gui.components.actions.BaseAction;
 import com.haulmont.cuba.gui.components.actions.ItemTrackingAction;
-import com.haulmont.cuba.gui.data.HierarchicalDatasource;
+import com.haulmont.cuba.gui.model.CollectionContainer;
+import com.haulmont.cuba.gui.model.CollectionLoader;
+import com.haulmont.cuba.gui.screen.LookupComponent;
+import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.cuba.security.entity.User;
+import com.haulmont.cuba.security.global.UserSession;
 import com.haulmont.timesheets.entity.*;
-import com.haulmont.timesheets.gui.util.ComponentsHelper;
+import com.haulmont.timesheets.gui.util.ScreensHelper;
 import com.haulmont.timesheets.gui.util.SecurityAssistant;
 import com.haulmont.timesheets.service.ProjectsService;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 
-import javax.annotation.Nullable;
 import javax.inject.Inject;
-import javax.inject.Named;
 import java.util.*;
 
 /**
  * @author gorelov
  */
-@SuppressWarnings("WeakerAccess")
-public class ProjectBrowse extends AbstractLookup {
+@UiController("ts$Project.browse")
+@UiDescriptor("project-browse.xml")
+@LookupComponent("projectsTable")
+public class ProjectBrowse extends StandardLookup<Project> {
     @Inject
     protected TreeTable<Project> projectsTable;
     @Inject
@@ -61,167 +62,222 @@ public class ProjectBrowse extends AbstractLookup {
     @Inject
     protected ProjectsService projectsService;
     @Inject
-    protected HierarchicalDatasource<Project, UUID> projectsDs;
-    @Named("participantsTable.create")
-    protected CreateAction participantsTableCreate;
-    @Named("participantsTable.edit")
-    protected EditAction participantsTableEdit;
+    protected CollectionLoader<Project> projectsDl;
+    @Inject
+    protected CollectionLoader<ProjectParticipant> participantsDl;
+    @Inject
+    protected CollectionLoader<Task> tasksDl;
+    @Inject
+    private CollectionContainer<Project> projectsDc;
     @Inject
     protected Metadata metadata;
+    @Inject
+    protected UserSession userSession;
+    @Inject
+    protected Messages messages;
+    @Inject
+    protected MessageBundle messageBundle;
+    @Inject
+    protected ScreenBuilders screenBuilders;
+    @Inject
+    protected Notifications notifications;
+    @Inject
+    protected DataManager dataManager;
 
-    @Override
-    public void init(Map<String, Object> params) {
-        if (securityAssistant.isSuperUser()) {
-            projectsDs.setQuery("select e from ts$Project e");
+    protected List<Action> editActions = new ArrayList<>();
+    protected List<ProjectRole> projectCreateRoles;
+
+    @Install(to = "projectsTable", subject = "styleProvider")
+    protected String projectsTableStyleProvider(Project entity, String property) {
+        if ("status".equals(property)) {
+            return ScreensHelper.getProjectStatusStyle(entity);
         }
+        return null;
+    }
+
+    @Install(to = "tasksTable", subject = "styleProvider")
+    protected String tasksTableStyleProvider(Task entity, String property) {
+        if ("status".equals(property)) {
+            return ScreensHelper.getTaskStatusStyle(entity);
+        }
+        return null;
+    }
+
+    @Subscribe
+    protected void onInit(InitEvent event) {
+        if (securityAssistant.isSuperUser()) {
+            projectsDl.setQuery("select e from ts$Project e");
+        } else {
+            projectsDl.setParameter("user", userSession.getCurrentOrSubstitutedUser());
+        }
+        initTasksTable();
+    }
+
+    @Subscribe("tasksTable.create")
+    protected void onTasksTableCreate(Action.ActionPerformedEvent event) {
+        if (projectsTable.getSingleSelected() != null) {
+            Task newTask = metadata.create(Task.class);
+            newTask.setProject(projectsTable.getSingleSelected());
+            screenBuilders.editor(tasksTable)
+                    .newEntity(newTask)
+                    .build()
+                    .show();
+        } else {
+            showNotification(messageBundle.getMessage("notification.pleaseSelectProject"), Notifications.NotificationType.HUMANIZED);
+        }
+    }
+
+    @Subscribe("participantsTable.create")
+    protected void onParticipantsTableCreate(Action.ActionPerformedEvent event) {
+        ProjectParticipant newParticipant = metadata.create(ProjectParticipant.class);
+        newParticipant.setProject(projectsTable.getSingleSelected());
+        if (projectsTable.getSingleSelected() != null) {
+            screenBuilders.editor(participantsTable)
+                    .newEntity(newParticipant)
+                    .withLaunchMode(OpenMode.DIALOG)
+                    .build()
+                    .show();
+        } else {
+            showNotification(messageBundle.getMessage("notification.pleaseSelectProject"), Notifications.NotificationType.HUMANIZED);
+        }
+    }
+
+    @Subscribe("participantsTable.edit")
+    protected void onParticipantsTableEdit(Action.ActionPerformedEvent event) {
+        screenBuilders.editor(participantsTable)
+                .withLaunchMode(OpenMode.DIALOG)
+                .build()
+                .show();
+    }
+
+    @Subscribe("participantsTable.copy")
+    protected void onParticipantsTableCopy(Action.ActionPerformedEvent event) {
+        Project project = projectsTable.getSingleSelected();
+        if (project != null) {
+            ProjectLookup lookup = screenBuilders.lookup(Project.class, this)
+                    .withScreenClass(ProjectLookup.class)
+                    .withLaunchMode(OpenMode.DIALOG)
+                    .withSelectHandler(items -> {
+                        if (CollectionUtils.isNotEmpty(items)) {
+                            CommitContext commitContext = new CommitContext();
+                            for (Project selected : items) {
+                                commitContext.getCommitInstances().addAll(
+                                        updateParticipants(projectsService.getProjectParticipants(selected, "projectParticipant-full"), project));
+                            }
+                            dataManager.commit(commitContext);
+                            tasksDl.setParameter("project", project);
+                            participantsDl.load();
+                        }
+                    })
+                    .build();
+            lookup.setExcludedProject(project);
+            lookup.show();
+        } else {
+            showNotificationProjectIsNotSelected();
+        }
+    }
+
+    @Subscribe("projectsTable.create")
+    protected void onProjectsTableCreate(Action.ActionPerformedEvent event) {
+        screenBuilders.editor(projectsTable)
+                .newEntity()
+                .withLaunchMode(OpenMode.DIALOG)
+                .build()
+                .show();
+    }
+
+    @Subscribe("projectsTable.edit")
+    protected void onProjectsTableEdit(Action.ActionPerformedEvent event) {
+        Screen editor = screenBuilders.editor(projectsTable)
+                .withLaunchMode(OpenMode.DIALOG)
+                .build();
+        editor.addAfterCloseListener(afterCloseEvent -> projectsDl.load());
+        editor.show();
+    }
+
+    @Subscribe
+    protected void onBeforeShow(BeforeShowEvent event) {
+        projectsDc.addItemChangeListener(e -> {
+            tasksDl.setParameter("project", e.getItem());
+            tasksDl.load();
+            participantsDl.setParameter("project", e.getItem());
+            participantsDl.load();
+        });
+
+        projectsDl.load();
 
         initProjectsTable();
 
-        initTasksTable();
-
-        initParticipantsTable();
-    }
-
-    private void initParticipantsTable() {
-        participantsTable.addAction(new CreateAction(participantsTable) {
-            @Override
-            public String getCaption() {
-                return getMessage("caption.createParticipant");
-            }
-
-            @Override
-            public WindowManager.OpenType getOpenType() {
-                return WindowManager.OpenType.DIALOG;
-            }
-
-            @Override
-            public Map<String, Object> getInitialValues() {
-                return ParamsMap.of("project", projectsTable.getSingleSelected());
-            }
-
-            @Override
-            public void actionPerform(Component component) {
-                if (projectsTable.getSingleSelected() != null) {
-                    super.actionPerform(component);
-                } else {
-                    showNotification(getMessage("notification.pleaseSelectProject"), NotificationType.HUMANIZED);
-                }
-            }
-        });
-
-        participantsTable.addAction(new ItemTrackingAction("copy") {
-            @Override
-            public String getCaption() {
-                return getMessage("caption.copy");
-            }
-
-            @Override
-            public void actionPerform(Component component) {
-                copyParticipants();
-            }
-
-            @Override
-            protected boolean isApplicable() {
-                return projectsTable != null && !projectsTable.getSelected().isEmpty();
-            }
-        });
-        participantsTableCreate.setOpenType(WindowManager.OpenType.DIALOG);
-        participantsTableEdit.setOpenType(WindowManager.OpenType.DIALOG);
+        projectsTable.expandAll();
     }
 
     private void initTasksTable() {
-        tasksTable.addAction(new CreateAction(tasksTable) {
-            @Override
-            public Map<String, Object> getInitialValues() {
-                return ParamsMap.of("project", projectsTable.getSingleSelected());
-            }
-
+        tasksTable.addAction(new ItemTrackingAction("switchStatus") {
             @Override
             public void actionPerform(Component component) {
-                if (projectsTable.getSingleSelected() != null) {
-                    super.actionPerform(component);
-                } else {
-                    showNotification(getMessage("notification.pleaseSelectProject"), NotificationType.HUMANIZED);
+                Task task = tasksTable.getSingleSelected();
+                if (task != null) {
+                    if (task.getStatus() != null) {
+                        task.setStatus(task.getStatus().inverted());
+                    }
                 }
             }
-        });
-        tasksTable.addAction(new ComponentsHelper.TaskStatusTrackingAction(tasksTable, "switchStatus"));
 
-        tasksTable.setStyleProvider(new Table.StyleProvider<Task>() {
-            @Nullable
             @Override
-            public String getStyleName(Task entity, @Nullable String property) {
-                if ("status".equals(property)) {
-                    return ComponentsHelper.getTaskStatusStyle(entity);
+            public void refreshState() {
+                super.refreshState();
+                String captionKey = "closeTask";
+                Task selected = (Task) target.getSingleSelected();
+                if (selected != null) {
+                    TaskStatus status = selected.getStatus();
+                    if (TaskStatus.INACTIVE.equals(status)) {
+                        captionKey = "openTask";
+                    }
                 }
-                return null;
+                setCaption(messages.getMessage(getClass(), captionKey));
             }
-        });
+        }.withIcon("font-icon:EXCHANGE"));
     }
 
     private void initProjectsTable() {
-        projectsTable.addAction(new CreateAction(projectsTable) {
-            @Override
-            public WindowManager.OpenType getOpenType() {
-                return WindowManager.OpenType.DIALOG;
-            }
-        });
-        projectsTable.addAction(new EditAction(tasksTable) {
-            @Override
-            public WindowManager.OpenType getOpenType() {
-                return WindowManager.OpenType.DIALOG;
-            }
-
-            @Override
-            protected void afterCommit(Entity entity) {
-                projectsTable.refresh();
-            }
-        });
-
         LoadContext<ProjectRole> loadContext = new LoadContext<>(ProjectRole.class);
         loadContext.setQueryString("select pr from ts$ProjectRole pr order by pr.name");
-        List<ProjectRole> projectRoles = getDsContext().getDataSupplier().loadList(loadContext);
-        projectRoles = new ArrayList<>(projectRoles);
-        sortProjectRoles(projectRoles);
-        for (final ProjectRole projectRole : projectRoles) {
-            assignBtn.addAction(new AbstractAction("assign" + projectRole.getCode()) {
-                @Override
-                public String getCaption() {
-                    return (getMessage("caption.assign" + StringUtils.capitalize(projectRole.getCode().getId().toLowerCase())));
-                }
+        List<ProjectRole> loadedRoles = dataManager.loadList(loadContext);
+        projectCreateRoles = new ArrayList<>(loadedRoles);
 
-                @SuppressWarnings("unchecked")
-                @Override
-                public void actionPerform(Component component) {
-                    if (CollectionUtils.isNotEmpty(projectsTable.getSelected())) {
-                        openLookup("sec$User.lookup", items -> {
-                            if (CollectionUtils.isNotEmpty(items)) {
-                                Collection<Project> selectedProjects = projectsTable.getSelected();
-                                Collection<User> selectedUsers = (Collection) items;
-                                boolean needToRefresh =
-                                        projectsService.assignUsersToProjects(selectedUsers, selectedProjects, projectRole);
-                                if (needToRefresh) {
-                                    participantsTable.refresh();
-                                }
-                            }
-                        }, WindowManager.OpenType.DIALOG);
-                    } else {
-                        showNotification(getMessage("notification.pleaseSelectProject"), NotificationType.HUMANIZED);
-                    }
-                }
-            });
+        sortProjectRoles(projectCreateRoles);
+        for (final ProjectRole projectRole : projectCreateRoles) {
+            assignBtn.addAction(createAssignAction(projectRole));
         }
+    }
 
-        projectsTable.setStyleProvider(new Table.StyleProvider<Project>() {
-            @Nullable
-            @Override
-            public String getStyleName(Project entity, @Nullable String property) {
-                if ("status".equals(property)) {
-                    return ComponentsHelper.getProjectStatusStyle(entity);
+    protected Action createAssignAction(final ProjectRole projectRole) {
+        final String assignCode = "assign" + StringUtils.capitalize(projectRole.getCode().getId().toLowerCase());
+
+        final String assignCaption = messageBundle.getMessage("caption.assign" + StringUtils.capitalize(projectRole.getCode().getId().toLowerCase()));
+
+        return new BaseAction(assignCode)
+                .withCaption(assignCaption)
+                .withHandler(actionPerformedEvent -> {
+                    Set<Project> selected = projectsTable.getSelected();
+                    if (CollectionUtils.isNotEmpty(selected)) {
+                        doAssign(projectRole, selected);
+                    } else {
+                        showNotification(messageBundle.getMessage("notification.pleaseSelectProject"), Notifications.NotificationType.HUMANIZED);
+                    }
+                });
+    }
+
+    protected void doAssign(final ProjectRole projectRole, final Collection<Project> selectedProjects) {
+        getWindow().openLookup("sec$User.lookup", items -> {
+            if (CollectionUtils.isNotEmpty(items)) {
+                boolean needToRefresh = projectsService.assignUsersToProjects(items, selectedProjects, projectRole);
+                if (projectRole == null || needToRefresh) {
+                    participantsDl.setParameter("project", selectedProjects.iterator().next());
+                    participantsDl.load();
                 }
-                return null;
             }
-        });
+        }, WindowManager.OpenType.DIALOG);
     }
 
     protected void sortProjectRoles(List<ProjectRole> projectRoles) {
@@ -245,25 +301,6 @@ public class ProjectBrowse extends AbstractLookup {
         });
     }
 
-    @SuppressWarnings("unchecked")
-    public void copyParticipants() {
-        final Project project = projectsTable.getSingleSelected();
-        if (project != null) {
-            openLookup("ts$Project.lookup", items -> {
-                if (CollectionUtils.isNotEmpty(items)) {
-                    CommitContext commitContext = new CommitContext();
-                    for (Project selected : (Collection<Project>) items) {
-                        commitContext.getCommitInstances().addAll(updateParticipants(
-                                projectsService.getProjectParticipants(selected, "projectParticipant-full"), project));
-                    }
-                    getDsContext().getDataSupplier().commit(commitContext);
-                    participantsTable.refresh();
-                }
-            }, WindowManager.OpenType.DIALOG, ParamsMap.of("exclude", project));
-        } else {
-            showNotification(getMessage("notification.pleaseSelectProject"), NotificationType.HUMANIZED);
-        }
-    }
 
     protected Collection<? extends Entity> updateParticipants(List<ProjectParticipant> participants, Project project) {
         if (participants.isEmpty()) {
@@ -284,8 +321,14 @@ public class ProjectBrowse extends AbstractLookup {
         return copies;
     }
 
-    @Override
-    public void ready() {
-        projectsTable.expandAll();
+    protected void showNotificationProjectIsNotSelected() {
+        showNotification(messageBundle.getMessage("notification.pleaseSelectProject"), Notifications.NotificationType.HUMANIZED);
+    }
+
+    protected void showNotification(String caption, Notifications.NotificationType type) {
+        notifications.create()
+                .withCaption(caption)
+                .withType(type)
+                .show();
     }
 }

@@ -16,36 +16,27 @@
 
 package com.haulmont.timesheets.gui.holiday;
 
-import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.FieldGroup;
+import com.haulmont.cuba.gui.model.DataContext;
+import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.timesheets.entity.Holiday;
-import com.haulmont.timesheets.gui.util.ComponentsHelper;
 import com.haulmont.timesheets.service.CacheService;
 
 import javax.inject.Inject;
-import java.util.Map;
 
 /**
  * @author gorelov
  */
-public class HolidayEdit extends AbstractEditor<Holiday> {
+@UiController("ts$Holiday.edit")
+@UiDescriptor("holiday-edit.xml")
+@EditedEntityContainer("holidayDc")
+@LoadDataBeforeShow
+public class HolidayEdit extends StandardEditor<Holiday> {
 
     @Inject
-    protected FieldGroup fieldGroup;
+    protected CacheService cacheService;
 
-    @Inject
-    private CacheService cacheService;
-
-    @Override
-    public void init(Map<String, Object> params) {
-        fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
-    }
-
-    @Override
-    protected boolean postCommit(boolean committed, boolean close) {
-        if (committed) {
-            cacheService.updateHolidaysCache();
-        }
-        return super.postCommit(committed, close);
+    @Subscribe(target = Target.DATA_CONTEXT)
+    protected void onPostCommit(DataContext.PostCommitEvent e) {
+        cacheService.updateHolidaysCache();
     }
 }

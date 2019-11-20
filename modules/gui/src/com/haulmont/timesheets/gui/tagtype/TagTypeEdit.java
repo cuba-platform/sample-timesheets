@@ -16,29 +16,26 @@
 
 package com.haulmont.timesheets.gui.tagtype;
 
-import com.haulmont.cuba.gui.components.AbstractEditor;
-import com.haulmont.cuba.gui.components.FieldGroup;
-import com.haulmont.cuba.gui.data.Datasource;
+import com.haulmont.cuba.gui.model.InstanceContainer;
+import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.timesheets.entity.TagType;
-import com.haulmont.timesheets.gui.util.ComponentsHelper;
+import com.haulmont.timesheets.gui.util.ScreensHelper;
 
 import javax.inject.Inject;
-import java.util.Map;
 
 /**
  * @author gorelov
  */
-public class TagTypeEdit extends AbstractEditor<TagType> {
-
+@UiController("ts$TagType.edit")
+@UiDescriptor("tagtype-edit.xml")
+@EditedEntityContainer("tagTypeDc")
+@LoadDataBeforeShow
+public class TagTypeEdit extends StandardEditor<TagType> {
     @Inject
-    protected FieldGroup fieldGroup;
+    protected InstanceContainer<TagType> tagTypeDc;
 
-    @Inject
-    private Datasource<TagType> tagTypeDs;
-
-    @Override
-    public void init(Map<String, Object> params) {
-        fieldGroup.addCustomField("description", ComponentsHelper.getCustomTextArea());
-        tagTypeDs.addItemPropertyChangeListener(new ComponentsHelper.EntityCodeGenerationListener<>());
+    @Subscribe
+    protected void onInit(InitEvent event) {
+        tagTypeDc.addItemPropertyChangeListener(new ScreensHelper.EntityCodeGenerationListener<>());
     }
 }

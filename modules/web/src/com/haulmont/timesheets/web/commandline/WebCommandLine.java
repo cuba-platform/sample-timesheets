@@ -42,4 +42,9 @@ public class WebCommandLine extends WebSourceCodeEditor implements CommandLine {
     public CommandLineSuggestionExtension getSuggestionExtension() {
         return (CommandLineSuggestionExtension) suggestionExtension;
     }
+
+    @Override
+    public void setApplyHandler(Runnable handler) {
+        this.getSuggestionExtension().setApplyHandler(handler);
+    }
 }

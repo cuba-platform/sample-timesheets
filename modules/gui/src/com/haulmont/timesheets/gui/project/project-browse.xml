@@ -15,45 +15,51 @@
   ~ limitations under the License.
   -->
 
-<window xmlns="http://schemas.haulmont.com/cuba/window.xsd" caption="msg://browseCaption"
-        class="com.haulmont.timesheets.gui.project.ProjectBrowse" focusComponent="projectsTable"
-        lookupComponent="projectsTable" messagesPack="com.haulmont.timesheets.gui.project">
-    <dsContext>
-        <hierarchicalDatasource id="projectsDs" class="com.haulmont.timesheets.entity.Project"
-                                hierarchyProperty="parent" view="project-with-parent">
-            <query>
-                <![CDATA[select e
+<window xmlns="http://schemas.haulmont.com/cuba/screen/window.xsd" caption="msg://browseCaption"
+        focusComponent="projectsTable"
+        messagesPack="com.haulmont.timesheets.gui.project">
+    <data>
+        <collection id="projectsDc" class="com.haulmont.timesheets.entity.Project" view="project-with-parent">
+            <loader id="projectsDl">
+                <query>
+                    <![CDATA[select e
                          from
                             ts$Project e left join e.participants p
                          where
-                            p.user.id = :session$userId and (p.role.code = 'manager' or p.role.code = 'approver')
+                            p.user = :user and (p.role.code = 'manager' or p.role.code = 'approver')
                          ]]>
-            </query>
-        </hierarchicalDatasource>
-        <collectionDatasource id="tasksDs" class="com.haulmont.timesheets.entity.Task" view="task-full">
-            <query>
-                <![CDATA[select t from ts$Task t where t.project.id = :ds$projectsDs]]>
-            </query>
-        </collectionDatasource>
-        <collectionDatasource id="participantsDs" class="com.haulmont.timesheets.entity.ProjectParticipant"
-                              view="projectParticipant-full">
-            <query>
-                <![CDATA[select p from ts$ProjectParticipant p where p.project.id = :ds$projectsDs]]>
-            </query>
-        </collectionDatasource>
-    </dsContext>
+                </query>
+            </loader>
+        </collection>
+        <collection id="tasksDc" class="com.haulmont.timesheets.entity.Task" view="task-full">
+            <loader id="tasksDl">
+                <query>
+                    <![CDATA[select t from ts$Task t where t.project = :project]]>
+                </query>
+            </loader>
+        </collection>
+        <collection id="participantsDc" class="com.haulmont.timesheets.entity.ProjectParticipant"
+                    view="projectParticipant-full">
+            <loader id="participantsDl">
+                <query>
+                    <![CDATA[select p from ts$ProjectParticipant p where p.project = :project]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
     <layout expand="split" spacing="true">
-        <filter id="filter" datasource="projectsDs">
+        <filter id="filter" dataLoader="projectsDl">
             <properties include=".*"/>
         </filter>
         <split id="split" orientation="horizontal" width="100%">
             <vbox id="leftBox" height="100%" margin="false,true,false,false" spacing="true">
-                <treeTable id="projectsTable" height="100%" multiselect="true" width="100%">
+                <treeTable id="projectsTable" height="100%" multiselect="true" width="100%"
+                           dataContainer="projectsDc" hierarchyProperty="parent">
                     <actions>
-                        <action id="create"/>
-                        <action id="edit"/>
-                        <action id="remove"/>
-                        <action id="excel"/>
+                        <action id="create" type="create"/>
+                        <action id="edit" type="edit"/>
+                        <action id="remove" type="remove"/>
+                        <action id="excel" type="excel"/>
                     </actions>
                     <columns>
                         <column id="name"/>
@@ -61,7 +67,6 @@
                         <column id="client"/>
                         <column id="status"/>
                     </columns>
-                    <rows datasource="projectsDs"/>
                     <rowsCount/>
                     <buttonsPanel id="buttonsPanel" alwaysVisible="true">
                         <button id="createBtn" action="projectsTable.create" caption="msg://caption.createProject"/>
@@ -75,13 +80,13 @@
             <vbox id="rightBox" height="100%" margin="false,false,false,true">
                 <tabSheet height="100%">
                     <tab id="tasks" caption="msg://caption.tasks" margin="true,false,false,false">
-                        <table id="tasksTable" height="100%" width="100%">
+                        <table id="tasksTable" height="100%" width="100%" dataContainer="tasksDc">
                             <actions>
-                                <action id="create"/>
-                                <action id="edit"/>
-                                <action id="remove"/>
+                                <action id="create" type="create"/>
+                                <action id="edit" type="edit"/>
+                                <action id="remove" type="remove"/>
                                 <action id="switchStatus"/>
-                                <action id="excel"/>
+                                <action id="excel" type="excel"/>
                             </actions>
                             <columns>
                                 <column id="name"/>
@@ -91,9 +96,9 @@
                                 <column id="defaultTagsList"/>
                                 <column id="requiredTagTypesList"/>
                             </columns>
-                            <rows datasource="tasksDs"/>
                             <buttonsPanel id="taskButtonsPanel" alwaysVisible="true">
-                                <button id="taskCreateBtn" action="tasksTable.create" caption="msg://caption.createTask"/>
+                                <button id="taskCreateBtn" action="tasksTable.create"
+                                        caption="msg://caption.createTask"/>
                                 <button id="taskEditBtn" action="tasksTable.edit"/>
                                 <button id="tasRemoveBtn" action="tasksTable.remove"/>
                                 <button id="tasExcelBtn" action="tasksTable.excel"/>
@@ -103,20 +108,19 @@
                     </tab>
                     <tab id="participants" caption="msg://caption.participants" margin="true,false,false,false">
                         <table id="participantsTable" columnControlVisible="false" editable="true" height="100%"
-                               multiselect="true" width="100%">
+                               multiselect="true" width="100%" dataContainer="participantsDc">
                             <actions>
-                                <action id="create"/>
-                                <action id="edit"/>
-                                <action id="remove"/>
-                                <action id="copy"/>
-                                <action id="excel"/>
+                                <action id="create" type="create"/>
+                                <action id="edit" type="edit"/>
+                                <action id="remove" type="remove"/>
+                                <action id="copy" caption="msg://caption.copy"/>
+                                <action id="excel" type="excel"/>
                             </actions>
                             <columns>
                                 <column id="user" link="true"/>
                                 <column id="role"/>
                                 <column id="user.position"/>
                             </columns>
-                            <rows datasource="participantsDs"/>
                             <buttonsPanel>
                                 <button action="participantsTable.create"/>
                                 <button action="participantsTable.edit"/>
@@ -129,5 +133,9 @@
                 </tabSheet>
             </vbox>
         </split>
+        <hbox id="lookupActions" spacing="true" visible="false">
+            <button action="lookupSelectAction"/>
+            <button action="lookupCancelAction"/>
+        </hbox>
     </layout>
 </window>

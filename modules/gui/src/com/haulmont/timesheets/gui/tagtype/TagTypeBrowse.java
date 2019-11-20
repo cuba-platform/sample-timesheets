@@ -16,27 +16,42 @@
 
 package com.haulmont.timesheets.gui.tagtype;
 
-import com.haulmont.cuba.gui.WindowManager;
-import com.haulmont.cuba.gui.components.AbstractLookup;
-import com.haulmont.cuba.gui.components.actions.CreateAction;
-import com.haulmont.cuba.gui.components.actions.EditAction;
+import com.haulmont.cuba.gui.ScreenBuilders;
+import com.haulmont.cuba.gui.components.Action;
+import com.haulmont.cuba.gui.components.Table;
+import com.haulmont.cuba.gui.screen.*;
+import com.haulmont.timesheets.entity.TagType;
 
-import javax.inject.Named;
-import java.util.Map;
+import javax.inject.Inject;
 
 /**
  * @author gorelov
  */
-public class TagTypeBrowse extends AbstractLookup {
+@UiController("ts$TagType.browse")
+@UiDescriptor("tagtype-browse.xml")
+@LookupComponent("tagTypesTable")
+@LoadDataBeforeShow
+public class TagTypeBrowse extends StandardLookup<TagType> {
+    @Inject
+    protected ScreenBuilders screenBuilders;
 
-    @Named("tagTypesTable.create")
-    protected CreateAction tagTypesTableCreate;
-    @Named("tagTypesTable.edit")
-    protected EditAction tagTypesTableEdit;
+    @Inject
+    protected Table<TagType> tagTypesTable;
 
-    @Override
-    public void init(Map<String, Object> params) {
-        tagTypesTableCreate.setOpenType(WindowManager.OpenType.DIALOG);
-        tagTypesTableEdit.setOpenType(WindowManager.OpenType.DIALOG);
+    @Subscribe("tagTypesTable.create")
+    protected void onTagTypesTableCreateActionPerformed(Action.ActionPerformedEvent e) {
+        screenBuilders.editor(tagTypesTable)
+                .newEntity()
+                .withLaunchMode(OpenMode.DIALOG)
+                .build()
+                .show();
+    }
+
+    @Subscribe("tagTypesTable.edit")
+    protected void onTagTypesTableEditActionPerformed(Action.ActionPerformedEvent e) {
+        screenBuilders.editor(tagTypesTable)
+                .withLaunchMode(OpenMode.DIALOG)
+                .build()
+                .show();
     }
 }

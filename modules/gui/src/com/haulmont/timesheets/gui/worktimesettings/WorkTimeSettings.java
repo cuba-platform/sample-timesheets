@@ -16,71 +16,53 @@
 
 package com.haulmont.timesheets.gui.worktimesettings;
 
-import com.haulmont.cuba.client.ClientConfig;
-import com.haulmont.cuba.core.global.Configuration;
 import com.haulmont.cuba.gui.components.*;
+import com.haulmont.cuba.gui.screen.*;
 import com.haulmont.timesheets.entity.DayOfWeek;
 import com.haulmont.timesheets.global.WorkTimeConfigBean;
 
 import javax.inject.Inject;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.Collection;
+import java.util.Date;
 
 /**
  * @author gorelov
  */
-public class WorkTimeSettings extends AbstractWindow {
+@UiController("work-time-settings")
+@UiDescriptor("work-time-settings.xml")
+public class WorkTimeSettings extends Screen {
 
     @Inject
-    protected Configuration configuration;
-    @Inject
     protected WorkTimeConfigBean workTimeConfigBean;
-    @Inject
-    protected TextField workHoursTextField;
+
     @Inject
     protected OptionsGroup workDaysOptions;
     @Inject
-    private DateField openPeriodStart;
+    protected DateField<Date> openPeriodStart;
+    @Inject
+    protected TextField<BigDecimal> workHoursTextField;
 
-    @Override
-    public void init(Map<String, Object> params) {
+    @Subscribe
+    protected void onBeforeShow(BeforeShowEvent event) {
         workHoursTextField.setValue(workTimeConfigBean.getWorkHourForWeek());
-
         initWorkDays();
+    }
 
-        AbstractAction commitAction = new AbstractAction(Editor.WINDOW_COMMIT) {
+    @Subscribe("confirm")
+    protected void onConfirm(Action.ActionPerformedEvent event) {
+        BigDecimal workHoursValue = workHoursTextField.getValue();
+        workTimeConfigBean.setWorkHourForWeek(workHoursValue);
+        workTimeConfigBean.setWorkDays(new ArrayList<DayOfWeek>((Collection) workDaysOptions.getValue()));
+        workTimeConfigBean.setOpenPeriodStart(openPeriodStart.getValue());
+        close(new StandardCloseAction(Window.COMMIT_ACTION_ID));
+    }
 
-            @Override
-            public String getCaption() {
-                return messages.getMainMessage("actions.Ok");
-            }
-
-            @Override
-            public void actionPerform(Component component) {
-                BigDecimal workHoursValue = workHoursTextField.getValue();
-                workTimeConfigBean.setWorkHourForWeek(workHoursValue);
-                workTimeConfigBean.setWorkDays(workDaysOptions.<List<DayOfWeek>>getValue());
-                workTimeConfigBean.setOpenPeriodStart(openPeriodStart.getValue());
-                close(getId());
-            }
-        };
-        commitAction.setShortcut(configuration.getConfig(ClientConfig.class).getCommitShortcut());
-        addAction(commitAction);
-
-        addAction(new AbstractAction(Editor.WINDOW_CLOSE) {
-                      @Override
-                      public String getCaption() {
-                          return messages.getMainMessage("actions.Cancel");
-                      }
-
-                      @Override
-                      public void actionPerform(Component component) {
-                          close(getId());
-                      }
-                  }
-        );
+    @Subscribe("cancel")
+    protected void onCancel(Action.ActionPerformedEvent event) {
+        close(new StandardCloseAction(Window.CLOSE_ACTION_ID));
     }
 
     protected void initWorkDays() {
