@@ -64,7 +64,7 @@ public class HolidaysCache implements HolidaysCacheMBean, HolidaysCacheAPI {
                 Date startDate = holiday.getStartDate();
                 Date endDate = holiday.getEndDate();
                 Date currentDate = startDate;
-                while (currentDate.before(endDate)) {
+                while (!currentDate.after(endDate)) {
                     cache.put(currentDate, holiday);
                     currentDate = DateUtils.addDays(currentDate, 1);
                 }
