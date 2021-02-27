@@ -37,7 +37,8 @@ public class TimeEntryOvertimeAggregation implements AggregationStrategy<Overtim
             Map<String, Object> key = new TreeMap<>();
             key.put("user", propertyValue.getUser());
             key.put("date", propertyValue.getDate());
-            map.put(key, propertyValue.getOvertimeInHours());
+            BigDecimal overtimeInHours = propertyValue.getOvertimeInHours();
+            map.put(key, overtimeInHours != null ? overtimeInHours : BigDecimal.ZERO);
         }
 
         BigDecimal result = BigDecimal.ZERO;

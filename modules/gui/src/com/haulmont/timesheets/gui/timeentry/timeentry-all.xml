@@ -25,7 +25,7 @@
                     <![CDATA[
                 select e from ts$TimeEntry e
                 where exists (select 1 from ts$ProjectParticipant pa
-                                where pa.project = e.task.project and pa.user.id = :user
+                                where pa.project = e.task.project and pa.user = :user
                                 and (pa.role.code = 'manager' or pa.role.code = 'approver'))
                 ]]>
                 </query>
