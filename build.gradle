@@ -1,5 +1,5 @@
 buildscript {
-    ext.cubaVersion = '7.1.8'
+    ext.cubaVersion = '7.2.13'
     repositories {
         maven {
             url 'https://repo.cuba-platform.com/content/groups/work'
@@ -16,11 +16,11 @@ buildscript {
 
 def modulePrefix = 'app'
 
-def globalModule = project(":${modulePrefix}-global" )
-def coreModule = project(":${modulePrefix}-core" )
-def guiModule = project(":${modulePrefix}-gui" )
-def webModule = project(":${modulePrefix}-web" )
-def webToolkitModule = project(":${modulePrefix}-web-toolkit" )
+def globalModule = project(":${modulePrefix}-global")
+def coreModule = project(":${modulePrefix}-core")
+def guiModule = project(":${modulePrefix}-gui")
+def webModule = project(":${modulePrefix}-web")
+def webToolkitModule = project(":${modulePrefix}-web-toolkit")
 
 def servletApi = 'javax.servlet:javax.servlet-api:3.1.0'
 
@@ -34,11 +34,8 @@ cuba {
         version = '0.1'
         isSnapshot = true
     }
-    tomcat {
-        dir = "$project.rootDir/deploy/tomcat"
-    }
     ide {
-        
+
         copyright = 'Copyright (c) ${YEAR} ${PACKAGE_NAME}'
         classComment = '''/**
  * @author ${USER}
@@ -63,6 +60,9 @@ configure([globalModule, coreModule, guiModule, webModule, webToolkitModule]) {
     dependencies {
         testCompile(jmockit)
         testCompile('junit:junit:4.5')
+        testCompile('org.junit.jupiter:junit-jupiter-api:5.5.2')
+        testCompile('org.junit.jupiter:junit-jupiter-engine:5.5.2')
+        testCompile('org.junit.vintage:junit-vintage-engine:5.5.2')
     }
 
     task sourceJar(type: Jar) {
@@ -73,15 +73,19 @@ configure([globalModule, coreModule, guiModule, webModule, webToolkitModule]) {
     artifacts {
         archives sourceJar
     }
+
+    test {
+        useJUnitPlatform()
+    }
 }
 
 configure(globalModule) {
     dependencies {
 
-    if (!JavaVersion.current().isJava8()) {
-        runtime('javax.xml.bind:jaxb-api:2.3.1')
-        runtime('org.glassfish.jaxb:jaxb-runtime:2.3.1')
-    }
+        if (!JavaVersion.current().isJava8()) {
+            runtime('javax.xml.bind:jaxb-api:2.3.1')
+            runtime('org.glassfish.jaxb:jaxb-runtime:2.3.1')
+        }
     }
 
     entitiesEnhancing {
@@ -106,15 +110,8 @@ configure(coreModule) {
 
     }
 
-    task cleanConf(description: 'Cleans up conf directory') {
-        doLast {
-            def dir = new File(cuba.tomcat.dir, "/conf/${modulePrefix}-core" )
-            if (dir.isDirectory()) {
-                ant.delete(includeemptydirs: true) {
-                    fileset(dir: dir, includes: '**/*', excludes: 'local.app.properties')
-                }
-            }
-        }
+    task cleanConf(description: 'Cleans up conf directory', type: Delete) {
+        delete "$cuba.appHome/${modulePrefix}-core/conf"
     }
 
     task deploy(dependsOn: [assemble, cleanConf], type: CubaDeployment) {
@@ -125,7 +122,7 @@ configure(coreModule) {
     task createDb(dependsOn: assembleDbScripts, description: 'Creates local database', type: CubaDbCreation) {
         dbms = 'hsql'
         host = 'localhost'
-        dbName = 'ts'
+        dbName = 'tst'
         dbUser = 'sa'
         dbPassword = ''
     }
@@ -133,7 +130,7 @@ configure(coreModule) {
     task updateDb(dependsOn: assembleDbScripts, description: 'Updates local database', type: CubaDbUpdate) {
         dbms = 'hsql'
         host = 'localhost'
-        dbName = 'ts'
+        dbName = 'tst'
         dbUser = 'sa'
         dbPassword = ''
     }
@@ -148,7 +145,7 @@ configure(guiModule) {
     task deployConf(type: Copy) {
         from file('src')
         include "com/haulmont/timesheets/**"
-        into "$cuba.tomcat.dir/conf/${modulePrefix}"
+        into "$cuba.appHome/${modulePrefix}/conf"
     }
 }
 
@@ -183,7 +180,7 @@ configure(webModule) {
     task deployConf(type: Copy) {
         from file('src')
         include "com/haulmont/timesheets/**"
-        into "$cuba.tomcat.dir/conf/${modulePrefix}"
+        into "$cuba.appHome/${modulePrefix}/conf"
     }
 
     task clearMessagesCache(type: CubaClearMessagesCache) {
@@ -192,15 +189,8 @@ configure(webModule) {
     deployConf.dependsOn clearMessagesCache
 
 
-    task cleanConf(description: 'Cleans up conf directory') {
-        doLast {
-            def dir = new File(cuba.tomcat.dir, "/conf/${modulePrefix}" )
-            if (dir.isDirectory()) {
-                ant.delete(includeemptydirs: true) {
-                    fileset(dir: dir, includes: '**/*', excludes: 'local.app.properties')
-                }
-            }
-        }
+    task cleanConf(description: 'Cleans up conf directory', type: Delete) {
+        delete "$cuba.appHome/${modulePrefix}/conf"
     }
 
     task deploy(dependsOn: [assemble, cleanConf], type: CubaDeployment) {
@@ -255,27 +245,25 @@ configure(webToolkitModule) {
 }
 
 
-
-
-task undeploy(type: Delete, dependsOn: ":${modulePrefix}-web:cleanConf" ) {
+task undeploy(type: Delete, dependsOn: ":${modulePrefix}-web:cleanConf") {
     delete("$cuba.tomcat.dir/shared")
-    delete("$cuba.tomcat.dir/webapps/${modulePrefix}-core" )
-    delete("$cuba.tomcat.dir/webapps/${modulePrefix}" )
+    delete("$cuba.tomcat.dir/webapps/${modulePrefix}-core")
+    delete("$cuba.tomcat.dir/webapps/${modulePrefix}")
 }
 
-task restart(dependsOn: ['stop', ":${modulePrefix}-core:deploy" , ":${modulePrefix}-web:deploy" ], description: 'Redeploys applications and restarts local Tomcat') {
+task restart(dependsOn: ['stop', ":${modulePrefix}-core:deploy", ":${modulePrefix}-web:deploy"], description: 'Redeploys applications and restarts local Tomcat') {
     doLast {
         ant.waitfor(maxwait: 6, maxwaitunit: 'second', checkevery: 2, checkeveryunit: 'second') {
             not {
                 socket(server: 'localhost', port: '8787')
             }
         }
-        start.execute()
     }
 }
+restart.finalizedBy start
 
-def distribDir="./distrib"
-def scriptsDir="./scripts"
+def distribDir = "./distrib"
+def scriptsDir = "./scripts"
 
 task cleanTomcatLogs {
     doLast {
@@ -288,7 +276,7 @@ task cleanTomcatLogs {
     }
 }
 
-task copyTomcat(type: Copy, dependsOn: ['setupTomcat',":${modulePrefix}-core:deploy" , ":${modulePrefix}-web:deploy" , ":${modulePrefix}-web-toolkit:deploy" , 'cleanTomcatLogs']) {
+task copyTomcat(type: Copy, dependsOn: ['setupTomcat', ":${modulePrefix}-core:deploy", ":${modulePrefix}-web:deploy", ":${modulePrefix}-web-toolkit:deploy", 'cleanTomcatLogs']) {
     from file("$cuba.tomcat.dir/..")
     include "tomcat/**"
     into "$distribDir"
@@ -310,11 +298,11 @@ task buildDistributionZip(type: Zip, dependsOn: ['copyLoriScripts', 'copyTomcatS
     from "$distribDir"
     exclude "*.zip"
     baseName = 'lori'
-    version= "$cuba.artifact.version"
+    version = "$cuba.artifact.version"
     destinationDir = file("$distribDir")
 }
 
-task distribution(dependsOn: buildDistributionZip)  {
-    doLast{}
+task distribution(dependsOn: buildDistributionZip) {
+    doLast {}
 }
 
