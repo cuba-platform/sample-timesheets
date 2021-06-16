@@ -23,6 +23,8 @@ import com.haulmont.cuba.core.global.UserSessionSource;
 import com.haulmont.cuba.security.entity.RoleType;
 import com.haulmont.cuba.security.entity.User;
 import com.haulmont.cuba.security.entity.UserRole;
+import com.haulmont.cuba.security.role.RoleDefinition;
+import com.haulmont.cuba.security.role.RolesService;
 import com.haulmont.timesheets.config.TimeSheetsSettings;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
@@ -36,6 +38,8 @@ import javax.inject.Inject;
 public class SecurityAssistant {
     @Inject
     protected UserSessionSource userSessionSource;
+    @Inject
+    private RolesService rolesService;
 
     public static final String NAME = "ts_SecurityAssistant";
 
@@ -45,14 +49,18 @@ public class SecurityAssistant {
             return true;
         }
 
+        RoleDefinition roleDefinition;
+
         for (UserRole userRole : user.getUserRoles()) {
-            if (userRole.getRole().getType() == RoleType.SUPER) {
+            roleDefinition = rolesService.getRoleDefinitionByName(userRole.getRoleName());
+            if (roleDefinition != null && roleDefinition.isSuper()) {
                 return true;
             }
         }
 
         return false;
     }
+
 
     public boolean isUserCloser() {
         User user = userSessionSource.getUserSession().getCurrentOrSubstitutedUser();
